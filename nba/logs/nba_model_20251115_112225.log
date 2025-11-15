@@ -1,0 +1,121 @@
+==========================================
+NBA Model Run: Sat Nov 15 11:22:25 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 3 pending picks...[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+[92m✓ Tracking dashboard saved: nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[92m✓ Using cached composite stats (less than 6 hours old)[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[92m✓ Using cached home/away splits (less than 6 hours old)[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched odds for 8 total games[0m
+[92m✓ Filtered to 5 games in next 7 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Indiana Pacers +6.5 (Edge: +20.9)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 233.5 (Edge: -7.5)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Minnesota Timberwolves -2.0 (Edge: +6.7)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 234.5 (Edge: -8.6)[0m
+
+[1m[92m✅ Analyzed 5 games with complete odds[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mMemphis Grizzlies @ Cleveland Cavaliers[0m
+  🕐 11/15/25 05:10 PM EST
+  📊 Spread: Market -11.5 | Model +11.9
+  🎯 Total: Market 238.5 | Model 233.0
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+0.4)[0m
+  [92m✅ BET: UNDER 238.5[0m
+     [96mModel projects 233 total points, bet the UNDER[0m
+  📈 Predicted: Memphis Grizzlies 111, Cleveland Cavaliers 122
+
+[1m[96mOklahoma City Thunder @ Charlotte Hornets[0m
+  🕐 11/15/25 07:10 PM EST
+  📊 Spread: Market +15.5 | Model -9.5
+  🎯 Total: Market 225.5 | Model 220.5
+  [92m✅ BET: Charlotte Hornets +15.5[0m
+     [96mModel projects Charlotte Hornets to lose by only 9.5, covering +15.5.[0m
+  [92m✅ BET: UNDER 225.5[0m
+     [96mModel projects 220 total points, bet the UNDER[0m
+  📈 Predicted: Oklahoma City Thunder 115, Charlotte Hornets 106
+
+[1m[96mToronto Raptors @ Indiana Pacers[0m
+  🕐 11/15/25 07:10 PM EST
+  📊 Spread: Market +6.5 | Model +14.4
+  🎯 Total: Market 233.5 | Model 226.0
+  [92m✅ BET: Indiana Pacers +6.5[0m
+     [96mModel projects Indiana Pacers to win outright, easily covering +6.5.[0m
+  [92m✅ BET: UNDER 233.5[0m
+     [96mModel projects 226 total points, bet the UNDER[0m
+  📈 Predicted: Toronto Raptors 106, Indiana Pacers 120
+
+[1m[96mDenver Nuggets @ Minnesota Timberwolves[0m
+  🕐 11/15/25 08:10 PM EST
+  📊 Spread: Market -2.0 | Model +8.7
+  🎯 Total: Market 234.5 | Model 225.9
+  [92m✅ BET: Minnesota Timberwolves -2.0[0m
+     [96mModel projects Minnesota Timberwolves to win by 8.7, covering -2.0.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 226 total points, bet the UNDER[0m
+  📈 Predicted: Denver Nuggets 109, Minnesota Timberwolves 117
+
+[1m[96mLos Angeles Lakers @ Milwaukee Bucks[0m
+  🕐 11/15/25 08:10 PM EST
+  📊 Spread: Market +1.5 | Model +10.6
+  🎯 Total: Market 229.5 | Model 226.8
+  [92m✅ BET: Milwaukee Bucks +1.5[0m
+     [96mModel projects Milwaukee Bucks to win outright, easily covering +1.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Los Angeles Lakers 108, Milwaukee Bucks 119
+
+[92m✓ CSV saved: nba_model_output.csv[0m
+[92m✓ HTML saved: nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 29[0m
+[92mRecord: 16-6-0[0m
+[92mWin Rate: 72.7%[0m
+[92mProfit: +8.56 units[0m
+[92mROI: +35.4%[0m
+[1m==========================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================

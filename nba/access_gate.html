@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Model Picks - Get Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            background: #1a1a1a;
+            padding: 3rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            border: 2px solid #2a2a2a;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            color: #fbbf24;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .stats {
+            background: #0a0a0a;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            border: 2px solid #fbbf24;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .stat-label {
+            color: #9ca3af;
+        }
+        
+        .stat-value {
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .access-section {
+            margin: 2rem 0;
+        }
+        
+        input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #fbbf24;
+            background: #0a0a0a;
+            color: white;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        
+        button {
+            width: 100%;
+            background: #fbbf24;
+            color: black;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+        }
+        
+        .divider {
+            margin: 2rem 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        
+        .purchase-option {
+            background: linear-gradient(135deg, #422006 0%, #78350f 100%);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            border: 2px solid #fbbf24;
+        }
+        
+        .price {
+            font-size: 3rem;
+            color: #fbbf24;
+            font-weight: 900;
+            margin: 1rem 0;
+        }
+        
+        .benefits {
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+        
+        .benefit {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .benefit:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+        
+        .cta-button {
+            background: #10b981;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            padding: 1.25rem;
+        }
+        
+        .cta-button:hover {
+            background: #059669;
+        }
+        
+        .error {
+            color: #ef4444;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            color: #10b981;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .trial-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏀 NBA Model Picks</h1>
+        <p style="text-align: center; color: #9ca3af; margin-bottom: 2rem;">
+            Data-driven NBA betting predictions tracked publicly
+        </p>
+        
+        <!-- Current Performance Stats -->
+        <div class="stats">
+            <div class="stat-row">
+                <span class="stat-label">Win Rate:</span>
+                <span class="stat-value">65.2%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Record:</span>
+                <span class="stat-value">15-8-0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">ROI:</span>
+                <span class="stat-value">+22.3%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Total Profit:</span>
+                <span class="stat-value">+5.80 units</span>
+            </div>
+        </div>
+        
+        <!-- Access Code Section -->
+        <div class="access-section">
+            <h2 style="color: #fbbf24; margin-bottom: 1rem;">Already Have Access?</h2>
+            <p style="color: #9ca3af; margin-bottom: 1rem;">Enter your access code:</p>
+            
+            <input 
+                type="text" 
+                id="accessCode" 
+                placeholder="Enter your access code"
+                autocomplete="off"
+            >
+            <button onclick="checkAccess()">Access Dashboard →</button>
+            
+            <div id="message"></div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- Purchase Section -->
+        <div class="purchase-option">
+            <div class="trial-badge">🎁 First Week Free Trial Available</div>
+            
+            <h2 style="margin-bottom: 0.5rem;">Get Premium Access</h2>
+            <div class="price">$10<span style="font-size: 1.5rem; color: #9ca3af;">/week</span></div>
+            
+            <div class="benefits">
+                <div class="benefit">Get picks BEFORE games start</div>
+                <div class="benefit">Detailed analysis for each pick</div>
+                <div class="benefit">Real-time updates to dashboard</div>
+                <div class="benefit">Full transparency - every bet tracked</div>
+                <div class="benefit">Cancel anytime, no commitment</div>
+            </div>
+            
+            <!-- Replace with your actual Gumroad/Stripe link -->
+            <button class="cta-button" onclick="window.open('https://gumroad.com/l/your-product', '_blank')">
+                🔒 Get Access Now
+            </button>
+            
+            <p style="margin-top: 1rem; font-size: 0.875rem; color: #9ca3af;">
+                Or try free trial: <a href="#" onclick="requestTrial()" style="color: #fbbf24;">Click here</a>
+            </p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">
+            Questions? DM me on TikTok @yourusername
+        </p>
+    </div>
+    
+    <script>
+        // Access code validation
+        const validCodes = {
+            // Add your access codes here
+            'TRIAL24H': {
+                expires: '2025-11-02',
+                type: 'trial',
+                name: '24-Hour Trial'
+            },
+            'BETA2024': {
+                expires: '2025-12-31',
+                type: 'beta',
+                name: 'Beta Access'
+            },
+            // After someone purchases, add their code:
+            // 'PAID-ABC123': {
+            //     expires: '2026-01-01',
+            //     type: 'paid',
+            //     name: 'Premium Weekly'
+            // }
+        };
+        
+        function checkAccess() {
+            const code = document.getElementById('accessCode').value.trim().toUpperCase();
+            const messageDiv = document.getElementById('message');
+            
+            if (!code) {
+                messageDiv.innerHTML = '<div class="error">Please enter an access code</div>';
+                return;
+            }
+            
+            if (validCodes[code]) {
+                const access = validCodes[code];
+                const now = new Date();
+                const expires = new Date(access.expires);
+                
+                if (now <= expires) {
+                    // Grant access
+                    sessionStorage.setItem('hasAccess', 'true');
+                    sessionStorage.setItem('accessType', access.type);
+                    sessionStorage.setItem('accessCode', code);
+                    
+                    messageDiv.innerHTML = `<div class="success">✅ Access granted! Redirecting...</div>`;
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'nba_tracking_dashboard.html';
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">❌ Access code expired on ${expires.toLocaleDateString()}. Please renew your subscription.</div>`;
+                }
+            } else {
+                messageDiv.innerHTML = '<div class="error">❌ Invalid access code. Please check and try again.</div>';
+            }
+        }
+        
+        function requestTrial() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <div class="success">
+                    🎁 Free trial code: <strong>TRIAL24H</strong><br>
+                    Valid for 24 hours. Enter above to access!
+                </div>
+            `;
+            document.getElementById('accessCode').value = 'TRIAL24H';
+            document.getElementById('accessCode').focus();
+        }
+        
+        // Allow Enter key
+        document.getElementById('accessCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAccess();
+            }
+        });
+    </script>
+</body>
+</html>

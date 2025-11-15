@@ -1,0 +1,35 @@
+# =================================================
+# COLLEGE BASKETBALL MODEL - CONFIGURATION
+# =================================================
+#
+# Get your free API key from: https://the-odds-api.com/
+# - 500 free requests per month
+# - No credit card required
+# - Real-time odds data
+#
+# SETUP INSTRUCTIONS:
+# 1. Sign up at the-odds-api.com
+# 2. Copy your API key
+# 3. Paste it after the = sign below (no spaces)
+# 4. Save this file as ".env" in the same directory as the Python script
+#
+# =================================================
+
+ODDS_API_KEY=your_api_key_here
+
+# =================================================
+# OPTIONAL SETTINGS (Advanced Users)
+# =================================================
+#
+# These can be configured directly in the Python script
+# if you want to customize the model behavior:
+#
+# - HOME_COURT_ADVANTAGE: Points added to home team (default: 3.5)
+# - SPREAD_THRESHOLD: Minimum edge to display spread picks (default: 2.5)
+# - TOTAL_THRESHOLD: Minimum edge to display total picks (default: 4.0)
+# - CONFIDENT_SPREAD_EDGE: Minimum edge to track spreads (default: 4.0)
+# - CONFIDENT_TOTAL_EDGE: Minimum edge to track totals (default: 5.0)
+# - DAYS_AHEAD_TO_FETCH: How many days ahead to fetch games (default: 7)
+# - UNIT_SIZE: Standard bet size in dollars (default: 100)
+#
+# =================================================

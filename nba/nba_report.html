@@ -1,0 +1,170 @@
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #eef2ff; } /* Lighter background */
+        
+        /* Custom Keyframe for Pulse effect */
+        @keyframes pulse-alert {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .pulse-alert {
+            animation: pulse-alert 1.5s infinite;
+        }
+    </style>
+    <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-6 border-b-4 border-indigo-600 pb-3">
+            <span class="text-indigo-600">NBA</span> Betting Value Report
+        </h1>
+    
+        <div class="text-xl font-extrabold text-indigo-700 mt-8 mb-4 border-l-4 border-indigo-500 pl-3">
+            📅 October 27, 2025
+        </div>
+        
+            <div class="bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl p-6 mb-6 border-t-4 border-indigo-400">
+                
+                <!-- Matchup Title and Time -->
+                <div class="flex items-center justify-between border-b pb-4 mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">BKN @ HOU</h2>
+                    <span class="text-base font-semibold text-indigo-500">08:00 PM EDT: BKN @ HOU</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    
+                    <!-- Predicted Score (Col 1-2) -->
+                    <div class="md:col-span-2 flex justify-start items-center p-3 rounded-lg bg-indigo-50 border-r-4 border-indigo-200">
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs font-semibold text-gray-500 mb-1">PREDICTED SCORE</span>
+                            <div class="flex items-baseline space-x-2">
+                                <span class="text-3xl text-gray-600 font-extrabold">115</span>
+                                <span class="text-xl font-light text-gray-400">vs</span>
+                                <span class="text-3xl text-gray-600 font-extrabold">115</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- LEAN Badge (Col 3-4) -->
+                    <div class="md:col-span-2 flex flex-col justify-center items-start border-l pl-4">
+                        <div class="text-xs font-extrabold text-gray-700 mb-1">
+                            🎯 MODEL PICK
+                        </div>
+                        <div class="flex items-center text-xl font-extrabold text-gray-900">
+                            <span class="px-3 py-1 rounded-full text-lg bg-red-600 text-white shadow-xl shadow-md transition-all duration-300">
+                                HOU +15.5
+                            </span>
+                        </div>
+                        <div class="text-sm font-extrabold mt-1 text-red-600 pulse-alert">STRONG VALUE ALERT!</div>
+                    </div>
+                    
+                    <!-- Edge (Col 5) -->
+                    <div class="md:col-span-1 flex flex-col justify-center items-end border-l pl-4">
+                        <div class="text-xs font-extrabold text-gray-700 mb-1">
+                            📈 VALUE EDGE
+                        </div>
+                        <div class="text-3xl font-extrabold text-red-600">
+                            -16.00
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Spread Comparison Details -->
+                <div class="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-sm">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Market Spread (Home)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            +15.5
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Model Spread (Home)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            -0.50
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Total Line (O/U)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            230
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl p-6 mb-6 border-t-4 border-indigo-400">
+                
+                <!-- Matchup Title and Time -->
+                <div class="flex items-center justify-between border-b pb-4 mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">OKC @ DAL</h2>
+                    <span class="text-base font-semibold text-indigo-500">08:40 PM EDT: OKC @ DAL</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    
+                    <!-- Predicted Score (Col 1-2) -->
+                    <div class="md:col-span-2 flex justify-start items-center p-3 rounded-lg bg-indigo-50 border-r-4 border-indigo-200">
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs font-semibold text-gray-500 mb-1">PREDICTED SCORE</span>
+                            <div class="flex items-baseline space-x-2">
+                                <span class="text-3xl text-indigo-700 font-extrabold">116</span>
+                                <span class="text-xl font-light text-gray-400">vs</span>
+                                <span class="text-3xl text-gray-500 font-semibold">111</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- LEAN Badge (Col 3-4) -->
+                    <div class="md:col-span-2 flex flex-col justify-center items-start border-l pl-4">
+                        <div class="text-xs font-extrabold text-gray-700 mb-1">
+                            🎯 MODEL PICK
+                        </div>
+                        <div class="flex items-center text-xl font-extrabold text-gray-900">
+                            <span class="px-3 py-1 rounded-full text-lg bg-orange-500 text-white shadow-md transition-all duration-300">
+                                OKC +8.0
+                            </span>
+                        </div>
+                        <div class="text-sm font-medium mt-1 text-gray-500">Solid Value</div>
+                    </div>
+                    
+                    <!-- Edge (Col 5) -->
+                    <div class="md:col-span-1 flex flex-col justify-center items-end border-l pl-4">
+                        <div class="text-xs font-extrabold text-gray-700 mb-1">
+                            📈 VALUE EDGE
+                        </div>
+                        <div class="text-3xl font-extrabold text-orange-500">
+                            +2.30
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Spread Comparison Details -->
+                <div class="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-sm">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Market Spread (Home)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            -8.0
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Model Spread (Home)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            -5.70
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="font-medium text-gray-500">Total Line (O/U)</div>
+                        <div class="text-lg font-bold text-gray-800">
+                            227
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            </div>

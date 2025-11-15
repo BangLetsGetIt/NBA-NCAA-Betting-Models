@@ -1,0 +1,859 @@
+import csv
+import json
+import os
+import re
+import traceback
+from datetime import datetime, timedelta
+from jinja2 import Template
+import requests
+from dotenv import load_dotenv
+import pytz
+
+# Import for the NBA's official stats API
+from nba_api.stats.endpoints import leaguedashteamstats
+import time 
+
+# =========================
+# CONFIG
+# =========================
+
+load_dotenv()
+API_KEY = os.getenv("ODDS_API_KEY")
+if not API_KEY:
+    print("FATAL: ODDS_API_KEY not found in .env file.")
+    exit()
+
+BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds/"
+PARAMS = {
+    "apiKey": API_KEY,
+    "regions": "us",
+    "markets": "h2h,spreads,totals",
+    "oddsFormat": "american",
+    "dateFormat": "iso"
+}
+
+# --- File & Model Config ---
+CSV_FILE = "nba_model_output.csv"
+HTML_FILE = "nba_model_output.html"
+STATS_FILE = "nba_stats_cache.json"
+SPLITS_CACHE_FILE = "nba_home_away_splits_cache.json"
+
+# IMPORTANT: Update this to the current NBA season (e.g., '2025-26')
+CURRENT_SEASON = '2025-26' 
+
+# --- Model Parameters ---
+HOME_COURT_ADVANTAGE = 2.5
+SPREAD_THRESHOLD = 2.0
+TOTAL_THRESHOLD = 3.0
+
+# --- Parameters for Team Form/Momentum ---
+LAST_N_GAMES = 10       # The number of recent games to consider for team form
+SEASON_WEIGHT = 0.70    # The weight given to full-season stats
+FORM_WEIGHT = 0.30      # The weight given to last N games stats
+
+# --- Parameters for Home/Away Splits ---
+USE_HOME_AWAY_SPLITS = True  # Toggle to enable/disable home/away split analysis
+SPLITS_WEIGHT = 0.50         # Weight given to splits vs composite (when both available)
+COMPOSITE_WEIGHT = 0.50      # Weight given to composite when blending with splits
+
+# ANSI color codes
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+    PURPLE = '\033[35m'
+    ORANGE = '\033[38;5;208m'
+
+# Map API names to nba_api names
+TEAM_NAME_MAP = {
+    "LA Clippers": "Los Angeles Clippers",
+    # All other names match between The Odds API and nba_api
+}
+
+# =========================
+# TEAM NAME NORMALIZATION
+# =========================
+
+def get_team_name(api_name):
+    """Converts API team name to stats team name using the map."""
+    return TEAM_NAME_MAP.get(api_name, api_name)
+
+# =========================
+# MODEL CALCULATIONS
+# =========================
+
+def calculate_model_spread(home_team, away_team, stats, splits_data=None):
+    """
+    Calculate predicted spread using composite stats and optionally home/away splits.
+    Positive spread = home team favored.
+    
+    For spreads, we use splits when available because location matters significantly.
+    """
+    try:
+        home_team_name = get_team_name(home_team)
+        away_team_name = get_team_name(away_team)
+        
+        # Use splits for spread calculation when available (they work well here)
+        if USE_HOME_AWAY_SPLITS and splits_data and splits_data.get('Home') and splits_data.get('Road'):
+            if home_team_name in splits_data['Home'] and away_team_name in splits_data['Road']:
+                # Use pure splits (no blending) - they're already location-specific
+                home_rating = splits_data['Home'][home_team_name]['NET_RATING']
+                away_rating = splits_data['Road'][away_team_name]['NET_RATING']
+                
+                spread = (home_rating - away_rating) + HOME_COURT_ADVANTAGE
+                return round(spread, 1)
+        
+        # Fallback to composite only
+        home_stats = stats[home_team_name]['NET_RATING']
+        away_stats = stats[away_team_name]['NET_RATING']
+        
+        # MODEL: (Home NetRtg - Away NetRtg) + Home Court Advantage
+        spread = (home_stats - away_stats) + HOME_COURT_ADVANTAGE
+        return round(spread, 1)
+    
+    except KeyError as e:
+        print(f"{Colors.RED}Missing stats for team: {e}{Colors.END}")
+        return 0.0
+
+def calculate_model_total(home_team, away_team, stats, splits_data=None):
+    """
+    Calculate predicted total based on Pace and Offensive/Defensive Ratings.
+    
+    FORMULA: Total = (Pace / 100) * Average_OffRtg * 2
+    
+    For totals, we use COMPOSITE ONLY (not splits) because:
+    1. Composite already blends season + recent form
+    2. Total scoring is less location-dependent than spread
+    3. Splits data can be unstable for pace/efficiency calculations
+    """
+    try:
+        home_team_name = get_team_name(home_team)
+        away_team_name = get_team_name(away_team)
+        
+        # ALWAYS use composite stats for totals (most reliable)
+        home_stats = stats[home_team_name]
+        away_stats = stats[away_team_name]
+        
+        # Average pace for the game
+        avg_pace = (home_stats['Pace'] + away_stats['Pace']) / 2
+        
+        # Average offensive efficiency
+        avg_efficiency = (home_stats['OffRtg'] + away_stats['OffRtg']) / 2
+        
+        # Calculate total: efficiency per 100 possessions * (pace / 100) * 2 teams
+        total = (avg_pace / 100) * avg_efficiency * 2
+        
+        # Sanity check: NBA totals should be between 190-250
+        if total < 190 or total > 250:
+            print(f"{Colors.RED}WARNING: Unusual total {total:.1f} for {home_team} vs {away_team}{Colors.END}")
+            print(f"{Colors.YELLOW}Pace: {avg_pace:.1f}, Avg OffRtg: {avg_efficiency:.1f}{Colors.END}")
+            # Cap at reasonable bounds
+            total = max(190, min(250, total))
+        
+        return round(total, 1)
+    
+    except KeyError as e:
+        print(f"{Colors.RED}Missing stats for team: {e}{Colors.END}")
+        return 0.0
+
+def predicted_score(model_spread, model_total):
+    """Calculate predicted final scores"""
+    home_score = round(model_total / 2 + model_spread / 2)
+    away_score = round(model_total / 2 - model_spread / 2)
+    return home_score, away_score
+
+# =========================
+# FETCH ADVANCED STATS (with Team Form/Momentum)
+# =========================
+
+def fetch_advanced_stats():
+    """
+    Fetch and cache advanced team stats from stats.nba.com API.
+    This function fetches both full-season and last-N-games stats
+    and blends them to create a composite rating that accounts for team form.
+    """
+    
+    # 1. Check cache first
+    if os.path.exists(STATS_FILE):
+        file_mod_time = datetime.fromtimestamp(os.path.getmtime(STATS_FILE))
+        if (datetime.now() - file_mod_time) < timedelta(hours=6):
+            print(f"{Colors.GREEN}✓ Using cached composite stats (less than 6 hours old){Colors.END}")
+            with open(STATS_FILE, 'r') as f:
+                return json.load(f)
+
+    print(f"{Colors.CYAN}🔄 Fetching new team stats from stats.nba.com...{Colors.END}")
+    try:
+        print(f"{Colors.CYAN}Fetching full-season stats for NBA season: {CURRENT_SEASON}{Colors.END}")
+        
+        # 2. Fetch full-season stats
+        season_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+            measure_type_detailed_defense='Advanced',
+            season=CURRENT_SEASON,
+            timeout=30 
+        )
+        season_df = season_stats_data.get_data_frames()[0]
+        time.sleep(0.6)  # Be respectful of the API
+
+        print(f"{Colors.CYAN}Fetching last {LAST_N_GAMES} games (form) stats for NBA season: {CURRENT_SEASON}{Colors.END}")
+
+        # 3. Fetch last N games (form) stats
+        form_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+            measure_type_detailed_defense='Advanced',
+            season=CURRENT_SEASON,
+            last_n_games=LAST_N_GAMES,
+            timeout=30
+        )
+        form_df = form_stats_data.get_data_frames()[0]
+
+        if season_df.empty:
+            raise ValueError(f"API returned no data for full season. Is the season '{CURRENT_SEASON}' correct?")
+            
+        # 4. Format as dictionaries for easier lookup
+        season_dict = {row['TEAM_NAME']: row for _, row in season_df.iterrows()}
+        form_dict = {row['TEAM_NAME']: row for _, row in form_df.iterrows()}
+        
+        # 5. Create the blended, composite stats
+        composite_stats = {}
+        for team_name, s_stats in season_dict.items():
+            if team_name in form_dict:
+                f_stats = form_dict[team_name]
+                # Blend season and form stats using the defined weights
+                composite_stats[team_name] = {
+                    'NET_RATING': (s_stats['NET_RATING'] * SEASON_WEIGHT) + (f_stats['NET_RATING'] * FORM_WEIGHT),
+                    'Pace': (s_stats['PACE'] * SEASON_WEIGHT) + (f_stats['PACE'] * FORM_WEIGHT),
+                    'OffRtg': (s_stats['OFF_RATING'] * SEASON_WEIGHT) + (f_stats['OFF_RATING'] * FORM_WEIGHT),
+                    'DefRtg': (s_stats['DEF_RATING'] * SEASON_WEIGHT) + (f_stats['DEF_RATING'] * FORM_WEIGHT),
+                }
+            else:
+                # If a team has no recent games (e.g., start of season), use only their season stats
+                print(f"{Colors.YELLOW}Note: No recent game data for {team_name}. Using full-season stats only.{Colors.END}")
+                composite_stats[team_name] = {
+                    'NET_RATING': s_stats['NET_RATING'],
+                    'Pace': s_stats['PACE'],
+                    'OffRtg': s_stats['OFF_RATING'],
+                    'DefRtg': s_stats['DEF_RATING'],
+                }
+        
+        # 6. Save the new composite stats to cache
+        with open(STATS_FILE, 'w') as f:
+            json.dump(composite_stats, f, indent=2)
+            
+        print(f"{Colors.GREEN}✓ Successfully fetched, blended, and cached new composite stats.{Colors.END}")
+        return composite_stats
+
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error fetching advanced stats from nba_api: {e}{Colors.END}")
+        traceback.print_exc()
+        return None
+
+# =========================
+# FETCH HOME/AWAY SPLITS
+# =========================
+
+def fetch_home_away_splits():
+    """
+    Fetch and cache home/away split statistics from stats.nba.com API.
+    This creates separate statistical profiles for teams at home vs on the road.
+    
+    Returns:
+        dict: {
+            'Home': {team_name: {stats}},
+            'Road': {team_name: {stats}}
+        }
+    """
+    
+    # 1. Check cache first
+    if os.path.exists(SPLITS_CACHE_FILE):
+        file_mod_time = datetime.fromtimestamp(os.path.getmtime(SPLITS_CACHE_FILE))
+        if (datetime.now() - file_mod_time) < timedelta(hours=6):
+            print(f"{Colors.GREEN}✓ Using cached home/away splits (less than 6 hours old){Colors.END}")
+            with open(SPLITS_CACHE_FILE, 'r') as f:
+                return json.load(f)
+    
+    print(f"{Colors.CYAN}🔄 Fetching home/away split stats from stats.nba.com...{Colors.END}")
+    
+    splits_data = {'Home': {}, 'Road': {}}
+    
+    try:
+        # Fetch HOME stats
+        print(f"{Colors.CYAN}Fetching HOME stats for season: {CURRENT_SEASON}{Colors.END}")
+        time.sleep(0.6)
+        
+        home_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+            measure_type_detailed_defense='Advanced',
+            season=CURRENT_SEASON,
+            location_nullable='Home',
+            timeout=30
+        )
+        home_df = home_stats_data.get_data_frames()[0]
+        
+        # Fetch ROAD stats
+        print(f"{Colors.CYAN}Fetching ROAD stats for season: {CURRENT_SEASON}{Colors.END}")
+        time.sleep(0.6)
+        
+        road_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+            measure_type_detailed_defense='Advanced',
+            season=CURRENT_SEASON,
+            location_nullable='Road',
+            timeout=30
+        )
+        road_df = road_stats_data.get_data_frames()[0]
+        
+        # Process HOME stats
+        for _, row in home_df.iterrows():
+            team_name = row['TEAM_NAME']
+            splits_data['Home'][team_name] = {
+                'NET_RATING': row['NET_RATING'],
+                'Pace': row['PACE'],
+                'OffRtg': row['OFF_RATING'],
+                'DefRtg': row['DEF_RATING'],
+            }
+        
+        # Process ROAD stats
+        for _, row in road_df.iterrows():
+            team_name = row['TEAM_NAME']
+            splits_data['Road'][team_name] = {
+                'NET_RATING': row['NET_RATING'],
+                'Pace': row['PACE'],
+                'OffRtg': row['OFF_RATING'],
+                'DefRtg': row['DEF_RATING'],
+            }
+        
+        # Save to cache
+        with open(SPLITS_CACHE_FILE, 'w') as f:
+            json.dump(splits_data, f, indent=2)
+        
+        print(f"{Colors.GREEN}✓ Successfully fetched and cached home/away splits{Colors.END}")
+        return splits_data
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error fetching home/away splits: {e}{Colors.END}")
+        traceback.print_exc()
+        return {'Home': {}, 'Road': {}}
+
+# =========================
+# FETCH ODDS FROM API
+# =========================
+
+def fetch_odds():
+    """Fetch current NBA odds and filter for today/tomorrow using Pytz."""
+    try:
+        print(f"{Colors.CYAN}🔄 Fetching NBA odds from The Odds API...{Colors.END}")
+        response = requests.get(BASE_URL, params=PARAMS, timeout=15)
+        response.raise_for_status()
+        
+        all_games = response.json()
+        
+        if 'x-requests-remaining' in response.headers:
+            remaining = response.headers['x-requests-remaining']
+            print(f"{Colors.GREEN}✓ API call successful! Requests remaining: {Colors.BOLD}{remaining}{Colors.END}")
+        
+        print(f"{Colors.GREEN}✓ Found {Colors.BOLD}{len(all_games)}{Colors.END}{Colors.GREEN} upcoming NBA games from API{Colors.END}")
+        
+        # Set up timezone handling
+        UTC = pytz.utc
+        LOCAL_TIMEZONE = pytz.timezone("America/New_York")
+        
+        # Get current time in local timezone
+        now_local = datetime.now(LOCAL_TIMEZONE)
+        
+        # Create time windows in local time, then convert to UTC for comparison
+        # Start: 6am today (to catch games that started early morning)
+        today_6am_local = now_local.replace(hour=6, minute=0, second=0, microsecond=0)
+        if now_local.hour < 6:
+            # If it's before 6am, go back to yesterday at 6am
+            today_6am_local = today_6am_local - timedelta(days=1)
+        
+        # End: 6am day after tomorrow (to catch all of tomorrow's games)
+        end_time_local = today_6am_local + timedelta(days=2)
+        
+        # Convert to UTC for comparison with API data
+        start_utc = today_6am_local.astimezone(UTC)
+        end_utc = end_time_local.astimezone(UTC)
+        
+        filtered_games = []
+        for game in all_games:
+            commence_dt = datetime.fromisoformat(game.get('commence_time').replace('Z', '+00:00'))
+            if start_utc <= commence_dt < end_utc:
+                # Convert to local time for display
+                local_time = commence_dt.astimezone(LOCAL_TIMEZONE)
+                game['local_time'] = local_time.strftime('%m/%d/%y %I:%M %p %Z')
+                filtered_games.append(game)
+        
+        # Get date strings for display
+        today_str = now_local.strftime('%m/%d/%y')
+        tomorrow_str = (now_local + timedelta(days=1)).strftime('%m/%d/%y')
+        
+        print(f"{Colors.GREEN}✓ Filtering kept {Colors.BOLD}{len(filtered_games)}{Colors.END}{Colors.GREEN} games for {today_str} and {tomorrow_str} (Eastern Time){Colors.END}\n")
+        return filtered_games
+    
+    except requests.exceptions.RequestException as e:
+        print(f"{Colors.RED}❌ API Error: {e}{Colors.END}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"{Colors.RED}Response: {e.response.text}{Colors.END}")
+        return []
+    except Exception as e:
+        print(f"{Colors.RED}❌ Unexpected error: {e}{Colors.END}")
+        traceback.print_exc()
+        return []
+
+# =========================
+# PARSE ODDS DATA
+# =========================
+
+def parse_bookmaker_odds(bookmakers, market_type):
+    """Extract odds from bookmakers for a specific market"""
+    if not bookmakers:
+        return None
+    for bookmaker in bookmakers:
+        for market in bookmaker.get('markets', []):
+            if market['key'] == market_type:
+                return market['outcomes']
+    return None
+
+def extract_spread_and_total(game):
+    """Extract spread and total from game odds"""
+    bookmakers = game.get('bookmakers', [])
+    spread_outcomes = parse_bookmaker_odds(bookmakers, 'spreads')
+    home_spread = None
+    if spread_outcomes:
+        for outcome in spread_outcomes:
+            if outcome['name'] == game['home_team']:
+                home_spread = outcome.get('point')
+                break
+    
+    total_outcomes = parse_bookmaker_odds(bookmakers, 'totals')
+    total = None
+    if total_outcomes and len(total_outcomes) > 0:
+        total = total_outcomes[0].get('point')
+    
+    return home_spread, total
+
+# =========================
+# PROCESS GAMES
+# =========================
+
+def process_games(games, stats, splits_data=None):
+    """Process games and generate picks using composite stats and optional splits"""
+    results = []
+    
+    if not games:
+        print("No games to process.")
+        return results
+    
+    for game in games:
+        try:
+            home_team = game.get('home_team', 'Unknown')
+            away_team = game.get('away_team', 'Unknown')
+            
+            # Use local time if available, otherwise fall back to UTC
+            game_time = game.get('local_time', game.get('commence_time', 'TBD'))
+            
+            market_spread, market_total = extract_spread_and_total(game)
+            
+            if market_spread is None or market_total is None:
+                continue
+            
+            model_spread = calculate_model_spread(home_team, away_team, stats, splits_data)
+            model_total = calculate_model_total(home_team, away_team, stats, splits_data)
+            
+            if model_spread == 0.0 or model_total == 0.0:
+                print(f"{Colors.YELLOW}Skipping {away_team} @ {home_team} (missing stats).{Colors.END}")
+                continue
+            
+            spread_edge = model_spread - market_spread
+            if abs(spread_edge) < SPREAD_THRESHOLD:
+                ats_pick = "~No clear edge"
+            else:
+                if spread_edge > 0:
+                    line_str = f"{market_spread:+.1f}" if market_spread != 0 else "PK"
+                    ats_pick = f"✓ {home_team} {line_str} (Edge: +{abs(spread_edge):.1f})"
+                else:
+                    away_line = -market_spread
+                    line_str = f"{away_line:+.1f}" if away_line != 0 else "PK"
+                    ats_pick = f"✓ {away_team} {line_str} (Edge: +{abs(spread_edge):.1f})"
+            
+            total_diff = model_total - market_total
+            if abs(total_diff) < TOTAL_THRESHOLD:
+                total_pick = "~No clear edge"
+            elif total_diff > 0:
+                total_pick = f"⬆️ OVER {market_total} (Edge: +{total_diff:.1f})"
+            else:
+                total_pick = f"⬇️ UNDER {market_total} (Edge: {total_diff:.1f})"
+            
+            home_score, away_score = predicted_score(model_spread, model_total)
+            
+            results.append({
+                "Matchup": f"{away_team} @ {home_team}",
+                "GameTime": game_time,
+                "Market Spread": f"{market_spread:+.1f}",
+                "Model Spread": f"{model_spread:+.1f}",
+                "ATS Pick": ats_pick,
+                "Total Pick": total_pick,
+                "Market Total": f"{market_total:.1f}",
+                "Model Total": f"{model_total:.1f}",
+                "Predicted Score": f"{away_team} {away_score}, {home_team} {home_score}",
+            })
+            
+        except Exception as e:
+            print(f"❌ Error processing game: {e}")
+            traceback.print_exc()
+            continue
+    
+    return results
+
+# =========================
+# TERMINAL OUTPUT
+# =========================
+
+def display_terminal(results):
+    """Display analyzed game results in a simple, left-aligned, and colorful block format."""
+    
+    print(f"\n{Colors.BOLD}{'='*80}{Colors.END}") 
+    print(f"{Colors.BOLD}{Colors.CYAN}🏀 NBA MODEL PICKS 📊{Colors.END}")
+    print(f"{Colors.BOLD}{'='*80}{Colors.END}\n") 
+    
+    pick_count = sum(1 for g in results if '✓' in g['ATS Pick'] or 'OVER' in g['Total Pick'] or 'UNDER' in g['Total Pick'])
+    print(f"{Colors.BOLD}✅ {len(results)} Games Analyzed | 🎯 {pick_count} Model Plays Found{Colors.END}\n")
+    
+    for idx, game in enumerate(results, 1):
+        ats_pick_color = Colors.GREEN if '✓' in game['ATS Pick'] else Colors.YELLOW
+        total_pick_color = Colors.GREEN if '⬆️ OVER' in game['Total Pick'] else (Colors.RED if '⬇️ UNDER' in game['Total Pick'] else Colors.YELLOW)
+        market_spread_display = f"Market Spread: {game['Market Spread']} | Model Spread: {game['Model Spread']}"
+        market_total_display = f"Market Total: {game['Market Total']} | Model Total: {game['Model Total']}"
+
+        print(f"{Colors.BOLD}{Colors.BLUE}{'─'*80}{Colors.END}")
+        print(f"{Colors.BOLD}{Colors.YELLOW}GAME {idx}: {game['Matchup']}{Colors.END}")
+        print(f"{Colors.CYAN}🕐 {game['GameTime']}{Colors.END}")
+        print()
+        print(f"{Colors.BOLD}{Colors.HEADER}  📊 SPREAD ANALYSIS ({market_spread_display}){Colors.END}")
+        print(f"{ats_pick_color}{Colors.BOLD}  💰 MODEL PICK: {game['ATS Pick']}{Colors.END}")
+        print(f"{Colors.BOLD}{Colors.HEADER}  🎯 TOTAL ANALYSIS ({market_total_display}){Colors.END}")
+        print(f"{total_pick_color}{Colors.BOLD}  🔥/❄️ MODEL PICK: {game['Total Pick']}{Colors.END}")
+        print(f"{Colors.BOLD}  📈 PREDICTED FINAL: {game['Predicted Score']}{Colors.END}") 
+        print()
+
+    print(f"{Colors.BOLD}{Colors.BLUE}{'─'*80}{Colors.END}")
+    print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Results saved to {CSV_FILE} and {HTML_FILE}{Colors.END}")
+    print(f"{Colors.CYAN}💡 Open {HTML_FILE} in your browser for interactive dashboard{Colors.END}\n")
+
+# =========================
+# CSV OUTPUT
+# =========================
+
+def save_csv(results):
+    if not results:
+        return
+    keys = list(results[0].keys())
+    try:
+        with open(CSV_FILE, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, keys)
+            writer.writeheader()
+            writer.writerows(results)
+        print(f"✓ CSV saved: {CSV_FILE}")
+    except Exception as e:
+        print(f"❌ Error saving CSV: {e}")
+
+# =========================
+# HTML OUTPUT
+# =========================
+
+def save_html(results):
+    if not results:
+        return
+    
+    LOCAL_TIMEZONE = pytz.timezone("America/New_York")
+    timestamp_str = datetime.now(LOCAL_TIMEZONE).strftime("%Y-%m-%d %H:%M:%S %Z") 
+
+    template_str = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>NBA Model Picks - Enhanced Model</title>
+        <style>
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                background: #000000;
+                min-height: 100vh;
+                padding: 2rem;
+            }
+           .container { max-width: 1600px; margin: auto; }
+           .card { 
+                background: #1a1a1a; 
+                border-radius: 1rem; 
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                overflow: hidden;
+                margin-bottom: 1.5rem;
+                border: 1px solid #2a2a2a;
+            }
+           .header-card {
+                background: #1a1a1a;
+                color: white;
+                padding: 2.5rem;
+                text-align: center;
+                border: 1px solid #2a2a2a;
+            }
+           .header-card h1 {
+                color: #fbbf24;
+           }
+           .game-card {
+                padding: 1.5rem;
+                border-bottom: 2px solid #2a2a2a;
+                transition: all 0.3s;
+            }
+           .game-card:hover {
+                background-color: #0a0a0a;
+                transform: translateX(8px);
+            }
+           .game-card:last-child { border-bottom: none; }
+           .matchup { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
+           .game-time { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }
+           .bet-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-top: 1rem;
+            }
+           .bet-box {
+                background: #0a0a0a;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border-left: 4px solid #fbbf24;
+            }
+           .bet-title { 
+                font-weight: 700; 
+                color: #fbbf24; 
+                margin-bottom: 0.5rem;
+                text-transform: uppercase;
+                font-size: 0.875rem;
+                letter-spacing: 0.05em;
+            }
+           .odds-line { 
+                display: flex; 
+                justify-content: space-between; 
+                margin: 0.25rem 0; 
+                font-size: 0.95rem;
+                color: #cbd5e1;
+            }
+           .odds-line strong {
+                color: #ffffff;
+           }
+           .pick { 
+                font-weight: 700; 
+                padding: 0.75rem; 
+                margin-top: 0.5rem; 
+                border-radius: 0.375rem;
+                font-size: 1.1rem;
+            }
+           .pick-yes { background-color: #064e3b; color: #10b981; border: 2px solid #10b981; }
+           .pick-no { background-color: #450a0a; color: #ef4444; border: 2px solid #ef4444; }
+           .pick-none { background-color: #1e293b; color: #94a3b8; border: 2px solid #475569; }
+           .prediction {
+                background: linear-gradient(135deg, #422006 0%, #78350f 100%);
+                color: #fbbf24;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                text-align: center;
+                font-weight: 800;
+                font-size: 1.25rem;
+                margin-top: 1rem;
+            }
+           .badge { 
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                border-radius: 9999px;
+                font-size: 0.875rem;
+                font-weight: 700;
+                background-color: #064e3b;
+                color: #10b981;
+                margin: 0.25rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card header-card">
+                <h1 class="text-5xl font-black mb-2">🏀 NBA MODEL PICKS</h1>
+                <p class="text-xl opacity-90">Real-time odds from The Odds API</p>
+                <div class="badge">● TEAM MOMENTUM (Last {{ last_n }} Games)</div>
+                <div class="badge">● HOME/AWAY SPLITS</div>
+                <div class="badge">● DYNAMIC STATS MODEL</div>
+                <p class="text-sm opacity-75 mt-4">Generated: {{ timestamp }}</p>
+            </div>
+            
+            <div class="card">
+                {% for game in results %}
+                <div class="game-card">
+                    <div class="matchup">{{ game.Matchup }}</div>
+                    <div class="game-time">🕐 {{ game.GameTime }}</div>
+                    
+                    <div class="bet-section">
+                        <div class="bet-box">
+                            <div class="bet-title">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Market Line:</span>
+                                <strong>{{ game['Market Spread'] }}</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Line:</span>
+                                <strong>{{ game['Model Spread'] }}</strong>
+                            </div>
+                            <div class="pick {{ 'pick-yes' if '✓' in game['ATS Pick'] else 'pick-none' }}">
+                                {{ game['ATS Pick'] }}
+                            </div>
+                        </div>
+                        
+                        <div class="bet-box">
+                            <div class="bet-title">🎯 TOTAL</div>
+                            <div class="odds-line">
+                                <span>Market Total:</span>
+                                <strong>{{ game['Market Total']|float|round(1) }}</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Total:</span>
+                                <strong>{{ game['Model Total']|float|round(1) }}</strong>
+                            </div>
+                            <div class="pick {{ 'pick-yes' if 'OVER' in game['Total Pick'] else ('pick-no' if 'UNDER' in game['Total Pick'] else 'pick-none') }}">
+                                {{ game['Total Pick'] }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: {{ game['Predicted Score'] }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    template = Template(template_str)
+    html_output = template.render(
+        results=results, 
+        timestamp=timestamp_str,
+        last_n=LAST_N_GAMES
+    )
+    
+    try:
+        with open(HTML_FILE, "w", encoding="utf-8") as f:
+            f.write(html_output)
+        print(f"✓ HTML saved: {HTML_FILE}")
+    except Exception as e:
+        print(f"❌ Error saving HTML: {e}")
+
+# =========================
+# MAIN EXECUTION
+# =========================
+
+def main():
+    """
+    Main execution function with all enhancements:
+    - Team Form/Momentum (70/30 blend of season + last N games)
+    - Home/Away Splits (location-specific performance)
+    """
+    print(f"\n{Colors.BOLD}{'='*90}{Colors.END}") 
+    print(f"{Colors.BOLD}{Colors.CYAN}🎲 NBA BETTING MODEL - ENHANCED v2.0 🎲{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.GREEN}⚡ Team Momentum + Home/Away Splits ⚡{Colors.END}")
+    print(f"{Colors.BOLD}{'='*90}{Colors.END}\n")
+    
+    # Fetch composite stats (momentum-adjusted: season + form blend)
+    print(f"{Colors.BOLD}{Colors.CYAN}STEP 1: Fetching Composite Stats (Season + Form){Colors.END}")
+    composite_stats = fetch_advanced_stats()
+    if not composite_stats:
+        print(f"\n{Colors.RED}⚠️  Could not fetch advanced stats. Exiting.{Colors.END}")
+        return
+    
+    # Fetch home/away splits
+    print(f"\n{Colors.BOLD}{Colors.CYAN}STEP 2: Fetching Home/Away Splits{Colors.END}")
+    splits_data = fetch_home_away_splits()
+    
+    # Fetch current odds
+    print(f"\n{Colors.BOLD}{Colors.CYAN}STEP 3: Fetching Live Odds{Colors.END}")
+    games = fetch_odds()
+    
+    if not games:
+        print(f"\n{Colors.RED}⚠️  No games found from The Odds API.{Colors.END}")
+        print(f"\n{Colors.YELLOW}Possible issues:{Colors.END}")
+        print(f"  {Colors.RED}✗{Colors.END} No upcoming NBA games for today or tomorrow.")
+        print(f"  {Colors.RED}✗{Colors.END} Invalid API key (check .env file)")
+        print(f"  {Colors.RED}✗{Colors.END} API rate limit exceeded")
+        print(f"\n{Colors.CYAN}💡 Check your API status at: https://the-odds-api.com/account/{Colors.END}\n")
+        return
+    
+    # Process and analyze
+    print(f"\n{Colors.BOLD}{Colors.CYAN}STEP 4: Processing Games & Generating Picks{Colors.END}\n")
+    results = process_games(games, composite_stats, splits_data)
+    
+    if results:
+        print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Analyzed {len(results)} games with complete odds{Colors.END}\n")
+        display_terminal(results)
+        save_csv(results)
+        save_html(results)
+    else:
+        print(f"\n{Colors.YELLOW}⚠️  No games with complete betting lines found (or stats were missing).{Colors.END}\n")
+
+if __name__ == "__main__":
+    main()
+
+
+# =========================
+# ENHANCEMENT SUMMARY
+# =========================
+"""
+✅ IMPLEMENTED ENHANCEMENTS:
+
+1. TEAM MOMENTUM (Priority 3)
+   - Blends full-season stats (70%) with last N games (30%)
+   - Captures teams trending up/down
+   - Configurable via LAST_N_GAMES, SEASON_WEIGHT, FORM_WEIGHT
+
+2. HOME/AWAY SPLITS (Priority 1)
+   - Separate statistical profiles for home vs road performance
+   - Identifies teams with strong home court advantage
+   - Blended with composite stats (50/50 default)
+   - Configurable via USE_HOME_AWAY_SPLITS, SPLITS_WEIGHT, COMPOSITE_WEIGHT
+   - Automatic fallback to composite if splits unavailable
+
+HOW THE MODEL WORKS:
+1. Fetches full-season advanced stats (NET_RATING, Pace, OffRtg, DefRtg)
+2. Fetches last N games stats (default: 10 games)
+3. Blends them into "composite" ratings (70% season, 30% form)
+4. Fetches home/away split stats separately
+5. When predicting, uses location-specific stats blended with composite
+6. Compares model predictions to market lines
+7. Identifies value when edge > threshold (default: 2 pts spread, 3 pts total)
+
+CONFIGURATION:
+- Turn off splits: SET USE_HOME_AWAY_SPLITS = False
+- Adjust momentum: CHANGE LAST_N_GAMES (5-15 recommended)
+- Adjust weights: MODIFY SEASON_WEIGHT/FORM_WEIGHT (must sum to 1.0)
+- Adjust thresholds: CHANGE SPREAD_THRESHOLD/TOTAL_THRESHOLD
+
+FILES CREATED:
+- nba_stats_cache.json (composite stats, 6hr cache)
+- nba_home_away_splits_cache.json (splits stats, 6hr cache)
+- nba_model_output.csv (picks in CSV format)
+- nba_model_output.html (interactive dashboard)
+
+NEXT RECOMMENDED ENHANCEMENTS:
+- Priority 2: Advanced Player Value Metrics (VORP/Win Shares)
+- Priority 3: Schedule Stress & Fatigue (B2B games)
+- Priority 4: Real-Time Injury Integration
+- Priority 5: Injury Impact Quantification
+- Priority 6: Enhanced Odds Integration
+- Priority 7: Backtesting Engine
+
+For help or issues, review the research report provided.
+"""

@@ -1,0 +1,35 @@
+# Environment files with API keys
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files (we'll keep the latest, but ignore timestamped ones)
+logs/*_*.log
+
+# Backup files
+*.backup
+*.bak
+
+# Cache files
+*_cache.json
