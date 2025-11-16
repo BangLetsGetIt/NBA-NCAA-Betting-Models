@@ -233,7 +233,7 @@ def update_pick_results():
     print(f"{Colors.CYAN}🔄 UPDATING RESULTS FOR COMPLETED GAMES{Colors.END}")
     print(f"{Colors.CYAN}{'='*90}{Colors.END}")
 
-    pending_picks = [p for p in tracking_data['picks'] if p['status'] == 'Pending']
+    pending_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending']
 
     if not pending_picks:
         print(f"\n{Colors.GREEN}✓ No pending picks to update{Colors.END}")
@@ -412,8 +412,28 @@ def generate_tracking_html():
     tracking_data = load_picks_tracking()
     stats = calculate_tracking_stats(tracking_data)
 
-    pending_picks = [p for p in tracking_data['picks'] if p['status'] == 'Pending']
-    completed_picks = [p for p in tracking_data['picks'] if p['status'] == 'Completed']
+    # Get current time in Eastern timezone
+    est_tz = pytz.timezone('America/New_York')
+    current_time = datetime.now(est_tz)
+
+    # Get all pending picks
+    all_pending = [p for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending']
+
+    # Separate pending picks by whether game is in future (upcoming) or past (stale)
+    pending_picks = []
+    for pick in all_pending:
+        try:
+            game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
+            game_dt_est = game_dt.astimezone(est_tz)
+
+            # Only include if game hasn't started yet
+            if game_dt_est > current_time:
+                pending_picks.append(pick)
+        except:
+            # If we can't parse the date, skip it
+            pass
+
+    completed_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() in ['win', 'loss', 'push']]
 
     pending_picks.sort(key=lambda x: x['game_date'], reverse=False)
     completed_picks.sort(key=lambda x: x['game_date'], reverse=True)

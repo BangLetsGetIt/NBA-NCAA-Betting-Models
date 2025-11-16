@@ -3,6 +3,9 @@
 # NBA Model Automation Script
 # Runs the improved NBA betting model with error handling
 
+# Set PATH to include Python 3.13 installation
+export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:$PATH"
+
 # Navigate to NBA Model folder
 cd "/Users/rico/sports-models/nba"
 

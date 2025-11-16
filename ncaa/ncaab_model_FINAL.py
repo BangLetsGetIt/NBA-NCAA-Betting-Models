@@ -248,7 +248,7 @@ def fetch_completed_scores():
         scores_url = "https://api.the-odds-api.com/v4/sports/basketball_ncaab/scores/"
         params = {
             "apiKey": API_KEY,
-            "daysFrom": 14  # Check last 14 days to catch older pending picks
+            "daysFrom": 3  # Check last 3 days (API limit)
         }
         
         response = requests.get(scores_url, params=params, timeout=10)
