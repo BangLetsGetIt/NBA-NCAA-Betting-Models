@@ -34,14 +34,18 @@ PARAMS = {
 }
 
 # --- File & Model Config ---
-CSV_FILE = "ncaab_model_output.csv"
-HTML_FILE = "ncaab_model_output.html"
-STATS_FILE = "ncaab_stats_cache.json"
-KENPOM_CACHE_FILE = "ncaab_kenpom_cache.json"
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Use absolute paths to ensure files are created in the correct location
+CSV_FILE = os.path.join(SCRIPT_DIR, "ncaab_model_output.csv")
+HTML_FILE = os.path.join(SCRIPT_DIR, "ncaab_model_output.html")
+STATS_FILE = os.path.join(SCRIPT_DIR, "ncaab_stats_cache.json")
+KENPOM_CACHE_FILE = os.path.join(SCRIPT_DIR, "ncaab_kenpom_cache.json")
 
 # Tracking files
-PICKS_TRACKING_FILE = "ncaab_picks_tracking.json"
-TRACKING_HTML_FILE = "ncaab_tracking_dashboard.html"
+PICKS_TRACKING_FILE = os.path.join(SCRIPT_DIR, "ncaab_picks_tracking.json")
+TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "ncaab_tracking_dashboard.html")
 
 # --- Model Parameters (Tuned for College Basketball) ---
 HOME_COURT_ADVANTAGE = 3.5  # Stronger in college
@@ -242,7 +246,7 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
 def fetch_completed_scores():
     """Fetch scores for recently completed games"""
     print(f"{Colors.CYAN}Fetching completed game scores...{Colors.END}")
-    
+
     try:
         # Fetch scores from The Odds API
         scores_url = "https://api.the-odds-api.com/v4/sports/basketball_ncaab/scores/"
@@ -250,17 +254,20 @@ def fetch_completed_scores():
             "apiKey": API_KEY,
             "daysFrom": 3  # Check last 3 days (API limit)
         }
-        
+
         response = requests.get(scores_url, params=params, timeout=10)
-        
+
         if response.status_code == 200:
             scores = response.json()
             print(f"{Colors.GREEN}✓ Fetched {len(scores)} completed games{Colors.END}")
             return scores
         else:
             print(f"{Colors.YELLOW}⚠️  Could not fetch scores: {response.status_code}{Colors.END}")
+            if response.status_code == 422:
+                print(f"{Colors.YELLOW}   API Response: {response.text[:200]}{Colors.END}")
+                print(f"{Colors.YELLOW}   This may be a temporary API issue. Results will update on next run.{Colors.END}")
             return []
-            
+
     except Exception as e:
         print(f"{Colors.RED}Error fetching scores: {e}{Colors.END}")
         return []

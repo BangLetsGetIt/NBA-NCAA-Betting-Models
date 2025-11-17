@@ -36,15 +36,19 @@ PARAMS = {
 }
 
 # --- File & Model Config ---
-CSV_FILE = "nba_model_output.csv"
-HTML_FILE = "nba_model_output.html"
-STATS_FILE = "nba_stats_cache.json"
-SPLITS_CACHE_FILE = "nba_home_away_splits_cache.json"
-SCHEDULE_CACHE_FILE = "nba_schedule_cache.json"
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Use absolute paths to ensure files are created in the correct location
+CSV_FILE = os.path.join(SCRIPT_DIR, "nba_model_output.csv")
+HTML_FILE = os.path.join(SCRIPT_DIR, "nba_model_output.html")
+STATS_FILE = os.path.join(SCRIPT_DIR, "nba_stats_cache.json")
+SPLITS_CACHE_FILE = os.path.join(SCRIPT_DIR, "nba_home_away_splits_cache.json")
+SCHEDULE_CACHE_FILE = os.path.join(SCRIPT_DIR, "nba_schedule_cache.json")
 
 # Tracking files
-PICKS_TRACKING_FILE = "nba_picks_tracking.json"
-TRACKING_HTML_FILE = "nba_tracking_dashboard.html"
+PICKS_TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_picks_tracking.json")
+TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "nba_tracking_dashboard.html")
 
 # IMPORTANT: Update this to the current NBA season (e.g., '2024-25')
 CURRENT_SEASON = '2024-25'
@@ -224,10 +228,39 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
 
     print(f"{Colors.GREEN}📝 LOGGED PICK: {pick_text} (Edge: {edge:+.1f}){Colors.END}")
 
+def fetch_completed_scores_nba():
+    """Fetch NBA scores for recently completed games from The Odds API"""
+    print(f"{Colors.CYAN}Fetching completed NBA game scores...{Colors.END}")
+
+    try:
+        scores_url = "https://api.the-odds-api.com/v4/sports/basketball_nba/scores/"
+        params = {
+            "apiKey": API_KEY,
+            "daysFrom": 3  # Check last 3 days
+        }
+
+        response = requests.get(scores_url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            scores = response.json()
+            print(f"{Colors.GREEN}✓ Fetched {len(scores)} games from API{Colors.END}")
+            completed = [g for g in scores if g.get('completed')]
+            print(f"{Colors.GREEN}✓ Found {len(completed)} completed games{Colors.END}")
+            return completed
+        else:
+            print(f"{Colors.YELLOW}⚠️  Could not fetch scores: {response.status_code}{Colors.END}")
+            if response.status_code == 422:
+                print(f"{Colors.YELLOW}   API Response: {response.text[:200]}{Colors.END}")
+                print(f"{Colors.YELLOW}   This may be a temporary API issue. Results will update on next run.{Colors.END}")
+            return []
+
+    except Exception as e:
+        print(f"{Colors.RED}Error fetching NBA scores: {e}{Colors.END}")
+        return []
+
 def update_pick_results():
     """Check for completed games and update pick results"""
     tracking_data = load_picks_tracking()
-    updated = False
 
     print(f"\n{Colors.CYAN}{'='*90}{Colors.END}")
     print(f"{Colors.CYAN}🔄 UPDATING RESULTS FOR COMPLETED GAMES{Colors.END}")
@@ -241,144 +274,122 @@ def update_pick_results():
 
     print(f"\n{Colors.YELLOW}📋 Checking {len(pending_picks)} pending picks...{Colors.END}")
 
-    try:
-        today = datetime.now()
-        # Check last 7 days for completed games
-        for days_ago in range(7):
-            check_date = (today - timedelta(days=days_ago)).strftime('%m/%d/%Y')
+    # Fetch completed scores from The Odds API
+    completed_games = fetch_completed_scores_nba()
 
-            try:
-                scoreboard = scoreboardv2.ScoreboardV2(game_date=check_date)
-                all_dfs = scoreboard.get_data_frames()
+    if not completed_games:
+        print(f"{Colors.YELLOW}⚠️  No completed games found.{Colors.END}")
+        save_picks_tracking(tracking_data)
+        return
 
-                games_df = all_dfs[0]
-                line_scores_df = all_dfs[1]
+    updated_count = 0
 
-                if games_df.empty:
-                    continue
-
-                for _, game in games_df.iterrows():
-                    game_id = game['GAME_ID']
-                    game_status = str(game.get('GAME_STATUS_TEXT', ''))
-
-                    if 'Final' not in game_status:
-                        continue
-
-                    game_lines = line_scores_df[line_scores_df['GAME_ID'] == game_id]
-
-                    if len(game_lines) < 2:
-                        continue
-
-                    home_team = None
-                    away_team = None
-                    home_score = 0
-                    away_score = 0
-
-                    for _, team_line in game_lines.iterrows():
-                        team_name = normalize_team_name(team_line['TEAM_NAME'])
-                        team_id = team_line['TEAM_ID']
-                        pts = sum([
-                            team_line.get('PTS_QTR1', 0) or 0,
-                            team_line.get('PTS_QTR2', 0) or 0,
-                            team_line.get('PTS_QTR3', 0) or 0,
-                            team_line.get('PTS_QTR4', 0) or 0,
-                            team_line.get('PTS_OT1', 0) or 0,
-                            team_line.get('PTS_OT2', 0) or 0,
-                            team_line.get('PTS_OT3', 0) or 0,
-                        ])
-
-                        if team_id == game['HOME_TEAM_ID']:
-                            home_team = team_name
-                            home_score = int(pts)
-                        else:
-                            away_team = team_name
-                            away_score = int(pts)
-
-                    if not home_team or not away_team:
-                        continue
-
-                    actual_total = home_score + away_score
-                    actual_spread = home_score - away_score
-
-                    # Find and update matching picks
-                    for pick in tracking_data['picks']:
-                        if pick['status'] != 'Pending':
-                            continue
-
-                        pick_home = normalize_team_name(pick['home_team'])
-                        pick_away = normalize_team_name(pick['away_team'])
-
-                        if pick_home == home_team and pick_away == away_team:
-                            print(f"  ✓ Updating: {away_team} {away_score} @ {home_team} {home_score}")
-
-                            pick['actual_home_score'] = home_score
-                            pick['actual_away_score'] = away_score
-
-                            if pick['pick_type'] == 'Spread':
-                                market_spread = float(pick['market_line'])
-                                pick_text = pick['pick']
-
-                                if pick_home in pick_text:
-                                    cover_margin = actual_spread + market_spread
-                                else:
-                                    cover_margin = -actual_spread - market_spread
-
-                                if abs(cover_margin) < 0.01:
-                                    pick['result'] = 'Push'
-                                    pick['profit_loss'] = 0
-                                elif cover_margin > 0:
-                                    pick['result'] = 'Win'
-                                    pick['profit_loss'] = 100
-                                else:
-                                    pick['result'] = 'Loss'
-                                    pick['profit_loss'] = -110
-
-                            elif pick['pick_type'] == 'Total':
-                                market_total = float(pick['market_line'])
-                                pick_text = pick['pick']
-                                total_diff = actual_total - market_total
-
-                                if abs(total_diff) < 0.01:
-                                    pick['result'] = 'Push'
-                                    pick['profit_loss'] = 0
-                                elif 'OVER' in pick_text and total_diff > 0:
-                                    pick['result'] = 'Win'
-                                    pick['profit_loss'] = 100
-                                elif 'UNDER' in pick_text and total_diff < 0:
-                                    pick['result'] = 'Win'
-                                    pick['profit_loss'] = 100
-                                else:
-                                    pick['result'] = 'Loss'
-                                    pick['profit_loss'] = -110
-
-                            pick['status'] = 'Completed'
-                            updated = True
-                            print(f"    Result: {pick['result']}")
-
-                time.sleep(0.6)
-
-            except Exception as e:
+    for pick in pending_picks:
+        # Find matching completed game
+        for game in completed_games:
+            if not game.get('completed'):
                 continue
 
-    except Exception as e:
-        print(f"\n{Colors.RED}✗ Error updating results: {e}{Colors.END}")
+            home_team = normalize_team_name(game['home_team'])
+            away_team = normalize_team_name(game['away_team'])
 
-    # Recalculate summary
+            pick_home = normalize_team_name(pick['home_team'])
+            pick_away = normalize_team_name(pick['away_team'])
+
+            if home_team == pick_home and away_team == pick_away:
+                # Found the game!
+                scores = game.get('scores')
+                if not scores or len(scores) < 2:
+                    print(f"{Colors.RED}⚠️  Found match but missing scores: {away_team} @ {home_team}{Colors.END}")
+                    continue
+
+                try:
+                    home_score_str = next((s['score'] for s in scores if s['name'] == game['home_team']), None)
+                    away_score_str = next((s['score'] for s in scores if s['name'] == game['away_team']), None)
+
+                    if home_score_str is None or away_score_str is None:
+                        print(f"{Colors.RED}⚠️  Could not parse scores for: {away_team} @ {home_team}{Colors.END}")
+                        continue
+
+                    home_score = int(home_score_str)
+                    away_score = int(away_score_str)
+
+                except (ValueError, TypeError) as e:
+                    print(f"{Colors.RED}Error parsing scores for {game['home_team']}: {e}{Colors.END}")
+                    continue
+
+                print(f"  ✓ Updating: {away_team} {away_score} @ {home_team} {home_score}")
+
+                pick['actual_home_score'] = home_score
+                pick['actual_away_score'] = away_score
+
+                actual_total = home_score + away_score
+                actual_spread = home_score - away_score
+
+                if pick['pick_type'] == 'Spread':
+                    market_spread = float(pick['market_line'])
+                    pick_text = pick['pick']
+
+                    if pick_home in pick_text:
+                        cover_margin = actual_spread + market_spread
+                    else:
+                        cover_margin = -actual_spread - market_spread
+
+                    if abs(cover_margin) < 0.01:
+                        pick['status'] = 'push'
+                        pick['result'] = 'Push'
+                        pick['profit_loss'] = 0
+                    elif cover_margin > 0:
+                        pick['status'] = 'win'
+                        pick['result'] = 'Win'
+                        pick['profit_loss'] = 100
+                    else:
+                        pick['status'] = 'loss'
+                        pick['result'] = 'Loss'
+                        pick['profit_loss'] = -110
+
+                elif pick['pick_type'] == 'Total':
+                    market_total = float(pick['market_line'])
+                    pick_text = pick['pick']
+                    total_diff = actual_total - market_total
+
+                    if abs(total_diff) < 0.01:
+                        pick['status'] = 'push'
+                        pick['result'] = 'Push'
+                        pick['profit_loss'] = 0
+                    elif 'OVER' in pick_text and total_diff > 0:
+                        pick['status'] = 'win'
+                        pick['result'] = 'Win'
+                        pick['profit_loss'] = 100
+                    elif 'UNDER' in pick_text and total_diff < 0:
+                        pick['status'] = 'win'
+                        pick['result'] = 'Win'
+                        pick['profit_loss'] = 100
+                    else:
+                        pick['status'] = 'loss'
+                        pick['result'] = 'Loss'
+                        pick['profit_loss'] = -110
+
+                updated_count += 1
+                print(f"    Result: {pick['result']}")
+                break
+
+    # Recalculate summary using status field to match NCAA model
     tracking_data['summary'] = {
         'total_picks': len(tracking_data['picks']),
-        'wins': sum(1 for p in tracking_data['picks'] if p.get('result') == 'Win'),
-        'losses': sum(1 for p in tracking_data['picks'] if p.get('result') == 'Loss'),
-        'pushes': sum(1 for p in tracking_data['picks'] if p.get('result') == 'Push'),
-        'pending': sum(1 for p in tracking_data['picks'] if p.get('status') == 'Pending')
+        'wins': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'win'),
+        'losses': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'loss'),
+        'pushes': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'push'),
+        'pending': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending')
     }
 
     save_picks_tracking(tracking_data)
 
-    if updated:
+    if updated_count > 0:
         wins = tracking_data['summary']['wins']
         losses = tracking_data['summary']['losses']
         pushes = tracking_data['summary']['pushes']
-        print(f"\n{Colors.GREEN}✅ RESULTS UPDATED! Record: {wins}-{losses}-{pushes}{Colors.END}")
+        print(f"\n{Colors.GREEN}✅ Updated {updated_count} picks! Record: {wins}-{losses}-{pushes}{Colors.END}")
     else:
         print(f"\n{Colors.YELLOW}⚠️  No new results found{Colors.END}")
 
@@ -433,7 +444,9 @@ def generate_tracking_html():
             # If we can't parse the date, skip it
             pass
 
-    completed_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    # Get completed picks
+    completed_picks = [p for p in tracking_data['picks'] if
+                       p.get('status', '').lower() in ['win', 'loss', 'push']]
 
     pending_picks.sort(key=lambda x: x['game_date'], reverse=False)
     completed_picks.sort(key=lambda x: x['game_date'], reverse=True)
