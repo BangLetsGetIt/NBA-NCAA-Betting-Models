@@ -2,6 +2,10 @@
 
 # NCAA Basketball Model Automation Script
 
+# Exit on error and make pipe return the exit code of the first failing command
+set -e
+set -o pipefail
+
 # Set PATH to include Python 3.13 installation
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:$PATH"
 

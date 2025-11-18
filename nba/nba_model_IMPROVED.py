@@ -427,6 +427,28 @@ def generate_tracking_html():
     est_tz = pytz.timezone('America/New_York')
     current_time = datetime.now(est_tz)
 
+    # Calculate yesterday's record
+    yesterday = (current_time - timedelta(days=1)).date()
+    yesterday_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    yesterday_wins = 0
+    yesterday_losses = 0
+    yesterday_pushes = 0
+
+    for pick in yesterday_picks:
+        try:
+            game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
+            game_dt_est = game_dt.astimezone(est_tz)
+
+            if game_dt_est.date() == yesterday:
+                if pick.get('status', '').lower() == 'win':
+                    yesterday_wins += 1
+                elif pick.get('status', '').lower() == 'loss':
+                    yesterday_losses += 1
+                elif pick.get('status', '').lower() == 'push':
+                    yesterday_pushes += 1
+        except:
+            pass
+
     # Get all pending picks
     all_pending = [p for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending']
 
@@ -568,6 +590,10 @@ def generate_tracking_html():
                     </div>
                     <div class="stat-label">ROI</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ yesterday_wins }}-{{ yesterday_losses }}{% if yesterday_pushes > 0 %}-{{ yesterday_pushes }}{% endif %}</div>
+                    <div class="stat-label">Yesterday's Record</div>
+                </div>
             </div>
 
             <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
@@ -680,7 +706,10 @@ def generate_tracking_html():
         completed_picks=completed_picks,
         timestamp=timestamp,
         format_profit=format_profit,
-        format_game_date=format_game_date
+        format_game_date=format_game_date,
+        yesterday_wins=yesterday_wins,
+        yesterday_losses=yesterday_losses,
+        yesterday_pushes=yesterday_pushes
     )
 
     with open(TRACKING_HTML_FILE, 'w', encoding='utf-8') as f:

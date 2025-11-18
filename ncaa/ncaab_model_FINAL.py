@@ -1225,11 +1225,33 @@ def generate_tracking_html():
     """Generate tracking dashboard HTML"""
     tracking_data = load_picks_tracking()
     stats = calculate_tracking_stats(tracking_data)
-    
+
     et = pytz.timezone('US/Eastern')
     timestamp_str = datetime.now(et).strftime('%Y-%m-%d %I:%M %p')
     current_time = datetime.now(et)
-    
+
+    # Calculate yesterday's record
+    yesterday = (current_time - timedelta(days=1)).date()
+    yesterday_picks = [p for p in tracking_data.get('picks', []) if p.get('status') in ['win', 'loss', 'push']]
+    yesterday_wins = 0
+    yesterday_losses = 0
+    yesterday_pushes = 0
+
+    for pick in yesterday_picks:
+        try:
+            game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
+            game_dt_et = game_dt.astimezone(et)
+
+            if game_dt_et.date() == yesterday:
+                if pick.get('status') == 'win':
+                    yesterday_wins += 1
+                elif pick.get('status') == 'loss':
+                    yesterday_losses += 1
+                elif pick.get('status') == 'push':
+                    yesterday_pushes += 1
+        except:
+            pass
+
     # Separate picks into categories
     all_pending = [p for p in tracking_data.get('picks', []) if p.get('status') == 'pending']
     
@@ -1363,6 +1385,10 @@ def generate_tracking_html():
                         {{ "%+.1f"|format(stats.roi) }}%
                     </div>
                     <div class="stat-label">ROI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ yesterday_wins }}-{{ yesterday_losses }}{% if yesterday_pushes > 0 %}-{{ yesterday_pushes }}{% endif %}</div>
+                    <div class="stat-label">Yesterday's Record</div>
                 </div>
             </div>
             
@@ -1512,7 +1538,10 @@ def generate_tracking_html():
         stale_picks=stale_picks,
         completed_picks=completed_picks,
         timestamp=timestamp_str,
-        format_date=format_date  # <-- We pass the function in as a variable
+        format_date=format_date,  # <-- We pass the function in as a variable
+        yesterday_wins=yesterday_wins,
+        yesterday_losses=yesterday_losses,
+        yesterday_pushes=yesterday_pushes
     )
     
     try:

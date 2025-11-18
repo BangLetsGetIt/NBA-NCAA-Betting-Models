@@ -1,0 +1,178 @@
+==========================================
+NBA Model Run: Sun Nov 16 10:07:18 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 7 pending picks...[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+[92m✓ Tracking dashboard saved: nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched odds for 11 total games[0m
+[92m✓ Filtered to 8 games in next 7 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[91m❌ Missing stats for Boston Celtics or Los Angeles Clippers[0m
+[91m❌ Missing stats for Boston Celtics or Los Angeles Clippers[0m
+[91m❌ Skipping Los Angeles Clippers @ Boston Celtics - missing model data[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Sacramento Kings +8.5 (Edge: -5.6)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 240.5 (Edge: -16.3)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Brooklyn Nets +2.5 (Edge: -5.2)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 233.5 (Edge: -13.0)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 226.5 (Edge: -7.1)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Dallas Mavericks +4.5 (Edge: +15.7)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 234.5 (Edge: -11.0)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Phoenix Suns +1.5 (Edge: +6.2)[0m
+[92m✓ Tracking data saved to nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 243.5 (Edge: -11.8)[0m
+
+[1m[92m✅ Analyzed 7 games with complete odds[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mSacramento Kings @ San Antonio Spurs[0m
+  🕐 11/16/25 04:00 PM EST
+  📊 Spread: Market -8.5 | Model +2.9
+  🎯 Total: Market 240.5 | Model 224.2
+  [92m✅ BET: Sacramento Kings +8.5[0m
+     [96mModel projects San Antonio Spurs to win by only 2.9, not enough to cover -8.5.[0m
+  [92m✅ BET: UNDER 240.5[0m
+     [96mModel projects 224 total points, bet the UNDER[0m
+  📈 Predicted: Sacramento Kings 111, San Antonio Spurs 114
+
+[1m[96mBrooklyn Nets @ Washington Wizards[0m
+  🕐 11/16/25 06:00 PM EST
+  📊 Spread: Market -2.5 | Model -2.7
+  🎯 Total: Market 233.5 | Model 220.5
+  [92m✅ BET: Brooklyn Nets +2.5[0m
+     [96mModel projects Washington Wizards to win by only 2.7, not enough to cover -2.5.[0m
+  [92m✅ BET: UNDER 233.5[0m
+     [96mModel projects 220 total points, bet the UNDER[0m
+  📈 Predicted: Brooklyn Nets 112, Washington Wizards 109
+
+[1m[96mGolden State Warriors @ New Orleans Pelicans[0m
+  🕐 11/16/25 07:00 PM EST
+  📊 Spread: Market +10.5 | Model -6.4
+  🎯 Total: Market 228.5 | Model 222.4
+  [92m✅ BET: New Orleans Pelicans +10.5[0m
+     [96mModel projects New Orleans Pelicans to lose by only 6.4, covering +10.5.[0m
+  [92m✅ BET: UNDER 228.5[0m
+     [96mModel projects 222 total points, bet the UNDER[0m
+  📈 Predicted: Golden State Warriors 114, New Orleans Pelicans 108
+
+[1m[96mOrlando Magic @ Houston Rockets[0m
+  🕐 11/16/25 07:00 PM EST
+  📊 Spread: Market -8.5 | Model +12.1
+  🎯 Total: Market 226.5 | Model 219.4
+  [92m✅ BET: Houston Rockets -8.5[0m
+     [96mModel projects Houston Rockets to win by 12.1, covering -8.5.[0m
+  [92m✅ BET: UNDER 226.5[0m
+     [96mModel projects 219 total points, bet the UNDER[0m
+  📈 Predicted: Orlando Magic 104, Houston Rockets 116
+
+[1m[96mPortland Trail Blazers @ Dallas Mavericks[0m
+  🕐 11/16/25 07:30 PM EST
+  📊 Spread: Market +4.5 | Model +11.2
+  🎯 Total: Market 234.5 | Model 223.5
+  [92m✅ BET: Dallas Mavericks +4.5[0m
+     [96mModel projects Dallas Mavericks to win outright, easily covering +4.5.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 224 total points, bet the UNDER[0m
+  📈 Predicted: Portland Trail Blazers 106, Dallas Mavericks 117
+
+[1m[96mAtlanta Hawks @ Phoenix Suns[0m
+  🕐 11/16/25 08:00 PM EST
+  📊 Spread: Market +1.5 | Model +4.7
+  🎯 Total: Market 229.5 | Model 231.1
+  [92m✅ BET: Phoenix Suns +1.5[0m
+     [96mModel projects Phoenix Suns to win outright, easily covering +1.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Atlanta Hawks 113, Phoenix Suns 118
+
+[1m[96mChicago Bulls @ Utah Jazz[0m
+  🕐 11/16/25 08:00 PM EST
+  📊 Spread: Market +4.5 | Model -2.7
+  🎯 Total: Market 243.5 | Model 231.7
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.8)[0m
+  [92m✅ BET: UNDER 243.5[0m
+     [96mModel projects 232 total points, bet the UNDER[0m
+  📈 Predicted: Chicago Bulls 117, Utah Jazz 114
+
+[92m✓ CSV saved: nba_model_output.csv[0m
+[92m✓ HTML saved: nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 38[0m
+[92mRecord: 16-6-0[0m
+[92mWin Rate: 72.7%[0m
+[92mProfit: +8.56 units[0m
+[92mROI: +35.4%[0m
+[1m==========================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main f6e1710] Update model outputs - 2025-11-16 10:08:03
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 484 insertions(+), 79 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   b5faebc..f6e1710  main -> main
+✅ Successfully pushed to GitHub!

@@ -1,0 +1,146 @@
+==========================================
+NBA Model Run: Tue Nov 18 10:49:10 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 5 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 27 games from API[0m
+[92m✓ Found 21 completed games[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched odds for 6 total games[0m
+[92m✓ Filtered to 6 games in next 7 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+
+[1m[92m✅ Analyzed 6 games with complete odds[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mGolden State Warriors @ Orlando Magic[0m
+  🕐 11/18/25 07:10 PM EST
+  📊 Spread: Market +3.5 | Model +1.7
+  🎯 Total: Market 223.5 | Model 217.5
+  [92m✅ BET: Orlando Magic +3.5[0m
+     [96mModel projects Orlando Magic to win outright, easily covering +3.5.[0m
+  [92m✅ BET: UNDER 223.5[0m
+     [96mModel projects 218 total points, bet the UNDER[0m
+  📈 Predicted: Golden State Warriors 108, Orlando Magic 110
+
+[1m[96mBoston Celtics @ Brooklyn Nets[0m
+  🕐 11/18/25 07:40 PM EST
+  📊 Spread: Market +10.5 | Model -14.4
+  🎯 Total: Market 223.0 | Model 219.3
+  [92m✅ BET: Boston Celtics -10.5[0m
+     [96mModel projects Brooklyn Nets to lose by 14.4, Boston Celtics covers -10.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Boston Celtics 117, Brooklyn Nets 102
+
+[1m[96mDetroit Pistons @ Atlanta Hawks[0m
+  🕐 11/18/25 08:10 PM EST
+  📊 Spread: Market +1.0 | Model -0.2
+  🎯 Total: Market 230.5 | Model 229.9
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+0.8)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Detroit Pistons 115, Atlanta Hawks 115
+
+[1m[96mMemphis Grizzlies @ San Antonio Spurs[0m
+  🕐 11/18/25 08:10 PM EST
+  📊 Spread: Market -6.0 | Model +0.1
+  🎯 Total: Market 232.5 | Model 229.1
+  [92m✅ BET: Memphis Grizzlies +6.0[0m
+     [96mModel projects San Antonio Spurs to win by only 0.1, not enough to cover -6.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Memphis Grizzlies 114, San Antonio Spurs 115
+
+[1m[96mUtah Jazz @ Los Angeles Lakers[0m
+  🕐 11/18/25 10:40 PM EST
+  📊 Spread: Market -12.5 | Model +17.3
+  🎯 Total: Market 239.5 | Model 226.3
+  [92m✅ BET: Los Angeles Lakers -12.5[0m
+     [96mModel projects Los Angeles Lakers to win by 17.3, covering -12.5.[0m
+  [92m✅ BET: UNDER 239.5[0m
+     [96mModel projects 226 total points, bet the UNDER[0m
+  📈 Predicted: Utah Jazz 104, Los Angeles Lakers 122
+
+[1m[96mPhoenix Suns @ Portland Trail Blazers[0m
+  🕐 11/18/25 11:10 PM EST
+  📊 Spread: Market -2.0 | Model +9.5
+  🎯 Total: Market 236.5 | Model 224.5
+  [92m✅ BET: Portland Trail Blazers -2.0[0m
+     [96mModel projects Portland Trail Blazers to win by 9.5, covering -2.0.[0m
+  [92m✅ BET: UNDER 236.5[0m
+     [96mModel projects 224 total points, bet the UNDER[0m
+  📈 Predicted: Phoenix Suns 108, Portland Trail Blazers 117
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 48[0m
+[92mRecord: 25-18-0[0m
+[92mWin Rate: 58.1%[0m
+[92mProfit: +4.36 units[0m
+[92mROI: +9.2%[0m
+[1m==========================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 8ac5edc] Update model outputs - 2025-11-18 10:49:38
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 29 insertions(+), 29 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   78d9fdd..8ac5edc  main -> main
+✅ Successfully pushed to GitHub!
