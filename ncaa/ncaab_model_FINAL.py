@@ -1252,6 +1252,58 @@ def generate_tracking_html():
         except:
             pass
 
+    # Calculate spread and total records (overall and yesterday)
+    all_completed = [p for p in tracking_data.get('picks', []) if p.get('status') in ['win', 'loss', 'push']]
+
+    # Overall records by type
+    spread_wins = spread_losses = spread_pushes = 0
+    total_wins = total_losses = total_pushes = 0
+
+    # Yesterday records by type
+    yesterday_spread_wins = yesterday_spread_losses = yesterday_spread_pushes = 0
+    yesterday_total_wins = yesterday_total_losses = yesterday_total_pushes = 0
+
+    for pick in all_completed:
+        pick_type = pick.get('pick_type', '').lower()
+        status = pick.get('status', '').lower()
+
+        # Check if from yesterday
+        is_yesterday = False
+        try:
+            game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
+            game_dt_et = game_dt.astimezone(et)
+            is_yesterday = (game_dt_et.date() == yesterday)
+        except:
+            pass
+
+        # Count overall records
+        if pick_type == 'spread':
+            if status == 'win':
+                spread_wins += 1
+                if is_yesterday:
+                    yesterday_spread_wins += 1
+            elif status == 'loss':
+                spread_losses += 1
+                if is_yesterday:
+                    yesterday_spread_losses += 1
+            elif status == 'push':
+                spread_pushes += 1
+                if is_yesterday:
+                    yesterday_spread_pushes += 1
+        elif pick_type == 'total':
+            if status == 'win':
+                total_wins += 1
+                if is_yesterday:
+                    yesterday_total_wins += 1
+            elif status == 'loss':
+                total_losses += 1
+                if is_yesterday:
+                    yesterday_total_losses += 1
+            elif status == 'push':
+                total_pushes += 1
+                if is_yesterday:
+                    yesterday_total_pushes += 1
+
     # Separate picks into categories
     all_pending = [p for p in tracking_data.get('picks', []) if p.get('status') == 'pending']
     
@@ -1479,43 +1531,49 @@ def generate_tracking_html():
         </div>
         {% endif %}
         
-        {% if completed_picks %}
         <div class="card">
-            <h2>📊 Recent Results</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Game Date</th>
-                            <th>Game</th>
-                            <th>Type</th>
-                            <th>Pick</th>
-                            <th>Result</th>
-                            <th>Profit</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pick in completed_picks[:20] %}
-                        <tr>
-                            <td class="text-sm font-bold">{{ format_date(pick.game_date) }}</td>
-                            <td class="font-bold">{{ pick.away_team }} @ {{ pick.home_team }}</td>
-                            <td>{{ pick.pick_type|title }}</td>
-                            <td class="text-sm">{{ pick.pick_text }}</td>
-                            <td class="text-sm text-gray-400">{{ pick.result or 'N/A' }}</td>
-                            <td class="{{ 'text-green-400' if pick.profit and pick.profit > 0 else ('text-red-400' if pick.profit and pick.profit < 0 else 'text-gray-400') }}">
-                                {{ "%+.2f"|format(pick.profit / 100) if pick.profit is not none else '-' }}u
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ pick.status }}">{{ pick.status|title }}</span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <h2>📊 Performance Breakdown</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem;">
+                <!-- Overall Records -->
+                <div>
+                    <h3 style="color: #f97316; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Overall Records</h3>
+                    <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #2a2a2a;">
+                            <span class="text-gray-400" style="font-size: 1rem;">Spreads:</span>
+                            <span style="font-size: 1.5rem; font-weight: 700;">
+                                <span class="text-green-400">{{ spread_wins }}</span>-<span class="text-red-400">{{ spread_losses }}</span>{% if spread_pushes > 0 %}-<span class="text-gray-400">{{ spread_pushes }}</span>{% endif %}
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="text-gray-400" style="font-size: 1rem;">Totals:</span>
+                            <span style="font-size: 1.5rem; font-weight: 700;">
+                                <span class="text-green-400">{{ total_wins }}</span>-<span class="text-red-400">{{ total_losses }}</span>{% if total_pushes > 0 %}-<span class="text-gray-400">{{ total_pushes }}</span>{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yesterday's Records -->
+                <div>
+                    <h3 style="color: #f97316; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Yesterday's Records</h3>
+                    <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #2a2a2a;">
+                            <span class="text-gray-400" style="font-size: 1rem;">Spreads:</span>
+                            <span style="font-size: 1.5rem; font-weight: 700;">
+                                <span class="text-green-400">{{ yesterday_spread_wins }}</span>-<span class="text-red-400">{{ yesterday_spread_losses }}</span>{% if yesterday_spread_pushes > 0 %}-<span class="text-gray-400">{{ yesterday_spread_pushes }}</span>{% endif %}
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="text-gray-400" style="font-size: 1rem;">Totals:</span>
+                            <span style="font-size: 1.5rem; font-weight: 700;">
+                                <span class="text-green-400">{{ yesterday_total_wins }}</span>-<span class="text-red-400">{{ yesterday_total_losses }}</span>{% if yesterday_total_pushes > 0 %}-<span class="text-gray-400">{{ yesterday_total_pushes }}</span>{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
         
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
             <p>Last updated: {{ timestamp }}</p>
@@ -1541,7 +1599,19 @@ def generate_tracking_html():
         format_date=format_date,  # <-- We pass the function in as a variable
         yesterday_wins=yesterday_wins,
         yesterday_losses=yesterday_losses,
-        yesterday_pushes=yesterday_pushes
+        yesterday_pushes=yesterday_pushes,
+        spread_wins=spread_wins,
+        spread_losses=spread_losses,
+        spread_pushes=spread_pushes,
+        total_wins=total_wins,
+        total_losses=total_losses,
+        total_pushes=total_pushes,
+        yesterday_spread_wins=yesterday_spread_wins,
+        yesterday_spread_losses=yesterday_spread_losses,
+        yesterday_spread_pushes=yesterday_spread_pushes,
+        yesterday_total_wins=yesterday_total_wins,
+        yesterday_total_losses=yesterday_total_losses,
+        yesterday_total_pushes=yesterday_total_pushes
     )
     
     try:
