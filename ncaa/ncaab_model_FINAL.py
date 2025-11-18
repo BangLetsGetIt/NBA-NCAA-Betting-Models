@@ -681,7 +681,11 @@ def extract_best_odds(bookmakers, market_type):
 def process_games(games, team_stats):
     """Process games and generate predictions"""
     results = []
-    
+
+    # Load tracking data once to check for existing pending picks
+    tracking_data = load_picks_tracking()
+    pending_pick_ids = {p['pick_id'] for p in tracking_data['picks'] if p.get('status') == 'pending'}
+
     for game in games:
         try:
             home_team = normalize_team_name(game['home_team'])
@@ -795,15 +799,40 @@ def process_games(games, team_stats):
                 "Total Explanation": total_explanation,
                 "Predicted Score": f"{away_team} {prediction['away_score']:.1f}, {home_team} {prediction['home_score']:.1f}"
             }
-            
-            results.append(game_data)
-            
-            # Log confident picks
-            if '✅' in ats_pick and abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
-                log_confident_pick(game_data, 'spread', spread_edge, model_spread, market_spread)
-            
-            if '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
-                log_confident_pick(game_data, 'total', total_edge, model_total, market_total)
+
+            # Check if picks already exist as pending (to avoid showing stale lines)
+            spread_pick_id = f"{home_team}_{away_team}_{game['commence_time']}_spread"
+            total_pick_id = f"{home_team}_{away_team}_{game['commence_time']}_total"
+
+            spread_already_pending = spread_pick_id in pending_pick_ids
+            total_already_pending = total_pick_id in pending_pick_ids
+
+            # Only show spread pick if it's not already pending OR if it's not a confident pick
+            if spread_already_pending and '✅' in ats_pick and abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
+                # Replace with indicator that pick already exists
+                game_data["ATS Pick"] = "⏳ ALREADY PENDING"
+                game_data["ATS Explanation"] = "This pick is already tracked from a previous run."
+
+            # Only show total pick if it's not already pending OR if it's not a confident pick
+            if total_already_pending and '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
+                # Replace with indicator that pick already exists
+                game_data["Total Pick"] = "⏳ ALREADY PENDING"
+                game_data["Total Explanation"] = "This pick is already tracked from a previous run."
+
+            # Only add game to results if it has at least one new pick to show or a non-confident pick
+            has_new_spread = not spread_already_pending and '✅' in ats_pick
+            has_new_total = not total_already_pending and '✅' in total_pick
+            has_no_bet = '❌' in ats_pick or '❌' in total_pick
+
+            if has_new_spread or has_new_total or has_no_bet:
+                results.append(game_data)
+
+                # Log confident picks (only if not already pending)
+                if not spread_already_pending and '✅' in ats_pick and abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
+                    log_confident_pick(game_data, 'spread', spread_edge, model_spread, market_spread)
+
+                if not total_already_pending and '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
+                    log_confident_pick(game_data, 'total', total_edge, model_total, market_total)
         
         except Exception as e:
             print(f"{Colors.RED}Error processing game {game.get('home_team')}: {e}{Colors.END}")
