@@ -2103,11 +2103,11 @@
       "edge": 13.8,
       "pick": "\u2705 BET: Charlotte Hornets +8.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 118,
+      "actual_away_score": 111
     },
     {
       "pick_id": "Indiana Pacers_Chicago Bulls_2025-11-30T00:40:00Z_spread",
@@ -2122,11 +2122,11 @@
       "edge": 13.2,
       "pick": "\u2705 BET: Indiana Pacers +4.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 103,
+      "actual_away_score": 101
     },
     {
       "pick_id": "Miami Heat_Detroit Pistons_2025-11-30T01:10:00Z_total",
@@ -2141,11 +2141,11 @@
       "edge": -14.6,
       "pick": "\u2705 BET: UNDER 238.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 135,
+      "actual_away_score": 138
     },
     {
       "pick_id": "Golden State Warriors_New Orleans Pelicans_2025-11-30T01:40:00Z_spread",
@@ -2160,6 +2160,25 @@
       "edge": 11.6,
       "pick": "\u2705 BET: Golden State Warriors -8.5",
       "units": 1,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 104,
+      "actual_away_score": 96
+    },
+    {
+      "pick_id": "Minnesota Timberwolves_San Antonio Spurs_2025-12-01T00:10:00Z_spread",
+      "date_logged": "2025-11-30T10:00:58.627341",
+      "game_date": "2025-12-01T00:10:00Z",
+      "home_team": "Minnesota Timberwolves",
+      "away_team": "San Antonio Spurs",
+      "matchup": "San Antonio Spurs @ Minnesota Timberwolves",
+      "pick_type": "Spread",
+      "model_line": 14.3,
+      "market_line": -3.5,
+      "edge": 10.8,
+      "pick": "\u2705 BET: Minnesota Timberwolves -3.5",
+      "units": 1,
       "status": "Pending",
       "result": null,
       "profit_loss": 0,
@@ -2168,10 +2187,10 @@
     }
   ],
   "summary": {
-    "total_picks": 114,
-    "wins": 63,
-    "losses": 47,
+    "total_picks": 115,
+    "wins": 65,
+    "losses": 49,
     "pushes": 0,
-    "pending": 4
+    "pending": 1
   }
 }
