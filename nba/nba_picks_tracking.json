@@ -2198,11 +2198,11 @@
       "edge": 9.0,
       "pick": "\u2705 BET: Brooklyn Nets +4.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 116,
+      "actual_away_score": 103
     },
     {
       "pick_id": "Orlando Magic_Chicago Bulls_2025-12-02T00:40:00Z_total",
@@ -2217,11 +2217,11 @@
       "edge": -15.6,
       "pick": "\u2705 BET: UNDER 239.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 125,
+      "actual_away_score": 120
     },
     {
       "pick_id": "Los Angeles Lakers_Phoenix Suns_2025-12-02T03:10:00Z_spread",
@@ -2236,11 +2236,11 @@
       "edge": 8.3,
       "pick": "\u2705 BET: Los Angeles Lakers -5.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 108,
+      "actual_away_score": 125
     },
     {
       "pick_id": "Brooklyn Nets_Charlotte Hornets_2025-12-02T00:40:00Z_total",
@@ -2255,11 +2255,11 @@
       "edge": -12.8,
       "pick": "\u2705 BET: UNDER 228.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 116,
+      "actual_away_score": 103
     },
     {
       "pick_id": "Boston Celtics_New York Knicks_2025-12-03T01:10:00Z_spread",
@@ -2298,13 +2298,32 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null
+    },
+    {
+      "pick_id": "New Orleans Pelicans_Minnesota Timberwolves_2025-12-03T01:10:00Z_total",
+      "date_logged": "2025-12-02T01:15:23.554892",
+      "game_date": "2025-12-03T01:10:00Z",
+      "home_team": "New Orleans Pelicans",
+      "away_team": "Minnesota Timberwolves",
+      "matchup": "Minnesota Timberwolves @ New Orleans Pelicans",
+      "pick_type": "Total",
+      "model_line": 222.5,
+      "market_line": 234.5,
+      "edge": -12.0,
+      "pick": "\u2705 BET: UNDER 234.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
     }
   ],
   "summary": {
-    "total_picks": 121,
-    "wins": 66,
-    "losses": 49,
+    "total_picks": 122,
+    "wins": 68,
+    "losses": 51,
     "pushes": 0,
-    "pending": 6
+    "pending": 3
   }
 }
