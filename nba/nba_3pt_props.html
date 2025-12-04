@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA 3PT Props - A.I. Projections</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: #64ffda;
+            font-weight: 600;
+        }
+
+        .twitter-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #1da1f2;
+            color: white;
+            text-decoration: none;
+            border-radius: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .twitter-link:hover {
+            background: #1a8cd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .over-section .section-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .under-section .section-header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        th {
+            padding: 1.25rem;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.01);
+        }
+
+        .player-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .prop-line {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+        }
+
+        .over-section .prop-line {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .under-section .prop-line {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .team-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(100, 255, 218, 0.15);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #64ffda;
+        }
+
+        .ai-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .over-section .ai-score {
+            color: #10b981;
+        }
+
+        .under-section .ai-score {
+            color: #ef4444;
+        }
+
+        .matchup {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            background: rgba(100, 255, 218, 0.1);
+            border-left: 4px solid #64ffda;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: #64ffda;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 0.3rem 0;
+            color: #cbd5e1;
+        }
+
+        .info-box li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .header .subtitle {
+                font-size: 1.2rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .section-header {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NBA A.I. 3PT Props Model</h1>
+            <div class="subtitle">Projections: 12/04</div>
+        </div>
+
+        
+
+        <div class="info-box">
+            <h3>How to Read This Report</h3>
+            <ul>
+                <li><strong>A.I. Score:</strong> 0-10 scale ranking the strength of each play (8.0+ are top plays)</li>
+                <li><strong>OVER plays:</strong> Player projected to exceed their 3PM line</li>
+                <li><strong>UNDER plays:</strong> Player projected to fall short of their 3PM line</li>
+                <li><strong>Model factors:</strong> Recent form, season averages, matchup, consistency</li>
+                <li>Higher A.I. scores indicate stronger confidence in the projection</li>
+            </ul>
+        </div>
+
+        <div class="section over-section">
+            <div class="section-header">
+                🔥 TOP OVER PLAYS
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PLAYER</th>
+                            <th>PROP</th>
+                            <th>TEAM</th>
+                            <th>OPPONENT</th>
+                            <th style="text-align: center;">A.I. SCORE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="player-name">Anthony Edwards</td>
+                            <td><span class="prop-line">OVER 3.5 3PT</span></td>
+                            <td><span class="team-badge">Minnesota Timberwolves</span></td>
+                            <td class="matchup">New Orleans Pelicans</td>
+                            <td class="ai-score">8.72</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">LeBron James</td>
+                            <td><span class="prop-line">OVER 1.5 3PT</span></td>
+                            <td><span class="team-badge">Los Angeles Lakers</span></td>
+                            <td class="matchup">Toronto Raptors</td>
+                            <td class="ai-score">8.51</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">Ziaire Williams</td>
+                            <td><span class="prop-line">OVER 1.5 3PT</span></td>
+                            <td><span class="team-badge">Brooklyn Nets</span></td>
+                            <td class="matchup">Utah Jazz</td>
+                            <td class="ai-score">8.44</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">Cam Whitmore</td>
+                            <td><span class="prop-line">OVER 1.5 3PT</span></td>
+                            <td><span class="team-badge">Washington Wizards</span></td>
+                            <td class="matchup">Boston Celtics</td>
+                            <td class="ai-score">8.36</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section under-section">
+            <div class="section-header">
+                ❄️ TOP UNDER PLAYS
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PLAYER</th>
+                            <th>PROP</th>
+                            <th>TEAM</th>
+                            <th>OPPONENT</th>
+                            <th style="text-align: center;">A.I. SCORE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
+                                No qualifying UNDER plays found (A.I. Score < 8.0)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-box" style="margin-top: 3rem;">
+            <h3>Model Information</h3>
+            <ul>
+                <li>Generated: December 04, 2025 at 02:42 PM ET</li>
+                <li>Minimum A.I. Score threshold: 8.0</li>
+                <li>Recent games analyzed: Last 10 games</li>
+                <li>This model is for entertainment and educational purposes only</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

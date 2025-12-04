@@ -1,0 +1,74 @@
+================================================================================
+NBA 3-POINT PROPS MODEL - QUICK START GUIDE
+================================================================================
+
+📋 WHAT IT DOES:
+   Analyzes NBA player 3-point props and ranks the best bets using A.I.
+
+🎯 OUTPUT:
+   - Beautiful HTML report (nba_3pt_props.html)
+   - Terminal display with top plays
+   - Green = OVER plays, Red = UNDER plays
+
+📊 A.I. SCORE SYSTEM:
+   9.0-10.0  = 🔥 Elite plays (highest confidence)
+   8.5-8.9   = ⭐ Premium plays
+   8.0-8.4   = ✅ Good plays
+   < 8.0     = Not shown
+
+⚡ QUICK RUN:
+   cd /Users/rico/sports-models/nba
+   python3 nba_3pt_props_model.py
+   open nba_3pt_props.html
+
+🔧 SETUP (ONE TIME):
+   export ODDS_API_KEY='your_api_key_here'
+
+📖 FULL DOCS:
+   See NBA_3PT_PROPS_README.md for complete guide
+
+⚠️  REMEMBER:
+   - Only bet what you can afford to lose
+   - Higher A.I. scores = more confidence
+   - Always verify player is in starting lineup
+   - Model is for entertainment/education only
+
+================================================================================
+EXAMPLE PLAY:
+
+Player: Cason Wallace
+Prop: OVER 1.5 3PT
+Team: OKC vs GSW
+A.I. Score: 9.36 🔥
+
+Translation: Model predicts Wallace will make 2+ three-pointers
+Confidence: Very High (9.36/10)
+================================================================================
+
+💡 PRO TIPS FOR BEGINNERS:
+   ✓ Start with 8.5+ A.I. scores
+   ✓ Don't bet every high-scoring play
+   ✓ Check injury reports before betting
+   ✓ Track your results to learn
+   ✓ Bet small amounts while learning
+
+❌ AVOID:
+   ✗ Chasing losses
+   ✗ Betting more than you can lose
+   ✗ Ignoring lineup changes
+   ✗ Betting on games already started
+
+================================================================================
+CUSTOMIZATION:
+
+Edit these values in nba_3pt_props_model.py:
+
+MIN_AI_SCORE = 8.0         # Show only plays above this score
+TOP_PLAYS_COUNT = 15       # Number of plays to display
+RECENT_GAMES_WINDOW = 10   # Games analyzed for recent form
+
+================================================================================
+✓ Ready to use!
+✓ Designed for beginners!
+✓ Beautiful HTML output!
+================================================================================
