@@ -155,9 +155,10 @@
       "odds": 142,
       "game_time": "2025-12-06T01:10:00Z",
       "tracked_at": "2025-12-05T00:22:31.651769-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": null,
+      "updated_at": "2025-12-06T11:50:26.983886-05:00"
     },
     {
       "pick_id": "Kawhi Leonard_2.5_over_2025-12-06T01:10:00Z",
@@ -170,9 +171,10 @@
       "odds": 152,
       "game_time": "2025-12-06T01:10:00Z",
       "tracked_at": "2025-12-05T00:22:31.653938-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": null,
+      "updated_at": "2025-12-06T11:50:26.983886-05:00"
     },
     {
       "pick_id": "Duncan Robinson_2.5_over_2025-12-06T00:40:00Z",
@@ -269,15 +271,105 @@
       "result": "WIN",
       "actual_3pm": null,
       "updated_at": "2025-12-05T23:47:47.854831-05:00"
+    },
+    {
+      "pick_id": "Darius Garland_2.5_over_2025-12-07T00:40:00Z",
+      "player": "Darius Garland",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "team": "Cleveland Cavaliers",
+      "opponent": "Golden State Warriors",
+      "ai_score": 8.570714615812314,
+      "odds": 124,
+      "game_time": "2025-12-07T00:40:00Z",
+      "tracked_at": "2025-12-06T11:50:29.131273-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "James Harden_3.5_over_2025-12-07T01:10:00Z",
+      "player": "James Harden",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "team": "Los Angeles Clippers",
+      "opponent": "Minnesota Timberwolves",
+      "ai_score": 8.558668637588132,
+      "odds": 130,
+      "game_time": "2025-12-07T01:10:00Z",
+      "tracked_at": "2025-12-06T11:50:29.132951-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "Donovan Mitchell_3.5_over_2025-12-07T00:40:00Z",
+      "player": "Donovan Mitchell",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "team": "Cleveland Cavaliers",
+      "opponent": "Golden State Warriors",
+      "ai_score": 8.544376975743111,
+      "odds": -128,
+      "game_time": "2025-12-07T00:40:00Z",
+      "tracked_at": "2025-12-06T11:50:29.133989-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "Michael Porter Jr_3.5_over_2025-12-06T22:10:00Z",
+      "player": "Michael Porter Jr",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "team": "Brooklyn Nets",
+      "opponent": "New Orleans Pelicans",
+      "ai_score": 8.534350938386998,
+      "odds": -138,
+      "game_time": "2025-12-06T22:10:00Z",
+      "tracked_at": "2025-12-06T11:50:29.134871-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "Anthony Edwards_3.5_over_2025-12-07T01:10:00Z",
+      "player": "Anthony Edwards",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "team": "Minnesota Timberwolves",
+      "opponent": "Los Angeles Clippers",
+      "ai_score": 8.646246595040154,
+      "odds": -144,
+      "game_time": "2025-12-07T01:10:00Z",
+      "tracked_at": "2025-12-06T11:50:56.914755-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "Donte DiVincenzo_3.5_over_2025-12-07T01:10:00Z",
+      "player": "Donte DiVincenzo",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "team": "Minnesota Timberwolves",
+      "opponent": "Los Angeles Clippers",
+      "ai_score": 8.641647146604338,
+      "odds": 128,
+      "game_time": "2025-12-07T01:10:00Z",
+      "tracked_at": "2025-12-06T11:50:56.916548-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
     }
   ],
   "summary": {
-    "total": 17,
-    "wins": 5,
-    "losses": 10,
-    "pending": 2,
-    "win_rate": 33.33333333333333,
-    "roi": -5.45,
-    "roi_pct": -32.05882352941177
+    "total": 23,
+    "wins": 6,
+    "losses": 11,
+    "pending": 6,
+    "win_rate": 35.294117647058826,
+    "roi": -5.54,
+    "roi_pct": -24.08695652173913
   }
 }
