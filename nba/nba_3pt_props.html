@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000000;
             color: #ffffff;
             padding: 2rem;
             min-height: 100vh;
@@ -26,189 +26,213 @@
 
         .header {
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+            padding: 2.5rem 2rem;
+            background: #1a1a1a;
             border-radius: 1rem;
-            backdrop-filter: blur(10px);
+            border: 1px solid #2a2a2a;
         }
 
         .header h1 {
             font-size: 2.5rem;
-            font-weight: 800;
+            font-weight: 900;
             margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
         }
 
         .header .subtitle {
-            font-size: 1.5rem;
-            color: #64ffda;
-            font-weight: 600;
-        }
-
-        .twitter-link {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: #1da1f2;
-            color: white;
-            text-decoration: none;
-            border-radius: 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .twitter-link:hover {
-            background: #1a8cd8;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
-        }
-
-        .section {
-            margin-bottom: 3rem;
-        }
-
-        .section-header {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .over-section .section-header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .under-section .section-header {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        .table-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        th {
-            padding: 1.25rem;
-            text-align: left;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        td {
-            padding: 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: scale(1.01);
-        }
-
-        .player-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .prop-line {
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            display: inline-block;
-        }
-
-        .over-section .prop-line {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .under-section .prop-line {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .team-badge {
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            background: rgba(100, 255, 218, 0.15);
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            border-radius: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #64ffda;
-        }
-
-        .ai-score {
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-align: center;
-        }
-
-        .over-section .ai-score {
-            color: #10b981;
-        }
-
-        .under-section .ai-score {
-            color: #ef4444;
-        }
-
-        .matchup {
+            font-size: 1rem;
             color: #94a3b8;
-            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
         }
 
-        .info-box {
-            background: rgba(100, 255, 218, 0.1);
-            border-left: 4px solid #64ffda;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
+        .performance-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 1rem;
+            padding: 2rem;
             margin-bottom: 2rem;
         }
 
-        .info-box h3 {
-            color: #64ffda;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
+        .performance-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
         }
 
-        .info-box ul {
-            list-style: none;
-            padding-left: 0;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
         }
 
-        .info-box li {
-            padding: 0.3rem 0;
-            color: #cbd5e1;
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #0a0a0a;
+            border-radius: 0.75rem;
+            border: 1px solid #2a2a2a;
         }
 
-        .info-box li:before {
-            content: "✓ ";
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
             color: #10b981;
-            font-weight: bold;
-            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .prop-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .prop-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .over-card {
+            border-left: 4px solid #10b981;
+        }
+
+        .under-card {
+            border-left: 4px solid #ef4444;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #2a2a2a;
+            background: #0a0a0a;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .matchup-info {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .ai-score-badge {
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            min-width: 80px;
+        }
+
+        .ai-score-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #000000;
+            line-height: 1;
+        }
+
+        .ai-score-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #000000;
+            margin-top: 0.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prop-display {
+            flex: 1;
+        }
+
+        .bet-type {
+            font-size: 1rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .prop-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .prop-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .odds-display {
+            text-align: right;
+            padding: 1rem 1.5rem;
+            background: #0a0a0a;
+            border-radius: 0.75rem;
+            border: 1px solid #2a2a2a;
+        }
+
+        .odds-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .odds-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            padding: 2rem;
         }
 
         @media (max-width: 768px) {
@@ -217,20 +241,19 @@
             }
 
             .header h1 {
-                font-size: 1.75rem;
+                font-size: 2rem;
             }
 
-            .header .subtitle {
-                font-size: 1.2rem;
+            .cards-grid {
+                grid-template-columns: 1fr;
             }
 
-            th, td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .section-header {
-                font-size: 1.5rem;
+            .prop-value {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -238,130 +261,133 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>NBA A.I. 3PT Props Model</h1>
-            <div class="subtitle">Projections: 12/06</div>
+            <h1>🏀 NBA 3PT PROPS MODEL</h1>
+            <div class="subtitle">12/06/25 • 10:18 PM ET</div>
         </div>
 
         
-        <div class="info-box" style="background: rgba(16, 185, 129, 0.1); border-color: #10b981;">
-            <h3 style="color: #10b981;">📊 Model Performance (Auto-Tracked)</h3>
-            <ul style="list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #10b981;">33.3%</div>
-                    <div style="color: #94a3b8;">Win Rate</div>
-                </li>
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #64ffda;">6-12</div>
-                    <div style="color: #94a3b8;">Record</div>
-                </li>
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #ef4444;">-6.54u</div>
-                    <div style="color: #94a3b8;">ROI</div>
-                </li>
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #f59e0b;">0.0%</div>
-                    <div style="color: #94a3b8;">CLV Rate</div>
-                </li>
-            </ul>
-            <p style="margin-top: 1rem; color: #cbd5e1; font-size: 0.9rem; text-align: center;">
-                12 picks pending | Auto-tracking picks with A.I. Score ≥ 8.5 | Positive CLV: 0/5
-            </p>
-        </div>
-
-        <div class="section over-section">
-            <div class="section-header">
-                🔥 TOP OVER PLAYS
+        <div class="performance-card">
+            <div class="performance-header">
+                <h2>📊 Model Performance</h2>
             </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PLAYER</th>
-                            <th>PROP</th>
-                            <th>TEAM</th>
-                            <th>OPPONENT</th>
-                            <th style="text-align: center;">A.I. SCORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="player-name">Jalen Brunson</td>
-                            <td><span class="prop-line">OVER 2.5 3PT</span></td>
-                            <td><span class="team-badge">New York Knicks</span></td>
-                            <td class="matchup">Orlando Magic</td>
-                            <td class="ai-score">8.57</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">Derrick White</td>
-                            <td><span class="prop-line">OVER 2.5 3PT</span></td>
-                            <td><span class="team-badge">Boston Celtics</span></td>
-                            <td class="matchup">Toronto Raptors</td>
-                            <td class="ai-score">8.56</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">Jalen Suggs</td>
-                            <td><span class="prop-line">OVER 2.5 3PT</span></td>
-                            <td><span class="team-badge">Orlando Magic</span></td>
-                            <td class="matchup">New York Knicks</td>
-                            <td class="ai-score">8.52</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">James Harden</td>
-                            <td><span class="prop-line">OVER 1.5 3PT</span></td>
-                            <td><span class="team-badge">Los Angeles Clippers</span></td>
-                            <td class="matchup">Minnesota Timberwolves</td>
-                            <td class="ai-score">8.51</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">OG Anunoby</td>
-                            <td><span class="prop-line">OVER 1.5 3PT</span></td>
-                            <td><span class="team-badge">New York Knicks</span></td>
-                            <td class="matchup">Orlando Magic</td>
-                            <td class="ai-score">8.51</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">Desmond Bane</td>
-                            <td><span class="prop-line">OVER 2.5 3PT</span></td>
-                            <td><span class="team-badge">New York Knicks</span></td>
-                            <td class="matchup">Orlando Magic</td>
-                            <td class="ai-score">8.38</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">Jaden McDaniels</td>
-                            <td><span class="prop-line">OVER 3.5 3PT</span></td>
-                            <td><span class="team-badge">Minnesota Timberwolves</span></td>
-                            <td class="matchup">Los Angeles Clippers</td>
-                            <td class="ai-score">8.35</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" style="color: #ef4444;">33.3%</div>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">6-12</div>
+                    <div class="stat-label">Record</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="color: #ef4444;">-6.54u</div>
+                    <div class="stat-label">Profit/Loss</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">13</div>
+                    <div class="stat-label">Pending</div>
+                </div>
             </div>
         </div>
 
-        <div class="section under-section">
-            <div class="section-header">
-                ❄️ TOP UNDER PLAYS
+        <div class="cards-grid">
+            
+        <div class="prop-card over-card">
+            <div class="card-header">
+                <div class="player-info">
+                    <div class="player-name">Derrick White</div>
+                    <div class="matchup-info">Boston Celtics vs Toronto Raptors</div>
+                </div>
+                <div class="ai-score-badge" style="background: #10b981;">
+                    <div class="ai-score-value">8.6</div>
+                    <div class="ai-score-label">A.I. SCORE</div>
+                </div>
             </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PLAYER</th>
-                            <th>PROP</th>
-                            <th>TEAM</th>
-                            <th>OPPONENT</th>
-                            <th style="text-align: center;">A.I. SCORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
-                                No qualifying UNDER plays found (A.I. Score < 8.0)
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="prop-display">
+                    <div class="bet-type" style="color: #10b981;">OVER</div>
+                    <div class="prop-value">2.5</div>
+                    <div class="prop-label">3-POINTERS</div>
+                </div>
+                <div class="odds-display">
+                    <div class="odds-label">ODDS</div>
+                    <div class="odds-value">-175</div>
+                </div>
             </div>
+        </div>
+        <div class="prop-card over-card">
+            <div class="card-header">
+                <div class="player-info">
+                    <div class="player-name">Quentin Grimes</div>
+                    <div class="matchup-info">Philadelphia 76ers vs Los Angeles Lakers</div>
+                </div>
+                <div class="ai-score-badge" style="background: #10b981;">
+                    <div class="ai-score-value">8.5</div>
+                    <div class="ai-score-label">A.I. SCORE</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="prop-display">
+                    <div class="bet-type" style="color: #10b981;">OVER</div>
+                    <div class="prop-value">2.5</div>
+                    <div class="prop-label">3-POINTERS</div>
+                </div>
+                <div class="odds-display">
+                    <div class="odds-label">ODDS</div>
+                    <div class="odds-value">132</div>
+                </div>
+            </div>
+        </div>
+        <div class="prop-card over-card">
+            <div class="card-header">
+                <div class="player-info">
+                    <div class="player-name">Tyrese Maxey</div>
+                    <div class="matchup-info">Philadelphia 76ers vs Los Angeles Lakers</div>
+                </div>
+                <div class="ai-score-badge" style="background: #10b981;">
+                    <div class="ai-score-value">8.5</div>
+                    <div class="ai-score-label">A.I. SCORE</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="prop-display">
+                    <div class="bet-type" style="color: #10b981;">OVER</div>
+                    <div class="prop-value">3.5</div>
+                    <div class="prop-label">3-POINTERS</div>
+                </div>
+                <div class="odds-display">
+                    <div class="odds-label">ODDS</div>
+                    <div class="odds-value">116</div>
+                </div>
+            </div>
+        </div>
+        <div class="prop-card over-card">
+            <div class="card-header">
+                <div class="player-info">
+                    <div class="player-name">Franz Wagner</div>
+                    <div class="matchup-info">Orlando Magic vs New York Knicks</div>
+                </div>
+                <div class="ai-score-badge" style="background: #10b981;">
+                    <div class="ai-score-value">8.4</div>
+                    <div class="ai-score-label">A.I. SCORE</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="prop-display">
+                    <div class="bet-type" style="color: #10b981;">OVER</div>
+                    <div class="prop-value">1.5</div>
+                    <div class="prop-label">3-POINTERS</div>
+                </div>
+                <div class="odds-display">
+                    <div class="odds-label">ODDS</div>
+                    <div class="odds-value">136</div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="footer">
+            Powered by A.I. Analytics • Tracking picks with score ≥ 8.5
         </div>
     </div>
 </body>
