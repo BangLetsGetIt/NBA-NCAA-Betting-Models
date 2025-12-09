@@ -2958,11 +2958,11 @@
       "edge": 11.3,
       "pick": "\u2705 BET: New Orleans Pelicans +9.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 132,
+      "actual_away_score": 135
     },
     {
       "pick_id": "New Orleans Pelicans_San Antonio Spurs_2025-12-09T01:10:00Z_total",
@@ -2977,11 +2977,11 @@
       "edge": -13.9,
       "pick": "\u2705 BET: UNDER 236.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 132,
+      "actual_away_score": 135
     },
     {
       "pick_id": "Orlando Magic_Miami Heat_2025-12-09T23:10:00Z_total",
@@ -3005,9 +3005,9 @@
   ],
   "summary": {
     "total_picks": 158,
-    "wins": 94,
-    "losses": 61,
+    "wins": 95,
+    "losses": 62,
     "pushes": 0,
-    "pending": 3
+    "pending": 1
   }
 }
