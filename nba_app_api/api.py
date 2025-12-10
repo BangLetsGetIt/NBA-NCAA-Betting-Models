@@ -225,8 +225,8 @@ async def get_pending_picks():
     data = load_tracking_data()
     picks = data.get('picks', [])
 
-    # Filter for pending picks only
-    pending_picks = [p for p in picks if p.get('status') == 'pending']
+    # Filter for pending picks only (case-insensitive)
+    pending_picks = [p for p in picks if p.get('status', '').lower() == 'pending']
 
     # Transform to API format
     game_predictions = [transform_pick_to_game_prediction(p) for p in pending_picks]
