@@ -3,42 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Bet Tracking Dashboard</title>
+    <title>CourtSide Analytics - Performance Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #0a1628;
+            color: #ffffff;
+            padding: 1.5rem;
             min-height: 100vh;
         }
         .container { max-width: 1400px; margin: 0 auto; }
         .card {
-            background: #1a1a1a;
-            border-radius: 1rem;
-            border: 1px solid #2a2a2a;
+            background: #1a2332;
+            border-radius: 1.25rem;
+            border: none;
             padding: 2rem;
             margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .stat-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            border: 2px solid #fbbf24;
-            border-radius: 0.75rem;
+            background: #2a3441;
+            border: none;
+            border-radius: 1rem;
             padding: 1.5rem;
             text-align: center;
         }
         .stat-value {
             font-size: 2.5rem;
-            font-weight: 900;
-            color: #fbbf24;
+            font-weight: 700;
+            color: #4ade80;
         }
         .stat-label {
-            color: #9ca3af;
-            font-size: 0.875rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-top: 0.5rem;
+            font-weight: 500;
         }
         .grid {
             display: grid;
@@ -46,85 +48,137 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; color: #fbbf24; }
-        h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; color: #fbbf24; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #0a0a0a; }
-        th { padding: 0.75rem 1rem; text-align: left; color: #fbbf24; font-weight: 700; }
-        td { padding: 0.75rem 1rem; border-bottom: 1px solid #2a2a2a; }
-        tr:hover { background: #0a0a0a; }
+        thead { background: #2a3441; }
+        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
+        tr:hover { background: #2a3441; }
         .text-center { text-align: center; }
-        .text-green-400 { color: #10b981; }
-        .text-red-400 { color: #ef4444; }
+        .text-green-400 { color: #4ade80; }
+        .text-blue-400 { color: #60a5fa; }
+        .text-pink-400 { color: #f472b6; }
+        .text-red-400 { color: #f87171; }
         .text-yellow-400 { color: #fbbf24; }
-        .text-gray-400 { color: #9ca3af; }
+        .text-gray-400 { color: #94a3b8; }
         .font-bold { font-weight: 700; }
         .text-sm { font-size: 0.875rem; }
         .badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
         }
-        .badge-pending { background: #78350f; color: #fbbf24; }
-        .badge-win { background: #064e3b; color: #10b981; }
-        .badge-loss { background: #450a0a; color: #ef4444; }
-        .badge-push { background: #374151; color: #9ca3af; }
+        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .badge-win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1 class="text-center">🏀 NBA BET TRACKING</h1>
-            <p class="text-center text-gray-400" style="font-size: 1.25rem; margin-bottom: 2rem;">Performance Analytics Dashboard</p>
+            <h1 class="text-center">Model Performance</h1>
+            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
 
-            <div class="grid">
-                <div class="stat-card">
-                    <div class="stat-value">166</div>
-                    <div class="stat-label">Total Bets</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">60.2%</div>
-                    <div class="stat-label">Win Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value text-green-400">
-                        +25.76u
+            <!-- Overall Performance Card -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Overall Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">167</div>
+                        <div class="stat-label">Total Bets</div>
                     </div>
-                    <div class="stat-label">Total Profit</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value text-green-400">
-                        +14.5%
+                    <div class="stat-card">
+                        <div class="stat-value">97-64</div>
+                        <div class="stat-label">Record</div>
                     </div>
-                    <div class="stat-label">ROI</div>
+                    <div class="stat-card">
+                        <div class="stat-value">60.2%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +25.76u
+                        </div>
+                        <div class="stat-label">Total Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +14.5%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">1-2</div>
-                    <div class="stat-label">Dec 10 Record</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (82 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">51-31</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">62.2%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">16.90u</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (79 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">46-33</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">58.2%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">9.70u</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
-                <div>
-                    <span class="text-gray-400">Wins:</span>
-                    <span class="text-green-400 font-bold" style="margin-left: 0.5rem;">97</span>
-                </div>
-                <div>
-                    <span class="text-gray-400">Losses:</span>
-                    <span class="text-red-400 font-bold" style="margin-left: 0.5rem;">64</span>
-                </div>
-                <div>
-                    <span class="text-gray-400">Pushes:</span>
-                    <span class="text-gray-400 font-bold" style="margin-left: 0.5rem;">0</span>
+            <!-- Today's/Yesterday's Record -->
+            <div style="background: #2a3441; border-radius: 1rem; padding: 1.5rem;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">Dec 10 Record</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #4ade80;">1-2</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Overall</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #60a5fa;">1-1</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Spreads</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #f472b6;">0-1</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Totals</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         
         <div class="card">
-            <h2>🎯 Upcoming Bets</h2>
+            <h2>🎯 Today's Projections</h2>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -190,50 +244,165 @@
                             <td><span class="badge badge-pending">Pending</span></td>
                         </tr>
                         
+                        <tr>
+                            <td class="text-sm font-bold">12/12 08:10 PM</td>
+                            <td class="font-bold">Utah Jazz @ Memphis Grizzlies</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Memphis Grizzlies -6.5</td>
+                            <td>-6.5</td>
+                            <td>+13.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
         </div>
         
 
+        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
         <div class="card">
-            <h2>📊 Performance Breakdown</h2>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
+                <p class="subtitle">Verified Track Record</p>
+            </div>
 
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem;">
-                <!-- Overall Records -->
-                <div>
-                    <h3 style="color: #fbbf24; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Overall Records</h3>
-                    <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #2a2a2a;">
-                            <span class="text-gray-400" style="font-size: 1rem;">Spreads:</span>
-                            <span style="font-size: 1.5rem; font-weight: 700;">
-                                <span class="text-green-400">51</span>-<span class="text-red-400">31</span>
-                            </span>
+            <!-- Last 100 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Last 100 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">62-38</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">62.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +20.20u
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="text-gray-400" style="font-size: 1rem;">Totals:</span>
-                            <span style="font-size: 1.5rem; font-weight: 700;">
-                                <span class="text-green-400">46</span>-<span class="text-red-400">33</span>
-                            </span>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +20.2%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (50 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">31-19</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">62.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+20.2%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (50 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">31-19</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">62.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+20.2%</span></div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Recent Day's Records -->
-                <div>
-                    <h3 style="color: #fbbf24; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Dec 10 Records</h3>
-                    <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #2a2a2a;">
-                            <span class="text-gray-400" style="font-size: 1rem;">Spreads:</span>
-                            <span style="font-size: 1.5rem; font-weight: 700;">
-                                <span class="text-green-400">1</span>-<span class="text-red-400">1</span>
-                            </span>
+            <!-- Last 50 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    🚀 Last 50 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">33-17</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">66.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +14.30u
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="text-gray-400" style="font-size: 1rem;">Totals:</span>
-                            <span style="font-size: 1.5rem; font-weight: 700;">
-                                <span class="text-green-400">0</span>-<span class="text-red-400">1</span>
-                            </span>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +28.6%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (27 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">18-9</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">66.7%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+30.0%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (23 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">15-8</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">65.2%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+27.0%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 20 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    ⚡ Last 20 Picks (Hot Streak)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">15-5</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">75.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +9.50u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">
+                            +47.5%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (9 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">8-1</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">88.9%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+76.7%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (11 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">7-4</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">63.6%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+23.6%</span></div>
                         </div>
                     </div>
                 </div>
@@ -241,7 +410,7 @@
         </div>
 
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
-            <p>Last updated: 2025-12-11 12:59 AM</p>
+            <p>Last updated: 2025-12-11 02:06 AM</p>
         </div>
     </div>
 </body>

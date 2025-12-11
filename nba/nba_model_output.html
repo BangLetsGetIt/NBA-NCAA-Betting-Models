@@ -3,36 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NBA Model Picks</title>
+        <title>CourtSide Analytics - Today's Picks</title>
         <style>
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-                color: #e2e8f0;
-                padding: 2rem;
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+                background: #0a1628;
+                color: #ffffff;
+                padding: 1.5rem;
                 min-height: 100vh;
             }
            .container { max-width: 1200px; margin: 0 auto; }
            .card {
-                background: #1a1a1a;
-                border-radius: 1rem;
-                border: 1px solid #2a2a2a;
+                background: #1a2332;
+                border-radius: 1.25rem;
+                border: none;
                 padding: 2rem;
                 margin-bottom: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             }
            .header-card {
                 text-align: center;
-                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                border: 2px solid #fbbf24;
+                background: #1a2332;
+                border: none;
             }
            .game-card {
                 padding: 1.5rem;
-                border-bottom: 1px solid #2a2a2a;
+                border-bottom: 1px solid #2a3441;
             }
            .game-card:last-child { border-bottom: none; }
-           .matchup { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
-           .game-time { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }
+           .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
            .bet-section {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -40,28 +41,41 @@
                 margin-top: 1rem;
             }
            .bet-box {
-                background: #0a0a0a;
-                padding: 1rem;
-                border-radius: 0.5rem;
-                border-left: 4px solid #fbbf24;
+                background: #2a3441;
+                padding: 1.25rem;
+                border-radius: 1rem;
+                border-left: none;
+            }
+           .bet-box-spread {
+                border-left: 4px solid #60a5fa;
+            }
+           .bet-box-total {
+                border-left: 4px solid #f472b6;
             }
            .bet-title {
-                font-weight: 700;
-                color: #fbbf24;
+                font-weight: 600;
+                color: #94a3b8;
                 margin-bottom: 0.5rem;
                 text-transform: uppercase;
-                font-size: 0.875rem;
+                font-size: 0.75rem;
                 letter-spacing: 0.05em;
+            }
+           .bet-title-spread {
+                color: #60a5fa;
+            }
+           .bet-title-total {
+                color: #f472b6;
             }
            .odds-line {
                 display: flex;
                 justify-content: space-between;
                 margin: 0.25rem 0;
-                font-size: 0.95rem;
-                color: #cbd5e1;
+                font-size: 0.9375rem;
+                color: #94a3b8;
             }
            .odds-line strong {
                 color: #ffffff;
+                font-weight: 600;
            }
            .confidence-bar-container {
                 margin: 0.75rem 0;
@@ -71,111 +85,112 @@
                 justify-content: space-between;
                 margin-bottom: 0.5rem;
                 font-size: 0.875rem;
-                color: #9ca3af;
+                color: #94a3b8;
            }
            .confidence-pct {
                 font-weight: 700;
-                color: #fbbf24;
+                color: #4ade80;
            }
            .confidence-bar {
-                height: 8px;
-                background: #1e293b;
+                height: 6px;
+                background: #1a2332;
                 border-radius: 999px;
                 overflow: hidden;
-                border: 1px solid #2a2a2a;
+                border: none;
            }
            .confidence-fill {
                 height: 100%;
-                background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+                background: #4ade80;
                 border-radius: 999px;
                 transition: width 0.3s ease;
            }
            .pick {
-                font-weight: 700;
-                padding: 0.75rem;
-                margin-top: 0.5rem;
-                border-radius: 0.375rem;
-                font-size: 1.1rem;
-                line-height: 1.6;
+                font-weight: 600;
+                padding: 0.875rem 1rem;
+                margin-top: 0.75rem;
+                border-radius: 0.75rem;
+                font-size: 1rem;
+                line-height: 1.5;
             }
            .pick small {
                 display: block;
-                font-size: 0.85rem;
+                font-size: 0.8125rem;
                 font-weight: 400;
                 margin-top: 0.5rem;
-                opacity: 0.9;
+                opacity: 0.85;
                 line-height: 1.4;
             }
-           .pick-yes { background-color: #064e3b; color: #10b981; border: 2px solid #10b981; }
-           .pick-no { background-color: #450a0a; color: #ef4444; border: 2px solid #ef4444; }
-           .pick-none { background-color: #1e293b; color: #94a3b8; border: 2px solid #475569; }
+           .pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
+           .pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
+           .pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
            .prediction {
-                background: linear-gradient(135deg, #422006 0%, #78350f 100%);
-                color: #fbbf24;
+                background: #2a3441;
+                color: #4ade80;
                 padding: 1rem;
-                border-radius: 0.5rem;
+                border-radius: 1rem;
                 text-align: center;
-                font-weight: 800;
-                font-size: 1.25rem;
+                font-weight: 700;
+                font-size: 1.125rem;
                 margin-top: 1rem;
+                border: 1px solid #2a3441;
             }
            .badge {
                 display: inline-block;
-                padding: 0.5rem 1rem;
-                border-radius: 9999px;
-                font-size: 0.875rem;
-                font-weight: 700;
-                background-color: #064e3b;
-                color: #10b981;
+                padding: 0.375rem 0.875rem;
+                border-radius: 0.5rem;
+                font-size: 0.8125rem;
+                font-weight: 600;
+                background: rgba(74, 222, 128, 0.2);
+                color: #4ade80;
                 margin: 0.25rem;
             }
            .team-indicator {
-                padding: 0.75rem 1rem;
+                padding: 0.875rem 1rem;
                 margin: 0.75rem 0;
-                border-radius: 0.5rem;
-                font-size: 0.95rem;
+                border-radius: 0.75rem;
+                font-size: 0.875rem;
                 font-weight: 600;
-                border-left: 4px solid;
+                border-left: 3px solid;
             }
            .team-indicator-hot {
-                background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-                color: #10b981;
-                border-color: #10b981;
+                background: rgba(74, 222, 128, 0.15);
+                color: #4ade80;
+                border-color: #4ade80;
             }
            .team-indicator-good {
-                background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+                background: rgba(52, 211, 153, 0.15);
                 color: #34d399;
                 border-color: #34d399;
             }
            .team-indicator-neutral-plus {
-                background: linear-gradient(135deg, #164e63 0%, #0e7490 100%);
-                color: #67e8f9;
-                border-color: #22d3ee;
+                background: rgba(96, 165, 250, 0.15);
+                color: #60a5fa;
+                border-color: #60a5fa;
             }
            .team-indicator-neutral {
-                background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-                color: #d1d5db;
-                border-color: #9ca3af;
+                background: rgba(148, 163, 184, 0.15);
+                color: #94a3b8;
+                border-color: #94a3b8;
             }
            .team-indicator-neutral-minus {
-                background: linear-gradient(135deg, #713f12 0%, #854d0e 100%);
-                color: #fde047;
-                border-color: #facc15;
+                background: rgba(251, 191, 36, 0.15);
+                color: #fbbf24;
+                border-color: #fbbf24;
             }
            .team-indicator-caution {
-                background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+                background: rgba(251, 191, 36, 0.15);
                 color: #fbbf24;
                 border-color: #fbbf24;
             }
            .team-indicator-cold {
-                background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);
+                background: rgba(248, 113, 113, 0.15);
                 color: #f87171;
-                border-color: #ef4444;
+                border-color: #f87171;
             }
            .team-indicator-limited {
-                background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
-                color: #7dd3fc;
-                border-color: #38bdf8;
+                background: rgba(96, 165, 250, 0.15);
+                color: #60a5fa;
+                border-color: #60a5fa;
             }
            @media (max-width: 768px) {
                 .bet-section {
@@ -193,15 +208,15 @@
     <body>
         <div class="container">
             <div class="card header-card">
-                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">🏀 NBA MODEL PICKS</h1>
-                <p style="font-size: 1.25rem; opacity: 0.9;">IMPROVED Model - Stricter Filters</p>
+                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
+                <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">Today's Picks</p>
                 <div>
                     <div class="badge">● REST DAY TRACKING</div>
                     <div class="badge">● HOME/AWAY SPLITS</div>
                     <div class="badge">● MOMENTUM (Last 10 Games)</div>
                     <div class="badge">● 5+ SPREAD | 7+ TOTAL EDGES</div>
                 </div>
-                <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 2025-12-11 12:59 AM </p>
+                <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 2025-12-11 02:04 AM </p>
             </div>
 
             <div class="card">
@@ -217,7 +232,7 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -247,7 +262,7 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
@@ -284,6 +299,83 @@
                 </div>
                 
                 <div class="game-card">
+                    <div class="matchup">Utah Jazz @ Memphis Grizzlies</div>
+                    <div class="game-time">🕐 12/12/25 08:10 PM EST</div>
+
+                    
+                    <div class="team-indicator team-indicator-neutral">
+                        ➖ <strong>NEUTRAL</strong>: Memphis Grizzlies - Average performance: 3-3 (50%) | -0.30u over 6 picks
+                    </div>
+                    
+
+                    <div class="bet-section">
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title">📊 SPREAD BET</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>-6.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+20.4</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+13.9 pts</strong>
+                            </div>
+                            
+                            
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ BET: Memphis Grizzlies -6.5<br><small>Model projects Memphis Grizzlies to win by 20.4, covering -6.5.</small>
+                            </div>
+                        </div>
+
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title">🎯 OVER/UNDER BET</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>233.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>231.3 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+2.2 pts</strong>
+                            </div>
+                            
+                            
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">18%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 18%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ NO BET - Too close to call
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prediction">
+                        📈 PREDICTED: Utah Jazz 105, Memphis Grizzlies 126
+                    </div>
+                </div>
+                
+                <div class="game-card">
                     <div class="matchup">Denver Nuggets @ Sacramento Kings</div>
                     <div class="game-time">🕐 12/11/25 10:10 PM EST</div>
 
@@ -294,7 +386,7 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -324,7 +416,7 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
@@ -367,7 +459,7 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -397,11 +489,11 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
-                                <strong>235.5</strong>
+                                <strong>236.5</strong>
                             </div>
                             <div class="odds-line">
                                 <span>Model Projects:</span>
@@ -409,7 +501,7 @@
                             </div>
                             <div class="odds-line">
                                 <span>Edge:</span>
-                                <strong>+12.0 pts</strong>
+                                <strong>+13.0 pts</strong>
                             </div>
                             
                             
@@ -423,7 +515,7 @@
                                 </div>
                             </div>
                             <div class="pick pick-no">
-                                ✅ BET: UNDER 235.5<br><small>Model projects 224 total points, bet the UNDER</small>
+                                ✅ BET: UNDER 236.5<br><small>Model projects 224 total points, bet the UNDER</small>
                             </div>
                         </div>
                     </div>
@@ -440,7 +532,7 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -470,11 +562,11 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
-                                <strong>237.5</strong>
+                                <strong>238.5</strong>
                             </div>
                             <div class="odds-line">
                                 <span>Model Projects:</span>
@@ -482,21 +574,21 @@
                             </div>
                             <div class="odds-line">
                                 <span>Edge:</span>
-                                <strong>+10.4 pts</strong>
+                                <strong>+11.4 pts</strong>
                             </div>
                             
                             
                             <div class="confidence-bar-container">
                                 <div class="confidence-label">
                                     <span>Confidence</span>
-                                    <span class="confidence-pct">86%</span>
+                                    <span class="confidence-pct">95%</span>
                                 </div>
                                 <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: 86%"></div>
+                                    <div class="confidence-fill" style="width: 95%"></div>
                                 </div>
                             </div>
                             <div class="pick pick-no">
-                                ✅ BET: UNDER 237.5<br><small>Model projects 227 total points, bet the UNDER</small>
+                                ✅ BET: UNDER 238.5<br><small>Model projects 227 total points, bet the UNDER</small>
                             </div>
                         </div>
                     </div>
@@ -517,11 +609,11 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
-                                <strong>-6.5</strong>
+                                <strong>-6.0</strong>
                             </div>
                             <div class="odds-line">
                                 <span>Model Prediction:</span>
@@ -529,29 +621,29 @@
                             </div>
                             <div class="odds-line">
                                 <span>Edge:</span>
-                                <strong>-7.9 pts</strong>
+                                <strong>-7.4 pts</strong>
                             </div>
                             
                             
                             <div class="confidence-bar-container">
                                 <div class="confidence-label">
                                     <span>Confidence</span>
-                                    <span class="confidence-pct">79%</span>
+                                    <span class="confidence-pct">74%</span>
                                 </div>
                                 <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: 79%"></div>
+                                    <div class="confidence-fill" style="width: 74%"></div>
                                 </div>
                             </div>
                             <div class="pick pick-yes">
-                                ✅ BET: Indiana Pacers +6.5<br><small>Model projects Philadelphia 76ers to win by only 1.4, not enough to cover -6.5.</small>
+                                ✅ BET: Indiana Pacers +6.0<br><small>Model projects Philadelphia 76ers to win by only 1.4, not enough to cover -6.0.</small>
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
-                                <strong>226.5</strong>
+                                <strong>227.5</strong>
                             </div>
                             <div class="odds-line">
                                 <span>Model Projects:</span>
@@ -559,17 +651,17 @@
                             </div>
                             <div class="odds-line">
                                 <span>Edge:</span>
-                                <strong>+0.1 pts</strong>
+                                <strong>+1.1 pts</strong>
                             </div>
                             
                             
                             <div class="confidence-bar-container">
                                 <div class="confidence-label">
                                     <span>Confidence</span>
-                                    <span class="confidence-pct">0%</span>
+                                    <span class="confidence-pct">9%</span>
                                 </div>
                                 <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: 0%"></div>
+                                    <div class="confidence-fill" style="width: 9%"></div>
                                 </div>
                             </div>
                             <div class="pick pick-none">
@@ -594,7 +686,7 @@
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -624,7 +716,7 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
@@ -661,13 +753,86 @@
                 </div>
                 
                 <div class="game-card">
+                    <div class="matchup">Brooklyn Nets @ Dallas Mavericks</div>
+                    <div class="game-time">🕐 12/12/25 08:40 PM EST</div>
+
+                    
+
+                    <div class="bet-section">
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title">📊 SPREAD BET</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>-8.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+10.7</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+2.2 pts</strong>
+                            </div>
+                            
+                            
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">21%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 21%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ NO BET - Too close to call<br><small>Edge too small (+2.2)</small>
+                            </div>
+                        </div>
+
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title">🎯 OVER/UNDER BET</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>225.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>221.8 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+3.7 pts</strong>
+                            </div>
+                            
+                            
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">30%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ NO BET - Too close to call
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prediction">
+                        📈 PREDICTED: Brooklyn Nets 106, Dallas Mavericks 116
+                    </div>
+                </div>
+                
+                <div class="game-card">
                     <div class="matchup">Atlanta Hawks @ Detroit Pistons</div>
                     <div class="game-time">🕐 12/12/25 07:10 PM EST</div>
 
                     
 
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -697,7 +862,7 @@
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
