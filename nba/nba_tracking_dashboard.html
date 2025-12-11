@@ -97,6 +97,130 @@
         .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
         .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
         .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container { max-width: 100%; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card { padding: 1.25rem; }
+
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.125rem; }
+            h4 { font-size: 1rem; }
+
+            /* Make all inline 5-column grids responsive */
+            div[style*="grid-template-columns: repeat(5, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Make all inline 4-column grids responsive */
+            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Make all inline 2-column grids single column on mobile */
+            div[style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Make auto-fit grids smaller on mobile */
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.75rem;
+            }
+
+            /* Stat cards */
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            .stat-label {
+                font-size: 0.6875rem;
+            }
+
+            /* Tables - enable horizontal scroll and reduce font */
+            table {
+                font-size: 0.8125rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+            th, td {
+                padding: 0.625rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+            th {
+                font-size: 0.75rem;
+            }
+
+            /* Badges */
+            .badge {
+                padding: 0.3125rem 0.625rem;
+                font-size: 0.6875rem;
+                margin: 0.1875rem;
+            }
+
+            /* Reduce spacing */
+            div[style*="padding: 2rem"] {
+                padding: 1.25rem !important;
+            }
+            div[style*="padding: 1.5rem"] {
+                padding: 1rem !important;
+            }
+            div[style*="gap: 1.5rem"] {
+                gap: 1rem !important;
+            }
+            div[style*="margin-bottom: 2rem"] {
+                margin-bottom: 1.25rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; }
+
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.125rem; }
+            h3 { font-size: 1rem; }
+
+            .stat-value { font-size: 1.5rem; }
+            .stat-label { font-size: 0.625rem; }
+            .stat-card { padding: 0.75rem; }
+
+            /* Force all multi-column grids to single column on small phones */
+            div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
+            th { font-size: 0.6875rem; }
+
+            .badge {
+                display: block;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -112,7 +236,7 @@
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
                     <div class="stat-card">
-                        <div class="stat-value">167</div>
+                        <div class="stat-value">169</div>
                         <div class="stat-label">Total Bets</div>
                     </div>
                     <div class="stat-card">
@@ -241,6 +365,26 @@
                             <td class="text-yellow-400">✅ BET: UNDER 235.5</td>
                             <td>235.5</td>
                             <td>-12.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/12 07:10 PM</td>
+                            <td class="font-bold">Cleveland Cavaliers @ Washington Wizards</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: UNDER 241.5</td>
+                            <td>241.5</td>
+                            <td>-14.4</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/12 07:10 PM</td>
+                            <td class="font-bold">Indiana Pacers @ Philadelphia 76ers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Indiana Pacers +7.5</td>
+                            <td>-7.5</td>
+                            <td>-8.9</td>
                             <td><span class="badge badge-pending">Pending</span></td>
                         </tr>
                         
@@ -410,7 +554,7 @@
         </div>
 
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
-            <p>Last updated: 2025-12-11 10:01 AM</p>
+            <p>Last updated: 2025-12-11 03:20 PM</p>
         </div>
     </div>
 </body>
