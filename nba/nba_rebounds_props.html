@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Rebounds Props - A.I. Projections</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            background: #000000;
+            color: #ffffff;
+            padding: 2rem;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 0.5rem;
+            border: 1px solid #2a2a2a;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            color: #10b981;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .performance-section {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .performance-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            border: 1px solid #2a2a2a;
+        }
+
+        .over-header {
+            background: #064e3b;
+            border-bottom: 2px solid #10b981;
+        }
+
+        .under-header {
+            background: #450a0a;
+            border-bottom: 2px solid #ef4444;
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .plays-list {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+        }
+
+        .play-row {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .over-row {
+            background: #064e3b;
+            border-left: 3px solid #10b981;
+        }
+
+        .under-row {
+            background: #450a0a;
+            border-left: 3px solid #ef4444;
+        }
+
+        .track-marker {
+            font-size: 1rem;
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        .play-number {
+            color: #60a5fa;
+            font-weight: 700;
+            min-width: 2.5rem;
+        }
+
+        .player-name {
+            color: #60a5fa;
+            font-weight: 600;
+            min-width: 12rem;
+        }
+
+        .separator {
+            color: #64748b;
+        }
+
+        .prop {
+            font-weight: 700;
+            min-width: 8rem;
+        }
+
+        .over-prop {
+            color: #10b981;
+        }
+
+        .under-prop {
+            color: #ef4444;
+        }
+
+        .matchup {
+            color: #94a3b8;
+            min-width: 8rem;
+        }
+
+        .ai-score {
+            color: #ffffff;
+            font-weight: 900;
+            margin-left: auto;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            padding: 2rem;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .play-row {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .player-name {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .stats-row {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏀 NBA REBOUNDS PROPS MODEL</h1>
+            <div class="subtitle">12/11/25 • 04:32 PM ET</div>
+        </div>
+
+        
+
+        
+        <div class="section">
+            <div class="section-header over-header">
+                <h2>TOP OVER PLAYS</h2>
+            </div>
+            <div class="plays-list">
+                <div class="play-row over-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 1.</span>
+                    <span class="player-name">Steven Adams             </span>
+                    <span class="separator">|</span>
+                    <span class="prop over-prop">OVER 7.5 REB   </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Roc vs Cli</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 10.00</span>
+                </div>
+                <div class="play-row over-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 2.</span>
+                    <span class="player-name">Ivica Zubac              </span>
+                    <span class="separator">|</span>
+                    <span class="prop over-prop">OVER 10.5 REB  </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Cli vs Roc</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 10.00</span>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-header under-header">
+                <h2>TOP UNDER PLAYS</h2>
+            </div>
+            <div class="plays-list">
+                <div class="play-row under-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 1.</span>
+                    <span class="player-name">Maxime Raynaud           </span>
+                    <span class="separator">|</span>
+                    <span class="prop under-prop">UNDER 6.5 REB  </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Kin vs Nug</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 10.00</span>
+                </div>
+                <div class="play-row under-row">
+                    <span class="track-marker">  </span>
+                    <span class="play-number"> 2.</span>
+                    <span class="player-name">Deni Avdija              </span>
+                    <span class="separator">|</span>
+                    <span class="prop under-prop">UNDER 8.5 REB  </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Pel vs Bla</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 9.69</span>
+                </div>
+                <div class="play-row under-row">
+                    <span class="track-marker">  </span>
+                    <span class="play-number"> 3.</span>
+                    <span class="player-name">Derik Queen              </span>
+                    <span class="separator">|</span>
+                    <span class="prop under-prop">UNDER 7.5 REB  </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Pel vs Bla</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 9.62</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ 9.5<br>Using strict edge requirements: 1.5+ above line (OVER) / 1.2+ below line (UNDER)<br>📊 = Auto-tracked (A.I. Score >= 9.7)
+        </div>
+    </div>
+</body>
+</html>
