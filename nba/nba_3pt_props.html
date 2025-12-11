@@ -12,274 +12,177 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             background: #000000;
             color: #ffffff;
             padding: 2rem;
             min-height: 100vh;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .header {
             text-align: center;
             margin-bottom: 2rem;
-            padding: 2.5rem 2rem;
+            padding: 2rem;
             background: #1a1a1a;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             border: 1px solid #2a2a2a;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -1px;
-        }
-
-        .header .subtitle {
-            font-size: 1rem;
-            color: #94a3b8;
-            font-weight: 500;
-            margin-top: 0.5rem;
-        }
-
-        .performance-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .performance-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 1.5rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-        }
-
-        .stat-box {
-            text-align: center;
-            padding: 1rem;
-            background: #0a0a0a;
-            border-radius: 0.75rem;
-            border: 1px solid #2a2a2a;
-        }
-
-        .stat-value {
             font-size: 2rem;
             font-weight: 900;
+            margin-bottom: 0.5rem;
             color: #10b981;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .prop-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .prop-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        .over-card {
-            border-left: 4px solid #10b981;
-        }
-
-        .under-card {
-            border-left: 4px solid #ef4444;
-        }
-
-        .card-header {
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid #2a2a2a;
-            background: #0a0a0a;
-        }
-
-        .player-info {
-            flex: 1;
-        }
-
-        .player-name {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
             letter-spacing: -0.5px;
         }
 
-        .matchup-info {
+        .header .subtitle {
             font-size: 0.9rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        .game-time-info {
-            font-size: 0.8rem;
             color: #94a3b8;
             font-weight: 500;
-            margin-top: 0.25rem;
         }
 
-        .ai-score-badge {
-            text-align: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            min-width: 80px;
-        }
-
-        .ai-score-value {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #000000;
-            line-height: 1;
-        }
-
-        .ai-score-label {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #000000;
-            margin-top: 0.25rem;
-            letter-spacing: 0.5px;
-        }
-
-        .card-body {
+        .performance-section {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 0.5rem;
             padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .performance-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .stats-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
 
-        .prop-display {
-            flex: 1;
-            min-width: 0;
+        .stat {
+            font-size: 0.95rem;
+            color: #94a3b8;
         }
 
-        .bet-type {
-            font-size: 1rem;
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            border: 1px solid #2a2a2a;
+        }
+
+        .over-header {
+            background: #064e3b;
+            border-bottom: 2px solid #10b981;
+        }
+
+        .under-header {
+            background: #450a0a;
+            border-bottom: 2px solid #ef4444;
+        }
+
+        .section-header h2 {
+            font-size: 1.1rem;
             font-weight: 900;
-            margin-bottom: 0.5rem;
+            color: #ffffff;
             letter-spacing: 1px;
         }
 
-        .prop-value {
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1;
-            margin-bottom: 0.25rem;
-        }
-
-        .prop-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .odds-display {
-            text-align: right;
-            padding: 1rem 1.5rem;
-            background: #0a0a0a;
-            border-radius: 0.75rem;
+        .plays-list {
+            background: #1a1a1a;
             border: 1px solid #2a2a2a;
-            flex-shrink: 0;
-            min-width: 100px;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
         }
 
-        .odds-label {
-            font-size: 0.7rem;
-            color: #64748b;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            letter-spacing: 0.5px;
+        .play-row {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
         }
 
-        .odds-value {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #ffffff;
+        .over-row {
+            background: #064e3b;
+            border-left: 3px solid #10b981;
         }
 
-        .stats-section {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #2a2a2a;
+        .under-row {
+            background: #450a0a;
+            border-left: 3px solid #ef4444;
         }
 
-        .stats-grid-inline {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            padding: 0 0.5rem;
-        }
-
-        .stat-item {
+        .track-marker {
+            font-size: 1rem;
+            width: 1.5rem;
             text-align: center;
         }
 
-        .stat-item-label {
-            font-size: 0.7rem;
-            color: #64748b;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .stat-item-value {
-            font-size: 1.1rem;
+        .play-number {
+            color: #60a5fa;
             font-weight: 700;
-            color: #ffffff;
+            min-width: 2.5rem;
         }
 
-        .stat-item-value.edge {
+        .player-name {
+            color: #60a5fa;
+            font-weight: 600;
+            min-width: 12rem;
+        }
+
+        .separator {
+            color: #64748b;
+        }
+
+        .prop {
+            font-weight: 700;
+            min-width: 8rem;
+        }
+
+        .over-prop {
+            color: #10b981;
+        }
+
+        .under-prop {
+            color: #ef4444;
+        }
+
+        .matchup {
+            color: #94a3b8;
+            min-width: 8rem;
+        }
+
+        .ai-score {
+            color: #ffffff;
             font-weight: 900;
+            margin-left: auto;
         }
 
         .footer {
             text-align: center;
             color: #64748b;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             padding: 2rem;
+            line-height: 1.8;
         }
 
         @media (max-width: 768px) {
@@ -287,132 +190,23 @@
                 padding: 1rem;
             }
 
-            .header {
-                padding: 1.5rem 1rem;
-            }
-
-            .header h1 {
-                font-size: 1.75rem;
-            }
-
-            .header .subtitle {
-                font-size: 0.875rem;
-            }
-
-            .performance-card {
-                padding: 1.5rem 1rem;
-            }
-
-            .performance-header h2 {
-                font-size: 1.25rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .card-header {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .player-info {
-                width: 100%;
-            }
-
-            .player-name {
-                font-size: 1.25rem;
-            }
-
-            .matchup-info {
-                font-size: 0.85rem;
-            }
-
-            .game-time-info {
-                font-size: 0.75rem;
-            }
-
-            .ai-score-badge {
-                align-self: flex-end;
-                min-width: 70px;
-            }
-
-            .ai-score-value {
-                font-size: 1.75rem;
-            }
-
-            .card-body {
-                padding: 1rem;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-            }
-
-            .prop-display {
-                text-align: center;
-            }
-
-            .prop-value {
-                font-size: 2.5rem;
-            }
-
-            .odds-display {
-                text-align: center;
-                width: 100%;
-            }
-
-            .stats-section {
-                margin-top: 1rem;
-                padding-top: 1rem;
-            }
-
-            .stats-grid-inline {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-                padding: 0;
-            }
-
-            .stat-item-label {
-                font-size: 0.65rem;
-            }
-
-            .stat-item-value {
-                font-size: 1rem;
-            }
-
-            .footer {
-                padding: 1.5rem 1rem;
-                font-size: 0.75rem;
-            }
-        }
-
-        @media (max-width: 480px) {
             .header h1 {
                 font-size: 1.5rem;
             }
 
-            .prop-value {
-                font-size: 2rem;
-            }
-
-            .stats-grid-inline {
+            .play-row {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
                 gap: 0.5rem;
             }
 
-            .stat-item-label {
-                font-size: 0.6rem;
+            .player-name {
+                min-width: auto;
+                width: 100%;
             }
 
-            .stat-item-value {
-                font-size: 0.9rem;
+            .stats-row {
+                gap: 1rem;
             }
         }
     </style>
@@ -421,204 +215,84 @@
     <div class="container">
         <div class="header">
             <h1>🏀 NBA 3PT PROPS MODEL</h1>
-            <div class="subtitle">12/11/25 • 04:18 PM ET</div>
+            <div class="subtitle">12/11/25 • 04:31 PM ET</div>
         </div>
 
         
-        <div class="performance-card">
-            <div class="performance-header">
-                <h2>📊 Model Performance</h2>
+        <div class="performance-section">
+            <h2>📊 Model Performance</h2>
+            <div class="stats-row">
+                <span class="stat">Win Rate: <span style="color: #ef4444;">34.3%</span></span>
+                <span class="stat">Record: 12-23</span>
+                <span class="stat">P/L: <span style="color: #ef4444;">-12.08u</span></span>
+                <span class="stat">Pending: 3</span>
             </div>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #ef4444;">34.3%</div>
-                    <div class="stat-label">Win Rate</div>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-header over-header">
+                <h2>TOP OVER PLAYS</h2>
+            </div>
+            <div class="plays-list">
+                <div class="play-row over-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 1.</span>
+                    <span class="player-name">Kevin Porter Jr.         </span>
+                    <span class="separator">|</span>
+                    <span class="prop over-prop">OVER 2.5 3PT   </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Buc vs Cel</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 9.70</span>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-value">12-23</div>
-                    <div class="stat-label">Record</div>
+                <div class="play-row over-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 2.</span>
+                    <span class="player-name">James Harden             </span>
+                    <span class="separator">|</span>
+                    <span class="prop over-prop">OVER 2.5 3PT   </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Cli vs Roc</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 9.70</span>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #ef4444;">-12.08u</div>
-                    <div class="stat-label">Profit/Loss</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Pending</div>
+                <div class="play-row over-row">
+                    <span class="track-marker">  </span>
+                    <span class="play-number"> 3.</span>
+                    <span class="player-name">Deni Avdija              </span>
+                    <span class="separator">|</span>
+                    <span class="prop over-prop">OVER 1.5 3PT   </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Pel vs Bla</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 9.50</span>
                 </div>
             </div>
         </div>
 
-        <div class="cards-grid">
-            
-        <div class="prop-card under-card">
-            <div class="card-header">
-                <div class="player-info">
-                    <div class="player-name">Keegan Murray</div>
-                    <div class="matchup-info">Sacramento Kings vs Denver Nuggets</div>
-                    <div class="game-time-info">12/11 10:10 PM ET</div>
-                </div>
-                <div class="ai-score-badge" style="background: #ef4444;">
-                    <div class="ai-score-value">10.0</div>
-                    <div class="ai-score-label">A.I. SCORE</div>
+        
+        <div class="section">
+            <div class="section-header under-header">
+                <h2>TOP UNDER PLAYS</h2>
+            </div>
+            <div class="plays-list">
+                <div class="play-row under-row">
+                    <span class="track-marker">📊</span>
+                    <span class="play-number"> 1.</span>
+                    <span class="player-name">Keegan Murray            </span>
+                    <span class="separator">|</span>
+                    <span class="prop under-prop">UNDER 2.5 3PT  </span>
+                    <span class="separator">|</span>
+                    <span class="matchup">Kin vs Nug</span>
+                    <span class="separator">|</span>
+                    <span class="ai-score">A.I.: 10.00</span>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="prop-display">
-                    <div class="bet-type" style="color: #ef4444;">UNDER</div>
-                    <div class="prop-value">2.5</div>
-                    <div class="prop-label">3-POINTERS</div>
-                </div>
-                <div class="odds-display">
-                    <div class="odds-label">ODDS</div>
-                    <div class="odds-value">+148</div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <div class="stats-grid-inline">
-                    <div class="stat-item">
-                        <div class="stat-item-label">Season Avg</div>
-                        <div class="stat-item-value">1.6</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Recent Avg</div>
-                        <div class="stat-item-value">1.6</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Edge</div>
-                        <div class="stat-item-value edge" style="color: #ef4444;">+0.9</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="prop-card over-card">
-            <div class="card-header">
-                <div class="player-info">
-                    <div class="player-name">Kevin Porter Jr.</div>
-                    <div class="matchup-info">Milwaukee Bucks vs Boston Celtics</div>
-                    <div class="game-time-info">12/11 08:10 PM ET</div>
-                </div>
-                <div class="ai-score-badge" style="background: #10b981;">
-                    <div class="ai-score-value">9.7</div>
-                    <div class="ai-score-label">A.I. SCORE</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="prop-display">
-                    <div class="bet-type" style="color: #10b981;">OVER</div>
-                    <div class="prop-value">2.5</div>
-                    <div class="prop-label">3-POINTERS</div>
-                </div>
-                <div class="odds-display">
-                    <div class="odds-label">ODDS</div>
-                    <div class="odds-value">-115</div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <div class="stats-grid-inline">
-                    <div class="stat-item">
-                        <div class="stat-item-label">Season Avg</div>
-                        <div class="stat-item-value">3.5</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Recent Avg</div>
-                        <div class="stat-item-value">3.8</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Edge</div>
-                        <div class="stat-item-value edge" style="color: #10b981;">+1.0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="prop-card over-card">
-            <div class="card-header">
-                <div class="player-info">
-                    <div class="player-name">James Harden</div>
-                    <div class="matchup-info">Los Angeles Clippers vs Houston Rockets</div>
-                    <div class="game-time-info">12/11 08:10 PM ET</div>
-                </div>
-                <div class="ai-score-badge" style="background: #10b981;">
-                    <div class="ai-score-value">9.7</div>
-                    <div class="ai-score-label">A.I. SCORE</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="prop-display">
-                    <div class="bet-type" style="color: #10b981;">OVER</div>
-                    <div class="prop-value">2.5</div>
-                    <div class="prop-label">3-POINTERS</div>
-                </div>
-                <div class="odds-display">
-                    <div class="odds-label">ODDS</div>
-                    <div class="odds-value">-174</div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <div class="stats-grid-inline">
-                    <div class="stat-item">
-                        <div class="stat-item-label">Season Avg</div>
-                        <div class="stat-item-value">3.5</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Recent Avg</div>
-                        <div class="stat-item-value">3.4</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Edge</div>
-                        <div class="stat-item-value edge" style="color: #10b981;">+1.0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="prop-card over-card">
-            <div class="card-header">
-                <div class="player-info">
-                    <div class="player-name">Deni Avdija</div>
-                    <div class="matchup-info">New Orleans Pelicans vs Portland Trail Blazers</div>
-                    <div class="game-time-info">12/11 08:10 PM ET</div>
-                </div>
-                <div class="ai-score-badge" style="background: #10b981;">
-                    <div class="ai-score-value">9.5</div>
-                    <div class="ai-score-label">A.I. SCORE</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="prop-display">
-                    <div class="bet-type" style="color: #10b981;">OVER</div>
-                    <div class="prop-value">1.5</div>
-                    <div class="prop-label">3-POINTERS</div>
-                </div>
-                <div class="odds-display">
-                    <div class="odds-label">ODDS</div>
-                    <div class="odds-value">-194</div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <div class="stats-grid-inline">
-                    <div class="stat-item">
-                        <div class="stat-item-label">Season Avg</div>
-                        <div class="stat-item-value">2.5</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Recent Avg</div>
-                        <div class="stat-item-value">2.5</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-label">Edge</div>
-                        <div class="stat-item-value edge" style="color: #10b981;">+1.0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
         </div>
 
         <div class="footer">
-            Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ 9.5<br>Using strict edge requirements: 1.2+ above line (OVER) / 1.0+ below line (UNDER)
+            Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ 9.5<br>Using strict edge requirements: 1.2+ above line (OVER) / 1.0+ below line (UNDER)<br>📊 = Auto-tracked (A.I. Score >= 9.7)
         </div>
     </div>
 </body>
