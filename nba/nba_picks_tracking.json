@@ -2597,11 +2597,11 @@
       "edge": 8.1,
       "pick": "\u2705 BET: Los Angeles Lakers -3.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 119,
+      "actual_away_score": 132
     },
     {
       "pick_id": "Orlando Magic_Miami Heat_2025-12-06T00:10:00Z_total",
@@ -3034,11 +3034,11 @@
       "edge": -12.4,
       "pick": "\u2705 BET: UNDER 235.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 119,
+      "actual_away_score": 132
     },
     {
       "pick_id": "Oklahoma City Thunder_Phoenix Suns_2025-12-11T00:30:00Z_spread",
@@ -3053,11 +3053,11 @@
       "edge": 8.3,
       "pick": "\u2705 BET: Oklahoma City Thunder -14.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 138,
+      "actual_away_score": 89
     },
     {
       "pick_id": "New Orleans Pelicans_Portland Trail Blazers_2025-12-12T01:10:00Z_spread",
@@ -3134,13 +3134,32 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null
+    },
+    {
+      "pick_id": "Charlotte Hornets_Chicago Bulls_2025-12-13T00:10:00Z_total",
+      "date_logged": "2025-12-11T00:59:23.511098",
+      "game_date": "2025-12-13T00:10:00Z",
+      "home_team": "Charlotte Hornets",
+      "away_team": "Chicago Bulls",
+      "matchup": "Chicago Bulls @ Charlotte Hornets",
+      "pick_type": "Total",
+      "model_line": 223.5,
+      "market_line": 235.5,
+      "edge": -12.0,
+      "pick": "\u2705 BET: UNDER 235.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
     }
   ],
   "summary": {
-    "total_picks": 165,
-    "wins": 96,
-    "losses": 62,
+    "total_picks": 166,
+    "wins": 97,
+    "losses": 64,
     "pushes": 0,
-    "pending": 7
+    "pending": 5
   }
 }
