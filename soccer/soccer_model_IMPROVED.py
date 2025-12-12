@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 """
-NFL Betting Model - Sharp +EV Version
-- Stricter thresholds for profitability (+EV focus)
-- Modern dark theme aesthetic matching NBA model
-- Only logs high-confidence bets (8+ spread edge, 12+ total edge)
-- Sharp, profitable, +EV leaning
+Soccer Model - Full Matchup Analysis (NBA Style)
+=================================================
+Complete soccer betting model with spreads and totals, focusing on unders value.
+
+Key Features:
+- Full matchup analysis (like NBA model)
+- Spreads and totals for each game
+- Game cards showing both markets
+- Sharp +EV thresholds
+- Unders value focus
+- NBA-style dark theme with mobile optimization
 """
 
 import requests
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
+from jinja2 import Template
 
 # Load environment variables
 load_dotenv()
@@ -21,612 +28,565 @@ load_dotenv()
 # CONFIGURATION
 # ============================================================================
 
-# File paths
+ODDS_API_KEY = os.getenv('ODDS_API_KEY')
+if not ODDS_API_KEY:
+    print("FATAL: ODDS_API_KEY not found in .env file.")
+    exit()
+
+ODDS_API_BASE = "https://api.the-odds-api.com/v4"
 SCRIPT_DIR = Path(__file__).parent
-PICKS_TRACKING_FILE = SCRIPT_DIR / "nfl_picks_tracking.json"
-PICKS_HTML_FILE = SCRIPT_DIR / "nfl_model_output.html"
-TRACKING_HTML_FILE = SCRIPT_DIR / "nfl_tracking_dashboard.html"
+OUTPUT_HTML = SCRIPT_DIR / "soccer_model_output.html"
 
-# ============================================================================
-# MODEL PARAMETERS - SHARP +EV THRESHOLDS
-# ============================================================================
+# Sharp +EV thresholds
+SPREAD_THRESHOLD = 0.25  # 0.25 goal spread edge to display
+TOTAL_THRESHOLD = 0.30   # 0.30 goal total edge to display
+CONFIDENT_SPREAD_EDGE = 0.50  # 0.50+ goal edge to log (sharp)
+CONFIDENT_TOTAL_EDGE = 0.40   # 0.40+ goal edge to log (sharp) - unders focus
 
-# Display thresholds (minimum to show in HTML)
-SPREAD_THRESHOLD = 3.0      # Minimum edge to display
-TOTAL_THRESHOLD = 4.0       # Minimum edge to display
+# Home advantage in soccer (typically ~0.3-0.4 goals)
+HOME_ADVANTAGE = 0.35
 
-# STRICT thresholds for LOGGING picks (only high-confidence bets tracked)
-CONFIDENT_SPREAD_EDGE = 8.0   # Need 8+ point edge to log (sharp +EV focus)
-CONFIDENT_TOTAL_EDGE = 12.0   # Need 12+ point edge to log (sharp +EV focus)
-
-# Home field advantage (NFL average ~2.5-3.0 points)
-HOME_ADVANTAGE = 2.75
-
-# ============================================================================
-# TRACKING SYSTEM
-# ============================================================================
-
-class BettingTracker:
-    """Track bets and calculate performance metrics"""
-    
-    def __init__(self, storage_file=None):
-        self.storage_file = Path(storage_file) if storage_file else PICKS_TRACKING_FILE
-        self.bets = self._load_bets()
-    
-    def _load_bets(self):
-        """Load previous bets from file"""
-        if self.storage_file.exists():
-            try:
-                with open(self.storage_file, 'r') as f:
-                    return json.load(f)
-            except:
-                return []
-        return []
-    
-    def _save_bets(self):
-        """Save bets to file"""
-        with open(self.storage_file, 'w') as f:
-            json.dump(self.bets, f, indent=2)
-    
-    def add_bet(self, game_id, bet_type, team, line, predicted_value, edge, confidence, recommendation):
-        """Add a new bet to tracking (only high-confidence bets)"""
-        bet = {
-            'game_id': game_id,
-            'bet_type': bet_type,
-            'team': team,
-            'line': line,
-            'predicted_value': predicted_value,
-            'edge': edge,
-            'confidence': confidence,
-            'recommendation': recommendation,
-            'date_placed': datetime.now().isoformat(),
-            'status': 'pending',
-            'result': None,
-            'profit': 0.0
-        }
-        self.bets.append(bet)
-        self._save_bets()
-        return bet
-    
-    def update_bet_result(self, game_id, bet_type, won, amount=100):
-        """Update bet result after game completes"""
-        for bet in self.bets:
-            if bet['game_id'] == game_id and bet['bet_type'] == bet_type:
-                bet['status'] = 'complete'
-                bet['result'] = 'won' if won else 'lost'
-                bet['profit'] = amount * 0.91 if won else -amount  # -110 odds
-                self._save_bets()
-                return bet
-        return None
-    
-    def get_statistics(self):
-        """Calculate performance statistics"""
-        total_bets = len(self.bets)
-        completed = [b for b in self.bets if b['status'] == 'complete']
-        pending = [b for b in self.bets if b['status'] == 'pending']
-        
-        won = [b for b in completed if b['result'] == 'won']
-        lost = [b for b in completed if b['result'] == 'lost']
-        
-        win_rate = (len(won) / len(completed) * 100) if completed else 0.0
-        total_profit = sum(b['profit'] for b in completed)
-        roi = (total_profit / (len(completed) * 100) * 100) if completed else 0.0
-        
-        return {
-            'total_bets': total_bets,
-            'completed': len(completed),
-            'pending': len(pending),
-            'won': len(won),
-            'lost': len(lost),
-            'win_rate': win_rate,
-            'total_profit': total_profit,
-            'roi': roi
-        }
-
-# ============================================================================
-# TEAM RATINGS - MARKET-BASED POWER RATINGS
-# ============================================================================
-
-TEAM_RATINGS = {
-    # AFC East
-    'Buffalo Bills': 72.5,
-    'Miami Dolphins': 58.3,
-    'New York Jets': 48.7,
-    'New England Patriots': 42.3,
-    
-    # AFC North
-    'Baltimore Ravens': 71.2,
-    'Pittsburgh Steelers': 64.8,
-    'Cincinnati Bengals': 56.9,
-    'Cleveland Browns': 45.1,
-    
-    # AFC South
-    'Houston Texans': 66.7,
-    'Jacksonville Jaguars': 52.4,
-    'Indianapolis Colts': 51.8,
-    'Tennessee Titans': 31.0,
-    
-    # AFC West
-    'Kansas City Chiefs': 68.5,
-    'Los Angeles Chargers': 64.0,
-    'Denver Broncos': 60.2,
-    'Las Vegas Raiders': 38.6,
-    
-    # NFC East
-    'Philadelphia Eagles': 69.8,
-    'Washington Commanders': 63.5,
-    'Dallas Cowboys': 62.1,
-    'New York Giants': 41.9,
-    
-    # NFC North
-    'Detroit Lions': 75.3,
-    'Minnesota Vikings': 68.9,
-    'Green Bay Packers': 64.5,
-    'Chicago Bears': 49.2,
-    
-    # NFC South
-    'Atlanta Falcons': 61.7,
-    'Tampa Bay Buccaneers': 59.4,
-    'New Orleans Saints': 47.8,
-    'Carolina Panthers': 36.2,
-    
-    # NFC West
-    'San Francisco 49ers': 67.3,
-    'Arizona Cardinals': 59.1,
-    'Los Angeles Rams': 55.6,
-    'Seattle Seahawks': 54.3,
+# League averages
+LEAGUE_AVG_GOALS = {
+    'soccer_epl': 2.65,
+    'soccer_spain_la_liga': 2.55,
+    'soccer_italy_serie_a': 2.60,
+    'soccer_germany_bundesliga': 2.85,
+    'soccer_france_ligue_one': 2.55,
+    'soccer_usa_mls': 2.80,
 }
 
-# ============================================================================
-# ODDS API INTEGRATION
-# ============================================================================
-
-def get_nfl_odds(api_key):
-    """Fetch current NFL odds from The Odds API"""
-    url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/"
+# Team power ratings (higher = better team)
+# Based on recent form and quality
+TEAM_RATINGS = {
+    # Premier League
+    'Arsenal': 72, 'Manchester City': 78, 'Liverpool': 75,
+    'Chelsea': 65, 'Tottenham': 68, 'Manchester United': 62,
+    'Newcastle': 66, 'Brighton': 64, 'West Ham': 60,
+    'Aston Villa': 63, 'Crystal Palace': 58, 'Wolves': 57,
+    'Fulham': 56, 'Brentford': 55, 'Everton': 59,
+    'Nottingham Forest': 53, 'Burnley': 48, 'Sheffield United': 45,
     
-    params = {
-        'apiKey': api_key,
-        'regions': 'us',
-        'markets': 'spreads,totals',
-        'oddsFormat': 'american'
-    }
+    # La Liga
+    'Real Madrid': 80, 'Barcelona': 77, 'Atletico Madrid': 73,
+    'Real Sociedad': 68, 'Villarreal': 66, 'Real Betis': 64,
+    'Sevilla': 65, 'Valencia': 61, 'Athletic Bilbao': 67,
+    'CA Osasuna': 58, 'Getafe': 57, 'Girona': 63,
     
-    try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching odds: {e}")
-        return []
+    # Serie A
+    'Inter Milan': 76, 'Juventus': 74, 'AC Milan': 72,
+    'Napoli': 70, 'Atalanta': 69, 'Roma': 67,
+    'Lazio': 68, 'Fiorentina': 64, 'Bologna': 63,
+    
+    # Bundesliga
+    'Bayern Munich': 79, 'Borussia Dortmund': 73,
+    'RB Leipzig': 71, 'Bayer Leverkusen': 70,
+}
 
 # ============================================================================
 # PREDICTION FUNCTIONS
 # ============================================================================
 
+def get_league_from_sport_key(sport_key):
+    """Extract league name"""
+    if 'epl' in sport_key:
+        return 'Premier League'
+    elif 'la_liga' in sport_key:
+        return 'La Liga'
+    elif 'serie_a' in sport_key:
+        return 'Serie A'
+    elif 'bundesliga' in sport_key:
+        return 'Bundesliga'
+    elif 'ligue_one' in sport_key:
+        return 'Ligue 1'
+    elif 'mls' in sport_key:
+        return 'MLS'
+    return sport_key.replace('soccer_', '').replace('_', ' ').title()
+
 def calculate_spread_prediction(home_team, away_team):
-    """
-    Calculate predicted point spread
-    Positive = home team favored
-    Negative = away team favored
-    """
-    home_rating = TEAM_RATINGS.get(home_team, 50.0)
-    away_rating = TEAM_RATINGS.get(away_team, 50.0)
+    """Calculate predicted goal spread (home - away)"""
+    home_rating = TEAM_RATINGS.get(home_team, 60.0)
+    away_rating = TEAM_RATINGS.get(away_team, 60.0)
     
-    # Calculate raw difference
-    raw_diff = home_rating - away_rating
-    
-    # Add home field advantage
+    raw_diff = (home_rating - away_rating) / 20.0  # Convert rating to goals
     predicted_spread = raw_diff + HOME_ADVANTAGE
     
-    return round(predicted_spread, 1)
+    return round(predicted_spread, 2)
 
-def calculate_total_prediction(home_team, away_team):
-    """
-    Calculate predicted total points
-    Uses average of team ratings to determine scoring potential
-    """
-    home_rating = TEAM_RATINGS.get(home_team, 50.0)
-    away_rating = TEAM_RATINGS.get(away_team, 50.0)
+def calculate_total_prediction(home_team, away_team, league_avg):
+    """Calculate predicted total goals"""
+    home_rating = TEAM_RATINGS.get(home_team, 60.0)
+    away_rating = TEAM_RATINGS.get(away_team, 60.0)
     
-    # Average rating determines baseline scoring
-    avg_rating = (home_rating + away_rating) / 2
+    # Offensive strength (higher rating = more goals scored)
+    home_off = (home_rating / 80.0) * 2.0  # Scale to goals
+    away_off = (away_rating / 80.0) * 2.0
     
-    # Scale: rating of 50 = 42 points, each 10 points adds/subtracts 5 total points
-    baseline = 42.0
-    rating_impact = (avg_rating - 50) * 0.5
+    # Defensive strength (inverse - higher rating = fewer goals allowed)
+    home_def_factor = 1.0 - ((home_rating - 50) / 100.0) * 0.3
+    away_def_factor = 1.0 - ((away_rating - 50) / 100.0) * 0.3
     
-    predicted_total = baseline + rating_impact
+    # Calculate predicted goals
+    home_goals = home_off * away_def_factor
+    away_goals = away_off * home_def_factor
     
-    return round(predicted_total, 1)
+    predicted_total = (home_goals + away_goals) * (league_avg / 2.65)
+    
+    # Regression to league mean
+    predicted_total = (predicted_total * 0.7) + (league_avg * 0.3)
+    
+    return round(predicted_total, 2)
 
-def calculate_predicted_scores(home_team, away_team):
+def calculate_predicted_scores(home_team, away_team, league_avg):
     """Calculate individual team scores"""
     predicted_spread = calculate_spread_prediction(home_team, away_team)
-    predicted_total = calculate_total_prediction(home_team, away_team)
+    predicted_total = calculate_total_prediction(home_team, away_team, league_avg)
     
-    # Solve for individual scores
-    # home_score - away_score = spread
-    # home_score + away_score = total
     home_score = (predicted_total + predicted_spread) / 2
     away_score = (predicted_total - predicted_spread) / 2
     
-    return round(home_score, 1), round(away_score, 1)
+    return round(home_score, 2), round(away_score, 2)
 
 # ============================================================================
-# BETTING ANALYSIS - SHARP +EV FOCUS
+# API FUNCTIONS
 # ============================================================================
 
-def analyze_game(game, tracker):
-    """Analyze a single game and identify betting opportunities"""
-    home_team = game.get('home_team')
-    away_team = game.get('away_team')
-    commence_time = game.get('commence_time')
-    game_id = game.get('id')
+def fetch_soccer_odds(api_key):
+    """Fetch soccer odds with spreads and totals"""
+    print("\n⚽ Fetching soccer odds (spreads & totals)...")
+    
+    sports = [
+        'soccer_epl',
+        'soccer_spain_la_liga',
+        'soccer_italy_serie_a',
+        'soccer_germany_bundesliga',
+        'soccer_france_ligue_one',
+        'soccer_usa_mls',
+    ]
+    
+    all_games = []
+    
+    for sport in sports:
+        url = f"{ODDS_API_BASE}/sports/{sport}/odds"
+        params = {
+            'apiKey': api_key,
+            'regions': 'us',
+            'markets': 'spreads,totals',
+            'oddsFormat': 'american'
+        }
+        
+        try:
+            response = requests.get(url, params=params, timeout=15)
+            response.raise_for_status()
+            games = response.json()
+            
+            for game in games:
+                game['sport_key'] = sport
+                game['league'] = get_league_from_sport_key(sport)
+                all_games.append(game)
+            
+            if games:
+                print(f"   ✅ {get_league_from_sport_key(sport)}: {len(games)} games")
+        
+        except Exception as e:
+            print(f"   ⚠️  {get_league_from_sport_key(sport)}: Error - {e}")
+            continue
+    
+    print(f"\n📊 Total: {len(all_games)} games found")
+    return all_games
+
+# ============================================================================
+# GAME ANALYSIS
+# ============================================================================
+
+def analyze_game(game):
+    """Analyze a single game for spreads and totals"""
+    home_team = game.get('home_team', '')
+    away_team = game.get('away_team', '')
+    commence_time = game.get('commence_time', '')
+    league = game.get('league', 'Unknown')
+    sport_key = game.get('sport_key', '')
     
     if not home_team or not away_team:
         return None
     
-    # Get market lines
+    league_avg = LEAGUE_AVG_GOALS.get(sport_key, 2.65)
+    
+    # Get market lines from first bookmaker
     bookmakers = game.get('bookmakers', [])
     if not bookmakers:
         return None
     
-    # Use first bookmaker (could be enhanced to shop for best line)
     bookmaker = bookmakers[0]
     markets = bookmaker.get('markets', [])
     
     spread_market = next((m for m in markets if m['key'] == 'spreads'), None)
     total_market = next((m for m in markets if m['key'] == 'totals'), None)
     
-    if not spread_market or not total_market:
-        return None
-    
-    # Extract lines
-    home_spread_outcome = next((o for o in spread_market['outcomes'] if o['name'] == home_team), None)
-    total_over = next((o for o in total_market['outcomes'] if o['name'] == 'Over'), None)
-    
-    if not home_spread_outcome or not total_over:
-        return None
-    
-    market_spread = float(home_spread_outcome['point'])  # Negative if home underdog
-    market_total = float(total_over['point'])
-    
     # Calculate predictions
     predicted_spread = calculate_spread_prediction(home_team, away_team)
-    predicted_total = calculate_total_prediction(home_team, away_team)
-    home_score, away_score = calculate_predicted_scores(home_team, away_team)
+    predicted_total = calculate_total_prediction(home_team, away_team, league_avg)
+    home_score, away_score = calculate_predicted_scores(home_team, away_team, league_avg)
     
-    # Calculate edges
-    spread_edge = predicted_spread - market_spread
-    total_edge = predicted_total - market_total
+    # Confidence based on data availability
+    home_known = home_team in TEAM_RATINGS
+    away_known = away_team in TEAM_RATINGS
+    if home_known and away_known:
+        confidence = 0.85
+    elif home_known or away_known:
+        confidence = 0.70
+    else:
+        confidence = 0.55
     
-    # Determine bets (only show those meeting display threshold)
     bets = []
     
-    # Spread bet analysis
-    if abs(spread_edge) >= SPREAD_THRESHOLD:
-        if spread_edge > 0:
-            bet_team = home_team
-            bet_line = market_spread
-            recommendation = f"{home_team} {market_spread:+.1f}"
-        else:
-            bet_team = away_team
-            bet_line = -market_spread
-            recommendation = f"{away_team} {-market_spread:+.1f}"
-        
-        # Confidence based on edge size (capped at 100%)
-        confidence = min(abs(spread_edge) / 15.0, 1.0)
-        
-        # Only LOG high-confidence bets (8+ point edge)
-        if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
-            tracker.add_bet(
-                game_id=game_id,
-                bet_type='spread',
-                team=bet_team,
-                line=bet_line,
-                predicted_value=predicted_spread,
-                edge=spread_edge,
-                confidence=confidence,
-                recommendation=recommendation
-            )
-        
-        bets.append({
-            'type': 'SPREAD',
-            'market_line': f"{home_team} {market_spread:+.1f}",
-            'model_prediction': predicted_spread,
-            'edge': spread_edge,
-            'recommendation': recommendation,
-            'confidence': confidence,
-            'should_log': abs(spread_edge) >= CONFIDENT_SPREAD_EDGE
-        })
+    # Analyze spread
+    if spread_market:
+        home_outcome = next((o for o in spread_market['outcomes'] if o['name'] == home_team), None)
+        if home_outcome:
+            market_spread = float(home_outcome['point'])
+            spread_edge = predicted_spread - market_spread
+            
+            if abs(spread_edge) >= SPREAD_THRESHOLD:
+                if spread_edge > 0:
+                    recommendation = f"{home_team} {market_spread:+.2f}"
+                else:
+                    recommendation = f"{away_team} {-market_spread:+.2f}"
+                
+                bets.append({
+                    'type': 'SPREAD',
+                    'market_line': f"{home_team} {market_spread:+.2f}",
+                    'model_prediction': predicted_spread,
+                    'edge': spread_edge,
+                    'recommendation': recommendation if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE else None,
+                })
     
-    # Total bet analysis
-    if abs(total_edge) >= TOTAL_THRESHOLD:
-        if total_edge > 0:
-            recommendation = f"OVER {market_total}"
-            bet_team = "Over"
-        else:
-            recommendation = f"UNDER {market_total}"
-            bet_team = "Under"
-        
-        # Confidence based on edge size (capped at 100%)
-        confidence = min(abs(total_edge) / 18.0, 1.0)
-        
-        # Only LOG high-confidence bets (12+ point edge)
-        if abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
-            tracker.add_bet(
-                game_id=game_id,
-                bet_type='total',
-                team=bet_team,
-                line=market_total,
-                predicted_value=predicted_total,
-                edge=total_edge,
-                confidence=confidence,
-                recommendation=recommendation
-            )
-        
-        bets.append({
-            'type': 'TOTAL',
-            'market_line': market_total,
-            'model_prediction': predicted_total,
-            'edge': total_edge,
-            'recommendation': recommendation,
-            'confidence': confidence,
-            'should_log': abs(total_edge) >= CONFIDENT_TOTAL_EDGE
-        })
+    # Analyze total (focus on unders)
+    if total_market:
+        over_outcome = next((o for o in total_market['outcomes'] if o['name'] == 'Over'), None)
+        if over_outcome:
+            market_total = float(over_outcome['point'])
+            total_edge = predicted_total - market_total  # Negative = under value
+            
+            # Focus on unders (negative edge = under value)
+            if total_edge < 0:  # Model predicts lower than market (UNDER value)
+                under_edge = abs(total_edge)
+                
+                if under_edge >= TOTAL_THRESHOLD:
+                    recommendation = f"Under {market_total}" if under_edge >= CONFIDENT_TOTAL_EDGE else None
+                    
+                    bets.append({
+                        'type': 'TOTAL',
+                        'market_line': f"{market_total}",
+                        'model_prediction': predicted_total,
+                        'edge': -under_edge,  # Negative = under value
+                        'recommendation': recommendation,
+                        'direction': 'UNDER',
+                    })
+            elif total_edge >= TOTAL_THRESHOLD:  # Over value
+                bets.append({
+                    'type': 'TOTAL',
+                    'market_line': f"{market_total}",
+                    'model_prediction': predicted_total,
+                    'edge': total_edge,
+                    'recommendation': f"Over {market_total}" if total_edge >= CONFIDENT_TOTAL_EDGE else None,
+                    'direction': 'OVER',
+                })
     
     return {
-        'game_id': game_id,
         'home_team': home_team,
         'away_team': away_team,
+        'league': league,
         'commence_time': commence_time,
-        'home_rating': TEAM_RATINGS.get(home_team, 50.0),
-        'away_rating': TEAM_RATINGS.get(away_team, 50.0),
-        'predicted_score': f"{home_team} {home_score}, {away_team} {away_score}",
         'predicted_spread': predicted_spread,
         'predicted_total': predicted_total,
-        'market_spread': market_spread,
-        'market_total': market_total,
-        'bets': bets
+        'home_score': home_score,
+        'away_score': away_score,
+        'confidence': confidence,
+        'bets': bets,
     }
 
 # ============================================================================
-# HTML OUTPUT GENERATION - NBA STYLE AESTHETIC
+# HTML GENERATION (NBA Style)
 # ============================================================================
 
-def generate_picks_html(analyses, stats):
-    """Generate HTML page with individual game cards - NBA aesthetic"""
+def generate_html(analyses):
+    """Generate NBA-style HTML with game cards"""
     
-    # Generate game cards
-    game_cards = ""
-    for analysis in analyses:
-        game_time = datetime.fromisoformat(analysis['commence_time'].replace('Z', '+00:00'))
-        game_time_str = game_time.strftime('%m/%d/%y %I:%M %p EDT')
-        
-        matchup = f"{analysis['away_team']} @ {analysis['home_team']}"
-        
-        # Generate bet boxes for this game
-        bet_boxes = ""
-        
-        # Find spread and total bets
-        spread_bet = None
-        total_bet = None
-        
-        for bet in analysis['bets']:
-            if bet['type'] == 'SPREAD':
-                spread_bet = bet
-            elif bet['type'] == 'TOTAL':
-                total_bet = bet
-        
-        # Spread bet box
-        if spread_bet:
-            edge = spread_bet['edge']
-            # Only show as pick if meets logging threshold (sharp +EV)
-            if abs(edge) >= CONFIDENT_SPREAD_EDGE:
-                pick_class = "pick-yes"
-                pick_icon = "✅"
-                explanation = f"SHARP +EV - Model projects {spread_bet['model_prediction']:+.1f}, edge: {edge:+.1f} pts"
-            elif abs(edge) >= SPREAD_THRESHOLD:
-                pick_class = "pick-none"
-                pick_icon = "⚠️"
-                explanation = f"Edge: {edge:+.1f} pts - Below sharp threshold ({CONFIDENT_SPREAD_EDGE}+ required)"
-            else:
-                pick_class = "pick-none"
-                pick_icon = "❌"
-                explanation = "Insufficient edge"
-            
-            confidence_pct = int(spread_bet['confidence'] * 100)
-            
-            bet_boxes += f"""
-                        <div class="bet-box bet-box-spread">
-                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
-                            <div class="odds-line">
-                                <span>Vegas Line:</span>
-                                <strong>{spread_bet['market_line']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Prediction:</span>
-                                <strong>{spread_bet['model_prediction']:+.1f}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{edge:+.1f} pts</strong>
-                            </div>
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{confidence_pct}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {confidence_pct}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {pick_class}">
-                                {pick_icon} {spread_bet['recommendation'] if abs(edge) >= SPREAD_THRESHOLD else 'NO BET'}<br><small>{explanation}</small>
-                            </div>
-                        </div>
-            """
-        else:
-            bet_boxes += """
-                        <div class="bet-box bet-box-spread">
-                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
-                            <div class="pick pick-none">
-                                ❌ NO BET<br><small>Insufficient edge - pass on this line</small>
-                            </div>
-                        </div>
-            """
-        
-        # Total bet box
-        if total_bet:
-            edge = total_bet['edge']
-            # Only show as pick if meets logging threshold (sharp +EV)
-            if abs(edge) >= CONFIDENT_TOTAL_EDGE:
-                pick_class = "pick-yes" if edge > 0 else "pick-yes"
-                pick_icon = "✅"
-                direction = "OVER" if edge > 0 else "UNDER"
-                explanation = f"SHARP +EV - Model projects {total_bet['model_prediction']:.0f} total, {direction} edge: {abs(edge):.1f} pts"
-            elif abs(edge) >= TOTAL_THRESHOLD:
-                pick_class = "pick-none"
-                pick_icon = "⚠️"
-                direction = "OVER" if edge > 0 else "UNDER"
-                explanation = f"Edge: {abs(edge):.1f} pts - Below sharp threshold ({CONFIDENT_TOTAL_EDGE}+ required)"
-            else:
-                pick_class = "pick-none"
-                pick_icon = "❌"
-                explanation = "Insufficient edge"
-            
-            confidence_pct = int(total_bet['confidence'] * 100)
-            
-            bet_boxes += f"""
-                        <div class="bet-box bet-box-total">
-                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
-                            <div class="odds-line">
-                                <span>Vegas Total:</span>
-                                <strong>{total_bet['market_line']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Projects:</span>
-                                <strong>{total_bet['model_prediction']:.1f} pts</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{abs(edge):.1f} pts</strong>
-                            </div>
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{confidence_pct}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {confidence_pct}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {pick_class}">
-                                {pick_icon} {total_bet['recommendation'] if abs(edge) >= TOTAL_THRESHOLD else 'NO BET'}<br><small>{explanation}</small>
-                            </div>
-                        </div>
-            """
-        else:
-            bet_boxes += """
-                        <div class="bet-box bet-box-total">
-                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
-                            <div class="pick pick-none">
-                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
-                            </div>
-                        </div>
-            """
-        
-        # Add game card
-        game_cards += f"""
-                <div class="game-card">
-                    <div class="matchup">{matchup}</div>
-                    <div class="game-time">🕐 {game_time_str}</div>
-                    
-                    <div class="bet-section">
-{bet_boxes}
-                    </div>
-                    
-                    <div class="prediction">
-                        📈 PREDICTED: {analysis['predicted_score']}
-                    </div>
-                </div>
-        """
+    # Filter to games with analysis
+    analyses = [a for a in analyses if a and a.get('bets')]
     
-    if not game_cards:
-        game_cards = '<div class="game-card"><div class="matchup">No games available</div></div>'
+    HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soccer Model - Full Matchup Analysis</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: #0a1628;
+    color: #ffffff;
+    padding: 1.5rem;
+    min-height: 100vh;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+.card {
+    background: #1a2332;
+    border-radius: 1.25rem;
+    border: none;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+.header-card {
+    text-align: center;
+    background: #1a2332;
+    border: none;
+}
+.game-card {
+    padding: 1.5rem;
+    border-bottom: 1px solid #2a3441;
+}
+.game-card:last-child { border-bottom: none; }
+.matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+.game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
+.league-badge {
+    background: rgba(96, 165, 250, 0.2);
+    color: #60a5fa;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+.bet-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+.bet-box {
+    background: #2a3441;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    border-left: none;
+}
+.bet-box-spread {
+    border-left: 4px solid #60a5fa;
+}
+.bet-box-total {
+    border-left: 4px solid #f472b6;
+}
+.bet-title {
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+.bet-title-spread { color: #60a5fa; }
+.bet-title-total { color: #f472b6; }
+.odds-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0;
+    font-size: 0.9375rem;
+    color: #94a3b8;
+}
+.odds-line strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+.confidence-bar-container {
+    margin: 0.75rem 0;
+}
+.confidence-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+.confidence-pct {
+    font-weight: 700;
+    color: #4ade80;
+}
+.confidence-bar {
+    height: 6px;
+    background: #1a2332;
+    border-radius: 999px;
+    overflow: hidden;
+    border: none;
+}
+.confidence-fill {
+    height: 100%;
+    background: #4ade80;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+.pick {
+    font-weight: 600;
+    padding: 0.875rem 1rem;
+    margin-top: 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.pick small {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    opacity: 0.85;
+    line-height: 1.4;
+}
+.pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
+.pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
+.pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
+.prediction {
+    background: #2a3441;
+    color: #4ade80;
+    padding: 1rem;
+    border-radius: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-top: 1rem;
+    border: 1px solid #2a3441;
+}
+@media (max-width: 768px) {
+    body { padding: 1rem; }
+    .card { padding: 1.25rem; }
+    .game-card { padding: 1.25rem; }
+    .bet-section { grid-template-columns: 1fr; gap: 1rem; }
+    .matchup { font-size: 1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card header-card">
+<h1>⚽ Soccer Model - Full Matchup Analysis</h1>
+<p style="color: #94a3b8; margin-top: 0.5rem;">Focusing on Unders Value | Generated {{timestamp}}</p>
+</div>
+
+{% for analysis in analyses %}
+{% set game_time = analysis.commence_time %}
+{% set matchup = analysis.away_team + " @ " + analysis.home_team %}
+{% set spread_bet = analysis.bets|selectattr('type', 'equalto', 'SPREAD')|first %}
+{% set total_bet = analysis.bets|selectattr('type', 'equalto', 'TOTAL')|first %}
+
+<div class="card game-card">
+<div class="matchup">{{matchup}}<span class="league-badge">{{analysis.league}}</span></div>
+<div class="game-time">🕐 {{game_time[:10]}}</div>
+
+<div class="bet-section">
+{% if spread_bet %}
+{% set edge = spread_bet.edge %}
+{% set pick_class = 'pick-yes' if abs(edge) >= CONFIDENT_SPREAD_EDGE else 'pick-none' %}
+{% set pick_icon = '✅' if abs(edge) >= CONFIDENT_SPREAD_EDGE else '⚠️' %}
+{% set explanation = 'SHARP +EV' if abs(edge) >= CONFIDENT_SPREAD_EDGE else 'Below sharp threshold' %}
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>{{spread_bet.market_line}}</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>{{spread_bet.model_prediction:+.2f}}</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>{{edge:+.2f}} goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">{{(analysis.confidence * 100)|int}}%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
+</div>
+</div>
+<div class="pick {{pick_class}}">
+{{pick_icon}} {{spread_bet.recommendation if spread_bet.recommendation else 'NO BET'}}<br>
+<small>{{explanation}}</small>
+</div>
+</div>
+{% else %}
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+{% endif %}
+
+{% if total_bet %}
+{% set edge = total_bet.edge %}
+{% set is_under = total_bet.direction == 'UNDER' %}
+{% set pick_class = 'pick-yes' if abs(edge) >= CONFIDENT_TOTAL_EDGE else 'pick-none' %}
+{% set pick_icon = '✅' if abs(edge) >= CONFIDENT_TOTAL_EDGE else '⚠️' %}
+{% set explanation = 'SHARP +EV UNDER' if (abs(edge) >= CONFIDENT_TOTAL_EDGE and is_under) else ('Below threshold' if abs(edge) >= TOTAL_THRESHOLD else 'Insufficient edge') %}
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>{{total_bet.market_line}}</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>{{total_bet.model_prediction:.2f}} goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>{{abs(edge):.2f}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">{{(analysis.confidence * 100)|int}}%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
+</div>
+</div>
+<div class="pick {{pick_class}}">
+{{pick_icon}} {{total_bet.recommendation if total_bet.recommendation else 'NO BET'}}<br>
+<small>{{explanation}}</small>
+</div>
+</div>
+{% else %}
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+{% endif %}
+</div>
+
+<div class="prediction">
+Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_score}} {{analysis.away_team}}
+</div>
+</div>
+{% endfor %}
+
+</div>
+</body>
+</html>
+"""
     
-    # NBA-style dark blue aesthetic
-    html = f"""<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CourtSide Analytics - NFL Picks</title>
-        <style>
-           * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-           body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-                background: #0a1628;
-                color: #ffffff;
-                padding: 1.5rem;
-                min-height: 100vh;
-            }}
-           .container {{ max-width: 1200px; margin: 0 auto; }}
-           .card {{
-                background: #1a2332;
-                border-radius: 1.25rem;
-                border: none;
-                padding: 2rem;
-                margin-bottom: 1.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            }}
-           .header-card {{
-                text-align: center;
-                background: #1a2332;
-                border: none;
-            }}
-           .game-card {{
-                padding: 1.5rem;
-                border-bottom: 1px solid #2a3441;
-            }}
-           .game-card:last-child {{ border-bottom: none; }}
-           .matchup {{ font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }}
-           .game-time {{ color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }}
-           .bet-section {{
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1.5rem;
-                margin-top: 1rem;
-            }}
-           .bet-box {{
-                background: #2a3441;
-                padding: 1.25rem;
-                border-radius: 1rem;
-                border-left: none;
-            }}
-           .bet-box-spread {{
-                border-left: 4px solid #60a5fa;
-            }}
-           .bet-box-total {{
-                border-left: 4px solid #f472b6;
-            }}
-           .bet-title {{
-                font-weight: 600;
-                color: #94a3b8;
-                margin-bottom: 0.5rem;
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.05em;
-            }}
-           .bet-title-spread {{
-                color: #60a5fa;
-            }}
-           .bet-title-total {{
-                color: #f472b6;
-            }}
-           .odds-line {{
-                display: flex;
-                justify-content: space-between;
-                margin: 0.25rem 0;
-                font-size: 0.9375rem;
+    template = Template(HTML_TEMPLATE)
+    html = template.render(
+        analyses=analyses,
+        timestamp=datetime.now().strftime('%B %d, %Y at %I:%M %p ET'),
+        CONFIDENT_SPREAD_EDGE=CONFIDENT_SPREAD_EDGE,
+        CONFIDENT_TOTAL_EDGE=CONFIDENT_TOTAL_EDGE,
+        TOTAL_THRESHOLD=TOTAL_THRESHOLD,
+    )
+    
+    with open(OUTPUT_HTML, 'w', encoding='utf-8') as f:
+        f.write(html)
+    
+    print(f"\n✅ HTML saved: {OUTPUT_HTML}")
