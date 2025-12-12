@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run All Models - Manual Execution
-# Runs NBA, Rebounds, Assists, 3PT, and NCAAB models at once
+# Runs NBA, Rebounds, Assists, 3PT, Points, and NCAAB models at once
 # Perfect for late-night head starts on picks!
 
 # Set PATH to include Python 3.13 installation
@@ -95,6 +95,13 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run Points Model
+if run_model "NBA Points Props" "nba/nba_points_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Run NCAAB Model
 if run_model "NCAAB Model" "ncaa/ncaab_model_FINAL.py"; then
     ((SUCCESS_COUNT++))
@@ -113,9 +120,9 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/5${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/6${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/5${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/6${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
@@ -126,6 +133,7 @@ echo "  • NBA: nba/nba_model_output.html"
 echo "  • Rebounds: nba/nba_rebounds_props.html"
 echo "  • Assists: nba/nba_assists_props.html"
 echo "  • 3PT: nba/nba_3pt_props.html"
+echo "  • Points: nba/nba_points_props.html"
 echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo ""
 
