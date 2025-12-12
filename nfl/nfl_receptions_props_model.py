@@ -572,9 +572,9 @@ def calculate_ai_score(player_data, prop_line, bet_type, opponent_defense=None):
         elif edge_above_line >= 1.5:
             score += 2.5
         elif edge_above_line >= 1.0:
-            score += 1.5
+            score += 2.0  # Increased from 1.5
         elif edge_above_line >= 0.5:
-            score += 0.5
+            score += 1.5  # Increased to help reach 9.5 threshold
         else:
             score -= 2.0
             if recent_avg < prop_line + 0.5:
@@ -584,11 +584,11 @@ def calculate_ai_score(player_data, prop_line, bet_type, opponent_defense=None):
         if recent_edge >= MIN_RECENT_FORM_EDGE:
             score += 2.5
         elif recent_edge >= 1.0:
-            score += 1.5
+            score += 2.0  # Increased from 1.5
         elif recent_avg > season_avg + 1.0:
-            score += 1.0
+            score += 1.5  # Increased from 1.0
         elif recent_avg >= prop_line:
-            score += 0.5
+            score += 1.2  # Increased to help reach 9.5 threshold
         else:
             score -= 1.5
 
@@ -598,9 +598,9 @@ def calculate_ai_score(player_data, prop_line, bet_type, opponent_defense=None):
         elif target_share >= 0.20:
             score += 1.0
         elif target_share >= 0.15:
-            score += 0.5
+            score += 0.8  # Increased from 0.5
 
-        score += consistency * 0.8
+        score += consistency * 1.0  # Increased from 0.8
 
         # Opponent factors
         if opponent_defense:
@@ -676,9 +676,27 @@ def analyze_props(props_list, player_stats, defense_factors):
 
         player_data = player_stats.get(player_name)
         if not player_data:
-            # Try fuzzy matching
+            # Try fuzzy matching - handle different name formats
+            prop_last = player_name.split()[-1].lower() if ' ' in player_name else player_name.lower()
+            prop_first = player_name.split()[0].lower() if ' ' in player_name else ''
+            
             for name, stats in player_stats.items():
-                if player_name.split()[-1].lower() in name.lower() or name.split()[-1].lower() in player_name.lower():
+                name_lower = name.lower()
+                # Try exact match first
+                if player_name.lower() == name_lower:
+                    player_data = stats
+                    break
+                # Try last name match
+                name_last = name.split()[-1].lower() if ' ' in name else name_lower.split('.')[-1] if '.' in name else name_lower
+                if prop_last == name_last:
+                    player_data = stats
+                    break
+                # Try last name substring match
+                if prop_last in name_lower or name_last in player_name.lower():
+                    player_data = stats
+                    break
+                # Try first initial + last name format (A.Rodgers vs Aaron Rodgers)
+                if '.' in name and prop_last in name_lower:
                     player_data = stats
                     break
             

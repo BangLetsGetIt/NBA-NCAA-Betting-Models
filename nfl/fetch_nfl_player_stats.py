@@ -64,8 +64,10 @@ def fetch_all_stats():
         receiving_stats = {}
         passing_stats = {}
         
-        # Get unique players
-        if 'player_name' in df.columns:
+        # Get unique players - use display_name for full names
+        if 'player_display_name' in df.columns:
+            player_col = 'player_display_name'
+        elif 'player_name' in df.columns:
             player_col = 'player_name'
         elif 'player' in df.columns:
             player_col = 'player'
@@ -100,8 +102,8 @@ def fetch_all_stats():
                     break
             
             if rec_col:
-                rec_total = player_data[rec_col].sum()
-                rec_avg = rec_total / games_played if games_played > 0 else 0
+                # Data is already per-game, so just take mean
+                rec_avg = player_data[rec_col].mean() if games_played > 0 else 0
                 recent_rec = player_data.tail(5)[rec_col].mean() if len(player_data) >= 5 else rec_avg
                 
                 if rec_avg > 0:
@@ -125,8 +127,8 @@ def fetch_all_stats():
                     break
             
             if rush_yds_col:
-                rush_yds_total = player_data[rush_yds_col].sum()
-                rush_yds_avg = rush_yds_total / games_played if games_played > 0 else 0
+                # Data is already per-game, so just take mean
+                rush_yds_avg = player_data[rush_yds_col].mean() if games_played > 0 else 0
                 recent_rush_yds = player_data.tail(5)[rush_yds_col].mean() if len(player_data) >= 5 else rush_yds_avg
                 
                 if rush_yds_avg > 0:
@@ -150,8 +152,8 @@ def fetch_all_stats():
                     break
             
             if rec_yds_col:
-                rec_yds_total = player_data[rec_yds_col].sum()
-                rec_yds_avg = rec_yds_total / games_played if games_played > 0 else 0
+                # Data is already per-game, so just take mean
+                rec_yds_avg = player_data[rec_yds_col].mean() if games_played > 0 else 0
                 recent_rec_yds = player_data.tail(5)[rec_yds_col].mean() if len(player_data) >= 5 else rec_yds_avg
                 
                 if rec_yds_avg > 0:
@@ -175,21 +177,21 @@ def fetch_all_stats():
                     break
             
             if pass_yds_col:
-                pass_yds_total = player_data[pass_yds_col].sum()
-                pass_yds_avg = pass_yds_total / games_played if games_played > 0 else 0
+                # Data is already per-game, so just take mean
+                pass_yds_avg = player_data[pass_yds_col].mean() if games_played > 0 else 0
                 recent_pass_yds = player_data.tail(5)[pass_yds_col].mean() if len(player_data) >= 5 else pass_yds_avg
                 
                 # Get pass attempts
                 pass_att_col = None
-                for col in ['pass_attempts', 'pass_att', 'att', 'attempts']:
+                for col in ['attempts', 'pass_attempts', 'pass_att', 'att']:
                     if col in player_data.columns:
                         pass_att_col = col
                         break
                 
                 pass_att_avg = 0
                 if pass_att_col:
-                    pass_att_total = player_data[pass_att_col].sum()
-                    pass_att_avg = pass_att_total / games_played if games_played > 0 else 0
+                    # Data is already per-game
+                    pass_att_avg = player_data[pass_att_col].mean() if games_played > 0 else 0
                 
                 if pass_yds_avg > 0:
                     consistency = min(1.0, (pass_yds_avg / 300.0) * 0.8)
