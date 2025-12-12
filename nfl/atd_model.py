@@ -919,7 +919,7 @@ def generate_csv(results):
         fieldnames = [
             'player_name', 'position', 'team', 'opponent', 'game_time',
             'model_prob', 'confidence', 'best_odds', 'best_book',
-            'avg_implied_prob', 'edge', 'ev', 'kelly_pct', 'recommended',
+            'avg_implied_prob', 'edge', 'ev', 'kelly_pct', 'recommended', 'sharp_bet',
             'total_tds', 'games', 'td_per_game', 'rz_share',
             'touches_per_game', 'snap_pct', 'def_mult', 'implied_total'
         ]
