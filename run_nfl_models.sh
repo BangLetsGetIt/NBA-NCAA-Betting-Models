@@ -1,0 +1,112 @@
+#!/bin/bash
+
+# NFL Models Runner
+# Runs all NFL models including props and main model
+
+echo "=========================================="
+echo "🏈 Running All NFL Models"
+echo "=========================================="
+echo ""
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+NFL_DIR="$SCRIPT_DIR/nfl"
+
+# Change to NFL directory
+cd "$NFL_DIR" || exit 1
+
+# Track start time
+START_TIME=$(date +%s)
+
+# Run NFL main model
+echo "📊 Running NFL Main Model..."
+python3 nfl_model_IMPROVED.py
+MAIN_EXIT=$?
+
+if [ $MAIN_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Main Model had errors (exit code: $MAIN_EXIT)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
+# Run NFL Receptions Props Model
+echo "📊 Running NFL Receptions Props Model..."
+python3 nfl_receptions_props_model.py
+REC_EXIT=$?
+
+if [ $REC_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Receptions Props Model had errors (exit code: $REC_EXIT)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
+# Run NFL Rushing Yards Props Model
+echo "📊 Running NFL Rushing Yards Props Model..."
+python3 nfl_rushing_yards_props_model.py
+RUSH_EXIT=$?
+
+if [ $RUSH_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Rushing Yards Props Model had errors (exit code: $RUSH_EXIT)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
+# Run NFL Receiving Yards Props Model
+echo "📊 Running NFL Receiving Yards Props Model..."
+python3 nfl_receiving_yards_props_model.py
+REC_YDS_EXIT=$?
+
+if [ $REC_YDS_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Receiving Yards Props Model had errors (exit code: $REC_YDS_EXIT)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
+# Run NFL Passing Yards Props Model
+echo "📊 Running NFL Passing Yards Props Model..."
+python3 nfl_passing_yards_props_model.py
+PASS_YDS_EXIT=$?
+
+if [ $PASS_YDS_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Passing Yards Props Model had errors (exit code: $PASS_YDS_EXIT)"
+fi
+
+echo ""
+echo "=========================================="
+echo "✅ NFL Models Execution Complete"
+echo "=========================================="
+
+# Calculate total time
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+MINUTES=$((ELAPSED / 60))
+SECONDS=$((ELAPSED % 60))
+
+echo ""
+echo "⏱️  Total execution time: ${MINUTES}m ${SECONDS}s"
+echo ""
+
+# Summary
+echo "📋 Execution Summary:"
+echo "  • NFL Main Model: $([ $MAIN_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Receptions Props: $([ $REC_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Rushing Yards Props: $([ $RUSH_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Receiving Yards Props: $([ $REC_YDS_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Passing Yards Props: $([ $PASS_YDS_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo ""
+
+# Exit with error if any model failed
+if [ $MAIN_EXIT -ne 0 ] || [ $REC_EXIT -ne 0 ] || [ $RUSH_EXIT -ne 0 ] || [ $REC_YDS_EXIT -ne 0 ] || [ $PASS_YDS_EXIT -ne 0 ]; then
+    exit 1
+fi
+
+exit 0
+
