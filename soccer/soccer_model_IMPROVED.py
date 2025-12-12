@@ -35,7 +35,7 @@ if not ODDS_API_KEY:
 
 ODDS_API_BASE = "https://api.the-odds-api.com/v4"
 SCRIPT_DIR = Path(__file__).parent
-OUTPUT_HTML = SCRIPT_DIR / "soccer_model_output.html"
+OUTPUT_HTML = SCRIPT_DIR / "soccer_totals_output.html"  # Keep same filename for GitHub Pages
 
 # Sharp +EV thresholds
 SPREAD_THRESHOLD = 0.25  # 0.25 goal spread edge to display
@@ -590,3 +590,42 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
         f.write(html)
     
     print(f"\n✅ HTML saved: {OUTPUT_HTML}")
+
+# ============================================================================
+# MAIN
+# ============================================================================
+
+def main():
+    print("=" * 80)
+    print("⚽ SOCCER MODEL - FULL MATCHUP ANALYSIS")
+    print("=" * 80)
+    
+    # Fetch odds
+    games = fetch_soccer_odds(ODDS_API_KEY)
+    
+    if not games:
+        print("\n⚠️  No games found.")
+        return
+    
+    # Analyze all games
+    print("\n🔍 Analyzing games...")
+    analyses = []
+    
+    for game in games:
+        analysis = analyze_game(game)
+        if analysis:
+            analyses.append(analysis)
+    
+    # Count recommendations
+    sharp_bets = sum(1 for a in analyses for b in a.get('bets', []) if b.get('recommendation'))
+    print(f"\n✅ Analyzed {len(analyses)} games")
+    print(f"🔥 {sharp_bets} sharp +EV recommendations")
+    
+    # Generate HTML
+    generate_html(analyses)
+    
+    print("\n" + "=" * 80)
+
+if __name__ == "__main__":
+    main()
+
