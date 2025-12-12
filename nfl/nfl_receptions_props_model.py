@@ -36,10 +36,10 @@ RECENT_GAMES_WINDOW = 5  # 5 games for recent form (NFL season shorter)
 AUTO_TRACK_THRESHOLD = 9.7  # Only track elite plays
 CURRENT_SEASON = '2024'
 
-# Edge requirements - Matching NBA model strictness
-MIN_EDGE_OVER_LINE = 1.5  # Player must average 1.5+ above prop line for OVER
-MIN_EDGE_UNDER_LINE = 1.2  # Player must average 1.2+ below prop line for UNDER
-MIN_RECENT_FORM_EDGE = 1.0  # Recent form must strongly support
+# Edge requirements - Strict for receptions
+MIN_EDGE_OVER_LINE = 2.0  # Player must average 2.0+ above prop line for OVER
+MIN_EDGE_UNDER_LINE = 1.5  # Player must average 1.5+ below prop line for UNDER
+MIN_RECENT_FORM_EDGE = 1.2  # Recent form must strongly support
 
 # ANSI color codes
 class Colors:
@@ -707,7 +707,7 @@ def analyze_props(props_list, player_stats, defense_factors):
             season_avg = player_data.get('season_rec_avg', 0)
             recent_avg = player_data.get('recent_rec_avg', 0)
             
-            if season_avg >= prop_line + 0.3 and recent_avg >= prop_line + 0.2:
+            if season_avg >= prop_line + 0.5 and recent_avg >= prop_line + 0.3:
                 # Calculate EV
                 ev = calculate_ev(over_score, prop_line, season_avg, recent_avg, prop['over_price'], 'over')
                 is_sharp = over_score >= AUTO_TRACK_THRESHOLD and ev > 0
@@ -736,7 +736,7 @@ def analyze_props(props_list, player_stats, defense_factors):
             season_avg = player_data.get('season_rec_avg', 0)
             recent_avg = player_data.get('recent_rec_avg', 0)
             
-            if season_avg <= prop_line - 0.3 and recent_avg <= prop_line - 0.2:
+            if season_avg <= prop_line - 0.5 and recent_avg <= prop_line - 0.3:
                 # Calculate EV
                 ev = calculate_ev(under_score, prop_line, season_avg, recent_avg, prop['over_price'], 'under')
                 is_sharp = under_score >= AUTO_TRACK_THRESHOLD and ev > 0
