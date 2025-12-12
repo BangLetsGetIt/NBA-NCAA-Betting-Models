@@ -470,7 +470,7 @@ def get_player_props():
             odds_params = {
                 'apiKey': API_KEY,
                 'regions': 'us',
-                'markets': 'player_rushing_yards',
+                'markets': 'player_rush_yds',
                 'oddsFormat': 'american'
             }
 
@@ -484,7 +484,7 @@ def get_player_props():
 
                     if 'markets' in fanduel:
                         for market in fanduel['markets']:
-                            if market['key'] == 'player_rushing_yards':
+                            if market['key'] == 'player_rush_yds':
                                 for outcome in market['outcomes']:
                                     player_name = outcome['description']
                                     player_team, player_opponent = match_player_to_team(
