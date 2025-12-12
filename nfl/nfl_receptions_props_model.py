@@ -53,10 +53,10 @@ class Colors:
 
 def get_nfl_player_receptions_stats():
     """
-    Fetch REAL NFL player receptions stats from ESPN API
+    Fetch REAL NFL player receptions stats from cache (populated by fetch_nfl_player_stats.py)
     Returns dictionary with player receptions stats (season avg, recent form, etc.)
     """
-    print(f"\n{Colors.CYAN}Fetching REAL NFL player receptions statistics...{Colors.END}")
+    print(f"\n{Colors.CYAN}Loading NFL player receptions statistics...{Colors.END}")
 
     # Check cache first (6 hour cache)
     if os.path.exists(PLAYER_STATS_CACHE):
@@ -64,43 +64,36 @@ def get_nfl_player_receptions_stats():
         if (datetime.now() - file_mod_time) < timedelta(hours=6):
             print(f"{Colors.GREEN}✓ Using cached player stats (less than 6 hours old){Colors.END}")
             with open(PLAYER_STATS_CACHE, 'r') as f:
-                return json.load(f)
+                stats = json.load(f)
+                if stats:
+                    print(f"{Colors.GREEN}✓ Loaded {len(stats)} players from cache{Colors.END}")
+                    return stats
 
-    player_stats = {}
-
+    # If cache is old or empty, try to fetch fresh stats
+    print(f"{Colors.YELLOW}  Cache is old or empty. Running automated stats fetcher...{Colors.END}")
     try:
-        # Fetch from ESPN API
-        print(f"{Colors.CYAN}  Fetching season receptions stats from ESPN...{Colors.END}")
-        
-        # ESPN NFL stats endpoint
-        url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/statistics"
-        
-        # Try to get player stats - ESPN structure may vary
-        # For now, use a manual cache approach that can be updated
-        # In production, this would fetch from ESPN or another NFL stats API
-        
-        # Placeholder: Return empty dict if no cache, will be populated by manual entry or API
-        print(f"{Colors.YELLOW}  Note: NFL stats API integration needed. Using cached data if available.{Colors.END}")
-        
-        if os.path.exists(PLAYER_STATS_CACHE):
-            with open(PLAYER_STATS_CACHE, 'r') as f:
-                cached = json.load(f)
-                if cached:
-                    print(f"{Colors.GREEN}✓ Loaded {len(cached)} players from cache{Colors.END}")
-                    return cached
-
-        # Return empty - stats will need to be manually entered or fetched
-        print(f"{Colors.YELLOW}  No cached stats found. Please update cache with player data.{Colors.END}")
-        return {}
-
+        import subprocess
+        result = subprocess.run(
+            ['python3', str(SCRIPT_DIR / 'fetch_nfl_player_stats.py')],
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+        if result.returncode == 0:
+            print(f"{Colors.GREEN}✓ Stats fetched successfully{Colors.END}")
+            # Reload from cache
+            if os.path.exists(PLAYER_STATS_CACHE):
+                with open(PLAYER_STATS_CACHE, 'r') as f:
+                    stats = json.load(f)
+                    if stats:
+                        print(f"{Colors.GREEN}✓ Loaded {len(stats)} players from cache{Colors.END}")
+                        return stats
     except Exception as e:
-        print(f"{Colors.RED}✗ Error fetching NFL stats: {e}{Colors.END}")
-        # Try to load from cache if available
-        if os.path.exists(PLAYER_STATS_CACHE):
-            print(f"{Colors.YELLOW}  Loading from cache as fallback...{Colors.END}")
-            with open(PLAYER_STATS_CACHE, 'r') as f:
-                return json.load(f)
-        return {}
+        print(f"{Colors.YELLOW}  Could not auto-fetch stats: {e}{Colors.END}")
+
+    # Return empty if all else fails
+    print(f"{Colors.YELLOW}  No cached stats found. Run 'python3 nfl/fetch_nfl_player_stats.py' to populate.{Colors.END}")
+    return {}
 
 def get_opponent_pass_defense_factors():
     """
