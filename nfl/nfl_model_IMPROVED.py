@@ -12,6 +12,10 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ============================================================================
 # CONFIGURATION
@@ -739,8 +743,12 @@ def generate_picks_html(analyses, stats):
 def main():
     """Main execution function"""
     
-    # Get API key from environment or use default
-    API_KEY = os.getenv("ODDS_API_KEY", "eef73e1d574d7e8ae25b4f60b2a5e0f4")
+    # Get API key from environment variable
+    API_KEY = os.getenv("ODDS_API_KEY")
+    if not API_KEY:
+        print("❌ ERROR: ODDS_API_KEY not found in environment variables")
+        print("Please create a .env file with: ODDS_API_KEY=your_key_here")
+        return
     
     print("🏈 NFL Betting Model - Sharp +EV Version")
     print("=" * 60)

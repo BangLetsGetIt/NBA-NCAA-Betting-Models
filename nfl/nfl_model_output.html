@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CourtSide Analytics - NFL Picks</title>
+        <style>
+           * { margin: 0; padding: 0; box-sizing: border-box; }
+           body {
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+                background: #0a1628;
+                color: #ffffff;
+                padding: 1.5rem;
+                min-height: 100vh;
+            }
+           .container { max-width: 1200px; margin: 0 auto; }
+           .card {
+                background: #1a2332;
+                border-radius: 1.25rem;
+                border: none;
+                padding: 2rem;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+           .header-card {
+                text-align: center;
+                background: #1a2332;
+                border: none;
+            }
+           .game-card {
+                padding: 1.5rem;
+                border-bottom: 1px solid #2a3441;
+            }
+           .game-card:last-child { border-bottom: none; }
+           .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
+           .bet-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-top: 1rem;
+            }
+           .bet-box {
+                background: #2a3441;
+                padding: 1.25rem;
+                border-radius: 1rem;
+                border-left: none;
+            }
+           .bet-box-spread {
+                border-left: 4px solid #60a5fa;
+            }
+           .bet-box-total {
+                border-left: 4px solid #f472b6;
+            }
+           .bet-title {
+                font-weight: 600;
+                color: #94a3b8;
+                margin-bottom: 0.5rem;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 0.05em;
+            }
+           .bet-title-spread {
+                color: #60a5fa;
+            }
+           .bet-title-total {
+                color: #f472b6;
+            }
+           .odds-line {
+                display: flex;
+                justify-content: space-between;
+                margin: 0.25rem 0;
+                font-size: 0.9375rem;
+                color: #94a3b8;
+            }
+           .odds-line strong {
+                color: #ffffff;
+                font-weight: 600;
+           }
+           .confidence-bar-container {
+                margin: 0.75rem 0;
+           }
+           .confidence-label {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.5rem;
+                font-size: 0.875rem;
+                color: #94a3b8;
+           }
+           .confidence-pct {
+                font-weight: 700;
+                color: #4ade80;
+           }
+           .confidence-bar {
+                height: 6px;
+                background: #1a2332;
+                border-radius: 999px;
+                overflow: hidden;
+                border: none;
+           }
+           .confidence-fill {
+                height: 100%;
+                background: #4ade80;
+                border-radius: 999px;
+                transition: width 0.3s ease;
+           }
+           .pick {
+                font-weight: 600;
+                padding: 0.875rem 1rem;
+                margin-top: 0.75rem;
+                border-radius: 0.75rem;
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+           .pick small {
+                display: block;
+                font-size: 0.8125rem;
+                font-weight: 400;
+                margin-top: 0.5rem;
+                opacity: 0.85;
+                line-height: 1.4;
+            }
+           .pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
+           .pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
+           .pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
+           .prediction {
+                background: #2a3441;
+                color: #4ade80;
+                padding: 1rem;
+                border-radius: 1rem;
+                text-align: center;
+                font-weight: 700;
+                font-size: 1.125rem;
+                margin-top: 1rem;
+                border: 1px solid #2a3441;
+            }
+           .badge {
+                display: inline-block;
+                padding: 0.375rem 0.875rem;
+                border-radius: 0.5rem;
+                font-size: 0.8125rem;
+                font-weight: 600;
+                background: rgba(74, 222, 128, 0.2);
+                color: #4ade80;
+                margin: 0.25rem;
+            }
+           @media (max-width: 1024px) {
+                .container { max-width: 100%; }
+                .card { padding: 1.5rem; }
+           }
+           @media (max-width: 768px) {
+                .bet-section { grid-template-columns: 1fr; }
+                body { padding: 1rem; }
+                .matchup { font-size: 1.25rem; }
+           }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card header-card">
+                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">🏈 NFL MODEL PICKS</h1>
+                <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 1rem;">Sharp +EV Focus • High Confidence Only</p>
+                <div>
+                    <div class="badge">● SHARP THRESHOLDS (8+ Spread / 12+ Total)</div>
+                    <div class="badge">● +EV FOCUSED</div>
+                    <div class="badge">● PROFITABILITY FIRST</div>
+                </div>
+                <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 2025-12-11 09:38 PM</p>
+            </div>
+            
+            <div class="card">
+
+                <div class="game-card">
+                    <div class="matchup">Atlanta Falcons @ Tampa Bay Buccaneers</div>
+                    <div class="game-time">🕐 12/12/25 01:15 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this line</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Tampa Bay Buccaneers 23.8, Atlanta Falcons 23.4
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Arizona Cardinals @ Houston Texans</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Houston Texans -9.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+10.4</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+19.9 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Houston Texans -9.5<br><small>SHARP +EV - Model projects +10.4, edge: +19.9 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>42.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>48.5 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>6.0 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">33%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 33%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 42.5<br><small>Edge: 6.0 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Houston Texans 29.4, Arizona Cardinals 19.1
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Baltimore Ravens @ Cincinnati Bengals</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Cincinnati Bengals +2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-11.6</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-14.1 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">94%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 94%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Baltimore Ravens -2.5<br><small>SHARP +EV - Model projects -11.6, edge: -14.1 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Cincinnati Bengals 18.7, Baltimore Ravens 30.3
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Buffalo Bills @ New England Patriots</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>New England Patriots +1.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-27.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-29.0 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Buffalo Bills -1.5<br><small>SHARP +EV - Model projects -27.5, edge: -29.0 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: New England Patriots 9.1, Buffalo Bills 36.6
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Cleveland Browns @ Chicago Bears</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Chicago Bears -7.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+6.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+14.4 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">96%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 96%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Chicago Bears -7.5<br><small>SHARP +EV - Model projects +6.9, edge: +14.4 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Chicago Bears 23.8, Cleveland Browns 16.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">New York Jets @ Jacksonville Jaguars</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Jacksonville Jaguars -13.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+6.4</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+19.9 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Jacksonville Jaguars -13.5<br><small>SHARP +EV - Model projects +6.4, edge: +19.9 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Jacksonville Jaguars 24.3, New York Jets 17.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Los Angeles Chargers @ Kansas City Chiefs</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Kansas City Chiefs -5.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+7.2</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+12.7 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">84%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 84%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Kansas City Chiefs -5.5<br><small>SHARP +EV - Model projects +7.2, edge: +12.7 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>41.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>50.1 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>8.6 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">47%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 47%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 41.5<br><small>Edge: 8.6 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Kansas City Chiefs 28.7, Los Angeles Chargers 21.4
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Las Vegas Raiders @ Philadelphia Eagles</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Philadelphia Eagles -11.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+33.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+45.4 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Philadelphia Eagles -11.5<br><small>SHARP +EV - Model projects +33.9, edge: +45.4 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>38.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>44.1 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>5.6 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">31%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 31%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 38.5<br><small>Edge: 5.6 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Philadelphia Eagles 39.0, Las Vegas Raiders 5.1
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Washington Commanders @ New York Giants</div>
+                    <div class="game-time">🕐 12/14/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>New York Giants -2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-18.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-16.4 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Washington Commanders +2.5<br><small>SHARP +EV - Model projects -18.9, edge: -16.4 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: New York Giants 12.2, Washington Commanders 31.1
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Carolina Panthers @ New Orleans Saints</div>
+                    <div class="game-time">🕐 12/14/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>New Orleans Saints +2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+14.3</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+11.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">78%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ New Orleans Saints +2.5<br><small>SHARP +EV - Model projects +14.3, edge: +11.8 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: New Orleans Saints 26.1, Carolina Panthers 11.8
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Green Bay Packers @ Denver Broncos</div>
+                    <div class="game-time">🕐 12/14/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Denver Broncos +2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-1.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-4.0 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">26%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 26%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ Green Bay Packers -2.5<br><small>Edge: -4.0 pts - Below sharp threshold (8.0+ required)</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>42.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>48.2 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>5.7 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">31%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 31%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 42.5<br><small>Edge: 5.7 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Denver Broncos 23.4, Green Bay Packers 24.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Detroit Lions @ Los Angeles Rams</div>
+                    <div class="game-time">🕐 12/14/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Los Angeles Rams -6.0</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-16.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-10.9 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">72%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 72%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Detroit Lions +6.0<br><small>SHARP +EV - Model projects -16.9, edge: -10.9 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>54.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>49.7 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>4.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">26%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 26%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ UNDER 54.5<br><small>Edge: 4.8 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Los Angeles Rams 16.4, Detroit Lions 33.3
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Indianapolis Colts @ Seattle Seahawks</div>
+                    <div class="game-time">🕐 12/14/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Seattle Seahawks -13.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+5.2</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+18.7 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Seattle Seahawks -13.5<br><small>SHARP +EV - Model projects +5.2, edge: +18.7 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Seattle Seahawks 24.4, Indianapolis Colts 19.1
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Tennessee Titans @ San Francisco 49ers</div>
+                    <div class="game-time">🕐 12/14/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>San Francisco 49ers -12.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+39.0</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+51.5 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ San Francisco 49ers -12.5<br><small>SHARP +EV - Model projects +39.0, edge: +51.5 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: San Francisco 49ers 40.3, Tennessee Titans 1.3
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Minnesota Vikings @ Dallas Cowboys</div>
+                    <div class="game-time">🕐 12/15/25 01:20 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this line</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Dallas Cowboys 22.8, Minnesota Vikings 26.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Miami Dolphins @ Pittsburgh Steelers</div>
+                    <div class="game-time">🕐 12/16/25 01:15 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Pittsburgh Steelers -3.0</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+9.2</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+12.2 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">81%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 81%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Pittsburgh Steelers -3.0<br><small>SHARP +EV - Model projects +9.2, edge: +12.2 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>41.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>47.8 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>6.3 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">34%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 34%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 41.5<br><small>Edge: 6.3 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Pittsburgh Steelers 28.5, Miami Dolphins 19.3
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Los Angeles Rams @ Seattle Seahawks</div>
+                    <div class="game-time">🕐 12/19/25 01:15 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this line</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Seattle Seahawks 22.9, Los Angeles Rams 21.6
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Philadelphia Eagles @ Washington Commanders</div>
+                    <div class="game-time">🕐 12/20/25 10:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Washington Commanders +5.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-3.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-9.0 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">60%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Philadelphia Eagles -5.5<br><small>SHARP +EV - Model projects -3.5, edge: -9.0 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>45.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>50.3 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>4.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">26%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 26%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 45.5<br><small>Edge: 4.8 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Washington Commanders 23.4, Philadelphia Eagles 26.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Green Bay Packers @ Chicago Bears</div>
+                    <div class="game-time">🕐 12/21/25 01:20 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Chicago Bears +3.0</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-12.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-15.5 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Green Bay Packers -3.0<br><small>SHARP +EV - Model projects -12.5, edge: -15.5 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Chicago Bears 16.4, Green Bay Packers 28.9
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Buffalo Bills @ Cleveland Browns</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Cleveland Browns +8.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-24.6</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-33.1 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Buffalo Bills -8.5<br><small>SHARP +EV - Model projects -24.6, edge: -33.1 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Cleveland Browns 10.9, Buffalo Bills 35.5
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Cincinnati Bengals @ Miami Dolphins</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this line</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>50.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>45.8 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>4.7 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">26%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 26%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ UNDER 50.5<br><small>Edge: 4.7 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Miami Dolphins 24.9, Cincinnati Bengals 20.8
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Los Angeles Chargers @ Dallas Cowboys</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Dallas Cowboys -2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+0.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+3.4 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">22%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 22%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ Dallas Cowboys -2.5<br><small>Edge: +3.4 pts - Below sharp threshold (8.0+ required)</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Dallas Cowboys 24.7, Los Angeles Chargers 23.8
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Kansas City Chiefs @ Tennessee Titans</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Tennessee Titans +10.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-34.8</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-45.3 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Kansas City Chiefs -10.5<br><small>SHARP +EV - Model projects -34.8, edge: -45.3 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Tennessee Titans 3.6, Kansas City Chiefs 38.3
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Minnesota Vikings @ New York Giants</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>New York Giants +1.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-24.3</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-25.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Minnesota Vikings -1.5<br><small>SHARP +EV - Model projects -24.3, edge: -25.8 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: New York Giants 10.2, Minnesota Vikings 34.5
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">New York Jets @ New Orleans Saints</div>
+                    <div class="game-time">🕐 12/21/25 06:00 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>New Orleans Saints -3.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+1.8</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+5.3 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">35%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 35%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ New Orleans Saints -3.5<br><small>Edge: +5.3 pts - Below sharp threshold (8.0+ required)</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: New Orleans Saints 21.4, New York Jets 19.7
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Jacksonville Jaguars @ Denver Broncos</div>
+                    <div class="game-time">🕐 12/21/25 09:05 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Denver Broncos -2.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+10.6</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+13.1 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">87%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 87%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Denver Broncos -2.5<br><small>SHARP +EV - Model projects +10.6, edge: +13.1 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Denver Broncos 27.9, Jacksonville Jaguars 17.2
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Pittsburgh Steelers @ Detroit Lions</div>
+                    <div class="game-time">🕐 12/21/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Detroit Lions -6.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+13.2</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+19.7 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Detroit Lions -6.5<br><small>SHARP +EV - Model projects +13.2, edge: +19.7 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Detroit Lions 32.6, Pittsburgh Steelers 19.4
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">Las Vegas Raiders @ Houston Texans</div>
+                    <div class="game-time">🕐 12/21/25 09:25 PM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Houston Texans -12.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+30.9</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+43.4 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Houston Texans -12.5<br><small>SHARP +EV - Model projects +30.9, edge: +43.4 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="odds-line">
+                                <span>Vegas Total:</span>
+                                <strong>37.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Projects:</span>
+                                <strong>43.3 pts</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>5.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">32%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 32%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-none">
+                                ⚠️ OVER 37.5<br><small>Edge: 5.8 pts - Below sharp threshold (12.0+ required)</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Houston Texans 37.1, Las Vegas Raiders 6.2
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">New England Patriots @ Baltimore Ravens</div>
+                    <div class="game-time">🕐 12/22/25 01:20 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Baltimore Ravens -1.5</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>+31.7</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>+33.2 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ Baltimore Ravens -1.5<br><small>SHARP +EV - Model projects +31.7, edge: +33.2 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Baltimore Ravens 38.5, New England Patriots 6.8
+                    </div>
+                </div>
+        
+                <div class="game-card">
+                    <div class="matchup">San Francisco 49ers @ Indianapolis Colts</div>
+                    <div class="game-time">🕐 12/23/25 01:15 AM EDT</div>
+                    
+                    <div class="bet-section">
+
+                        <div class="bet-box bet-box-spread">
+                            <div class="bet-title bet-title-spread">📊 SPREAD</div>
+                            <div class="odds-line">
+                                <span>Vegas Line:</span>
+                                <strong>Indianapolis Colts +6.0</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Model Prediction:</span>
+                                <strong>-12.8</strong>
+                            </div>
+                            <div class="odds-line">
+                                <span>Edge:</span>
+                                <strong>-18.8 pts</strong>
+                            </div>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-pct">100%</span>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="pick pick-yes">
+                                ✅ San Francisco 49ers -6.0<br><small>SHARP +EV - Model projects -12.8, edge: -18.8 pts</small>
+                            </div>
+                        </div>
+            
+                        <div class="bet-box bet-box-total">
+                            <div class="bet-title bet-title-total">🎯 OVER/UNDER</div>
+                            <div class="pick pick-none">
+                                ❌ NO BET<br><small>Insufficient edge - pass on this total</small>
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                    <div class="prediction">
+                        📈 PREDICTED: Indianapolis Colts 17.0, San Francisco 49ers 29.8
+                    </div>
+                </div>
+        
+            </div>
+        </div>
+    </body>
+    </html>
