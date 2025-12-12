@@ -481,7 +481,7 @@ body {
 
 <div class="card game-card">
 <div class="matchup">{{matchup}}<span class="league-badge">{{analysis.league}}</span></div>
-<div class="game-time">🕐 {{game_time[:10]}}</div>
+<div class="game-time">🕐 {{game_time[0:10]}}</div>
 
 <div class="bet-section">
 {% if spread_bet %}
@@ -497,11 +497,11 @@ body {
 </div>
 <div class="odds-line">
 <span>Model Prediction:</span>
-<strong>{{spread_bet.model_prediction:+.2f}}</strong>
+<strong>{{"{:+.2f}".format(spread_bet.model_prediction)}}</strong>
 </div>
 <div class="odds-line">
 <span>Edge:</span>
-<strong>{{edge:+.2f}} goals</strong>
+<strong>{{"{:+.2f}".format(edge)}} goals</strong>
 </div>
 <div class="confidence-bar-container">
 <div class="confidence-label">
@@ -544,11 +544,11 @@ body {
 </div>
 <div class="odds-line">
 <span>Model Projects:</span>
-<strong>{{total_bet.model_prediction:.2f}} goals</strong>
+<strong>{{"{:.2f}".format(total_bet.model_prediction)}} goals</strong>
 </div>
 <div class="odds-line">
 <span>Edge:</span>
-<strong>{{abs(edge):.2f}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
+<strong>{{"{:.2f}".format(edge|abs)}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
 </div>
 <div class="confidence-bar-container">
 <div class="confidence-label">
