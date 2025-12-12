@@ -51,10 +51,11 @@
       "latest_odds": -102,
       "game_time": "2025-12-12T03:10:00Z",
       "tracked_at": "2025-12-11T16:32:25.973979-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "win",
+      "result": "WIN",
       "actual_reb": null,
-      "last_updated": "2025-12-11T19:45:23.934976-05:00"
+      "last_updated": "2025-12-11T19:45:23.934976-05:00",
+      "updated_at": "2025-12-12T06:00:03.813510-05:00"
     },
     {
       "pick_id": "Nique Clifford_3.5_under_2025-12-12T03:10:00Z",
@@ -69,10 +70,11 @@
       "latest_odds": -110,
       "game_time": "2025-12-12T03:10:00Z",
       "tracked_at": "2025-12-11T16:47:13.021631-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "loss",
+      "result": "LOSS",
       "actual_reb": null,
-      "last_updated": "2025-12-11T17:47:39.855817-05:00"
+      "last_updated": "2025-12-11T17:47:39.855817-05:00",
+      "updated_at": "2025-12-12T06:00:03.813510-05:00"
     },
     {
       "pick_id": "Kevin Porter Jr._5.5_under_2025-12-12T01:10:00Z",
@@ -263,12 +265,13 @@
       "ai_score": 10.0,
       "odds": 120,
       "opening_odds": 120,
-      "latest_odds": 120,
+      "latest_odds": 114,
       "game_time": "2025-12-13T00:10:00Z",
       "tracked_at": "2025-12-12T00:43:13.864706-05:00",
       "status": "pending",
       "result": null,
-      "actual_reb": null
+      "actual_reb": null,
+      "last_updated": "2025-12-12T06:00:10.174143-05:00"
     },
     {
       "pick_id": "Jaylen Wells_4.5_under_2025-12-13T01:10:00Z",
@@ -303,17 +306,51 @@
       "status": "pending",
       "result": null,
       "actual_reb": null
+    },
+    {
+      "pick_id": "Brandon Miller_4.5_under_2025-12-13T00:10:00Z",
+      "player": "Brandon Miller",
+      "prop_line": 4.5,
+      "bet_type": "under",
+      "team": "Charlotte Hornets",
+      "opponent": "Chicago Bulls",
+      "ai_score": 10.0,
+      "odds": 132,
+      "opening_odds": 132,
+      "latest_odds": 132,
+      "game_time": "2025-12-13T00:10:00Z",
+      "tracked_at": "2025-12-12T06:00:10.171804-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_reb": null
+    },
+    {
+      "pick_id": "Cedric Coward_7.5_under_2025-12-13T01:10:00Z",
+      "player": "Cedric Coward",
+      "prop_line": 7.5,
+      "bet_type": "under",
+      "team": "Memphis Grizzlies",
+      "opponent": "Utah Jazz",
+      "ai_score": 10.0,
+      "odds": 102,
+      "opening_odds": 102,
+      "latest_odds": 102,
+      "game_time": "2025-12-13T01:10:00Z",
+      "tracked_at": "2025-12-12T06:00:10.175333-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_reb": null
     }
   ],
   "summary": {
-    "total": 17,
-    "wins": 6,
-    "losses": 1,
+    "total": 19,
+    "wins": 7,
+    "losses": 2,
     "pending": 10,
-    "win_rate": 85.71428571428571,
-    "roi": 4.46,
-    "roi_pct": 26.235294117647058,
-    "clv_rate": 23.52941176470588,
-    "clv_count": "4/17"
+    "win_rate": 77.77777777777779,
+    "roi": 4.37,
+    "roi_pct": 23.0,
+    "clv_rate": 26.31578947368421,
+    "clv_count": "5/19"
   }
 }
