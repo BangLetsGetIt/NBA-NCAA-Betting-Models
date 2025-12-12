@@ -593,10 +593,11 @@
       "latest_odds": 100,
       "game_time": "2025-12-12T01:10:00Z",
       "tracked_at": "2025-12-11T16:10:36.519920-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "loss",
+      "result": "LOSS",
       "actual_3pm": null,
-      "last_updated": "2025-12-11T19:44:54.739721-05:00"
+      "last_updated": "2025-12-11T19:45:18.967791-05:00",
+      "updated_at": "2025-12-12T00:43:27.969304-05:00"
     },
     {
       "pick_id": "James Harden_2.5_over_2025-12-12T01:10:00Z",
@@ -611,10 +612,11 @@
       "latest_odds": -158,
       "game_time": "2025-12-12T01:10:00Z",
       "tracked_at": "2025-12-11T16:10:36.521430-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "win",
+      "result": "WIN",
       "actual_3pm": null,
-      "last_updated": "2025-12-11T19:44:54.741094-05:00"
+      "last_updated": "2025-12-11T19:45:18.968783-05:00",
+      "updated_at": "2025-12-12T00:43:27.969304-05:00"
     },
     {
       "pick_id": "Keegan Murray_2.5_under_2025-12-12T03:10:00Z",
@@ -632,7 +634,7 @@
       "status": "pending",
       "result": null,
       "actual_3pm": null,
-      "last_updated": "2025-12-11T19:44:54.741909-05:00"
+      "last_updated": "2025-12-11T19:45:18.969459-05:00"
     },
     {
       "pick_id": "Jordan Poole_1.5_over_2025-12-12T01:10:00Z",
@@ -647,9 +649,10 @@
       "latest_odds": -184,
       "game_time": "2025-12-12T01:10:00Z",
       "tracked_at": "2025-12-11T19:25:47.031704-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": null,
+      "updated_at": "2025-12-12T00:43:27.969304-05:00"
     },
     {
       "pick_id": "Brandon Miller_3.5_under_2025-12-13T00:10:00Z",
@@ -667,18 +670,70 @@
       "status": "pending",
       "result": null,
       "actual_3pm": null,
-      "last_updated": "2025-12-11T19:44:54.742560-05:00"
+      "last_updated": "2025-12-12T00:49:03.423915-05:00"
+    },
+    {
+      "pick_id": "Anthony Edwards_2.5_over_2025-12-13T03:10:00Z",
+      "player": "Anthony Edwards",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "team": "Minnesota Timberwolves",
+      "opponent": "Golden State Warriors",
+      "ai_score": 10.0,
+      "odds": -172,
+      "opening_odds": -172,
+      "latest_odds": -168,
+      "game_time": "2025-12-13T03:10:00Z",
+      "tracked_at": "2025-12-12T00:43:32.288014-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null,
+      "last_updated": "2025-12-12T00:49:03.417166-05:00"
+    },
+    {
+      "pick_id": "Jalen Williams_1.5_under_2025-12-14T02:00:00Z",
+      "player": "Jalen Williams",
+      "prop_line": 1.5,
+      "bet_type": "under",
+      "team": "Oklahoma City Thunder",
+      "opponent": "San Antonio Spurs",
+      "ai_score": 10.0,
+      "odds": 162,
+      "opening_odds": 162,
+      "latest_odds": 162,
+      "game_time": "2025-12-14T02:00:00Z",
+      "tracked_at": "2025-12-12T00:43:32.290168-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
+    },
+    {
+      "pick_id": "Ja Morant_1.5_under_2025-12-13T01:10:00Z",
+      "player": "Ja Morant",
+      "prop_line": 1.5,
+      "bet_type": "under",
+      "team": "Memphis Grizzlies",
+      "opponent": "Utah Jazz",
+      "ai_score": 9.7,
+      "odds": -108,
+      "opening_odds": -108,
+      "latest_odds": -108,
+      "game_time": "2025-12-13T01:10:00Z",
+      "tracked_at": "2025-12-12T00:43:32.290906-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null
     }
   ],
   "summary": {
-    "total": 40,
-    "wins": 12,
-    "losses": 23,
+    "total": 43,
+    "wins": 14,
+    "losses": 24,
     "pending": 5,
-    "win_rate": 34.285714285714285,
-    "roi": -12.08,
-    "roi_pct": -30.2,
-    "clv_rate": 6.666666666666667,
-    "clv_count": "1/15"
+    "win_rate": 36.84210526315789,
+    "roi": -11.26,
+    "roi_pct": -26.186046511627907,
+    "clv_rate": 5.555555555555555,
+    "clv_count": "1/18"
   }
 }

@@ -3072,11 +3072,11 @@
       "edge": 8.5,
       "pick": "\u2705 BET: New Orleans Pelicans +5.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 143,
+      "actual_away_score": 120
     },
     {
       "pick_id": "New Orleans Pelicans_Portland Trail Blazers_2025-12-12T01:10:00Z_total",
@@ -3091,11 +3091,11 @@
       "edge": -16.2,
       "pick": "\u2705 BET: UNDER 237.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 143,
+      "actual_away_score": 120
     },
     {
       "pick_id": "Sacramento Kings_Denver Nuggets_2025-12-12T03:10:00Z_spread",
@@ -3110,11 +3110,11 @@
       "edge": 12.1,
       "pick": "\u2705 BET: Sacramento Kings +9.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 105,
+      "actual_away_score": 136
     },
     {
       "pick_id": "Sacramento Kings_Denver Nuggets_2025-12-12T03:10:00Z_total",
@@ -3129,11 +3129,11 @@
       "edge": -13.6,
       "pick": "\u2705 BET: UNDER 239.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 105,
+      "actual_away_score": 136
     },
     {
       "pick_id": "Charlotte Hornets_Chicago Bulls_2025-12-13T00:10:00Z_total",
@@ -3210,13 +3210,32 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null
+    },
+    {
+      "pick_id": "Orlando Magic_New York Knicks_2025-12-13T22:30:00Z_spread",
+      "date_logged": "2025-12-12T00:43:08.524846",
+      "game_date": "2025-12-13T22:30:00Z",
+      "home_team": "Orlando Magic",
+      "away_team": "New York Knicks",
+      "matchup": "New York Knicks @ Orlando Magic",
+      "pick_type": "Spread",
+      "model_line": 4.3,
+      "market_line": 4.0,
+      "edge": 8.3,
+      "pick": "\u2705 BET: Orlando Magic +4.0",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
     }
   ],
   "summary": {
-    "total_picks": 169,
-    "wins": 97,
-    "losses": 64,
+    "total_picks": 170,
+    "wins": 98,
+    "losses": 67,
     "pushes": 0,
-    "pending": 8
+    "pending": 5
   }
 }
