@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soccer Totals Model - Sharp +EV Unders</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: #0a1628;
+    color: #ffffff;
+    padding: 1rem;
+    min-height: 100vh;
+}
+.container { max-width: 1400px; margin: 0 auto; }
+.card {
+    background: #1a2332;
+    border-radius: 1.25rem;
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+.header-card {
+    text-align: center;
+    background: #1a2332;
+    padding: 2rem 1.5rem;
+}
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+.subtitle {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+.alert {
+    background: #0d2b1f;
+    border-left: 4px solid #00ff88;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+}
+.alert-text {
+    color: #00ff88;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+.alert-warning {
+    background: #2a1f10;
+    border-left-color: #ffa726;
+}
+.alert-warning .alert-text {
+    color: #ffa726;
+}
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #d4af37;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #d4af37;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a2332;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+th, td {
+    padding: 0.875rem;
+    text-align: left;
+    border-bottom: 1px solid #2a3441;
+    font-size: 0.875rem;
+}
+th {
+    background: #1a2332;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+tr:hover {
+    background: #2a3441;
+}
+.recommend {
+    background: linear-gradient(135deg, #0d2b1f, #0a1f15);
+    border-left: 4px solid #00ff88;
+    font-weight: 600;
+}
+.recommend.sharp {
+    background: linear-gradient(135deg, #0f3524, #0c2519);
+    border-left: 5px solid #00ff99;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+}
+.sharp-label {
+    background: rgba(0, 255, 153, 0.2);
+    color: #00ff99;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+}
+.neutral {
+    background: #1a2332;
+}
+.league-badge {
+    background: rgba(96, 165, 250, 0.2);
+    color: #60a5fa;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.odds-badge {
+    background: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.edge-positive {
+    color: #00ff88;
+    font-weight: 700;
+}
+.edge-neutral {
+    color: #ffa726;
+}
+.ev-badge {
+    background: rgba(0, 255, 136, 0.15);
+    color: #00ff88;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+.kelly-badge {
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+.confidence {
+    font-size: 0.8125rem;
+}
+.conf-high { color: #00ff88; }
+.conf-med { color: #ffa726; }
+.conf-low { color: #ef4444; }
+.stats {
+    color: #94a3b8;
+    font-size: 0.8125rem;
+}
+.methodology {
+    background: #1a2332;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    color: #94a3b8;
+    font-size: 0.8125rem;
+    line-height: 1.8;
+}
+.methodology h3 {
+    color: #d4af37;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+.methodology p {
+    margin-bottom: 0.5rem;
+}
+.footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+@media (max-width: 768px) {
+    body { padding: 0.75rem; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .card { padding: 1rem; }
+    table { font-size: 0.75rem; display: block; overflow-x: auto; }
+    th, td { padding: 0.5rem; }
+    .header-card { padding: 1.5rem 1rem; }
+}
+@media (max-width: 480px) {
+    th, td { padding: 0.4rem; font-size: 0.7rem; }
+    .subtitle { font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card header-card">
+<h1>⚽ Soccer Totals Model - Sharp +EV Unders</h1>
+<div class="subtitle">Focusing on Unders Value | Generated December 11, 2025 at 11:45 PM ET</div>
+</div>
+
+
+<div class="card">
+<div class="alert">
+<div class="alert-text">🔥 21 RECOMMENDED BET(S) - Sharp +EV Unders with 8.0%+ Edge</div>
+</div>
+
+<h2>💎 RECOMMENDED PLAYS (Unders +EV)</h2>
+<table>
+<tr>
+<th>Match</th><th>League</th><th>Line</th><th>Odds</th><th>Book</th>
+<th>Pred Total</th><th>Under Prob</th><th>Edge</th><th>EV</th><th>Kelly %</th><th>Conf</th>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">BetOnline.ag</td>
+<td class="stats">2.9</td>
+<td class="stats">72.1%</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">LowVig.ag</td>
+<td class="stats">2.9</td>
+<td class="stats">72.1%</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-122</span></td>
+<td class="stats">Bovada</td>
+<td class="stats">2.9</td>
+<td class="stats">75.8%</td>
+<td class="edge-positive">+20.9%</td>
+<td><span class="ev-badge">+38.0%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+123</span></td>
+<td class="stats">BetRivers</td>
+<td class="stats">2.9</td>
+<td class="stats">68.3%</td>
+<td class="edge-positive">+23.5%</td>
+<td><span class="ev-badge">+52.4%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+115</span></td>
+<td class="stats">BetMGM</td>
+<td class="stats">2.9</td>
+<td class="stats">68.3%</td>
+<td class="edge-positive">+21.8%</td>
+<td><span class="ev-badge">+46.9%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">BetUS</td>
+<td class="stats">2.9</td>
+<td class="stats">72.1%</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">BetOnline.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">71.6%</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">LowVig.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">71.6%</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">Bovada</td>
+<td class="stats">3.0</td>
+<td class="stats">71.6%</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">BetRivers</td>
+<td class="stats">3.0</td>
+<td class="stats">67.8%</td>
+<td class="edge-positive">+19.0%</td>
+<td><span class="ev-badge">+39.0%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">LowVig.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">74.4%</td>
+<td class="edge-positive">+21.3%</td>
+<td><span class="ev-badge">+40.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">BetOnline.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">74.4%</td>
+<td class="edge-positive">+21.3%</td>
+<td><span class="ev-badge">+40.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">Bovada</td>
+<td class="stats">3.0</td>
+<td class="stats">74.4%</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.8%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+128</span></td>
+<td class="stats">BetRivers</td>
+<td class="stats">3.0</td>
+<td class="stats">59.6%</td>
+<td class="edge-positive">+15.7%</td>
+<td><span class="ev-badge">+35.8%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+115</span></td>
+<td class="stats">BetMGM</td>
+<td class="stats">3.0</td>
+<td class="stats">59.6%</td>
+<td class="edge-positive">+13.1%</td>
+<td><span class="ev-badge">+28.1%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">BetUS</td>
+<td class="stats">3.0</td>
+<td class="stats">74.4%</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.8%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">LowVig.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">70.6%</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">BetOnline.ag</td>
+<td class="stats">3.0</td>
+<td class="stats">70.6%</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">Bovada</td>
+<td class="stats">3.0</td>
+<td class="stats">70.6%</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend sharp">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+120</span></td>
+<td class="stats">BetRivers</td>
+<td class="stats">3.0</td>
+<td class="stats">59.6%</td>
+<td class="edge-positive">+14.1%</td>
+<td><span class="ev-badge">+31.1%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+<tr class="recommend ">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+110</span></td>
+<td class="stats">BetMGM</td>
+<td class="stats">3.0</td>
+<td class="stats">59.6%</td>
+<td class="edge-positive">+12.0%</td>
+<td><span class="ev-badge">+25.1%</span></td>
+<td><span class="kelly-badge">5.00%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+</table>
+</div>
+
+
+<div class="card">
+<h2>📊 ALL TOTALS ANALYSIS</h2>
+<table>
+<tr>
+<th>Match</th><th>League</th><th>Line</th><th>Odds</th><th>Pred Total</th><th>Edge</th><th>EV</th><th>Conf</th>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+123</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+23.5%</td>
+<td><span class="ev-badge">+52.4%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+115</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+21.8%</td>
+<td><span class="ev-badge">+46.9%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+22.6%</td>
+<td><span class="ev-badge">+45.6%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+20.6%</td>
+<td><span class="ev-badge">+41.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.8%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.8%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+21.3%</td>
+<td><span class="ev-badge">+40.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+21.3%</td>
+<td><span class="ev-badge">+40.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Villarreal vs Barcelona</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+19.0%</td>
+<td><span class="ev-badge">+39.0%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Barcelona vs CA Osasuna</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 4.0</td>
+<td><span class="odds-badge">-122</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+20.9%</td>
+<td><span class="ev-badge">+38.0%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+128</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+15.7%</td>
+<td><span class="ev-badge">+35.8%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Villarreal vs Barcelona</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Villarreal vs Barcelona</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Villarreal vs Barcelona</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.75</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+17.4%</td>
+<td><span class="ev-badge">+32.2%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+120</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+14.1%</td>
+<td><span class="ev-badge">+31.1%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+115</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+13.1%</td>
+<td><span class="ev-badge">+28.1%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="recommend">
+<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">+110</span></td>
+<td class="stats">3.0</td>
+<td class="edge-positive">+12.0%</td>
+<td><span class="ev-badge">+25.1%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-106</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+23.1%</td>
+<td><span class="ev-badge">+44.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-110</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+22.1%</td>
+<td><span class="ev-badge">+42.3%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+21.7%</td>
+<td><span class="ev-badge">+41.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-113</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+21.5%</td>
+<td><span class="ev-badge">+40.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Metz vs Paris Saint Germain</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-120</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+20.0%</td>
+<td><span class="ev-badge">+36.6%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-118</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+16.6%</td>
+<td><span class="ev-badge">+30.7%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-120</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+16.2%</td>
+<td><span class="ev-badge">+29.7%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-121</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+16.0%</td>
+<td><span class="ev-badge">+29.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-121</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+16.0%</td>
+<td><span class="ev-badge">+29.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-122</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+15.8%</td>
+<td><span class="ev-badge">+28.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-123</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+15.6%</td>
+<td><span class="ev-badge">+28.3%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-123</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+15.6%</td>
+<td><span class="ev-badge">+28.3%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-152</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+14.2%</td>
+<td><span class="ev-badge">+23.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+10.9%</td>
+<td><span class="ev-badge">+22.3%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Marseille vs AS Monaco</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-160</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+13.0%</td>
+<td><span class="ev-badge">+21.1%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-162</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+12.7%</td>
+<td><span class="ev-badge">+20.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RC Lens vs Nice</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-165</span></td>
+<td class="stats">2.5</td>
+<td class="edge-positive">+12.2%</td>
+<td><span class="ev-badge">+19.7%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-143</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+9.6%</td>
+<td><span class="ev-badge">+16.3%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-145</span></td>
+<td class="stats">2.9</td>
+<td class="edge-positive">+9.3%</td>
+<td><span class="ev-badge">+15.6%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+6.2%</td>
+<td><span class="ev-badge">+11.9%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+6.2%</td>
+<td><span class="ev-badge">+11.9%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+6.2%</td>
+<td><span class="ev-badge">+11.9%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Real Madrid vs Sevilla</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-114</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+6.2%</td>
+<td><span class="ev-badge">+11.7%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Real Madrid vs Sevilla</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-114</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+6.2%</td>
+<td><span class="ev-badge">+11.7%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">-114</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+6.1%</td>
+<td><span class="ev-badge">+11.4%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">-114</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+6.1%</td>
+<td><span class="ev-badge">+11.4%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Real Madrid vs Sevilla</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-115</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+6.0%</td>
+<td><span class="ev-badge">+11.3%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+125</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+4.5%</td>
+<td><span class="ev-badge">+10.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+125</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+4.5%</td>
+<td><span class="ev-badge">+10.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-167</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+5.9%</td>
+<td><span class="ev-badge">+9.4%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-162</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+5.8%</td>
+<td><span class="ev-badge">+9.4%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">-120</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+4.8%</td>
+<td><span class="ev-badge">+8.8%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-165</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+5.4%</td>
+<td><span class="ev-badge">+8.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-175</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+4.8%</td>
+<td><span class="ev-badge">+7.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-182</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+3.9%</td>
+<td><span class="ev-badge">+6.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atlético Madrid vs Valencia</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+114</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+2.8%</td>
+<td><span class="ev-badge">+6.0%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-185</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+3.5%</td>
+<td><span class="ev-badge">+5.4%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+117</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+2.4%</td>
+<td><span class="ev-badge">+5.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Eintracht Frankfurt vs Augsburg</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-186</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+3.4%</td>
+<td><span class="ev-badge">+5.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+110</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+2.5%</td>
+<td><span class="ev-badge">+5.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-124</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+2.8%</td>
+<td><span class="ev-badge">+5.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-124</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+2.8%</td>
+<td><span class="ev-badge">+5.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+116</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+2.2%</td>
+<td><span class="ev-badge">+4.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Levante vs Villarreal</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.6</td>
+<td class="edge-neutral">+2.3%</td>
+<td><span class="ev-badge">+4.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-125</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+2.6%</td>
+<td><span class="ev-badge">+4.6%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.25</td>
+<td><span class="odds-badge">-125</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+2.6%</td>
+<td><span class="ev-badge">+4.6%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Rennes vs Brest</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+108</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+1.4%</td>
+<td><span class="ev-badge">+3.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+103</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+0.8%</td>
+<td><span class="ev-badge">+1.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+103</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+0.8%</td>
+<td><span class="ev-badge">+1.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atlético Madrid vs Valencia</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.7%</td>
+<td><span class="ev-badge">+1.5%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Rennes vs Brest</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.7%</td>
+<td><span class="ev-badge">+1.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.6%</td>
+<td><span class="ev-badge">+1.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.6%</td>
+<td><span class="ev-badge">+1.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.6%</td>
+<td><span class="ev-badge">+1.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.6%</td>
+<td><span class="ev-badge">+1.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Monchengladbach vs VfL Wolfsburg</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+133</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.5%</td>
+<td><span class="ev-badge">+1.2%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Real Madrid vs Sevilla</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 3.5</td>
+<td><span class="odds-badge">-143</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+0.7%</td>
+<td><span class="ev-badge">+1.1%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Hamburger SV vs Eintracht Frankfurt</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+132</span></td>
+<td class="stats">2.9</td>
+<td class="edge-neutral">+0.3%</td>
+<td><span class="ev-badge">+0.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Rennes vs Brest</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.3%</td>
+<td><span class="ev-badge">+0.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Rennes vs Brest</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.3%</td>
+<td><span class="ev-badge">+0.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Rennes vs Brest</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.3%</td>
+<td><span class="ev-badge">+0.5%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Dortmund vs Borussia Monchengladbach</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+138</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+0.1%</td>
+<td><span class="ev-badge">+0.3%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-neutral">+0.1%</td>
+<td><span class="ev-badge">+0.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Strasbourg vs Lorient</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.0%</td>
+<td><span class="ev-badge">+0.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Strasbourg vs Lorient</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.0%</td>
+<td><span class="ev-badge">+0.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Strasbourg vs Lorient</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.0%</td>
+<td><span class="ev-badge">+0.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Strasbourg vs Lorient</strong></td>
+<td><span class="league-badge">Ligue 1</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">2.5</td>
+<td class="edge-neutral">+0.0%</td>
+<td><span class="ev-badge">+0.0%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Eintracht Frankfurt vs Augsburg</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+130</span></td>
+<td class="stats">2.9</td>
+<td class="edge-negative">-0.0%</td>
+<td><span class="ev-badge">-0.1%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Monchengladbach vs VfL Wolfsburg</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+130</span></td>
+<td class="stats">2.9</td>
+<td class="edge-negative">-0.0%</td>
+<td><span class="ev-badge">-0.1%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.5</td>
+<td><span class="odds-badge">+105</span></td>
+<td class="stats">2.6</td>
+<td class="edge-negative">-0.3%</td>
+<td><span class="ev-badge">-0.6%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Dortmund vs Borussia Monchengladbach</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Dortmund vs Borussia Monchengladbach</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Borussia Dortmund vs Borussia Monchengladbach</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+100</span></td>
+<td class="stats">3.0</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.7%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.6</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.6</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atalanta BC vs Cagliari</strong></td>
+<td><span class="league-badge">Serie A</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-108</span></td>
+<td class="stats">2.6</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.8%</span></td>
+<td class="confidence conf-low">55%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>RB Leipzig vs Bayer Leverkusen</strong></td>
+<td><span class="league-badge">Bundesliga</span></td>
+<td class="stats">U 3.0</td>
+<td><span class="odds-badge">+102</span></td>
+<td class="stats">3.1</td>
+<td class="edge-negative">-0.4%</td>
+<td><span class="ev-badge">-0.8%</span></td>
+<td class="confidence conf-high">85%</td>
+</tr>
+
+
+
+
+<tr class="neutral">
+<td><strong>Atlético Madrid vs Valencia</strong></td>
+<td><span class="league-badge">La Liga</span></td>
+<td class="stats">U 2.75</td>
+<td><span class="odds-badge">-112</span></td>
+<td class="stats">2.5</td>
+<td class="edge-negative">-0.7%</td>
+<td><span class="ev-badge">-1.2%</span></td>
+<td class="confidence conf-med">70%</td>
+</tr>
+
+</table>
+</div>
+
+<div class="card methodology">
+<h3>📘 Model Methodology</h3>
+<p><strong>Focus:</strong> Unders value identification across major soccer leagues</p>
+<p><strong>Prediction Model:</strong> Based on team defensive/offensive ratings and league averages</p>
+<p><strong>Sharp Bet Criteria:</strong> Minimum 8.0% edge, positive EV, confidence ≥70.0%</p>
+<p><strong>Kelly %:</strong> Fractional Kelly (25.0%) for conservative bankroll management. Never exceeds 5%.</p>
+<p><strong>Confidence:</strong> Based on data availability for both teams. Higher confidence = more reliable ratings.</p>
+<p><strong>Edge:</strong> Model under probability minus market implied probability. Positive edge = value bet.</p>
+<p><strong>SHARP Label:</strong> Bets with 12.0%+ edge are marked as "SHARP" - highest confidence plays.</p>
+</div>
+
+<div class="footer">
+<p>Last updated: December 11, 2025 at 11:45 PM ET</p>
+<p>⚠️ Bet responsibly. This model focuses on unders value. Update team ratings regularly.</p>
+</div>
+
+</div>
+</body>
+</html>
