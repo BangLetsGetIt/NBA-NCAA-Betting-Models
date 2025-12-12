@@ -311,11 +311,25 @@ def analyze_game(game):
                 if total_edge >= CONFIDENT_TOTAL_EDGE:
                     log_confident_pick(game, 'TOTAL', total_edge, predicted_total, market_total, recommendation)
     
+    # Format game time
+    game_time_formatted = commence_time[:10] if commence_time else 'TBD'  # Default to date only
+    if commence_time:
+        try:
+            from datetime import datetime
+            import pytz
+            dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+            et = pytz.timezone('US/Eastern')
+            dt_et = dt.astimezone(et)
+            game_time_formatted = dt_et.strftime('%m/%d %I:%M %p ET')
+        except:
+            pass
+    
     return {
         'home_team': home_team,
         'away_team': away_team,
         'league': league,
         'commence_time': commence_time,
+        'game_time_formatted': game_time_formatted,
         'predicted_spread': predicted_spread,
         'predicted_total': predicted_total,
         'home_score': home_score,
@@ -492,14 +506,13 @@ body {
 </div>
 
 {% for analysis in analyses %}
-{% set game_time = analysis.commence_time %}
 {% set matchup = analysis.away_team + " @ " + analysis.home_team %}
 {% set spread_bet = analysis.bets|selectattr('type', 'equalto', 'SPREAD')|first %}
 {% set total_bet = analysis.bets|selectattr('type', 'equalto', 'TOTAL')|first %}
 
 <div class="card game-card">
 <div class="matchup">{{matchup}}<span class="league-badge">{{analysis.league}}</span></div>
-<div class="game-time">🕐 {{game_time[0:10]}}</div>
+<div class="game-time">🕐 {{analysis.game_time_formatted}}</div>
 
 <div class="bet-section">
 {% if spread_bet %}

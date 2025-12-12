@@ -19,7 +19,7 @@ from nba_api.stats.endpoints import leaguedashplayerstats, leaguedashteamstats, 
 from nba_api.stats.static import players
 
 # Configuration
-API_KEY = os.environ.get('ODDS_API_KEY', 'c32141ecbcaa976a824db8cd16031208')
+API_KEY = os.environ.get('ODDS_API_KEY', 'faabaed9ec8604dcc24db96c53d6ae01')
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "nba_3pt_props.html")
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_3pt_props_tracking.json")
@@ -930,6 +930,19 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
     date_str = now.strftime('%m/%d/%y')
     time_str = now.strftime('%I:%M %p ET')
     
+    # Helper function to format game time
+    def format_game_time(game_time_str):
+        """Format game time from ISO format to readable date/time"""
+        try:
+            if not game_time_str:
+                return 'TBD'
+            dt_obj = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+            et_tz = pytz.timezone('US/Eastern')
+            dt_et = dt_obj.astimezone(et_tz)
+            return dt_et.strftime('%m/%d %I:%M %p ET')
+        except:
+            return game_time_str if game_time_str else 'TBD'
+    
     # Helper function to get CLV for a play
     def get_play_clv(play):
         if not tracking_data or not tracking_data.get('picks'):
@@ -1025,6 +1038,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         for i, play in enumerate(over_plays, 1):
             tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
+            game_time_formatted = format_game_time(play.get('game_time', ''))
             
             # Get CLV for this play
             clv_info = get_play_clv(play)
@@ -1050,6 +1064,10 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                         <div class="odds-line">
                             <span>Matchup:</span>
                             <strong>{play['team']} vs {play['opponent']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>🕐 Game Time:</span>
+                            <strong>{game_time_formatted}</strong>
                         </div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
@@ -1089,6 +1107,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         for i, play in enumerate(under_plays, 1):
             tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
+            game_time_formatted = format_game_time(play.get('game_time', ''))
             
             # Get CLV for this play
             clv_info = get_play_clv(play)
@@ -1114,6 +1133,10 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                         <div class="odds-line">
                             <span>Matchup:</span>
                             <strong>{play['team']} vs {play['opponent']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>🕐 Game Time:</span>
+                            <strong>{game_time_formatted}</strong>
                         </div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
