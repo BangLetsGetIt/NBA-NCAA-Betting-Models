@@ -1,0 +1,186 @@
+==========================================
+NBA Model Run: Sat Nov 22 01:11:29 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 11 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 29 games from API[0m
+[92m✓ Found 22 completed games[0m
+  ✓ Updating: Denver Nuggets 112 @ Houston Rockets 109
+    Result: Loss
+  ✓ Updating: Portland Trail Blazers 127 @ Golden State Warriors 123
+    Result: Loss
+  ✓ Updating: Portland Trail Blazers 127 @ Golden State Warriors 123
+    Result: Loss
+  ✓ Updating: Indiana Pacers 109 @ Cleveland Cavaliers 120
+    Result: Win
+  ✓ Updating: Washington Wizards 110 @ Toronto Raptors 140
+    Result: Loss
+  ✓ Updating: Miami Heat 143 @ Chicago Bulls 107
+    Result: Loss
+  ✓ Updating: New Orleans Pelicans 115 @ Dallas Mavericks 118
+    Result: Loss
+  ✓ Updating: New Orleans Pelicans 115 @ Dallas Mavericks 118
+    Result: Loss
+  ✓ Updating: Minnesota Timberwolves 113 @ Phoenix Suns 114
+    Result: Win
+  ✓ Updating: Denver Nuggets 112 @ Houston Rockets 109
+    Result: Win
+  ✓ Updating: Oklahoma City Thunder 144 @ Utah Jazz 112
+    Result: Loss
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[92m✅ Updated 11 picks! Record: 39-35-0[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched odds for 7 total games[0m
+[92m✓ Filtered to 7 games in next 7 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[91m❌ Missing stats for Charlotte Hornets or Los Angeles Clippers[0m
+[91m❌ Missing stats for Charlotte Hornets or Los Angeles Clippers[0m
+[91m❌ Skipping Los Angeles Clippers @ Charlotte Hornets - missing model data[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Orlando Magic +1.5 (Edge: +6.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 229.5 (Edge: -11.6)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: New Orleans Pelicans +9.0 (Edge: +7.8)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 244.5 (Edge: -15.7)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Milwaukee Bucks +9.0 (Edge: +14.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 236.5 (Edge: -9.5)[0m
+
+[1m[92m✅ Analyzed 6 games with complete odds[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mNew York Knicks @ Orlando Magic[0m
+  🕐 11/22/25 05:10 PM EST
+  📊 Spread: Market +1.5 | Model +4.8
+  🎯 Total: Market 229.5 | Model 217.9
+  [92m✅ BET: Orlando Magic +1.5[0m
+     [96mModel projects Orlando Magic to win outright, easily covering +1.5.[0m
+  [92m✅ BET: UNDER 229.5[0m
+     [96mModel projects 218 total points, bet the UNDER[0m
+  📈 Predicted: New York Knicks 107, Orlando Magic 111
+
+[1m[96mAtlanta Hawks @ New Orleans Pelicans[0m
+  🕐 11/22/25 07:10 PM EST
+  📊 Spread: Market +9.0 | Model -1.2
+  🎯 Total: Market 231.5 | Model 228.7
+  [92m✅ BET: New Orleans Pelicans +9.0[0m
+     [96mModel projects New Orleans Pelicans to lose by only 1.2, covering +9.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Atlanta Hawks 115, New Orleans Pelicans 114
+
+[1m[96mWashington Wizards @ Chicago Bulls[0m
+  🕐 11/22/25 08:10 PM EST
+  📊 Spread: Market -12.5 | Model +12.9
+  🎯 Total: Market 244.5 | Model 228.8
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+0.4)[0m
+  [92m✅ BET: UNDER 244.5[0m
+     [96mModel projects 229 total points, bet the UNDER[0m
+  📈 Predicted: Washington Wizards 108, Chicago Bulls 121
+
+[1m[96mDetroit Pistons @ Milwaukee Bucks[0m
+  🕐 11/22/25 08:10 PM EST
+  📊 Spread: Market +9.0 | Model +5.4
+  🎯 Total: Market 224.5 | Model 228.0
+  [92m✅ BET: Milwaukee Bucks +9.0[0m
+     [96mModel projects Milwaukee Bucks to win outright, easily covering +9.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Detroit Pistons 111, Milwaukee Bucks 117
+
+[1m[96mMemphis Grizzlies @ Dallas Mavericks[0m
+  🕐 11/22/25 08:40 PM EST
+  📊 Spread: Market -2.5 | Model +3.7
+  🎯 Total: Market 226.5 | Model 230.2
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.2)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Memphis Grizzlies 113, Dallas Mavericks 117
+
+[1m[96mSacramento Kings @ Denver Nuggets[0m
+  🕐 11/22/25 10:10 PM EST
+  📊 Spread: Market -12.5 | Model +9.6
+  🎯 Total: Market 236.5 | Model 227.0
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-2.9)[0m
+  [92m✅ BET: UNDER 236.5[0m
+     [96mModel projects 227 total points, bet the UNDER[0m
+  📈 Predicted: Sacramento Kings 109, Denver Nuggets 118
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 80[0m
+[92mRecord: 39-35-0[0m
+[92mWin Rate: 52.7%[0m
+[91mProfit: -0.34 units[0m
+[91mROI: -0.4%[0m
+[1m==========================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 273e769] Update model outputs - 2025-11-22 01:12:14
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 487 insertions(+), 452 deletions(-)
+ create mode 100644 ncaa/ncaab_outputv2.html
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   44dbbbb..273e769  main -> main
+✅ Successfully pushed to GitHub!

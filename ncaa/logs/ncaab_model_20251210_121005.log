@@ -1,0 +1,203 @@
+==========================================
+NCAA Model Run: Wed Dec 10 12:10:05 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 17 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-10
+  Newest: 2025-12-11
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 96 completed games[0m
+[96mFound 96 completed games from API[0m
+[93m⚠️  No match found: Norfolk State Spartans @ Baylor Bears (2025-12-10)[0m
+[93m⚠️  No match found: Miami (OH) RedHawks @ UNC Asheville Bulldogs (2025-12-10)[0m
+[93m⚠️  No match found: Bryant Bulldogs @ Iona Gaels (2025-12-11)[0m
+[93m⚠️  No match found: Charleston Cougars @ South Florida Bulls (2025-12-11)[0m
+[93m⚠️  No match found: Delaware Blue Hens @ GW Revolutionaries (2025-12-11)[0m
+[93m⚠️  No match found: Liberty Flames @ NC State Wolfpack (2025-12-11)[0m
+[93m⚠️  No match found: Western Kentucky Hilltoppers @ Marshall Thundering Herd (2025-12-11)[0m
+[93m⚠️  No match found: New Mexico Lobos @ VCU Rams (2025-12-11)[0m
+[93m⚠️  No match found: Arkansas-Pine Bluff Golden Lions @ Tulsa Golden Hurricane (2025-12-11)[0m
+[93m⚠️  No match found: Eastern Kentucky Colonels @ Eastern Illinois Panthers (2025-12-11)[0m
+[93m⚠️  No match found: Jackson State Tigers @ Houston Cougars (2025-12-11)[0m
+[93m⚠️  No match found: Wisconsin Badgers @ Nebraska Cornhuskers (2025-12-11)[0m
+[93m⚠️  No match found: Fresno State Bulldogs @ CSU Northridge Matadors (2025-12-11)[0m
+[93m⚠️  No match found: Albany Great Danes @ Yale Bulldogs (2025-12-10)[0m
+[93m⚠️  No match found: Arkansas-Pine Bluff Golden Lions @ Tulsa Golden Hurricane (2025-12-11)[0m
+[93m⚠️  No match found: Duquesne Dukes @ Boise State Broncos (2025-12-11)[0m
+[93m⚠️  No match found: Lamar Cardinals @ San Diego State Aztecs (2025-12-11)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 0h)[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 29 games from The Odds API[0m
+[92m✓ 28 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+
+[1m[92m✅ Analyzed 6 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Bryant @ Iona ━━━[0m
+[96m🕐 12/10 07:00 PM[0m
+[92m✅ GOOD: Bryant - Good record: 2-1 (67%) | +0.82u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +0.8 | Edge: +8.7
+  [92m✅ BET: Bryant +9.5[0m
+  [96mHIGH confidence. Model predicts Bryant covers by +8.7 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 144.9 | Edge: -3.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.6)[0m
+
+[35m📈 Bryant 72.0, Iona 72.9[0m
+
+[1m[96m━━━ GAME 2: Merrimack @ Princeton ━━━[0m
+[96m🕐 12/10 05:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +4.8 | Edge: +2.3
+  [91m❌ NO BET[0m
+  [96mEdge (+2.3) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 136.5 | Model: 144.4 | Edge: +7.9
+  [92m✅ BET: OVER 136.5[0m
+  [96mMEDIUM confidence (7.9 edge)[0m
+
+[35m📈 Merrimack 69.8, Princeton 74.6[0m
+
+[1m[96m━━━ GAME 3: Lamar @ San Diego State ━━━[0m
+[96m🕐 12/10 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -18.5 | Model: +11.5 | Edge: +7.0
+  [92m✅ BET: Lamar +18.5[0m
+  [96mHIGH confidence. Model predicts Lamar covers by +7.0 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 135.5 | Model: 141.9 | Edge: +6.4
+  [92m✅ BET: OVER 135.5[0m
+  [96mMEDIUM confidence (6.4 edge)[0m
+
+[35m📈 Lamar 65.2, San Diego State 76.7[0m
+
+[1m[96m━━━ GAME 4: Boston College @ Massachusetts ━━━[0m
+[96m🕐 12/10 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +2.5 | Model: +2.5 | Edge: +5.0
+  [92m✅ BET: Massachusetts +2.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Massachusetts by +2.5 (Market: +2.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 146.8 | Edge: +6.3
+  [92m✅ BET: OVER 140.5[0m
+  [96mMEDIUM confidence (6.3 edge)[0m
+
+[35m📈 Boston College 72.2, Massachusetts 74.7[0m
+
+[1m[96m━━━ GAME 5: Eastern Kentucky @ Eastern Illinois ━━━[0m
+[96m🕐 12/10 08:00 PM[0m
+[91m🚫 COLD: Eastern Illinois - Poor performer: 0-3 (0%) | -3.00u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: +5.5 | Model: -0.4 | Edge: +5.1
+  [92m✅ BET: Eastern Illinois +5.5[0m
+  [96mMEDIUM confidence. Model predicts Eastern Illinois covers by +5.1 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 147.1 | Edge: -3.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.4)[0m
+
+[35m📈 Eastern Kentucky 73.8, Eastern Illinois 73.4[0m
+
+[1m[96m━━━ GAME 6: Duquesne @ Boise State ━━━[0m
+[96m🕐 12/10 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -13.5 | Model: +10.3 | Edge: +3.2
+  [91m❌ NO BET[0m
+  [96mEdge (+3.2) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 149.5 | Model: 149.3 | Edge: -0.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.2)[0m
+
+[35m📈 Duquesne 69.5, Boise State 79.8[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1479[0m
+[92mRecord: 769-693-0[0m
+[92mWin Rate: 52.6%[0m
+[92mProfit: +6.79 units[0m
+[92mROI: +0.5%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 12a2591] Update model outputs - 2025-12-10 12:10:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 138 insertions(+), 1843 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   e3752e4..12a2591  main -> main
+✅ Successfully pushed to GitHub!

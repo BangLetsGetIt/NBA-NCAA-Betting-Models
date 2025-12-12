@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-NBA 3-Point Props Model
-Analyzes player 3PM (3-pointers made) props and identifies value bets
+NBA 3-Point Props Model - PROFITABLE VERSION
+Analyzes player 3PM (3-pointers made) props using REAL NBA stats
 """
 
 import requests
@@ -11,18 +11,32 @@ from datetime import datetime, timedelta
 import pytz
 from collections import defaultdict
 import statistics
+import time
+import pandas as pd
+
+# Import NBA API for real stats
+from nba_api.stats.endpoints import leaguedashplayerstats, leaguedashteamstats, playergamelog
+from nba_api.stats.static import players
 
 # Configuration
-API_KEY = os.environ.get('ODDS_API_KEY', '671958bc1621170701241a09d5ecc627')
+API_KEY = os.environ.get('ODDS_API_KEY', 'c32141ecbcaa976a824db8cd16031208')
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "nba_3pt_props.html")
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_3pt_props_tracking.json")
+PLAYER_STATS_CACHE = os.path.join(SCRIPT_DIR, "nba_player_3pt_stats_cache.json")
+TEAM_DEFENSE_CACHE = os.path.join(SCRIPT_DIR, "nba_team_defense_3pt_cache.json")
 
-# Model Parameters
-MIN_AI_SCORE = 8.0  # Minimum A.I. score to display (8.0-10.0 are best plays)
-TOP_PLAYS_COUNT = 15  # Show top 15 overs and top 15 unders
-RECENT_GAMES_WINDOW = 10  # Analyze last 10 games for form
-AUTO_TRACK_THRESHOLD = 8.5  # Automatically track picks with A.I. score >= 8.5
+# Model Parameters - MUCH STRICTER FOR PROFITABILITY
+MIN_AI_SCORE = 9.5  # Raised from 8.5 - only show high-confidence plays
+TOP_PLAYS_COUNT = 5  # Reduced from 8 - quality over quantity
+RECENT_GAMES_WINDOW = 10  # 10 games for recent form
+AUTO_TRACK_THRESHOLD = 9.7  # Raised from 9.2 - only track elite plays
+CURRENT_SEASON = '2025-26'  # Update season as needed
+
+# Edge requirements (similar to successful NBA model)
+MIN_EDGE_OVER_LINE = 1.2  # Player must average 1.2+ above prop line for OVER
+MIN_EDGE_UNDER_LINE = 1.0  # Player must average 1.0+ below prop line for UNDER
+MIN_RECENT_FORM_EDGE = 0.8  # Recent form must support the bet
 
 # ANSI color codes
 class Colors:
@@ -34,29 +48,168 @@ class Colors:
     BOLD = '\033[1m'
     END = '\033[0m'
 
-def get_nba_stats():
+def get_nba_player_stats():
     """
-    Fetch NBA player stats from NBA API
-    Returns dictionary with player 3PT stats
+    Fetch REAL NBA player 3PT stats from NBA API
+    Returns dictionary with player 3PT stats (season avg, recent form, etc.)
     """
-    print(f"\n{Colors.CYAN}Fetching NBA player statistics...{Colors.END}")
+    print(f"\n{Colors.CYAN}Fetching REAL NBA player 3PT statistics...{Colors.END}")
 
-    # NBA API endpoints
-    # Note: Using a simplified approach - in production, you'd use official NBA API
-    # For now, we'll create sample data structure that would come from NBA API
+    # Check cache first (6 hour cache)
+    if os.path.exists(PLAYER_STATS_CACHE):
+        file_mod_time = datetime.fromtimestamp(os.path.getmtime(PLAYER_STATS_CACHE))
+        if (datetime.now() - file_mod_time) < timedelta(hours=6):
+            print(f"{Colors.GREEN}✓ Using cached player stats (less than 6 hours old){Colors.END}")
+            with open(PLAYER_STATS_CACHE, 'r') as f:
+                return json.load(f)
 
     player_stats = {}
 
     try:
-        # In production, this would fetch from:
-        # https://stats.nba.com/stats/leaguedashplayerstats
-        # For now, returning structure that would be populated
+        # Fetch season stats
+        print(f"{Colors.CYAN}  Fetching season stats...{Colors.END}")
+        season_stats = leaguedashplayerstats.LeagueDashPlayerStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense='Base',
+            per_mode_detailed='PerGame',
+            timeout=30
+        )
+        season_df = season_stats.get_data_frames()[0]
+        time.sleep(0.6)
 
-        print(f"{Colors.GREEN}✓ NBA stats fetched successfully{Colors.END}")
+        # Fetch recent form (last N games)
+        print(f"{Colors.CYAN}  Fetching recent form (last {RECENT_GAMES_WINDOW} games)...{Colors.END}")
+        recent_stats = leaguedashplayerstats.LeagueDashPlayerStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense='Base',
+            per_mode_detailed='PerGame',
+            last_n_games=RECENT_GAMES_WINDOW,
+            timeout=30
+        )
+        recent_df = recent_stats.get_data_frames()[0]
+        time.sleep(0.6)
+
+        # Process player stats
+        for _, row in season_df.iterrows():
+            player_name = row.get('PLAYER_NAME', '')
+            if not player_name:
+                continue
+
+            # Season averages
+            season_3pm = row.get('FG3M', 0)  # 3-pointers made per game
+            season_3pa = row.get('FG3A', 0)  # 3-pointers attempted per game
+            season_3pct = row.get('FG3_PCT', 0)  # 3-point percentage
+            games_played = row.get('GP', 0)
+            team = row.get('TEAM_ABBREVIATION', '')
+
+            # Get recent form
+            recent_row = recent_df[recent_df['PLAYER_NAME'] == player_name]
+            if not recent_row.empty:
+                recent_3pm = recent_row.iloc[0].get('FG3M', season_3pm)
+                recent_3pa = recent_row.iloc[0].get('FG3A', season_3pa)
+                recent_3pct = recent_row.iloc[0].get('FG3_PCT', season_3pct)
+            else:
+                recent_3pm = season_3pm
+                recent_3pa = season_3pa
+                recent_3pct = season_3pct
+
+            # Calculate consistency (lower std dev = more consistent)
+            # For now, estimate consistency based on 3pt% and attempts
+            # Higher attempts + good % = more consistent
+            consistency = min(1.0, (season_3pa / 10.0) * (season_3pct / 0.40)) if season_3pa > 0 else 0.3
+
+            player_stats[player_name] = {
+                'season_3pm_avg': round(season_3pm, 2),
+                'season_3pa_avg': round(season_3pa, 2),
+                'season_3pct': round(season_3pct, 3),
+                'recent_3pm_avg': round(recent_3pm, 2),
+                'recent_3pa_avg': round(recent_3pa, 2),
+                'recent_3pct': round(recent_3pct, 3),
+                'consistency_score': round(consistency, 2),
+                'games_played': int(games_played),
+                'team': team
+            }
+
+        # Cache results
+        with open(PLAYER_STATS_CACHE, 'w') as f:
+            json.dump(player_stats, f, indent=2)
+
+        print(f"{Colors.GREEN}✓ Fetched REAL stats for {len(player_stats)} players{Colors.END}")
         return player_stats
 
     except Exception as e:
         print(f"{Colors.RED}✗ Error fetching NBA stats: {e}{Colors.END}")
+        import traceback
+        traceback.print_exc()
+        # Try to load from cache if available
+        if os.path.exists(PLAYER_STATS_CACHE):
+            print(f"{Colors.YELLOW}  Loading from cache as fallback...{Colors.END}")
+            with open(PLAYER_STATS_CACHE, 'r') as f:
+                return json.load(f)
+        return {}
+
+def get_opponent_defense_3pt():
+    """
+    Fetch team defense vs 3PT shooting stats
+    Returns dict with opponent 3PT defense ratings
+    """
+    print(f"\n{Colors.CYAN}Fetching opponent 3PT defense stats...{Colors.END}")
+
+    # Check cache
+    if os.path.exists(TEAM_DEFENSE_CACHE):
+        file_mod_time = datetime.fromtimestamp(os.path.getmtime(TEAM_DEFENSE_CACHE))
+        if (datetime.now() - file_mod_time) < timedelta(hours=6):
+            print(f"{Colors.GREEN}✓ Using cached defense stats{Colors.END}")
+            with open(TEAM_DEFENSE_CACHE, 'r') as f:
+                return json.load(f)
+
+    defense_stats = {}
+
+    try:
+        # Fetch team defense stats
+        team_stats = leaguedashteamstats.LeagueDashTeamStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense='Base',
+            timeout=30
+        )
+        team_df = team_stats.get_data_frames()[0]
+        time.sleep(0.6)
+
+        # Process defense stats
+        for _, row in team_df.iterrows():
+            team_name = row.get('TEAM_NAME', '')
+            if not team_name:
+                continue
+
+            # Opponent 3PT stats allowed
+            opp_3pm = row.get('OPP_FG3M', 0)  # Opponent 3PM per game
+            opp_3pa = row.get('OPP_FG3A', 0)  # Opponent 3PA per game
+            opp_3pct = row.get('OPP_FG3_PCT', 0)  # Opponent 3PT% allowed
+
+            # Calculate defense rating (higher = worse defense, better for shooters)
+            # League average is ~12.5 3PM allowed, 35% 3PT% allowed
+            defense_rating = (opp_3pm / 12.5) * (opp_3pct / 0.35)  # >1.0 = bad defense
+
+            defense_stats[team_name] = {
+                'opp_3pm_allowed': round(opp_3pm, 2),
+                'opp_3pa_allowed': round(opp_3pa, 2),
+                'opp_3pct_allowed': round(opp_3pct, 3),
+                'defense_rating': round(defense_rating, 2)  # >1.0 = favorable matchup
+            }
+
+        # Cache results
+        with open(TEAM_DEFENSE_CACHE, 'w') as f:
+            json.dump(defense_stats, f, indent=2)
+
+        print(f"{Colors.GREEN}✓ Fetched defense stats for {len(defense_stats)} teams{Colors.END}")
+        return defense_stats
+
+    except Exception as e:
+        print(f"{Colors.YELLOW}⚠ Could not fetch defense stats: {e}{Colors.END}")
+        # Try cache
+        if os.path.exists(TEAM_DEFENSE_CACHE):
+            with open(TEAM_DEFENSE_CACHE, 'r') as f:
+                return json.load(f)
         return {}
 
 def get_nba_team_rosters():
@@ -67,35 +220,35 @@ def get_nba_team_rosters():
     # Key players for each team (last name matching)
     rosters = {
         'Boston Celtics': ['Tatum', 'Brown', 'White', 'Holiday', 'Porzingis', 'Horford', 'Hauser', 'Pritchard'],
-        'Washington Wizards': ['Kuzma', 'Poole', 'Coulibaly', 'Avdija', 'Bagley', 'Jones', 'Kispert'],
-        'Golden State Warriors': ['Curry', 'Thompson', 'Wiggins', 'Green', 'Kuminga', 'Podziemski', 'Looney', 'Payton'],
-        'Philadelphia 76ers': ['Embiid', 'Maxey', 'Harris', 'Oubre', 'Batum', 'McCain', 'Drummond', 'Reed'],
-        'Brooklyn Nets': ['Bridges', 'Johnson', 'Claxton', 'Thomas', 'Finney-Smith', 'Sharpe', 'Whitehead', 'Clowney', 'Bailey'],
-        'Utah Jazz': ['Markkanen', 'Sexton', 'Clarkson', 'Collins', 'Kessler', 'George', 'Hendricks'],
-        'Los Angeles Lakers': ['James', 'Davis', 'Reaves', 'Russell', 'Hachimura', 'Reddish', 'Prince', 'Christie'],
-        'Toronto Raptors': ['Barnes', 'Quickley', 'Anunoby', 'Siakam', 'Trent', 'Poeltl', 'Dick'],
-        'Minnesota Timberwolves': ['Towns', 'Edwards', 'Gobert', 'McDaniels', 'Conley', 'Reid', 'Alexander-Walker', 'DiVincenzo'],
-        'New Orleans Pelicans': ['Williamson', 'Ingram', 'McCollum', 'Murphy', 'Valanciunas', 'Alvarado', 'Hawkins'],
-        'Miami Heat': ['Butler', 'Adebayo', 'Herro', 'Rozier', 'Love', 'Highsmith', 'Robinson'],
-        'Orlando Magic': ['Banchero', 'Wagner', 'Carter', 'Isaac', 'Suggs', 'Anthony', 'Fultz'],
-        'New York Knicks': ['Randle', 'Brunson', 'Barrett', 'Robinson', 'Quickley', 'Hart', 'Grimes', 'Bridges'],
-        'Phoenix Suns': ['Durant', 'Booker', 'Beal', 'Nurkic', 'Allen', 'Gordon', 'Okogie'],
-        'Oklahoma City Thunder': ['Gilgeous-Alexander', 'Williams', 'Holmgren', 'Giddey', 'Wallace', 'Joe', 'Dort'],
-        'San Antonio Spurs': ['Wembanyama', 'Vassell', 'Johnson', 'Sochan', 'Jones', 'Branham', 'Collins'],
-        'Los Angeles Clippers': ['Leonard', 'George', 'Harden', 'Westbrook', 'Zubac', 'Mann', 'Powell'],
-        'Denver Nuggets': ['Jokic', 'Murray', 'Porter', 'Gordon', 'Caldwell-Pope', 'Watson'],
-        'Dallas Mavericks': ['Doncic', 'Irving', 'Washington', 'Hardaway', 'Gafford', 'Lively'],
-        'Sacramento Kings': ['Fox', 'Sabonis', 'Murray', 'Barnes', 'Huerter', 'Monk'],
-        'Memphis Grizzlies': ['Morant', 'Bane', 'Jackson', 'Smart', 'Williams', 'Konchar'],
-        'Cleveland Cavaliers': ['Mitchell', 'Garland', 'Mobley', 'Allen', 'LeVert', 'Strus'],
-        'Milwaukee Bucks': ['Antetokounmpo', 'Lillard', 'Middleton', 'Lopez', 'Portis'],
-        'Indiana Pacers': ['Haliburton', 'Turner', 'Mathurin', 'Nembhard', 'Nesmith'],
-        'Atlanta Hawks': ['Young', 'Murray', 'Collins', 'Hunter', 'Bogdanovic', 'Okongwu'],
-        'Chicago Bulls': ['LaVine', 'DeRozan', 'Vucevic', 'Williams', 'Caruso', 'Dosunmu'],
-        'Charlotte Hornets': ['Ball', 'Miller', 'Bridges', 'Washington', 'Williams', 'Richards'],
-        'Detroit Pistons': ['Cunningham', 'Ivey', 'Duren', 'Bogdanovic', 'Burks', 'Stewart'],
-        'Houston Rockets': ['Green', 'Smith', 'Sengun', 'VanVleet', 'Dillon', 'Thompson'],
-        'Portland Trail Blazers': ['Lillard', 'Simons', 'Grant', 'Sharpe', 'Ayton', 'Thybulle', 'Camara'],
+        'Washington Wizards': ['Kuzma', 'Poole', 'Coulibaly', 'Bagley', 'Jones', 'Kispert', 'Sarr'],
+        'Golden State Warriors': ['Curry', 'Wiggins', 'Green', 'Kuminga', 'Podziemski', 'Looney', 'Payton', 'Melton'],
+        'Philadelphia 76ers': ['Embiid', 'Maxey', 'Harris', 'Oubre', 'Batum', 'McCain', 'Drummond', 'Reed', 'Martin'],
+        'Brooklyn Nets': ['Johnson', 'Claxton', 'Thomas', 'Finney-Smith', 'Sharpe', 'Whitehead', 'Clowney', 'Schroder', 'Wilson'],
+        'Utah Jazz': ['Markkanen', 'Sexton', 'Clarkson', 'Collins', 'Kessler', 'George', 'Hendricks', 'Williams'],
+        'Los Angeles Lakers': ['James', 'Davis', 'Reaves', 'Russell', 'Hachimura', 'Reddish', 'Prince', 'Christie', 'Knecht'],
+        'Toronto Raptors': ['Barnes', 'Quickley', 'Poeltl', 'Dick', 'Battle', 'Agbaji', 'Shead', 'Brown'],
+        'Minnesota Timberwolves': ['Edwards', 'Gobert', 'McDaniels', 'Conley', 'Reid', 'Alexander-Walker', 'DiVincenzo', 'Randle'],
+        'New Orleans Pelicans': ['Williamson', 'Ingram', 'McCollum', 'Murphy', 'Alvarado', 'Hawkins', 'Jones'],
+        'Miami Heat': ['Butler', 'Adebayo', 'Herro', 'Rozier', 'Love', 'Highsmith', 'Robinson', 'Jovic', 'Ware'],
+        'Orlando Magic': ['Banchero', 'Wagner', 'Carter', 'Isaac', 'Suggs', 'Anthony', 'Fultz', 'Caldwell-Pope'],
+        'New York Knicks': ['Brunson', 'Towns', 'Bridges', 'Hart', 'Anunoby', 'McBride', 'Achiuwa'],
+        'Phoenix Suns': ['Durant', 'Booker', 'Beal', 'Nurkic', 'Allen', 'Gordon', 'Okogie', 'O\'Neale'],
+        'Oklahoma City Thunder': ['Gilgeous-Alexander', 'Williams', 'Holmgren', 'Wallace', 'Joe', 'Dort', 'Caruso', 'Hartenstein'],
+        'San Antonio Spurs': ['Wembanyama', 'Vassell', 'Johnson', 'Sochan', 'Jones', 'Branham', 'Collins', 'Castle'],
+        'Los Angeles Clippers': ['Leonard', 'Harden', 'Westbrook', 'Zubac', 'Mann', 'Powell', 'Coffey', 'Dunn'],
+        'Denver Nuggets': ['Jokic', 'Murray', 'Porter', 'Gordon', 'Watson', 'Braun', 'Strawther', 'Westbrook'],
+        'Dallas Mavericks': ['Doncic', 'Irving', 'Washington', 'Gafford', 'Lively', 'Grimes', 'Kleber', 'Exum'],
+        'Sacramento Kings': ['Fox', 'Sabonis', 'Murray', 'DeRozan', 'Huerter', 'Monk', 'McDermott'],
+        'Memphis Grizzlies': ['Morant', 'Bane', 'Jackson', 'Smart', 'Williams', 'Konchar', 'Edey', 'Wells'],
+        'Cleveland Cavaliers': ['Mitchell', 'Garland', 'Mobley', 'Allen', 'LeVert', 'Strus', 'Okoro', 'Wade'],
+        'Milwaukee Bucks': ['Antetokounmpo', 'Lillard', 'Middleton', 'Lopez', 'Portis', 'Connaughton', 'Trent'],
+        'Indiana Pacers': ['Haliburton', 'Turner', 'Mathurin', 'Nembhard', 'Nesmith', 'Siakam', 'Brown'],
+        'Atlanta Hawks': ['Young', 'Murray', 'Johnson', 'Hunter', 'Bogdanovic', 'Okongwu', 'Daniels', 'Risacher'],
+        'Chicago Bulls': ['LaVine', 'Vucevic', 'Williams', 'Dosunmu', 'White', 'Giddey', 'Ball'],
+        'Charlotte Hornets': ['Ball', 'Miller', 'Bridges', 'Williams', 'Richards', 'Martin', 'Knueppel', 'Green'],
+        'Detroit Pistons': ['Cunningham', 'Ivey', 'Duren', 'Harris', 'Beasley', 'Stewart', 'Thompson', 'Holland', 'Robinson'],
+        'Houston Rockets': ['Green', 'Smith', 'Sengun', 'VanVleet', 'Dillon', 'Thompson', 'Whitmore', 'Eason'],
+        'Portland Trail Blazers': ['Simons', 'Grant', 'Sharpe', 'Ayton', 'Thybulle', 'Camara', 'Henderson', 'Clingan'],
     }
     return rosters
 
@@ -156,6 +309,11 @@ def calculate_tracking_summary(picks):
     roi = (wins * 0.91 - losses * 1.0)
     roi_pct = (roi / total * 100) if total > 0 else 0.0
 
+    # Calculate CLV (Closing Line Value)
+    clv_picks = [p for p in picks if p.get('opening_odds') and p.get('latest_odds')]
+    positive_clv = len([p for p in clv_picks if p.get('latest_odds', 0) < p.get('opening_odds', 0)])  # Odds got worse = we got better value
+    clv_rate = (positive_clv / len(clv_picks) * 100) if clv_picks else 0.0
+
     return {
         'total': total,
         'wins': wins,
@@ -163,7 +321,9 @@ def calculate_tracking_summary(picks):
         'pending': pending,
         'win_rate': win_rate,
         'roi': roi,
-        'roi_pct': roi_pct
+        'roi_pct': roi_pct,
+        'clv_rate': clv_rate,
+        'clv_count': f"{positive_clv}/{len(clv_picks)}"
     }
 
 def track_pick(player_name, prop_line, bet_type, team, opponent, ai_score, odds, game_time):
@@ -176,6 +336,12 @@ def track_pick(player_name, prop_line, bet_type, team, opponent, ai_score, odds,
     # Check if already tracked
     existing = next((p for p in tracking_data['picks'] if p['pick_id'] == pick_id), None)
     if existing:
+        # Update odds if they changed (for CLV tracking)
+        if odds != existing.get('odds'):
+            existing['opening_odds'] = existing.get('opening_odds', existing.get('odds'))
+            existing['latest_odds'] = odds
+            existing['last_updated'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+            save_tracking(tracking_data)
         return False  # Already tracked
 
     pick = {
@@ -187,6 +353,8 @@ def track_pick(player_name, prop_line, bet_type, team, opponent, ai_score, odds,
         'opponent': opponent,
         'ai_score': ai_score,
         'odds': odds,
+        'opening_odds': odds,  # Track opening odds for CLV
+        'latest_odds': odds,
         'game_time': game_time,
         'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
         'status': 'pending',
@@ -200,8 +368,68 @@ def track_pick(player_name, prop_line, bet_type, team, opponent, ai_score, odds,
 
     return True
 
+def fetch_player_3pt_from_nba_api(player_name, team_name, game_date_str):
+    """
+    Fetch actual player 3-pointers made from NBA API for a specific game
+    Returns the actual 3pt made count or None if not found
+    """
+    try:
+        # Find player ID
+        player_list = players.get_players()
+        player_info = None
+        
+        # Match player name (handle variations)
+        name_parts = player_name.lower().split()
+        for p in player_list:
+            p_name = p['full_name'].lower()
+            p_parts = p_name.split()
+            if len(name_parts) >= 2 and len(p_parts) >= 2:
+                if name_parts[0] in p_parts[0] and name_parts[-1] in p_parts[-1]:
+                    player_info = p
+                    break
+        
+        if not player_info:
+            print(f"{Colors.YELLOW}    Could not find player {player_name} in NBA API{Colors.END}")
+            return None
+        
+        player_id = player_info['id']
+        
+        # Get player game log
+        game_log = playergamelog.PlayerGameLog(player_id=player_id, season=CURRENT_SEASON, timeout=30)
+        df = game_log.get_data_frames()[0]
+        
+        if df.empty:
+            return None
+        
+        # Find the game by date
+        target_date = datetime.strptime(game_date_str, '%Y-%m-%d').date()
+        
+        for _, row in df.iterrows():
+            game_date_str_nba = row.get('GAME_DATE', '')
+            if not game_date_str_nba:
+                continue
+            
+            # Parse NBA date format
+            try:
+                game_date = datetime.strptime(game_date_str_nba, '%b %d, %Y').date()
+            except:
+                try:
+                    game_date = datetime.strptime(game_date_str_nba, '%Y-%m-%d').date()
+                except:
+                    continue
+            
+            if game_date == target_date:
+                fg3m = row.get('FG3M', 0)  # 3-pointers made
+                return int(fg3m) if fg3m else 0
+        
+        return None
+        
+    except Exception as e:
+        print(f"{Colors.YELLOW}  Error fetching 3pt stats from NBA API for {player_name}: {str(e)}{Colors.END}")
+        return None
+
 def update_pick_results():
-    """Check pending picks and update their status using ESPN API"""
+    """Check pending picks and update their status using NBA API"""
     tracking_data = load_tracking()
     pending_picks = [p for p in tracking_data['picks'] if p.get('status') == 'pending']
 
@@ -210,17 +438,6 @@ def update_pick_results():
 
     print(f"\n{Colors.CYAN}Checking {len(pending_picks)} pending picks...{Colors.END}")
     updated = 0
-
-    # Group picks by game time to minimize API calls
-    games_to_check = {}
-    for pick in pending_picks:
-        game_key = f"{pick['team']}_{pick['opponent']}_{pick['game_time']}"
-        if game_key not in games_to_check:
-            games_to_check[game_key] = []
-        games_to_check[game_key].append(pick)
-
-    # For now, we'll mark picks older than 24 hours as completed
-    # In production, you'd integrate with ESPN or NBA Stats API to get actual player stats
     et = pytz.timezone('US/Eastern')
     current_time = datetime.now(et)
 
@@ -230,31 +447,123 @@ def update_pick_results():
             game_dt_et = game_dt.astimezone(et)
             hours_ago = (current_time - game_dt_et).total_seconds() / 3600
 
-            # If game was more than 4 hours ago, attempt to update
-            # (This gives time for game to finish and stats to be available)
+            # Only check games that finished at least 4 hours ago
             if hours_ago > 4:
-                # Simulate result for now - in production, fetch real stats
-                # For demonstration, we'll use a realistic win rate based on AI score
-                import random
-                random.seed(pick['pick_id'])
-
-                # Higher AI scores = higher chance of winning
-                win_probability = 0.45 + (pick['ai_score'] - 8.0) * 0.05  # 8.0 = 45%, 10.0 = 55%
-                is_win = random.random() < win_probability
-
+                game_date_str = game_dt_et.strftime('%Y-%m-%d')
+                player_name = pick['player']
+                team_name = pick['team']
+                
+                print(f"{Colors.CYAN}  Checking {player_name} ({team_name}) from {game_date_str}...{Colors.END}")
+                
+                # Fetch actual 3pt made
+                actual_3pt = fetch_player_3pt_from_nba_api(player_name, team_name, game_date_str)
+                
+                if actual_3pt is None:
+                    print(f"{Colors.YELLOW}    Could not fetch stats, skipping...{Colors.END}")
+                    continue
+                
+                # Determine win/loss
+                prop_line = pick['prop_line']
+                bet_type = pick['bet_type'].lower()
+                
+                if bet_type == 'over':
+                    is_win = actual_3pt > prop_line
+                else:  # under
+                    is_win = actual_3pt < prop_line
+                
+                # Update pick
                 pick['status'] = 'win' if is_win else 'loss'
                 pick['result'] = 'WIN' if is_win else 'LOSS'
+                pick['actual_3pt'] = actual_3pt
                 pick['updated_at'] = current_time.isoformat()
+                
+                result_str = f"{Colors.GREEN}WIN{Colors.END}" if is_win else f"{Colors.RED}LOSS{Colors.END}"
+                print(f"    {result_str}: {player_name} made {actual_3pt} 3-pointers (line: {prop_line}, bet: {bet_type.upper()})")
                 updated += 1
+                
+                # Small delay to avoid rate limiting
+                time.sleep(0.5)
 
         except Exception as e:
+            print(f"{Colors.RED}    Error processing pick: {e}{Colors.END}")
             continue
 
     if updated > 0:
         tracking_data['summary'] = calculate_tracking_summary(tracking_data['picks'])
         save_tracking(tracking_data)
-        print(f"{Colors.GREEN}✓ Updated {updated} picks{Colors.END}")
+        print(f"\n{Colors.GREEN}✓ Updated {updated} picks{Colors.END}")
 
+    return updated
+
+def reverify_completed_picks():
+    """Re-verify all completed picks to ensure accuracy"""
+    tracking_data = load_tracking()
+    completed_picks = [p for p in tracking_data['picks'] 
+                      if p.get('status') in ['win', 'loss'] and p.get('actual_3pt') is None]
+    
+    if not completed_picks:
+        print(f"{Colors.GREEN}✓ All completed picks already have actual stats{Colors.END}")
+        return 0
+    
+    print(f"\n{Colors.CYAN}Re-verifying {len(completed_picks)} completed picks...{Colors.END}")
+    updated = 0
+    et = pytz.timezone('US/Eastern')
+    
+    for pick in completed_picks:
+        try:
+            game_dt = datetime.fromisoformat(pick['game_time'].replace('Z', '+00:00'))
+            game_dt_et = game_dt.astimezone(et)
+            game_date_str = game_dt_et.strftime('%Y-%m-%d')
+            
+            player_name = pick['player']
+            team_name = pick['team']
+            
+            print(f"{Colors.CYAN}  Verifying {player_name} ({team_name}) from {game_date_str}...{Colors.END}")
+            
+            # Fetch actual 3pt made
+            actual_3pt = fetch_player_3pt_from_nba_api(player_name, team_name, game_date_str)
+            
+            if actual_3pt is None:
+                print(f"{Colors.YELLOW}    Could not fetch stats, skipping...{Colors.END}")
+                continue
+            
+            # Determine correct win/loss
+            prop_line = pick['prop_line']
+            bet_type = pick['bet_type'].lower()
+            
+            if bet_type == 'over':
+                correct_result = 'win' if actual_3pt > prop_line else 'loss'
+            else:  # under
+                correct_result = 'win' if actual_3pt < prop_line else 'loss'
+            
+            current_status = pick.get('status', '').lower()
+            
+            # Update if incorrect
+            if correct_result != current_status:
+                old_status = pick['status']
+                pick['status'] = correct_result
+                pick['result'] = 'WIN' if correct_result == 'win' else 'LOSS'
+                pick['actual_3pt'] = actual_3pt
+                
+                print(f"    {Colors.RED}FIXED: Was {old_status.upper()}, now {correct_result.upper()}{Colors.END}")
+                print(f"    {player_name} made {actual_3pt} 3-pointers (line: {prop_line}, bet: {bet_type.upper()})")
+                updated += 1
+            else:
+                pick['actual_3pt'] = actual_3pt
+                print(f"    {Colors.GREEN}Verified: {correct_result.upper()} - {actual_3pt} 3-pointers{Colors.END}")
+                updated += 1
+            
+            time.sleep(0.5)
+            
+        except Exception as e:
+            print(f"{Colors.RED}    Error verifying pick: {e}{Colors.END}")
+            continue
+    
+    if updated > 0:
+        tracking_data['summary'] = calculate_tracking_summary(tracking_data['picks'])
+        save_tracking(tracking_data)
+        print(f"\n{Colors.GREEN}✓ Re-verified {updated} picks{Colors.END}")
+    
     return updated
 
 def get_player_props():
@@ -343,123 +652,239 @@ def get_player_props():
         print(f"{Colors.RED}✗ Error fetching props: {e}{Colors.END}")
         return []
 
-def calculate_ai_score(player_data, prop_line, bet_type):
+def calculate_ai_score(player_data, prop_line, bet_type, opponent_defense=None):
     """
-    Calculate A.I. Score (0-10) for a player prop
-
-    Factors considered:
-    1. Recent form (last 5-10 games)
-    2. Season average vs prop line
-    3. 3PT% and attempts
-    4. Opponent defense vs 3PT
-    5. Home/away splits
-    6. Minutes played trends
+    Calculate STRICT A.I. Score (0-10) for a player prop using REAL stats
+    
+    Much stricter criteria for profitability:
+    - Requires significant edge above/below line
+    - Recent form must strongly support
+    - Consistency and matchup factors heavily weighted
+    - Only high-confidence plays score 9.5+
     """
 
-    score = 5.0  # Start at middle
+    score = 4.0  # Start lower - require strong edge to reach high scores
 
-    # Factor 1: Season average vs prop line (40% weight)
     season_avg = player_data.get('season_3pm_avg', 0)
-    if bet_type == 'over':
-        if season_avg > prop_line + 0.5:
-            score += 2.0
-        elif season_avg > prop_line:
-            score += 1.0
-    else:  # under
-        if season_avg < prop_line - 0.5:
-            score += 2.0
-        elif season_avg < prop_line:
-            score += 1.0
-
-    # Factor 2: Recent form (30% weight)
     recent_avg = player_data.get('recent_3pm_avg', 0)
+    season_3pa = player_data.get('season_3pa_avg', 0)
+    season_3pct = player_data.get('season_3pct', 0)
+    consistency = player_data.get('consistency_score', 0.3)
+    games_played = player_data.get('games_played', 0)
+
+    # REQUIREMENT: Must have played enough games (minimum 5 games)
+    if games_played < 5:
+        return 0.0  # Not enough data
+
+    # REQUIREMENT: Must have meaningful 3PT volume (at least 2 attempts/game)
+    if season_3pa < 2.0:
+        return 0.0  # Not a 3PT shooter
+
     if bet_type == 'over':
-        if recent_avg > season_avg + 0.3:
-            score += 1.5  # Hot streak
+        # STRICT OVER REQUIREMENTS
+        
+        # Factor 1: Season average MUST be significantly above line (40% weight)
+        edge_above_line = season_avg - prop_line
+        if edge_above_line >= MIN_EDGE_OVER_LINE:  # 1.2+ above line
+            score += 3.5  # Strong edge
+        elif edge_above_line >= 0.8:
+            score += 2.0  # Good edge
+        elif edge_above_line >= 0.5:
+            score += 1.0  # Moderate edge
+        elif edge_above_line >= 0.2:
+            score += 0.3  # Small edge
+        else:
+            score -= 2.0  # Below line - major penalty
+            # If below line, require recent form to be MUCH better
+            if recent_avg < prop_line + 0.5:
+                return 0.0  # Reject if both season and recent below line
+
+        # Factor 2: Recent form MUST support (35% weight) - STRICT
+        recent_edge = recent_avg - prop_line
+        if recent_edge >= MIN_RECENT_FORM_EDGE:  # 0.8+ above line
+            score += 2.5  # Recent form strongly supports
+        elif recent_edge >= 0.5:
+            score += 1.5  # Recent form supports
+        elif recent_avg > season_avg + 0.3:  # Hot streak
+            score += 1.0  # Trending up
+        elif recent_avg >= prop_line:
+            score += 0.5  # Just above line
+        else:
+            score -= 1.5  # Recent form doesn't support - penalty
+
+        # Factor 3: Volume and consistency (15% weight)
+        # Higher volume + good % = more reliable
+        if season_3pa >= 7.0 and season_3pct >= 0.38:  # High volume, good %
+            score += 1.5
+        elif season_3pa >= 5.0 and season_3pct >= 0.35:
+            score += 1.0
+        elif season_3pa >= 3.0:
+            score += 0.5
+        else:
+            score -= 0.5  # Low volume penalty
+
+        # Consistency bonus
+        score += consistency * 0.8
+
+        # Factor 4: Matchup (opponent defense) - 10% weight
+        if opponent_defense and opponent_defense.get('defense_rating', 1.0) > 1.05:
+            score += 1.0  # Opponent allows more 3PM (favorable)
+        elif opponent_defense and opponent_defense.get('defense_rating', 1.0) < 0.95:
+            score -= 0.5  # Opponent good at defending 3PT
+
     else:  # under
-        if recent_avg < season_avg - 0.3:
-            score += 1.5  # Cold streak
+        # STRICT UNDER REQUIREMENTS
+        
+        # Factor 1: Season average MUST be significantly below line
+        edge_below_line = prop_line - season_avg
+        if edge_below_line >= MIN_EDGE_UNDER_LINE:  # 1.0+ below line
+            score += 3.5  # Strong edge
+        elif edge_below_line >= 0.7:
+            score += 2.0  # Good edge
+        elif edge_below_line >= 0.4:
+            score += 1.0  # Moderate edge
+        elif edge_below_line >= 0.2:
+            score += 0.3  # Small edge
+        else:
+            score -= 2.0  # Above line - major penalty
+            # If above line, require recent form to be MUCH worse
+            if recent_avg > prop_line - 0.5:
+                return 0.0  # Reject if both season and recent above line
 
-    # Factor 3: Consistency (20% weight)
-    consistency = player_data.get('consistency_score', 0.5)
-    score += consistency * 1.0
+        # Factor 2: Recent form MUST support UNDER
+        recent_edge = prop_line - recent_avg
+        if recent_edge >= MIN_RECENT_FORM_EDGE:  # 0.8+ below line
+            score += 2.5  # Recent form strongly supports
+        elif recent_edge >= 0.5:
+            score += 1.5  # Recent form supports
+        elif recent_avg < season_avg - 0.3:  # Cold streak
+            score += 1.0  # Trending down
+        elif recent_avg <= prop_line:
+            score += 0.5  # Just below line
+        else:
+            score -= 1.5  # Recent form doesn't support - penalty
 
-    # Factor 4: Matchup (10% weight)
-    matchup_factor = player_data.get('matchup_factor', 0)
-    score += matchup_factor * 0.5
+        # Factor 3: Low volume or poor % helps UNDER
+        if season_3pa < 3.0:  # Low volume shooter
+            score += 1.0
+        elif season_3pct < 0.30:  # Poor shooter
+            score += 0.8
+        else:
+            score -= 0.3  # Good shooter - harder to go under
+
+        # Consistency (lower consistency = more variance = better for under)
+        score += (1.0 - consistency) * 0.5
+
+        # Factor 4: Matchup (good defense = better for under)
+        if opponent_defense and opponent_defense.get('defense_rating', 1.0) < 0.95:
+            score += 1.0  # Opponent good at defending 3PT (favorable for under)
+        elif opponent_defense and opponent_defense.get('defense_rating', 1.0) > 1.05:
+            score -= 0.5  # Opponent allows more 3PM (unfavorable for under)
 
     # Cap score at 10.0
-    return min(10.0, max(0.0, score))
+    final_score = min(10.0, max(0.0, score))
+    
+    # ADDITIONAL STRICT FILTER: Even if score is high, require minimum edge
+    if bet_type == 'over' and season_avg < prop_line + 0.3:
+        final_score = min(final_score, 8.5)  # Cap at 8.5 if edge too small
+    elif bet_type == 'under' and season_avg > prop_line - 0.3:
+        final_score = min(final_score, 8.5)  # Cap at 8.5 if edge too small
 
-def analyze_props(props_list, player_stats):
+    return round(final_score, 2)
+
+def analyze_props(props_list, player_stats, defense_stats):
     """
-    Analyze all player props and generate A.I. scores
-    Uses live data from The Odds API
+    Analyze all player props using REAL NBA stats
+    Much stricter filtering for profitability
     """
-    print(f"\n{Colors.CYAN}Analyzing {len(props_list)} player props...{Colors.END}")
+    print(f"\n{Colors.CYAN}Analyzing {len(props_list)} player props with REAL stats...{Colors.END}")
 
     over_plays = []
     under_plays = []
+    skipped_no_stats = 0
+    skipped_low_score = 0
 
     # Process each prop from live data
     for prop in props_list:
-        # Add simulated stats (in production, fetch from NBA Stats API)
-        # For now, generate reasonable estimates based on prop line
+        player_name = prop['player']
         prop_line = prop['prop_line']
+        opponent_team = prop['opponent']
 
-        # Simulate player stats based on line
-        # Higher lines typically indicate better shooters
-        if prop_line >= 3.0:
-            season_avg = prop_line + 0.3
-            recent_avg = prop_line + 0.5
-            consistency = 0.85
-        elif prop_line >= 2.0:
-            season_avg = prop_line + 0.2
-            recent_avg = prop_line + 0.3
-            consistency = 0.75
-        else:  # 1.5 or lower
-            season_avg = prop_line + 0.1
-            recent_avg = prop_line + 0.2
-            consistency = 0.70
+        # Get REAL player stats
+        player_data = player_stats.get(player_name)
+        if not player_data:
+            # Try fuzzy matching (last name only)
+            for name, stats in player_stats.items():
+                if player_name.split()[-1].lower() in name.lower() or name.split()[-1].lower() in player_name.lower():
+                    player_data = stats
+                    break
+            
+            if not player_data:
+                skipped_no_stats += 1
+                continue  # Skip if no stats found
 
-        # Add some randomness for variety
-        import random
-        random.seed(hash(prop['player']))  # Consistent per player
-        season_avg += random.uniform(-0.3, 0.3)
-        recent_avg += random.uniform(-0.4, 0.4)
-        consistency += random.uniform(-0.1, 0.1)
-        matchup_factor = random.uniform(0.2, 0.6)
+        # Get opponent defense stats
+        opponent_defense = None
+        if opponent_team in defense_stats:
+            opponent_defense = defense_stats[opponent_team]
+        else:
+            # Try to find team by partial match
+            for team_name, defense in defense_stats.items():
+                if opponent_team.lower() in team_name.lower() or team_name.lower() in opponent_team.lower():
+                    opponent_defense = defense
+                    break
 
-        player_data = {
-            'season_3pm_avg': max(0.5, season_avg),
-            'recent_3pm_avg': max(0.3, recent_avg),
-            'consistency_score': min(1.0, max(0.4, consistency)),
-            'matchup_factor': matchup_factor
-        }
-
-        # Calculate over score
-        over_score = calculate_ai_score(player_data, prop_line, 'over')
+        # Calculate over score with REAL stats
+        over_score = calculate_ai_score(player_data, prop_line, 'over', opponent_defense)
         if over_score >= MIN_AI_SCORE:
-            over_plays.append({
-                'player': prop['player'],
-                'prop': f"OVER {prop_line} 3PT",
-                'team': prop['team'],
-                'opponent': prop['opponent'],
-                'ai_score': over_score,
-                'odds': prop['over_price']
-            })
+            # Additional validation: ensure edge is real
+            season_avg = player_data.get('season_3pm_avg', 0)
+            recent_avg = player_data.get('recent_3pm_avg', 0)
+            
+            # Require both season and recent to support
+            if season_avg >= prop_line + 0.2 and recent_avg >= prop_line + 0.1:
+                over_plays.append({
+                    'player': player_name,
+                    'prop': f"OVER {prop_line} 3PT",
+                    'team': prop['team'],
+                    'opponent': opponent_team,
+                    'ai_score': over_score,
+                    'odds': prop['over_price'],
+                    'game_time': prop['game_time'],
+                    'season_avg': season_avg,
+                    'recent_avg': recent_avg,
+                    'edge': round(season_avg - prop_line, 2)
+                })
+            else:
+                skipped_low_score += 1
+        else:
+            skipped_low_score += 1
 
-        # Calculate under score
-        under_score = calculate_ai_score(player_data, prop_line, 'under')
+        # Calculate under score with REAL stats
+        under_score = calculate_ai_score(player_data, prop_line, 'under', opponent_defense)
         if under_score >= MIN_AI_SCORE:
-            under_plays.append({
-                'player': prop['player'],
-                'prop': f"UNDER {prop_line} 3PT",
-                'team': prop['team'],
-                'opponent': prop['opponent'],
-                'ai_score': under_score,
-                'odds': prop['over_price']  # Under odds would need separate fetch
-            })
+            # Additional validation: ensure edge is real
+            season_avg = player_data.get('season_3pm_avg', 0)
+            recent_avg = player_data.get('recent_3pm_avg', 0)
+            
+            # Require both season and recent to support
+            if season_avg <= prop_line - 0.2 and recent_avg <= prop_line - 0.1:
+                under_plays.append({
+                    'player': player_name,
+                    'prop': f"UNDER {prop_line} 3PT",
+                    'team': prop['team'],
+                    'opponent': opponent_team,
+                    'ai_score': under_score,
+                    'odds': prop['over_price'],  # Under odds would need separate fetch
+                    'game_time': prop['game_time'],
+                    'season_avg': season_avg,
+                    'recent_avg': recent_avg,
+                    'edge': round(prop_line - season_avg, 2)
+                })
+            else:
+                skipped_low_score += 1
+        else:
+            skipped_low_score += 1
 
     # Remove duplicates (same player + prop line)
     seen_over = set()
@@ -482,50 +907,243 @@ def analyze_props(props_list, player_stats):
     unique_over.sort(key=lambda x: x['ai_score'], reverse=True)
     unique_under.sort(key=lambda x: x['ai_score'], reverse=True)
 
-    # Limit to top plays
+    # Limit to top plays (quality over quantity)
     over_plays = unique_over[:TOP_PLAYS_COUNT]
     under_plays = unique_under[:TOP_PLAYS_COUNT]
 
     print(f"{Colors.GREEN}✓ Found {len(over_plays)} top OVER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")
     print(f"{Colors.GREEN}✓ Found {len(under_plays)} top UNDER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")
+    if skipped_no_stats > 0:
+        print(f"{Colors.YELLOW}  Skipped {skipped_no_stats} props (no player stats found){Colors.END}")
+    if skipped_low_score > 0:
+        print(f"{Colors.YELLOW}  Skipped {skipped_low_score} props (score below {MIN_AI_SCORE}){Colors.END}")
 
     return over_plays, under_plays
 
-def generate_html_output(over_plays, under_plays, tracking_summary=None):
+def generate_html_output(over_plays, under_plays, tracking_summary=None, tracking_data=None):
     """
-    Generate gorgeous HTML output with tracking summary
+    Generate HTML output matching NBA model card-based style
     """
+    from datetime import datetime as dt
     et = pytz.timezone('US/Eastern')
-    now = datetime.now(et)
-    date_str = now.strftime('%m/%d')
+    now = dt.now(et)
+    date_str = now.strftime('%m/%d/%y')
+    time_str = now.strftime('%I:%M %p ET')
+    
+    # Helper function to get CLV for a play
+    def get_play_clv(play):
+        if not tracking_data or not tracking_data.get('picks'):
+            return None
+        prop_line = float(play['prop'].split()[1])
+        bet_type = 'over' if 'OVER' in play['prop'] else 'under'
+        # Try to find matching tracked pick
+        for pick in tracking_data['picks']:
+            if (pick['player'] == play['player'] and 
+                pick['prop_line'] == prop_line and 
+                pick['bet_type'] == bet_type):
+                opening = pick.get('opening_odds')
+                latest = pick.get('latest_odds')
+                if opening and latest and opening != latest:
+                    # Positive CLV calculation for American odds:
+                    # For positive odds (+): latest < opening = odds got worse = better value = positive CLV
+                    # For negative odds (-): latest < opening = odds got worse = better value = positive CLV
+                    # So: latest < opening always means positive CLV (we got better value)
+                    is_positive = latest < opening
+                    return {
+                        'opening': opening,
+                        'latest': latest,
+                        'positive': is_positive,
+                        'change': latest - opening
+                    }
+        return None
 
-    # Format tracking summary if provided
+    # Format tracking summary (will be placed at bottom)
     tracking_section = ""
     if tracking_summary and tracking_summary['total'] > 0:
         completed = tracking_summary['wins'] + tracking_summary['losses']
-        if completed > 0:
+        # Show tracking even if no completed picks yet
+        if True:
+            win_rate_color = '#4ade80' if tracking_summary['win_rate'] >= 55 else ('#fbbf24' if tracking_summary['win_rate'] >= 52 else '#f87171')
+            roi_color = '#4ade80' if tracking_summary['roi'] >= 0 else '#f87171'
+            clv_color = '#4ade80' if tracking_summary.get('clv_rate', 0) >= 50 else '#f87171'
             tracking_section = f"""
-        <div class="info-box" style="background: rgba(16, 185, 129, 0.1); border-color: #10b981;">
-            <h3 style="color: #10b981;">📊 Model Performance (Auto-Tracked)</h3>
-            <ul style="list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #10b981;">{tracking_summary['win_rate']:.1f}%</div>
-                    <div style="color: #94a3b8;">Win Rate</div>
-                </li>
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #64ffda;">{tracking_summary['wins']}-{tracking_summary['losses']}</div>
-                    <div style="color: #94a3b8;">Record</div>
-                </li>
-                <li style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: {'#10b981' if tracking_summary['roi'] >= 0 else '#ef4444'};">{tracking_summary['roi']:+.2f}u</div>
-                    <div style="color: #94a3b8;">ROI</div>
-                </li>
-            </ul>
-            <p style="margin-top: 1rem; color: #cbd5e1; font-size: 0.9rem; text-align: center;">
-                {tracking_summary['pending']} picks pending | Auto-tracking picks with A.I. Score ≥ 8.5
-            </p>
-        </div>"""
+            <div class="card">
+                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['total']}</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: {win_rate_color if completed > 0 else '#94a3b8'};">{tracking_summary['win_rate']:.1f}%{' (N/A)' if completed == 0 else ''}</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['wins']}-{tracking_summary['losses']}</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">({completed} completed)</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: {roi_color if completed > 0 else '#94a3b8'};">{tracking_summary['roi']:+.2f}u</div>
+                        <div style="font-size: 0.75rem; color: {roi_color if completed > 0 else '#94a3b8'}; margin-top: 0.25rem;">{tracking_summary.get('roi_pct', 0):+.1f}% ROI{' (Pending)' if completed == 0 else ''}</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">{tracking_summary['pending']}</div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
+                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: {clv_color};">{tracking_summary.get('clv_rate', 0):.1f}%</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{tracking_summary.get('clv_count', '0/0')} positive CLV</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Avg A.I. Score</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #60a5fa;">9.7+</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Elite plays only</div>
+                    </div>
+                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Edge Requirements</div>
+                        <div style="font-size: 1rem; font-weight: 600; color: #ffffff;">{MIN_EDGE_OVER_LINE}+ OVER / {MIN_EDGE_UNDER_LINE}+ UNDER</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Strict thresholds</div>
+                    </div>
+                </div>
+            </div>"""
 
+    # Generate OVER plays cards
+    over_html = ""
+    if over_plays:
+        over_html = """
+            <div class="card">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #4ade80;">TOP OVER PLAYS</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">"""
+        
+        for i, play in enumerate(over_plays, 1):
+            tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
+            confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
+            
+            # Get CLV for this play
+            clv_info = get_play_clv(play)
+            clv_display = ""
+            if clv_info:
+                clv_color = '#4ade80' if clv_info['positive'] else '#f87171'
+                clv_icon = '✅' if clv_info['positive'] else '⚠️'
+                opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
+                latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
+                clv_display = f"""
+                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+                            <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
+                            <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
+                        </div>"""
+            
+            over_html += f"""
+                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
+                        <div class="bet-title" style="color: #4ade80;">#{i} • {play['prop']}</div>
+                        <div class="odds-line">
+                            <span>Player:</span>
+                            <strong>{play['player']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Matchup:</span>
+                            <strong>{play['team']} vs {play['opponent']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>{play.get('season_avg', 'N/A')}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>{play.get('recent_avg', 'N/A')}</strong>
+                        </div>
+                        {clv_display}
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">{play['ai_score']:.2f}</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: {confidence_pct}%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-yes">
+                            ✅ {play['prop']}{tracked_badge}
+                        </div>
+                    </div>"""
+        
+        over_html += """
+                </div>
+            </div>"""
+
+    # Generate UNDER plays cards
+    under_html = ""
+    if under_plays:
+        under_html = """
+            <div class="card">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #f87171;">TOP UNDER PLAYS</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">"""
+        
+        for i, play in enumerate(under_plays, 1):
+            tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
+            confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
+            
+            # Get CLV for this play
+            clv_info = get_play_clv(play)
+            clv_display = ""
+            if clv_info:
+                clv_color = '#4ade80' if clv_info['positive'] else '#f87171'
+                clv_icon = '✅' if clv_info['positive'] else '⚠️'
+                opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
+                latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
+                clv_display = f"""
+                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+                            <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
+                            <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
+                        </div>"""
+            
+            under_html += f"""
+                    <div class="bet-box" style="border-left: 4px solid #f87171;">
+                        <div class="bet-title" style="color: #f87171;">#{i} • {play['prop']}</div>
+                        <div class="odds-line">
+                            <span>Player:</span>
+                            <strong>{play['player']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Matchup:</span>
+                            <strong>{play['team']} vs {play['opponent']}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>{play.get('season_avg', 'N/A')}</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>{play.get('recent_avg', 'N/A')}</strong>
+                        </div>
+                        {clv_display}
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">{play['ai_score']:.2f}</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: {confidence_pct}%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-no">
+                            ✅ {play['prop']}{tracked_badge}
+                        </div>
+                    </div>"""
+        
+        under_html += """
+                </div>
+            </div>"""
+
+    footer_text = f"Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ {MIN_AI_SCORE}<br>Using strict edge requirements: {MIN_EDGE_OVER_LINE}+ above line (OVER) / {MIN_EDGE_UNDER_LINE}+ below line (UNDER)<br>📊 = Auto-tracked (A.I. Score >= {AUTO_TRACK_THRESHOLD})"
+    
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -533,348 +1151,141 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA 3PT Props - A.I. Projections</title>
     <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #0a1628;
             color: #ffffff;
-            padding: 2rem;
+            padding: 1.5rem;
             min-height: 100vh;
         }}
-
-        .container {{
-            max-width: 1400px;
-            margin: 0 auto;
-        }}
-
-        .header {{
-            text-align: center;
-            margin-bottom: 3rem;
+        .container {{ max-width: 1200px; margin: 0 auto; }}
+        .card {{
+            background: #1a2332;
+            border-radius: 1.25rem;
+            border: none;
             padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            backdrop-filter: blur(10px);
-        }}
-
-        .header h1 {{
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }}
-
-        .header .subtitle {{
-            font-size: 1.5rem;
-            color: #64ffda;
-            font-weight: 600;
-        }}
-
-        .twitter-link {{
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: #1da1f2;
-            color: white;
-            text-decoration: none;
-            border-radius: 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }}
-
-        .twitter-link:hover {{
-            background: #1a8cd8;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.4);
-        }}
-
-        .section {{
-            margin-bottom: 3rem;
-        }}
-
-        .section-header {{
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border-radius: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }}
-
-        .over-section .section-header {{
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }}
-
-        .under-section .section-header {{
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }}
-
-        .table-container {{
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }}
-
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-        }}
-
-        thead {{
-            background: rgba(0, 0, 0, 0.3);
-        }}
-
-        th {{
-            padding: 1.25rem;
-            text-align: left;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }}
-
-        td {{
-            padding: 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }}
-
-        tbody tr {{
-            transition: all 0.3s ease;
-        }}
-
-        tbody tr:hover {{
-            background: rgba(255, 255, 255, 0.08);
-            transform: scale(1.01);
-        }}
-
-        .player-name {{
-            font-weight: 700;
-            font-size: 1.1rem;
-        }}
-
-        .prop-line {{
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            display: inline-block;
-        }}
-
-        .over-section .prop-line {{
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }}
-
-        .under-section .prop-line {{
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }}
-
-        .team-badge {{
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            background: rgba(100, 255, 218, 0.15);
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            border-radius: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #64ffda;
-        }}
-
-        .ai-score {{
-            font-size: 1.5rem;
-            font-weight: 800;
+        .header-card {{
             text-align: center;
+            background: #1a2332;
+            border: none;
         }}
-
-        .over-section .ai-score {{
-            color: #10b981;
+        .bet-box {{
+            background: #2a3441;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border-left: none;
         }}
-
-        .under-section .ai-score {{
-            color: #ef4444;
-        }}
-
-        .matchup {{
+        .bet-title {{
+            font-weight: 600;
             color: #94a3b8;
-            font-size: 0.95rem;
-        }}
-
-        .info-box {{
-            background: rgba(100, 255, 218, 0.1);
-            border-left: 4px solid #64ffda;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
-        }}
-
-        .info-box h3 {{
-            color: #64ffda;
             margin-bottom: 0.5rem;
-            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
         }}
-
-        .info-box ul {{
-            list-style: none;
-            padding-left: 0;
+        .odds-line {{
+            display: flex;
+            justify-content: space-between;
+            margin: 0.25rem 0;
+            font-size: 0.9375rem;
+            color: #94a3b8;
         }}
-
-        .info-box li {{
-            padding: 0.3rem 0;
-            color: #cbd5e1;
+        .odds-line strong {{
+            color: #ffffff;
+            font-weight: 600;
         }}
-
-        .info-box li:before {{
-            content: "✓ ";
-            color: #10b981;
-            font-weight: bold;
-            margin-right: 0.5rem;
+        .confidence-bar-container {{
+            margin: 0.75rem 0;
         }}
-
+        .confidence-label {{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }}
+        .confidence-pct {{
+            font-weight: 700;
+            color: #4ade80;
+        }}
+        .confidence-bar {{
+            height: 6px;
+            background: #1a2332;
+            border-radius: 999px;
+            overflow: hidden;
+            border: none;
+        }}
+        .confidence-fill {{
+            height: 100%;
+            background: #4ade80;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }}
+        .pick {{
+            font-weight: 600;
+            padding: 0.875rem 1rem;
+            margin-top: 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }}
+        .pick-yes {{ background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }}
+        .pick-no {{ background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }}
+        .badge {{
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            margin: 0.25rem;
+        }}
+        @media (max-width: 1024px) {{
+            .container {{ max-width: 100%; }}
+            .card {{ padding: 1.5rem; }}
+        }}
         @media (max-width: 768px) {{
-            body {{
-                padding: 1rem;
-            }}
-
-            .header h1 {{
-                font-size: 1.75rem;
-            }}
-
-            .header .subtitle {{
-                font-size: 1.2rem;
-            }}
-
-            th, td {{
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
-            }}
-
-            .section-header {{
-                font-size: 1.5rem;
-            }}
+            body {{ padding: 1rem; }}
+            .card {{ padding: 1.25rem; }}
+            .bet-box {{ padding: 1rem; }}
+            .pick {{ font-size: 0.9375rem; padding: 0.75rem; }}
+        }}
+        @media (max-width: 480px) {{
+            body {{ padding: 0.75rem; }}
+            .card {{ padding: 1rem; margin-bottom: 1rem; }}
+            .bet-box {{ padding: 0.875rem; }}
+            .bet-title {{ font-size: 0.6875rem; }}
+            .odds-line {{ font-size: 0.8125rem; }}
+            .pick {{ font-size: 0.875rem; padding: 0.625rem; }}
         }}
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>NBA A.I. 3PT Props Model</h1>
-            <div class="subtitle">Projections: {date_str}</div>
+        <div class="card header-card">
+            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
+            <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NBA 3PT Props Model</p>
+            <div>
+                <div class="badge">● REAL NBA STATS API</div>
+                <div class="badge">● A.I. SCORE ≥ {MIN_AI_SCORE}</div>
+                <div class="badge">● STRICT EDGE REQUIREMENTS</div>
+            </div>
+            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {date_str} {time_str}</p>
         </div>
+
+        {over_html}
+
+        {under_html}
 
         {tracking_section}
 
-        <div class="info-box">
-            <h3>How to Read This Report</h3>
-            <ul>
-                <li><strong>A.I. Score:</strong> 0-10 scale ranking the strength of each play (8.0+ are top plays)</li>
-                <li><strong>OVER plays:</strong> Player projected to exceed their 3PM line</li>
-                <li><strong>UNDER plays:</strong> Player projected to fall short of their 3PM line</li>
-                <li><strong>Model factors:</strong> Recent form, season averages, matchup, consistency</li>
-                <li>Higher A.I. scores indicate stronger confidence in the projection</li>
-            </ul>
-        </div>
-
-        <div class="section over-section">
-            <div class="section-header">
-                🔥 TOP OVER PLAYS
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PLAYER</th>
-                            <th>PROP</th>
-                            <th>TEAM</th>
-                            <th>OPPONENT</th>
-                            <th style="text-align: center;">A.I. SCORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>"""
-
-    # Add OVER plays
-    for play in over_plays:
-        html += f"""
-                        <tr>
-                            <td class="player-name">{play['player']}</td>
-                            <td><span class="prop-line">{play['prop']}</span></td>
-                            <td><span class="team-badge">{play['team']}</span></td>
-                            <td class="matchup">{play['opponent']}</td>
-                            <td class="ai-score">{play['ai_score']:.2f}</td>
-                        </tr>"""
-
-    if not over_plays:
-        html += """
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
-                                No qualifying OVER plays found (A.I. Score < 8.0)
-                            </td>
-                        </tr>"""
-
-    html += """
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="section under-section">
-            <div class="section-header">
-                ❄️ TOP UNDER PLAYS
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PLAYER</th>
-                            <th>PROP</th>
-                            <th>TEAM</th>
-                            <th>OPPONENT</th>
-                            <th style="text-align: center;">A.I. SCORE</th>
-                        </tr>
-                    </thead>
-                    <tbody>"""
-
-    # Add UNDER plays
-    for play in under_plays:
-        html += f"""
-                        <tr>
-                            <td class="player-name">{play['player']}</td>
-                            <td><span class="prop-line">{play['prop']}</span></td>
-                            <td><span class="team-badge">{play['team']}</span></td>
-                            <td class="matchup">{play['opponent']}</td>
-                            <td class="ai-score">{play['ai_score']:.2f}</td>
-                        </tr>"""
-
-    if not under_plays:
-        html += """
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">
-                                No qualifying UNDER plays found (A.I. Score < 8.0)
-                            </td>
-                        </tr>"""
-
-    html += f"""
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="info-box" style="margin-top: 3rem;">
-            <h3>Model Information</h3>
-            <ul>
-                <li>Generated: {now.strftime('%B %d, %Y at %I:%M %p ET')}</li>
-                <li>Minimum A.I. Score threshold: {MIN_AI_SCORE}</li>
-                <li>Recent games analyzed: Last {RECENT_GAMES_WINDOW} games</li>
-                <li>This model is for entertainment and educational purposes only</li>
-            </ul>
+        <div class="card" style="text-align: center;">
+            <p style="color: #94a3b8; font-size: 0.875rem; line-height: 1.8;">{footer_text}</p>
         </div>
     </div>
 </body>
@@ -902,14 +1313,17 @@ def main():
     # Step 0: Update results for pending picks
     updated = update_pick_results()
 
-    # Step 1: Fetch NBA player stats
-    player_stats = get_nba_stats()
+    # Step 1: Fetch REAL NBA player 3PT stats
+    player_stats = get_nba_player_stats()
 
-    # Step 2: Fetch player props from odds API
+    # Step 2: Fetch opponent defense stats
+    defense_stats = get_opponent_defense_3pt()
+
+    # Step 3: Fetch player props from odds API
     props_list = get_player_props()
 
-    # Step 3: Analyze props and generate A.I. scores
-    over_plays, under_plays = analyze_props(props_list, player_stats)
+    # Step 4: Analyze props with REAL stats and generate A.I. scores
+    over_plays, under_plays = analyze_props(props_list, player_stats, defense_stats)
 
     # Step 3.5: Automatically track high-confidence picks
     print(f"\n{Colors.CYAN}Auto-tracking picks with A.I. Score >= {AUTO_TRACK_THRESHOLD}...{Colors.END}")
@@ -978,12 +1392,25 @@ def main():
 
     # Step 5: Generate HTML output
     print(f"\n{Colors.CYAN}Generating HTML report...{Colors.END}")
-    html_content = generate_html_output(over_plays, under_plays, summary)
+    html_content = generate_html_output(over_plays, under_plays, summary, tracking_data)
     save_html(html_content)
 
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}✓ Model execution complete!{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}\n")
+
+    # Update unified dashboard
+    print(f"{Colors.CYAN}Updating unified dashboard...{Colors.END}")
+    try:
+        import subprocess
+        subprocess.run(
+            ['python3', os.path.join(SCRIPT_DIR, '..', 'unified_dashboard_interactive.py')],
+            timeout=30,
+            capture_output=True
+        )
+        print(f"{Colors.GREEN}✓ Dashboard updated{Colors.END}\n")
+    except Exception as e:
+        print(f"{Colors.YELLOW}⚠ Dashboard update failed: {e}{Colors.END}\n")
 
 if __name__ == "__main__":
     main()

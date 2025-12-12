@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 
 # API Configuration
-ODDS_API_KEY = '671958bc1621170701241a09d5ecc627'
+ODDS_API_KEY = 'c32141ecbcaa976a824db8cd16031208'
 ODDS_API_BASE = 'https://api.the-odds-api.com/v4'
 
 def get_player_props():

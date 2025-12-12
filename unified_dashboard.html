@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Sports Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1d3a 50%, #0f1419 100%);
+            color: #ffffff;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-radius: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .header .timestamp {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        /* Overall Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.profit .stat-value {
+            color: #10b981;
+        }
+
+        .stat-card.loss .stat-value {
+            color: #ef4444;
+        }
+
+        .stat-card.pending .stat-value {
+            color: #f59e0b;
+        }
+
+        .stat-card.winrate .stat-value {
+            color: #3b82f6;
+        }
+
+        /* Sport Sections */
+        .sport-section {
+            margin-bottom: 3rem;
+        }
+
+        .sport-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .sport-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sport-stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .sport-stat {
+            text-align: center;
+        }
+
+        .sport-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sport-stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        /* Picks Table */
+        .picks-table {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        th {
+            padding: 1.25rem;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        td {
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .matchup {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .pick-desc {
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+            color: #10b981;
+        }
+
+        .pick-type {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .pick-type.spread {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .pick-type.total {
+            background: rgba(147, 51, 234, 0.2);
+            color: #a78bfa;
+        }
+
+        .pick-type.prop {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+        }
+
+        .score-badge {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #10b981;
+        }
+
+        .edge-badge {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .odds {
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .no-picks {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* Filters */
+        .filters {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        select:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sport-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .sport-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Unified Sports Dashboard</h1>
+            <div class="subtitle">All Your Models. One Platform.</div>
+            <div class="timestamp">Last Updated: December 09, 2025 06:32 PM ET</div>
+        </div>
+
+        <!-- Overall Stats -->
+        <div class="stats-grid">
+            <div class="stat-card pending">
+                <div class="stat-value">24</div>
+                <div class="stat-label">Active Picks</div>
+            </div>
+            <div class="stat-card winrate">
+                <div class="stat-value">53.3%</div>
+                <div class="stat-label">Win Rate</div>
+            </div>
+            <div class="stat-card profit">
+                <div class="stat-value">+2596u</div>
+                <div class="stat-label">Total P/L</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1657</div>
+                <div class="stat-label">All-Time Picks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">868-762</div>
+                <div class="stat-label">Record</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">27</div>
+                <div class="stat-label">Today's Games</div>
+            </div>
+        </div>
+
+        <div class="sport-section">
+            <div class="sport-header">
+                <div class="sport-title">NCAA</div>
+                <div class="sport-stats">
+                    <div class="sport-stat">
+                        <div class="sport-stat-value">24</div>
+                        <div class="sport-stat-label">Pending</div>
+                    </div>
+                    <div class="sport-stat">
+                        <div class="sport-stat-value">52.9%</div>
+                        <div class="sport-stat-label">Win Rate</div>
+                    </div>
+                    <div class="sport-stat">
+                        <div class="sport-stat-value">761-677</div>
+                        <div class="sport-stat-label">Record</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="picks-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Matchup</th>
+                            <th>Pick</th>
+                            <th>Odds</th>
+                            <th>Score/Edge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Maryland-Eastern Shore Hawks @ Virginia Cavaliers</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">40.9</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">North Carolina Central Eagles @ Kentucky Wildcats</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">38.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">USC Trojans @ San Diego Toreros</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">27.9</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">South Dakota Coyotes @ Wyoming Cowboys</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">24.6</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Columbia Lions @ Stony Brook Seawolves</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">24.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Penn State Nittany Lions @ Indiana Hoosiers</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">23.1</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Arkansas-Little Rock Trojans @ West Virginia Mountaineers</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">23.0</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Clemson Tigers @ BYU Cougars</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">22.1</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Florida Gators @ UConn Huskies</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">21.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Bucknell Bison @ Rider Broncs</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">20.9</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Morgan State Bears @ DePaul Blue Demons</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">20.9</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Illinois Fighting Illini @ Ohio State Buckeyes</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">20.2</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">USC Trojans @ San Diego Toreros</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">19.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Brown Bears @ Providence Friars</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">19.5</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Arkansas-Little Rock Trojans @ West Virginia Mountaineers</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">17.7</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Illinois Fighting Illini @ Ohio State Buckeyes</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">17.7</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">total</span></td>
+                            <td class="matchup">Coppin State Eagles @ Saint Joseph's Hawks</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">17.3</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Dartmouth Big Green @ Colorado State Rams</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">17.0</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Coppin State Eagles @ Saint Joseph's Hawks</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">16.7</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pick-type total">spread</span></td>
+                            <td class="matchup">Bucknell Bison @ Rider Broncs</td>
+                            <td><span class="pick-desc"></span></td>
+                            <td class="odds">-110</td>
+                            <td><span class="edge-badge">15.8</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

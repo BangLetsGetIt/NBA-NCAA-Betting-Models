@@ -10,6 +10,7 @@ import requests
 from dotenv import load_dotenv
 import pytz
 import pandas as pd
+from collections import defaultdict
 
 # Import for the NBA's official stats API
 from nba_api.stats.endpoints import leaguedashteamstats, scoreboardv2
@@ -54,22 +55,22 @@ TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "nba_tracking_dashboard.html")
 CURRENT_SEASON = '2024-25'
 
 # --- IMPROVED Model Parameters ---
-HOME_COURT_ADVANTAGE = 3.5  # Increased from 2.5 to 3.5
+HOME_COURT_ADVANTAGE = 3.0  # Reduced from 3.5 - modern NBA HCA trending lower
 SPREAD_THRESHOLD = 3.0      # Increased from 2.0 - minimum to show
 TOTAL_THRESHOLD = 4.0       # Increased from 3.0 - minimum to show
 
 # Stricter thresholds for LOGGING picks (these are the bets we actually track)
-CONFIDENT_SPREAD_EDGE = 5.0  # Increased from 3.0 - need 5+ points edge
-CONFIDENT_TOTAL_EDGE = 7.0   # Increased from 4.0 - need 7+ points edge
+CONFIDENT_SPREAD_EDGE = 8.0  # Increased from 5.0 - need 8+ points edge
+CONFIDENT_TOTAL_EDGE = 12.0  # Increased from 7.0 - need 12+ points edge
 UNIT_SIZE = 100
 
 # Date filtering
-DAYS_AHEAD_TO_FETCH = 7
+DAYS_AHEAD_TO_FETCH = 2  # Only fetch games within next 2 days (today + tomorrow)
 
 # --- Parameters for Team Form/Momentum ---
 LAST_N_GAMES = 10
-SEASON_WEIGHT = 0.65    # Slightly less emphasis on full season
-FORM_WEIGHT = 0.35      # More emphasis on recent form
+SEASON_WEIGHT = 0.55    # Slightly less emphasis on full season
+FORM_WEIGHT = 0.45      # More emphasis on recent form
 
 # --- Parameters for Home/Away Splits ---
 USE_HOME_AWAY_SPLITS = True
@@ -183,6 +184,134 @@ def save_picks_tracking(tracking_data):
     with open(PICKS_TRACKING_FILE, 'w') as f:
         json.dump(tracking_data, f, indent=2)
     print(f"{Colors.GREEN}✓ Tracking data saved to {PICKS_TRACKING_FILE}{Colors.END}")
+
+def get_team_historical_performance():
+    """Calculate historical win rates for all teams"""
+    tracking_data = load_picks_tracking()
+    team_stats = defaultdict(lambda: {'wins': 0, 'losses': 0, 'profit': 0})
+
+    for pick in tracking_data.get('picks', []):
+        status = pick.get('status', '')
+        if status not in ['win', 'loss']:
+            continue
+
+        home_team = normalize_team_name(pick.get('home_team', ''))
+        away_team = normalize_team_name(pick.get('away_team', ''))
+        # NBA uses 'pick' field, NCAA uses 'pick_text' field
+        pick_text = pick.get('pick', pick.get('pick_text', '')).upper()
+        profit = pick.get('profit_loss', pick.get('profit', 0))
+
+        # Determine which team we bet on
+        bet_team = None
+        if 'BET:' in pick_text:
+            if home_team.upper() in pick_text:
+                bet_team = home_team
+            elif away_team.upper() in pick_text:
+                bet_team = away_team
+
+        if not bet_team:
+            continue
+
+        if status == 'win':
+            team_stats[bet_team]['wins'] += 1
+        elif status == 'loss':
+            team_stats[bet_team]['losses'] += 1
+
+        team_stats[bet_team]['profit'] += profit if profit else 0
+
+    # Calculate win rates
+    team_performance = {}
+    for team, stats in team_stats.items():
+        total = stats['wins'] + stats['losses']
+        if total >= 1:  # Show performance for any team with historical data
+            win_rate = (stats['wins'] / total * 100) if total > 0 else 0
+            team_performance[team] = {
+                'record': f"{stats['wins']}-{stats['losses']}",
+                'win_rate': win_rate,
+                'total_picks': total,
+                'profit': stats['profit'] / 100
+            }
+
+    return team_performance
+
+def get_team_performance_indicator(team_name, team_performance):
+    """Get performance indicator for a team - now shows data for ALL teams with history"""
+    normalized_name = normalize_team_name(team_name)
+
+    if normalized_name not in team_performance:
+        return None
+
+    perf = team_performance[normalized_name]
+    win_rate = perf['win_rate']
+    record = perf['record']
+    profit = perf['profit']
+    total = perf['total_picks']
+
+    # Special handling for limited data (1-2 picks)
+    if total <= 2:
+        return {
+            'emoji': 'ℹ️',
+            'label': 'LIMITED',
+            'color': Colors.CYAN,
+            'message': f"{team_name} - Limited data: {record} ({win_rate:.0f}%) | {profit:+.2f}u ({total} pick{'s' if total > 1 else ''})"
+        }
+
+    # Hot performers (66.7%+)
+    if win_rate >= 66.7:
+        return {
+            'emoji': '🔥',
+            'label': 'HOT',
+            'color': Colors.GREEN,
+            'message': f"{team_name} - Strong performer: {record} ({win_rate:.0f}%) | +{profit:.2f}u over {total} picks"
+        }
+    # Good performers (60-66.6%)
+    elif win_rate >= 60.0:
+        return {
+            'emoji': '✅',
+            'label': 'GOOD',
+            'color': Colors.GREEN,
+            'message': f"{team_name} - Good record: {record} ({win_rate:.0f}%) | +{profit:.2f}u over {total} picks"
+        }
+    # Neutral-positive (52-59.9%)
+    elif win_rate >= 52.0:
+        return {
+            'emoji': '📊',
+            'label': 'NEUTRAL+',
+            'color': Colors.CYAN,
+            'message': f"{team_name} - Slightly above average: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
+        }
+    # Neutral range (48-51.9%)
+    elif win_rate >= 48.0:
+        return {
+            'emoji': '➖',
+            'label': 'NEUTRAL',
+            'color': Colors.END,
+            'message': f"{team_name} - Average performance: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
+        }
+    # Neutral-negative (40.1-47.9%)
+    elif win_rate > 40.0:
+        return {
+            'emoji': '📉',
+            'label': 'NEUTRAL-',
+            'color': Colors.YELLOW,
+            'message': f"{team_name} - Slightly below average: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
+        }
+    # Caution zone (33.4-40%)
+    elif win_rate > 33.3:
+        return {
+            'emoji': '⚠️',
+            'label': 'CAUTION',
+            'color': Colors.YELLOW,
+            'message': f"{team_name} - Below average: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
+        }
+    # Cold performers (≤33.3%)
+    else:
+        return {
+            'emoji': '🚫',
+            'label': 'COLD',
+            'color': Colors.RED,
+            'message': f"{team_name} - Poor performer: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
+        }
 
 def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
     """Log a confident pick to the tracking file"""
@@ -427,19 +556,36 @@ def generate_tracking_html():
     est_tz = pytz.timezone('America/New_York')
     current_time = datetime.now(est_tz)
 
-    # Calculate yesterday's record
+    # Calculate today's and yesterday's records
+    today = current_time.date()
     yesterday = (current_time - timedelta(days=1)).date()
-    yesterday_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() in ['win', 'loss', 'push']]
+
+    completed_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() in ['win', 'loss', 'push']]
+
+    # Today's record
+    today_wins = 0
+    today_losses = 0
+    today_pushes = 0
+
+    # Yesterday's record
     yesterday_wins = 0
     yesterday_losses = 0
     yesterday_pushes = 0
 
-    for pick in yesterday_picks:
+    for pick in completed_picks:
         try:
             game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
             game_dt_est = game_dt.astimezone(est_tz)
+            game_date = game_dt_est.date()
 
-            if game_dt_est.date() == yesterday:
+            if game_date == today:
+                if pick.get('status', '').lower() == 'win':
+                    today_wins += 1
+                elif pick.get('status', '').lower() == 'loss':
+                    today_losses += 1
+                elif pick.get('status', '').lower() == 'push':
+                    today_pushes += 1
+            elif game_date == yesterday:
                 if pick.get('status', '').lower() == 'win':
                     yesterday_wins += 1
                 elif pick.get('status', '').lower() == 'loss':
@@ -448,6 +594,168 @@ def generate_tracking_html():
                     yesterday_pushes += 1
         except:
             pass
+
+    # Determine which record to display (prefer today if there are completed games)
+    today_total = today_wins + today_losses + today_pushes
+    if today_total > 0:
+        # Show today's record
+        display_label = "Today's Record"
+        display_wins = today_wins
+        display_losses = today_losses
+        display_pushes = today_pushes
+    else:
+        # Show yesterday's record with date
+        display_label = yesterday.strftime('%b %d') + " Record"
+        display_wins = yesterday_wins
+        display_losses = yesterday_losses
+        display_pushes = yesterday_pushes
+
+    # Calculate spread and total records (overall, today, and yesterday)
+    all_completed = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss', 'push']]
+
+    # Overall records by type
+    spread_wins = spread_losses = spread_pushes = 0
+    total_wins = total_losses = total_pushes = 0
+
+    # Today's records by type
+    today_spread_wins = today_spread_losses = today_spread_pushes = 0
+    today_total_wins = today_total_losses = today_total_pushes = 0
+
+    # Yesterday records by type
+    yesterday_spread_wins = yesterday_spread_losses = yesterday_spread_pushes = 0
+    yesterday_total_wins = yesterday_total_losses = yesterday_total_pushes = 0
+
+    for pick in all_completed:
+        pick_type = pick.get('pick_type', '').lower()
+        status = pick.get('status', '').lower()
+
+        # Check if from today or yesterday
+        is_today = False
+        is_yesterday = False
+        try:
+            game_dt = datetime.fromisoformat(str(pick.get('game_date', '')).replace('Z', '+00:00'))
+            game_dt_est = game_dt.astimezone(est_tz)
+            game_date = game_dt_est.date()
+            is_today = (game_date == today)
+            is_yesterday = (game_date == yesterday)
+        except:
+            pass
+
+        # Count overall records
+        if pick_type == 'spread':
+            if status == 'win':
+                spread_wins += 1
+                if is_today:
+                    today_spread_wins += 1
+                if is_yesterday:
+                    yesterday_spread_wins += 1
+            elif status == 'loss':
+                spread_losses += 1
+                if is_today:
+                    today_spread_losses += 1
+                if is_yesterday:
+                    yesterday_spread_losses += 1
+            elif status == 'push':
+                spread_pushes += 1
+                if is_today:
+                    today_spread_pushes += 1
+                if is_yesterday:
+                    yesterday_spread_pushes += 1
+        elif pick_type == 'total':
+            if status == 'win':
+                total_wins += 1
+                if is_today:
+                    today_total_wins += 1
+                if is_yesterday:
+                    yesterday_total_wins += 1
+            elif status == 'loss':
+                total_losses += 1
+                if is_today:
+                    today_total_losses += 1
+                if is_yesterday:
+                    yesterday_total_losses += 1
+            elif status == 'push':
+                total_pushes += 1
+                if is_today:
+                    today_total_pushes += 1
+                if is_yesterday:
+                    yesterday_total_pushes += 1
+
+    # Determine which breakdown to display
+    if today_total > 0:
+        # Show today's breakdown
+        display_spread_wins = today_spread_wins
+        display_spread_losses = today_spread_losses
+        display_spread_pushes = today_spread_pushes
+        display_total_wins = today_total_wins
+        display_total_losses = today_total_losses
+        display_total_pushes = today_total_pushes
+    else:
+        # Show yesterday's breakdown
+        display_spread_wins = yesterday_spread_wins
+        display_spread_losses = yesterday_spread_losses
+        display_spread_pushes = yesterday_spread_pushes
+        display_total_wins = yesterday_total_wins
+        display_total_losses = yesterday_total_losses
+        display_total_pushes = yesterday_total_pushes
+
+    # ========== PERFORMANCE BREAKDOWN (SELLING POINT) ==========
+    # Calculate Last 100, Last 50, and Last 20 picks performance
+    def calculate_recent_performance(picks_list, count):
+        """Calculate performance stats for last N picks (most recent first)"""
+        # Since picks_list is sorted with most recent first (reverse=True), 
+        # we take the first N picks, not the last N
+        recent = picks_list[:count] if len(picks_list) >= count else picks_list
+        wins = sum(1 for p in recent if p.get('status', '').lower() == 'win')
+        losses = sum(1 for p in recent if p.get('status', '').lower() == 'loss')
+        pushes = sum(1 for p in recent if p.get('status', '').lower() == 'push')
+        total = wins + losses + pushes
+        profit = sum(p.get('profit_loss', 0) for p in recent if p.get('status', '').lower() in ['win', 'loss', 'push'])
+
+        win_rate = (wins / total * 100) if total > 0 else 0
+        roi = (profit / (total * 100) * 100) if total > 0 else 0
+
+        # Breakdown by type
+        spread_picks = [p for p in recent if p.get('pick_type') == 'Spread']
+        total_picks = [p for p in recent if p.get('pick_type') == 'Total']
+
+        spread_wins = sum(1 for p in spread_picks if p.get('status', '').lower() == 'win')
+        spread_losses = sum(1 for p in spread_picks if p.get('status', '').lower() == 'loss')
+        spread_pushes = sum(1 for p in spread_picks if p.get('status', '').lower() == 'push')
+        spread_total = spread_wins + spread_losses + spread_pushes
+        spread_profit = sum(p.get('profit_loss', 0) for p in spread_picks if p.get('status', '').lower() in ['win', 'loss', 'push'])
+        spread_wr = (spread_wins / spread_total * 100) if spread_total > 0 else 0
+        spread_roi = (spread_profit / (spread_total * 100) * 100) if spread_total > 0 else 0
+
+        total_wins = sum(1 for p in total_picks if p.get('status', '').lower() == 'win')
+        total_losses = sum(1 for p in total_picks if p.get('status', '').lower() == 'loss')
+        total_pushes = sum(1 for p in total_picks if p.get('status', '').lower() == 'push')
+        total_total = total_wins + total_losses + total_pushes
+        total_profit = sum(p.get('profit_loss', 0) for p in total_picks if p.get('status', '').lower() in ['win', 'loss', 'push'])
+        total_wr = (total_wins / total_total * 100) if total_total > 0 else 0
+        total_roi = (total_profit / (total_total * 100) * 100) if total_total > 0 else 0
+
+        return {
+            'record': f"{wins}-{losses}" + (f"-{pushes}" if pushes > 0 else ""),
+            'win_rate': win_rate,
+            'profit': profit / 100,
+            'roi': roi,
+            'count': len(recent),
+            'spreads': {
+                'record': f"{spread_wins}-{spread_losses}" + (f"-{spread_pushes}" if spread_pushes > 0 else ""),
+                'win_rate': spread_wr,
+                'profit': spread_profit / 100,
+                'roi': spread_roi,
+                'count': len(spread_picks)
+            },
+            'totals': {
+                'record': f"{total_wins}-{total_losses}" + (f"-{total_pushes}" if total_pushes > 0 else ""),
+                'win_rate': total_wr,
+                'profit': total_profit / 100,
+                'roi': total_roi,
+                'count': len(total_picks)
+            }
+        }
 
     # Get all pending picks
     all_pending = [p for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending']
@@ -466,12 +774,18 @@ def generate_tracking_html():
             # If we can't parse the date, skip it
             pass
 
-    # Get completed picks
+    # Get completed picks (redefine to ensure we have the latest)
     completed_picks = [p for p in tracking_data['picks'] if
                        p.get('status', '').lower() in ['win', 'loss', 'push']]
 
+    # Sort completed picks by date (most recent first) BEFORE calculating recent performance
     pending_picks.sort(key=lambda x: x['game_date'], reverse=False)
     completed_picks.sort(key=lambda x: x['game_date'], reverse=True)
+
+    # Calculate Last 100, Last 50, and Last 20 picks performance (AFTER sorting)
+    last_100 = calculate_recent_performance(completed_picks, 100)
+    last_50 = calculate_recent_performance(completed_picks, 50)
+    last_20 = calculate_recent_performance(completed_picks, 20)
 
     def format_profit(profit):
         if profit > 0:
@@ -493,42 +807,44 @@ def generate_tracking_html():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Bet Tracking Dashboard</title>
+    <title>CourtSide Analytics - Performance Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #0a1628;
+            color: #ffffff;
+            padding: 1.5rem;
             min-height: 100vh;
         }
         .container { max-width: 1400px; margin: 0 auto; }
         .card {
-            background: #1a1a1a;
-            border-radius: 1rem;
-            border: 1px solid #2a2a2a;
+            background: #1a2332;
+            border-radius: 1.25rem;
+            border: none;
             padding: 2rem;
             margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .stat-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            border: 2px solid #fbbf24;
-            border-radius: 0.75rem;
+            background: #2a3441;
+            border: none;
+            border-radius: 1rem;
             padding: 1.5rem;
             text-align: center;
         }
         .stat-value {
             font-size: 2.5rem;
-            font-weight: 900;
-            color: #fbbf24;
+            font-weight: 700;
+            color: #4ade80;
         }
         .stat-label {
-            color: #9ca3af;
-            font-size: 0.875rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-top: 0.5rem;
+            font-weight: 500;
         }
         .grid {
             display: grid;
@@ -536,85 +852,261 @@ def generate_tracking_html():
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; color: #fbbf24; }
-        h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; color: #fbbf24; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #0a0a0a; }
-        th { padding: 0.75rem 1rem; text-align: left; color: #fbbf24; font-weight: 700; }
-        td { padding: 0.75rem 1rem; border-bottom: 1px solid #2a2a2a; }
-        tr:hover { background: #0a0a0a; }
+        thead { background: #2a3441; }
+        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
+        tr:hover { background: #2a3441; }
         .text-center { text-align: center; }
-        .text-green-400 { color: #10b981; }
-        .text-red-400 { color: #ef4444; }
+        .text-green-400 { color: #4ade80; }
+        .text-blue-400 { color: #60a5fa; }
+        .text-pink-400 { color: #f472b6; }
+        .text-red-400 { color: #f87171; }
         .text-yellow-400 { color: #fbbf24; }
-        .text-gray-400 { color: #9ca3af; }
+        .text-gray-400 { color: #94a3b8; }
         .font-bold { font-weight: 700; }
         .text-sm { font-size: 0.875rem; }
         .badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
         }
-        .badge-pending { background: #78350f; color: #fbbf24; }
-        .badge-win { background: #064e3b; color: #10b981; }
-        .badge-loss { background: #450a0a; color: #ef4444; }
-        .badge-push { background: #374151; color: #9ca3af; }
+        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .badge-win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container { max-width: 100%; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card { padding: 1.25rem; }
+
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.125rem; }
+            h4 { font-size: 1rem; }
+
+            /* Make all inline 5-column grids responsive */
+            div[style*="grid-template-columns: repeat(5, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Make all inline 4-column grids responsive */
+            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Make all inline 2-column grids single column on mobile */
+            div[style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Make auto-fit grids smaller on mobile */
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.75rem;
+            }
+
+            /* Stat cards */
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            .stat-label {
+                font-size: 0.6875rem;
+            }
+
+            /* Tables - enable horizontal scroll and reduce font */
+            table {
+                font-size: 0.8125rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+            th, td {
+                padding: 0.625rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+            th {
+                font-size: 0.75rem;
+            }
+
+            /* Badges */
+            .badge {
+                padding: 0.3125rem 0.625rem;
+                font-size: 0.6875rem;
+                margin: 0.1875rem;
+            }
+
+            /* Reduce spacing */
+            div[style*="padding: 2rem"] {
+                padding: 1.25rem !important;
+            }
+            div[style*="padding: 1.5rem"] {
+                padding: 1rem !important;
+            }
+            div[style*="gap: 1.5rem"] {
+                gap: 1rem !important;
+            }
+            div[style*="margin-bottom: 2rem"] {
+                margin-bottom: 1.25rem !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; }
+
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.125rem; }
+            h3 { font-size: 1rem; }
+
+            .stat-value { font-size: 1.5rem; }
+            .stat-label { font-size: 0.625rem; }
+            .stat-card { padding: 0.75rem; }
+
+            /* Force all multi-column grids to single column on small phones */
+            div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
+            th { font-size: 0.6875rem; }
+
+            .badge {
+                display: block;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1 class="text-center">🏀 NBA BET TRACKING</h1>
-            <p class="text-center text-gray-400" style="font-size: 1.25rem; margin-bottom: 2rem;">Performance Analytics Dashboard</p>
+            <h1 class="text-center">Model Performance</h1>
+            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
 
-            <div class="grid">
-                <div class="stat-card">
-                    <div class="stat-value">{{ stats.total_picks }}</div>
-                    <div class="stat-label">Total Bets</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ "%.1f"|format(stats.win_rate) }}%</div>
-                    <div class="stat-label">Win Rate</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value {% if stats.total_profit > 0 %}text-green-400{% elif stats.total_profit < 0 %}text-red-400{% endif %}">
-                        {% if stats.total_profit > 0 %}+{% endif %}{{ "%.2f"|format(stats.total_profit/100) }}u
+            <!-- Overall Performance Card -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Overall Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.total_picks }}</div>
+                        <div class="stat-label">Total Bets</div>
                     </div>
-                    <div class="stat-label">Total Profit</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value {% if stats.roi > 0 %}text-green-400{% elif stats.roi < 0 %}text-red-400{% endif %}">
-                        {% if stats.roi > 0 %}+{% endif %}{{ "%.1f"|format(stats.roi) }}%
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.wins }}-{{ stats.losses }}{% if stats.pushes > 0 %}-{{ stats.pushes }}{% endif %}</div>
+                        <div class="stat-label">Record</div>
                     </div>
-                    <div class="stat-label">ROI</div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format(stats.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if stats.total_profit > 0 %}text-green-400{% elif stats.total_profit < 0 %}text-red-400{% endif %}">
+                            {% if stats.total_profit > 0 %}+{% endif %}{{ "%.2f"|format(stats.total_profit/100) }}u
+                        </div>
+                        <div class="stat-label">Total Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if stats.roi > 0 %}text-green-400{% elif stats.roi < 0 %}text-red-400{% endif %}">
+                            {% if stats.roi > 0 %}+{% endif %}{{ "%.1f"|format(stats.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ yesterday_wins }}-{{ yesterday_losses }}{% if yesterday_pushes > 0 %}-{{ yesterday_pushes }}{% endif %}</div>
-                    <div class="stat-label">Yesterday's Record</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ spread_wins + spread_losses + spread_pushes }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ spread_wins }}-{{ spread_losses }}{% if spread_pushes > 0 %}-{{ spread_pushes }}{% endif %}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">{% if spread_wins + spread_losses > 0 %}{{ "%.1f"|format(spread_wins / (spread_wins + spread_losses) * 100) }}%{% else %}0.0%{% endif %}</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">{{ "%.2f"|format((spread_wins * 100 - spread_losses * 110) / 100) }}u</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ total_wins + total_losses + total_pushes }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ total_wins }}-{{ total_losses }}{% if total_pushes > 0 %}-{{ total_pushes }}{% endif %}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">{% if total_wins + total_losses > 0 %}{{ "%.1f"|format(total_wins / (total_wins + total_losses) * 100) }}%{% else %}0.0%{% endif %}</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">{{ "%.2f"|format((total_wins * 100 - total_losses * 110) / 100) }}u</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div style="background: #0a0a0a; border-radius: 0.5rem; padding: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
-                <div>
-                    <span class="text-gray-400">Wins:</span>
-                    <span class="text-green-400 font-bold" style="margin-left: 0.5rem;">{{ stats.wins }}</span>
-                </div>
-                <div>
-                    <span class="text-gray-400">Losses:</span>
-                    <span class="text-red-400 font-bold" style="margin-left: 0.5rem;">{{ stats.losses }}</span>
-                </div>
-                <div>
-                    <span class="text-gray-400">Pushes:</span>
-                    <span class="text-gray-400 font-bold" style="margin-left: 0.5rem;">{{ stats.pushes }}</span>
+            <!-- Today's/Yesterday's Record -->
+            <div style="background: #2a3441; border-radius: 1rem; padding: 1.5rem;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">{{ display_label }}</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #4ade80;">{{ display_wins }}-{{ display_losses }}{% if display_pushes > 0 %}-{{ display_pushes }}{% endif %}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Overall</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #60a5fa;">{{ display_spread_wins }}-{{ display_spread_losses }}{% if display_spread_pushes > 0 %}-{{ display_spread_pushes }}{% endif %}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Spreads</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #f472b6;">{{ display_total_wins }}-{{ display_total_losses }}{% if display_total_pushes > 0 %}-{{ display_total_pushes }}{% endif %}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Totals</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         {% if pending_picks %}
         <div class="card">
-            <h2>🎯 Upcoming Bets</h2>
+            <h2>🎯 Today's Projections</h2>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -646,51 +1138,154 @@ def generate_tracking_html():
         </div>
         {% endif %}
 
-        {% if completed_picks %}
+        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
         <div class="card">
-            <h2>📊 Completed Bets</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Game Date</th>
-                            <th>Game</th>
-                            <th>Type</th>
-                            <th>Pick</th>
-                            <th>Line</th>
-                            <th>Score</th>
-                            <th>Result</th>
-                            <th>Profit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pick in completed_picks %}
-                        <tr>
-                            <td class="text-sm font-bold">{{ format_game_date(pick.game_date) }}</td>
-                            <td class="font-bold">{{ pick.matchup }}</td>
-                            <td>{{ pick.pick_type }}</td>
-                            <td>{{ pick.pick }}</td>
-                            <td>{{ pick.market_line }}</td>
-                            <td class="text-sm">{{ pick.actual_away_score }}-{{ pick.actual_home_score }}</td>
-                            <td>
-                                {% if pick.result == 'Win' %}
-                                <span class="badge badge-win">✅ Win</span>
-                                {% elif pick.result == 'Loss' %}
-                                <span class="badge badge-loss">❌ Loss</span>
-                                {% else %}
-                                <span class="badge badge-push">➖ Push</span>
-                                {% endif %}
-                            </td>
-                            <td class="font-bold {{ format_profit(pick.profit_loss) }}">
-                                {{ "%+.2f"|format(pick.profit_loss/100) }}u
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
+                <p class="subtitle">Verified Track Record</p>
+            </div>
+
+            <!-- Last 100 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Last 100 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ last_100.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format(last_100.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_100.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_100.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_100.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_100.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_100.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_100.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ last_100.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">{{ "%.1f"|format(last_100.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_100.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_100.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_100.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ last_100.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">{{ "%.1f"|format(last_100.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_100.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_100.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 50 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    🚀 Last 50 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">{{ last_50.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">{{ "%.1f"|format(last_50.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_50.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_50.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_50.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_50.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">{{ "%.1f"|format(last_50.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_50.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_50.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_50.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">{{ "%.1f"|format(last_50.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_50.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_50.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 20 Picks -->
+            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    ⚡ Last 20 Picks (Hot Streak)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">{{ last_20.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-green-400">{{ "%.1f"|format(last_20.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_20.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_20.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_20.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_20.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">{{ "%.1f"|format(last_20.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_20.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_20.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_20.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">{{ "%.1f"|format(last_20.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_20.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_20.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
 
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
             <p>Last updated: {{ timestamp }}</p>
@@ -707,9 +1302,25 @@ def generate_tracking_html():
         timestamp=timestamp,
         format_profit=format_profit,
         format_game_date=format_game_date,
-        yesterday_wins=yesterday_wins,
-        yesterday_losses=yesterday_losses,
-        yesterday_pushes=yesterday_pushes
+        display_label=display_label,
+        display_wins=display_wins,
+        display_losses=display_losses,
+        display_pushes=display_pushes,
+        spread_wins=spread_wins,
+        spread_losses=spread_losses,
+        spread_pushes=spread_pushes,
+        total_wins=total_wins,
+        total_losses=total_losses,
+        total_pushes=total_pushes,
+        display_spread_wins=display_spread_wins,
+        display_spread_losses=display_spread_losses,
+        display_spread_pushes=display_spread_pushes,
+        display_total_wins=display_total_wins,
+        display_total_losses=display_total_losses,
+        display_total_pushes=display_total_pushes,
+        last_100=last_100,
+        last_50=last_50,
+        last_20=last_20
     )
 
     with open(TRACKING_HTML_FILE, 'w', encoding='utf-8') as f:
@@ -1133,6 +1744,9 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
     """Process each game and generate predictions with improved validation"""
     results = []
 
+    # Load historical team performance
+    team_performance = get_team_historical_performance()
+
     for game in games:
         try:
             # Normalize team names from The Odds API
@@ -1236,6 +1850,19 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 total_pick = "⚠️ NO BET - Too close to call"
                 total_explanation = ""
 
+            # Check for team performance indicators
+            picked_team = None
+            if '✅ BET:' in ats_pick:
+                # Extract team from pick text
+                if home_team in ats_pick:
+                    picked_team = home_team
+                elif away_team in ats_pick:
+                    picked_team = away_team
+
+            team_indicator = None
+            if picked_team:
+                team_indicator = get_team_performance_indicator(picked_team, team_performance)
+
             result = {
                 "Matchup": f"{away_team} @ {home_team}",
                 "GameTime": game_time,
@@ -1252,7 +1879,8 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 "away_team": away_team,
                 "commence_time": commence_time,
                 "spread_edge": spread_edge,
-                "total_edge": total_edge
+                "total_edge": total_edge,
+                "team_indicator": team_indicator
             }
 
             results.append(result)
@@ -1284,6 +1912,12 @@ def display_terminal(results):
     for r in results:
         print(f"{Colors.BOLD}{Colors.CYAN}{r['Matchup']}{Colors.END}")
         print(f"  🕐 {r['GameTime']}")
+
+        # Display team performance indicator if available
+        if r.get('team_indicator'):
+            indicator = r['team_indicator']
+            print(f"  {indicator['color']}{indicator['emoji']} {indicator['label']}: {indicator['message']}{Colors.END}")
+
         print(f"  📊 Spread: Market {r['Market Spread']} | Model {r['Model Spread']}")
         print(f"  🎯 Total: Market {r['Market Total']} | Model {r['Model Total']}")
         print(f"  {Colors.GREEN if '✅' in r['ATS Pick'] else Colors.YELLOW}{r['ATS Pick']}{Colors.END}")
@@ -1316,36 +1950,37 @@ def save_html(results):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NBA Model Picks</title>
+        <title>CourtSide Analytics - Today's Picks</title>
         <style>
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-                color: #e2e8f0;
-                padding: 2rem;
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+                background: #0a1628;
+                color: #ffffff;
+                padding: 1.5rem;
                 min-height: 100vh;
             }
            .container { max-width: 1200px; margin: 0 auto; }
            .card {
-                background: #1a1a1a;
-                border-radius: 1rem;
-                border: 1px solid #2a2a2a;
+                background: #1a2332;
+                border-radius: 1.25rem;
+                border: none;
                 padding: 2rem;
                 margin-bottom: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             }
            .header-card {
                 text-align: center;
-                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                border: 2px solid #fbbf24;
+                background: #1a2332;
+                border: none;
             }
            .game-card {
                 padding: 1.5rem;
-                border-bottom: 1px solid #2a2a2a;
+                border-bottom: 1px solid #2a3441;
             }
            .game-card:last-child { border-bottom: none; }
-           .matchup { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
-           .game-time { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }
+           .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
            .bet-section {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1353,28 +1988,41 @@ def save_html(results):
                 margin-top: 1rem;
             }
            .bet-box {
-                background: #0a0a0a;
-                padding: 1rem;
-                border-radius: 0.5rem;
-                border-left: 4px solid #fbbf24;
+                background: #2a3441;
+                padding: 1.25rem;
+                border-radius: 1rem;
+                border-left: none;
+            }
+           .bet-box-spread {
+                border-left: 4px solid #60a5fa;
+            }
+           .bet-box-total {
+                border-left: 4px solid #f472b6;
             }
            .bet-title {
-                font-weight: 700;
-                color: #fbbf24;
+                font-weight: 600;
+                color: #94a3b8;
                 margin-bottom: 0.5rem;
                 text-transform: uppercase;
-                font-size: 0.875rem;
+                font-size: 0.75rem;
                 letter-spacing: 0.05em;
+            }
+           .bet-title-spread {
+                color: #60a5fa;
+            }
+           .bet-title-total {
+                color: #f472b6;
             }
            .odds-line {
                 display: flex;
                 justify-content: space-between;
                 margin: 0.25rem 0;
-                font-size: 0.95rem;
-                color: #cbd5e1;
+                font-size: 0.9375rem;
+                color: #94a3b8;
             }
            .odds-line strong {
                 color: #ffffff;
+                font-weight: 600;
            }
            .confidence-bar-container {
                 margin: 0.75rem 0;
@@ -1384,82 +2032,229 @@ def save_html(results):
                 justify-content: space-between;
                 margin-bottom: 0.5rem;
                 font-size: 0.875rem;
-                color: #9ca3af;
+                color: #94a3b8;
            }
            .confidence-pct {
                 font-weight: 700;
-                color: #fbbf24;
+                color: #4ade80;
            }
            .confidence-bar {
-                height: 8px;
-                background: #1e293b;
+                height: 6px;
+                background: #1a2332;
                 border-radius: 999px;
                 overflow: hidden;
-                border: 1px solid #2a2a2a;
+                border: none;
            }
            .confidence-fill {
                 height: 100%;
-                background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+                background: #4ade80;
                 border-radius: 999px;
                 transition: width 0.3s ease;
            }
            .pick {
-                font-weight: 700;
-                padding: 0.75rem;
-                margin-top: 0.5rem;
-                border-radius: 0.375rem;
-                font-size: 1.1rem;
-                line-height: 1.6;
+                font-weight: 600;
+                padding: 0.875rem 1rem;
+                margin-top: 0.75rem;
+                border-radius: 0.75rem;
+                font-size: 1rem;
+                line-height: 1.5;
             }
            .pick small {
                 display: block;
-                font-size: 0.85rem;
+                font-size: 0.8125rem;
                 font-weight: 400;
                 margin-top: 0.5rem;
-                opacity: 0.9;
+                opacity: 0.85;
                 line-height: 1.4;
             }
-           .pick-yes { background-color: #064e3b; color: #10b981; border: 2px solid #10b981; }
-           .pick-no { background-color: #450a0a; color: #ef4444; border: 2px solid #ef4444; }
-           .pick-none { background-color: #1e293b; color: #94a3b8; border: 2px solid #475569; }
+           .pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
+           .pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
+           .pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
            .prediction {
-                background: linear-gradient(135deg, #422006 0%, #78350f 100%);
-                color: #fbbf24;
+                background: #2a3441;
+                color: #4ade80;
                 padding: 1rem;
-                border-radius: 0.5rem;
+                border-radius: 1rem;
                 text-align: center;
-                font-weight: 800;
-                font-size: 1.25rem;
+                font-weight: 700;
+                font-size: 1.125rem;
                 margin-top: 1rem;
+                border: 1px solid #2a3441;
             }
            .badge {
                 display: inline-block;
-                padding: 0.5rem 1rem;
-                border-radius: 9999px;
-                font-size: 0.875rem;
-                font-weight: 700;
-                background-color: #064e3b;
-                color: #10b981;
+                padding: 0.375rem 0.875rem;
+                border-radius: 0.5rem;
+                font-size: 0.8125rem;
+                font-weight: 600;
+                background: rgba(74, 222, 128, 0.2);
+                color: #4ade80;
                 margin: 0.25rem;
             }
+           .team-indicator {
+                padding: 0.875rem 1rem;
+                margin: 0.75rem 0;
+                border-radius: 0.75rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                border-left: 3px solid;
+            }
+           .team-indicator-hot {
+                background: rgba(74, 222, 128, 0.15);
+                color: #4ade80;
+                border-color: #4ade80;
+            }
+           .team-indicator-good {
+                background: rgba(52, 211, 153, 0.15);
+                color: #34d399;
+                border-color: #34d399;
+            }
+           .team-indicator-neutral-plus {
+                background: rgba(96, 165, 250, 0.15);
+                color: #60a5fa;
+                border-color: #60a5fa;
+            }
+           .team-indicator-neutral {
+                background: rgba(148, 163, 184, 0.15);
+                color: #94a3b8;
+                border-color: #94a3b8;
+            }
+           .team-indicator-neutral-minus {
+                background: rgba(251, 191, 36, 0.15);
+                color: #fbbf24;
+                border-color: #fbbf24;
+            }
+           .team-indicator-caution {
+                background: rgba(251, 191, 36, 0.15);
+                color: #fbbf24;
+                border-color: #fbbf24;
+            }
+           .team-indicator-cold {
+                background: rgba(248, 113, 113, 0.15);
+                color: #f87171;
+                border-color: #f87171;
+            }
+           .team-indicator-limited {
+                background: rgba(96, 165, 250, 0.15);
+                color: #60a5fa;
+                border-color: #60a5fa;
+            }
+           /* Mobile Responsiveness */
+           @media (max-width: 1024px) {
+                .container { max-width: 100%; }
+                .card { padding: 1.5rem; }
+           }
+
            @media (max-width: 768px) {
+                body { padding: 1rem; }
+                .card { padding: 1.25rem; }
+                .game-card { padding: 1.25rem; }
+
                 .bet-section {
                     grid-template-columns: 1fr;
+                    gap: 1rem;
                 }
-                body {
+
+                .matchup { font-size: 1.25rem; }
+
+                .badge {
+                    padding: 0.3125rem 0.625rem;
+                    font-size: 0.6875rem;
+                    margin: 0.1875rem;
+                }
+
+                .pick, .prediction {
+                    font-size: 0.9375rem;
+                    padding: 0.75rem;
+                }
+
+                .pick small {
+                    font-size: 0.75rem;
+                }
+
+                .team-indicator {
+                    padding: 0.75rem 0.875rem;
+                    font-size: 0.8125rem;
+                }
+
+                .confidence-bar {
+                    height: 5px;
+                }
+
+                .odds-line {
+                    font-size: 0.875rem;
+                }
+
+                .bet-box {
                     padding: 1rem;
                 }
-                .matchup {
-                    font-size: 1.25rem;
+
+                /* Inline styles override */
+                h1[style] { font-size: 2rem !important; }
+                p[style*="font-size: 1.5rem"] { font-size: 1.125rem !important; }
+           }
+
+           @media (max-width: 480px) {
+                body { padding: 0.75rem; }
+                .card { padding: 1rem; margin-bottom: 1rem; }
+                .game-card { padding: 1rem; }
+
+                .matchup { font-size: 1.125rem; }
+                .game-time { font-size: 0.8125rem; }
+
+                .bet-section {
+                    gap: 0.75rem;
                 }
+
+                .bet-box {
+                    padding: 0.875rem;
+                }
+
+                .bet-title {
+                    font-size: 0.6875rem;
+                }
+
+                .odds-line {
+                    font-size: 0.8125rem;
+                }
+
+                .confidence-label {
+                    font-size: 0.8125rem;
+                }
+
+                .pick, .prediction {
+                    font-size: 0.875rem;
+                    padding: 0.625rem;
+                }
+
+                .pick small {
+                    font-size: 0.6875rem;
+                }
+
+                .team-indicator {
+                    padding: 0.625rem 0.75rem;
+                    font-size: 0.75rem;
+                }
+
+                .badge {
+                    display: block;
+                    margin: 0.25rem auto;
+                    text-align: center;
+                    max-width: 200px;
+                }
+
+                /* Inline styles override for small phones */
+                h1[style] { font-size: 1.5rem !important; }
+                p[style*="font-size: 1.5rem"] { font-size: 1rem !important; }
+                p[style*="font-size: 0.875rem"] { font-size: 0.8125rem !important; }
            }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="card header-card">
-                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">🏀 NBA MODEL PICKS</h1>
-                <p style="font-size: 1.25rem; opacity: 0.9;">IMPROVED Model - Stricter Filters</p>
+                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
+                <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">Today's Picks</p>
                 <div>
                     <div class="badge">● REST DAY TRACKING</div>
                     <div class="badge">● HOME/AWAY SPLITS</div>
@@ -1475,8 +2270,14 @@ def save_html(results):
                     <div class="matchup">{{ game.Matchup }}</div>
                     <div class="game-time">🕐 {{ game.GameTime }}</div>
 
+                    {% if game.team_indicator %}
+                    <div class="team-indicator team-indicator-{{ game.team_indicator.label|lower }}">
+                        {{ game.team_indicator.emoji }} <strong>{{ game.team_indicator.label }}</strong>: {{ game.team_indicator.message }}
+                    </div>
+                    {% endif %}
+
                     <div class="bet-section">
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-spread">
                             <div class="bet-title">📊 SPREAD BET</div>
                             <div class="odds-line">
                                 <span>Vegas Line:</span>
@@ -1506,7 +2307,7 @@ def save_html(results):
                             </div>
                         </div>
 
-                        <div class="bet-box">
+                        <div class="bet-box bet-box-total">
                             <div class="bet-title">🎯 OVER/UNDER BET</div>
                             <div class="odds-line">
                                 <span>Vegas Total:</span>
@@ -1604,9 +2405,22 @@ def main():
 
     if results:
         print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Analyzed {len(results)} games with complete odds{Colors.END}\n")
-        display_terminal(results)
-        save_csv(results)
-        save_html(results)
+
+        # Sort all results by highest edge (spread or total)
+        # This puts the most confident plays first
+        def get_max_edge(game):
+            # Get the highest edge for this game (either spread or total)
+            spread_edge = abs(game.get('spread_edge', 0))
+            total_edge = abs(game.get('total_edge', 0))
+            return max(spread_edge, total_edge)
+
+        sorted_results = sorted(results, key=get_max_edge, reverse=True)
+
+        print(f"{Colors.YELLOW}📊 All picks sorted by edge (highest confidence first){Colors.END}\n")
+
+        display_terminal(sorted_results)
+        save_csv(sorted_results)
+        save_html(sorted_results)
     else:
         print(f"\n{Colors.YELLOW}⚠️  No games with complete betting lines found.{Colors.END}\n")
 
@@ -1628,6 +2442,19 @@ def main():
     print(f"{profit_color}Profit: {stats['total_profit']/100:+.2f} units{Colors.END}")
     print(f"{profit_color}ROI: {stats['roi']:+.1f}%{Colors.END}")
     print(f"{Colors.BOLD}{'='*90}{Colors.END}\n")
+
+    # Update unified dashboard
+    print(f"{Colors.CYAN}Updating unified dashboard...{Colors.END}")
+    try:
+        import subprocess
+        subprocess.run(
+            ['python3', os.path.join(SCRIPT_DIR, '..', 'unified_dashboard_interactive.py')],
+            timeout=30,
+            capture_output=True
+        )
+        print(f"{Colors.GREEN}✓ Dashboard updated{Colors.END}\n")
+    except Exception as e:
+        print(f"{Colors.YELLOW}⚠ Dashboard update failed: {e}{Colors.END}\n")
 
 if __name__ == "__main__":
     main()

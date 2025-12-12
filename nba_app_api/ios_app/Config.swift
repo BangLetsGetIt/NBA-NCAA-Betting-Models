@@ -23,7 +23,7 @@ struct AppConfig {
     /// Backend API URL
     /// - Local testing: "http://localhost:8000"
     /// - Production: "https://your-app.onrender.com"
-    static let apiBaseURL = "http://localhost:8000"
+    static let apiBaseURL = "https://nba-analytics-api-rf2z.onrender.com"
 
     // MARK: - In-App Purchase Product IDs
 

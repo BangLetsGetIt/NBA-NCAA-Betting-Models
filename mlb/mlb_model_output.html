@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Alpha Model - November 22, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-weight: 700;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 3px solid #0077ff;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .header .subtitle {
+            color: #0077ff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .matchup {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 3px solid #ff6b35;
+        }
+
+        .matchup h2 {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .teams {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffd60a;
+            margin-bottom: 5px;
+        }
+
+        .pitcher-name {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .vs {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff6b35;
+            margin: 0 15px;
+        }
+
+        .bet-card {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #06d6a0;
+        }
+
+        .bet-card.highlight {
+            border-color: #ffd60a;
+        }
+
+        .bet-card h3 {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .bet-card.highlight h3 {
+            color: #ffd60a;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-weight: 900;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .stat-value.positive {
+            color: #0077ff;
+        }
+
+        .stat-value.highlight {
+            color: #e63946;
+            font-size: 18px;
+        }
+
+        .bet-recommendation {
+            background: #06d6a0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            border: 3px solid #06d6a0;
+        }
+
+        .bet-recommendation.value {
+            background: #e63946;
+            border-color: #e63946;
+        }
+
+        .bet-recommendation strong {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ffffff;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .bet-recommendation.value strong {
+            color: #ffffff;
+        }
+
+        .no-bet {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            color: #888888;
+            font-weight: 700;
+            border: 2px solid #333333;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0.6;
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        /* Tablet and smaller */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+                letter-spacing: 1px;
+            }
+
+            .header .subtitle {
+                font-size: 12px;
+            }
+
+            .matchup h2 {
+                font-size: 18px;
+            }
+
+            .teams {
+                flex-direction: column;
+            }
+
+            .team-name {
+                font-size: 18px;
+            }
+
+            .pitcher-name {
+                font-size: 13px;
+            }
+
+            .vs {
+                margin: 10px 0;
+                font-size: 20px;
+            }
+
+            .bet-card {
+                padding: 20px;
+            }
+
+            .bet-card h3 {
+                font-size: 16px;
+            }
+
+            .stat-label {
+                font-size: 13px;
+            }
+
+            .stat-value {
+                font-size: 15px;
+            }
+
+            .stat-value.highlight {
+                font-size: 16px;
+            }
+
+            .bet-recommendation strong {
+                font-size: 16px;
+            }
+        }
+
+        /* Large screens - better for YouTube videos */
+        @media (min-width: 1200px) {
+            body {
+                padding: 40px;
+            }
+
+            .header {
+                padding: 40px;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header .subtitle {
+                font-size: 16px;
+            }
+
+            .matchup {
+                padding: 30px;
+            }
+
+            .matchup h2 {
+                font-size: 28px;
+            }
+
+            .team-name {
+                font-size: 24px;
+            }
+
+            .pitcher-name {
+                font-size: 16px;
+            }
+
+            .bet-card {
+                padding: 35px;
+            }
+
+            .bet-card h3 {
+                font-size: 22px;
+            }
+
+            .stat-label {
+                font-size: 16px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .stat-value.highlight {
+                font-size: 22px;
+            }
+
+            .bet-recommendation {
+                padding: 25px;
+            }
+
+            .bet-recommendation strong {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚾ MLB Alpha Model</h1>
+            <div class="subtitle">November 22, 2025</div>
+        </div>
+
+        <div class="matchup">
+            <h2>Today's Featured Game</h2>
+            <div class="teams">
+                <div class="team">
+                    <div class="team-name">YANKEES</div>
+                    <div class="pitcher-name">Cole Ragans</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="team">
+                    <div class="team-name">DODGERS</div>
+                    <div class="pitcher-name">Tyler Glasnow</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- F5 Betting Section -->
+        <div class="bet-card highlight">
+            <h3>🎯 First 5 Innings (F5)</h3>
+            <div class="stat-row">
+                <span class="stat-label">Win Probability</span>
+                <span class="stat-value highlight">64.6%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Book Odds</span>
+                <span class="stat-value">+105</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Kelly Criterion</span>
+                <span class="stat-value positive">15.5% of bankroll</span>
+            </div>
+            <div class="bet-recommendation"><strong>🚨 BET RECOMMENDED: Yankees F5 ML</strong></div>
+        </div>
+
+        <!-- Strikeout Prop Section -->
+        <div class="bet-card ">
+            <h3>🔥 Strikeout Prop</h3>
+            <div class="stat-row">
+                <span class="stat-label">Player</span>
+                <span class="stat-value">Tyler Glasnow</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Projected Ks</span>
+                <span class="stat-value highlight">6.2</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Market Line</span>
+                <span class="stat-value">7.5</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Over Probability</span>
+                <span class="stat-value positive">27.8%</span>
+            </div>
+            <div class="no-bet">No value found - Pass on this prop</div>
+        </div>
+
+        <!-- Home Run Prop Section -->
+        <div class="bet-card highlight">
+            <h3>💣 Home Run Prop</h3>
+            <div class="stat-row">
+                <span class="stat-label">Player</span>
+                <span class="stat-value">Aaron Judge</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">HR Probability</span>
+                <span class="stat-value highlight">40.0%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Fair Odds</span>
+                <span class="stat-value positive">+149</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Book Odds</span>
+                <span class="stat-value">+250</span>
+            </div>
+            <div class="bet-recommendation value"><strong>💎 VALUE BET: Aaron Judge HR at +250</strong></div>
+        </div>
+
+        <div class="footer">
+            Model based on SIERA, xFIP, wRC+, Barrel Rate & Advanced Analytics<br>
+            Always bet responsibly. Past performance doesn't guarantee future results.
+        </div>
+    </div>
+</body>
+</html>

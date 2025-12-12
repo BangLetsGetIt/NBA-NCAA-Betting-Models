@@ -1,0 +1,249 @@
+==========================================
+NCAA Model Run: Mon Dec  8 10:30:05 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 6 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-08
+  Newest: 2025-12-10
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 171 completed games[0m
+[96mFound 171 completed games from API[0m
+[93m⚠️  No match found: Lafayette Leopards @ Pennsylvania Quakers (2025-12-08)[0m
+[93m⚠️  No match found: South Carolina State Bulldogs @ Charleston Southern Buccaneers (2025-12-09)[0m
+[93m⚠️  No match found: Miss Valley State Delta Devils @ Kansas State Wildcats (2025-12-09)[0m
+[93m⚠️  No match found: Southern Jaguars @ Texas Longhorns (2025-12-09)[0m
+[93m⚠️  No match found: Southern Jaguars @ Texas Longhorns (2025-12-09)[0m
+[93m⚠️  No match found: Illinois Fighting Illini @ Ohio State Buckeyes (2025-12-10)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[93m⚠️  No stats cache found or cache is old. Using simulated model.[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 9 games from The Odds API[0m
+[92m✓ 9 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1438[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1439[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 156.5 (Edge: -25.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1439[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1440[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 150.5 (Edge: -22.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1440[0m
+
+[1m[92m✅ Analyzed 9 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Miss Valley State Delta Devils @ Kansas State Wildcats ━━━[0m
+[96m🕐 12/08 08:00 PM[0m
+[92m🔥 HOT: Miss Valley State Delta Devils - Strong performer: 3-1 (75%) | +1.73u over 4 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -37.5 | Model: +6.3 | Edge: +31.2
+  [92m✅ BET: Miss Valley State Delta Devils +37.5[0m
+  [96mHIGH confidence. Model predicts Miss Valley State Delta Devils covers by +31.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 131.4 | Edge: -25.1
+  [92m✅ BET: UNDER 156.5[0m
+  [96mHIGH confidence (25.1 edge)[0m
+
+[35m📈 Miss Valley State Delta Devils 62.5, Kansas State Wildcats 68.9[0m
+
+[1m[96m━━━ GAME 2: Clemson Tigers @ BYU Cougars ━━━[0m
+[96m🕐 12/09 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +5.3 | Edge: +0.2
+  [91m❌ NO BET[0m
+  [96mEdge (+0.2) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 128.4 | Edge: -22.1
+  [92m✅ BET: UNDER 150.5[0m
+  [96mHIGH confidence (22.1 edge)[0m
+
+[35m📈 Clemson Tigers 61.6, BYU Cougars 66.9[0m
+
+[1m[96m━━━ GAME 3: Illinois Fighting Illini @ Ohio State Buckeyes ━━━[0m
+[96m🕐 12/09 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: +3.8 | Edge: +7.3
+  [91m❌ NO BET[0m
+  [96mEdge (+7.3) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 154.5 | Model: 136.6 | Edge: -17.9
+  [92m✅ BET: UNDER 154.5[0m
+  [96mHIGH confidence (17.9 edge)[0m
+
+[35m📈 Illinois Fighting Illini 66.4, Ohio State Buckeyes 70.2[0m
+
+[1m[96m━━━ GAME 4: Southern Jaguars @ Texas Longhorns ━━━[0m
+[96m🕐 12/08 08:00 PM[0m
+[96mℹ️ LIMITED: Southern Jaguars - Limited data: 1-1 (50%) | -0.09u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -20.5 | Model: +7.8 | Edge: +12.7
+  [92m✅ BET: Southern Jaguars +20.5[0m
+  [96mHIGH confidence. Model predicts Southern Jaguars covers by +12.7 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 153.5 | Model: 140.2 | Edge: -13.3
+  [92m✅ BET: UNDER 153.5[0m
+  [96mHIGH confidence (13.3 edge)[0m
+
+[35m📈 Southern Jaguars 66.2, Texas Longhorns 74.0[0m
+
+[1m[96m━━━ GAME 5: Lafayette Leopards @ Pennsylvania Quakers ━━━[0m
+[96m🕐 12/08 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +6.7 | Edge: +1.2
+  [91m❌ NO BET[0m
+  [96mEdge (+1.2) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 139.0 | Edge: -12.5
+  [92m✅ BET: UNDER 151.5[0m
+  [96mHIGH confidence (12.5 edge)[0m
+
+[35m📈 Lafayette Leopards 66.1, Pennsylvania Quakers 72.9[0m
+
+[1m[96m━━━ GAME 6: Incarnate Word Cardinals @ New Orleans Privateers ━━━[0m
+[96m🕐 12/08 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +5.9 | Edge: +7.4
+  [91m❌ NO BET[0m
+  [96mEdge (+7.4) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 137.0 | Edge: -11.5
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (11.5 edge)[0m
+
+[35m📈 Incarnate Word Cardinals 65.6, New Orleans Privateers 71.5[0m
+
+[1m[96m━━━ GAME 7: Florida Gators @ UConn Huskies ━━━[0m
+[96m🕐 12/09 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +13.7 | Edge: +9.2
+  [92m✅ BET: UConn Huskies -4.5[0m
+  [96mHIGH confidence. Model predicts UConn Huskies covers by +9.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 145.5 | Edge: -0.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.0)[0m
+
+[35m📈 Florida Gators 65.9, UConn Huskies 79.6[0m
+
+[1m[96m━━━ GAME 8: South Carolina State Bulldogs @ Charleston Southern Buccaneers ━━━[0m
+[96m🕐 12/08 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +4.0 | Edge: +4.5
+  [91m❌ NO BET[0m
+  [96mEdge (+4.5) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 144.3 | Edge: -8.2
+  [92m✅ BET: UNDER 152.5[0m
+  [96mMEDIUM confidence (8.2 edge)[0m
+
+[35m📈 South Carolina State Bulldogs 70.2, Charleston Southern Buccaneers 74.2[0m
+
+[1m[96m━━━ GAME 9: Grambling State Tigers @ Southern Miss Golden Eagles ━━━[0m
+[96m🕐 12/08 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +1.7 | Edge: +5.8
+  [91m❌ NO BET[0m
+  [96mEdge (+5.8) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 141.5 | Model: 138.2 | Edge: -3.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.3)[0m
+
+[35m📈 Grambling State Tigers 68.3, Southern Miss Golden Eagles 69.9[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1440[0m
+[92mRecord: 759-673-0[0m
+[92mWin Rate: 53.0%[0m
+[92mProfit: +17.69 units[0m
+[92mROI: +1.2%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 42a3e73] Update model outputs - 2025-12-08 10:30:07
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 214 insertions(+), 164 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   f104eef..42a3e73  main -> main
+✅ Successfully pushed to GitHub!

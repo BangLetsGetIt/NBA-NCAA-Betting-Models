@@ -1,0 +1,96 @@
+==========================================
+NBA Rebounds Props Model Run: Fri Dec 12 06:00:02 EST 2025
+==========================================
+Running NBA Rebounds Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mChecking 10 pending picks...[0m
+[92m✓ Updated 2 picks[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 9 upcoming games[0m
+[96m  Game 1/9: Atlanta Hawks @ Detroit Pistons[0m
+[96m  Game 2/9: Chicago Bulls @ Charlotte Hornets[0m
+[96m  Game 3/9: Cleveland Cavaliers @ Washington Wizards[0m
+[96m  Game 4/9: Indiana Pacers @ Philadelphia 76ers[0m
+[96m  Game 5/9: Utah Jazz @ Memphis Grizzlies[0m
+[96m  Game 6/9: Brooklyn Nets @ Dallas Mavericks[0m
+[96m  Game 7/9: Minnesota Timberwolves @ Golden State Warriors[0m
+[96m  Game 8/9: New York Knicks @ Orlando Magic[0m
+[96m  Game 9/9: San Antonio Spurs @ Oklahoma City Thunder[0m
+[92m✓ Fetched 228 total player props[0m
+
+[96mAnalyzing 228 player props with REAL stats...[0m
+[92m✓ Found 3 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 5 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 8 props (no player stats found)[0m
+[93m  Skipped 414 props (score below 9.5)[0m
+
+[96mAuto-tracking picks with A.I. Score >= 9.7...[0m
+[92m✓ Tracked 2 new picks[0m
+
+[1m[96m================================================================================[0m
+[1m[96mTRACKING SUMMARY[0m
+[1m[96m================================================================================[0m
+Total Picks: 19 | Wins: 7 | Losses: 2 | Pending: 10
+Win Rate: 77.8% | ROI: +4.37u (+23.0%)
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+📊 [96m 1. Julian Champagnie        [0m | [92mOVER 3.5 REB   [0m | Oklahoma City Thunder vs San Antonio Spurs | [1mA.I.: 10.00[0m
+📊 [96m 2. Stephon Castle           [0m | [92mOVER 4.5 REB   [0m | San Antonio Spurs vs Oklahoma City Thunder | [1mA.I.: 10.00[0m
+📊 [96m 3. Victor Wembanyama        [0m | [92mOVER 9.5 REB   [0m | San Antonio Spurs vs Oklahoma City Thunder | [1mA.I.: 10.00[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+📊 [96m 1. Brandon Miller           [0m | [91mUNDER 4.5 REB  [0m | Charlotte Hornets vs Chicago Bulls | [1mA.I.: 10.00[0m
+📊 [96m 2. Evan Mobley              [0m | [91mUNDER 10.5 REB [0m | Cleveland Cavaliers vs Washington Wizards | [1mA.I.: 10.00[0m
+📊 [96m 3. Joel Embiid              [0m | [91mUNDER 7.5 REB  [0m | Philadelphia 76ers vs Indiana Pacers | [1mA.I.: 10.00[0m
+📊 [96m 4. Cedric Coward            [0m | [91mUNDER 7.5 REB  [0m | Memphis Grizzlies vs Utah Jazz | [1mA.I.: 10.00[0m
+📊 [96m 5. Jaylen Wells             [0m | [91mUNDER 4.5 REB  [0m | Memphis Grizzlies vs Utah Jazz | [1mA.I.: 10.00[0m
+
+[93m📊 = Auto-tracked (A.I. Score >= 9.7)[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 279592b] Update model outputs - 2025-12-12 06:00:10
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 88 insertions(+), 47 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   07ce35e..279592b  main -> main
+✅ Successfully pushed to GitHub!

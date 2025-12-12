@@ -1,0 +1,184 @@
+==========================================
+NBA Model Run: Sun Dec  7 00:29:24 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 3 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 35 games from API[0m
+[92m✓ Found 24 completed games[0m
+  ✓ Updating: Sacramento Kings 127 @ Miami Heat 111
+    Result: Win
+  ✓ Updating: Houston Rockets 109 @ Dallas Mavericks 122
+    Result: Win
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[92m✅ Updated 2 picks! Record: 84-61-0[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 11 total games[0m
+[92m✓ Filtered to 7 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: New York Knicks -3.5 (Edge: +8.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 231.5 (Edge: -13.7)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 234.5 (Edge: -13.7)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Memphis Grizzlies -1.0 (Edge: +15.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 235.5 (Edge: -12.2)[0m
+
+[1m[92m✅ Analyzed 7 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mPortland Trail Blazers @ Memphis Grizzlies[0m
+  🕐 12/07/25 06:10 PM EST
+  [91m🚫 COLD: Memphis Grizzlies - Poor performer: 1-3 (25%) | -2.30u over 4 picks[0m
+  📊 Spread: Market -1.0 | Model +16.4
+  🎯 Total: Market 234.5 | Model 226.8
+  [92m✅ BET: Memphis Grizzlies -1.0[0m
+     [96mModel projects Memphis Grizzlies to win by 16.4, covering -1.0.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 227 total points, bet the UNDER[0m
+  📈 Predicted: Portland Trail Blazers 105, Memphis Grizzlies 122
+
+[1m[96mOrlando Magic @ New York Knicks[0m
+  🕐 12/07/25 12:10 PM EST
+  [96mℹ️ LIMITED: New York Knicks - Limited data: 2-0 (100%) | +1.91u (2 picks)[0m
+  📊 Spread: Market -3.5 | Model +12.0
+  🎯 Total: Market 231.5 | Model 217.8
+  [92m✅ BET: New York Knicks -3.5[0m
+     [96mModel projects New York Knicks to win by 12.0, covering -3.5.[0m
+  [92m✅ BET: UNDER 231.5[0m
+     [96mModel projects 218 total points, bet the UNDER[0m
+  📈 Predicted: Orlando Magic 103, New York Knicks 115
+
+[1m[96mDenver Nuggets @ Charlotte Hornets[0m
+  🕐 12/07/25 06:10 PM EST
+  [92m✅ GOOD: Charlotte Hornets - Good record: 2-1 (67%) | +1.00u over 3 picks[0m
+  📊 Spread: Market +10.5 | Model -3.0
+  🎯 Total: Market 234.5 | Model 220.8
+  [92m✅ BET: Charlotte Hornets +10.5[0m
+     [96mModel projects Charlotte Hornets to lose by only 3.0, covering +10.5.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 221 total points, bet the UNDER[0m
+  📈 Predicted: Denver Nuggets 112, Charlotte Hornets 109
+
+[1m[96mLos Angeles Lakers @ Philadelphia 76ers[0m
+  🕐 12/07/25 07:40 PM EST
+  [96mℹ️ LIMITED: Philadelphia 76ers - Limited data: 0-1 (0%) | -1.10u (1 pick)[0m
+  📊 Spread: Market +4.0 | Model +0.3
+  🎯 Total: Market 235.5 | Model 223.3
+  [92m✅ BET: Philadelphia 76ers +4.0[0m
+     [96mModel projects Philadelphia 76ers to win outright, easily covering +4.0.[0m
+  [92m✅ BET: UNDER 235.5[0m
+     [96mModel projects 223 total points, bet the UNDER[0m
+  📈 Predicted: Los Angeles Lakers 112, Philadelphia 76ers 112
+
+[1m[96mOklahoma City Thunder @ Utah Jazz[0m
+  🕐 12/07/25 08:10 PM EST
+  📊 Spread: Market +11.5 | Model -13.8
+  🎯 Total: Market 235.5 | Model 227.9
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-2.3)[0m
+  [92m✅ BET: UNDER 235.5[0m
+     [96mModel projects 228 total points, bet the UNDER[0m
+  📈 Predicted: Oklahoma City Thunder 121, Utah Jazz 107
+
+[1m[96mBoston Celtics @ Toronto Raptors[0m
+  🕐 12/07/25 03:40 PM EST
+  [92m🔥 HOT: Boston Celtics - Strong performer: 4-0 (100%) | +4.00u over 4 picks[0m
+  📊 Spread: Market +2.5 | Model -8.6
+  🎯 Total: Market 226.5 | Model 221.5
+  [92m✅ BET: Boston Celtics -2.5[0m
+     [96mModel projects Toronto Raptors to lose by 8.6, Boston Celtics covers -2.5.[0m
+  [92m✅ BET: UNDER 226.5[0m
+     [96mModel projects 222 total points, bet the UNDER[0m
+  📈 Predicted: Boston Celtics 115, Toronto Raptors 106
+
+[1m[96mGolden State Warriors @ Chicago Bulls[0m
+  🕐 12/07/25 07:10 PM EST
+  📊 Spread: Market +1.0 | Model -3.4
+  🎯 Total: Market 227.5 | Model 227.4
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-2.4)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Golden State Warriors 115, Chicago Bulls 112
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 151[0m
+[92mRecord: 84-61-0[0m
+[92mWin Rate: 57.9%[0m
+[92mProfit: +16.06 units[0m
+[92mROI: +10.1%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 9736429] Update model outputs - 2025-12-07 00:30:11
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 421 insertions(+), 156 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   fed57f4..9736429  main -> main
+✅ Successfully pushed to GitHub!

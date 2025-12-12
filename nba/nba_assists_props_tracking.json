@@ -13,9 +13,9 @@
       "latest_odds": -106,
       "game_time": "2025-12-12T03:10:00Z",
       "tracked_at": "2025-12-11T18:09:01.718939-05:00",
-      "status": "win",
-      "result": "WIN",
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 5,
       "last_updated": "2025-12-11T19:45:28.559092-05:00",
       "updated_at": "2025-12-12T07:00:06.698321-05:00"
     },
@@ -34,7 +34,7 @@
       "tracked_at": "2025-12-11T18:09:01.719823-05:00",
       "status": "win",
       "result": "WIN",
-      "actual_ast": null,
+      "actual_ast": 0,
       "last_updated": "2025-12-11T19:45:28.560229-05:00",
       "updated_at": "2025-12-12T07:00:06.698321-05:00"
     },
@@ -107,7 +107,7 @@
       "tracked_at": "2025-12-11T19:45:02.618508-05:00",
       "status": "win",
       "result": "WIN",
-      "actual_ast": null,
+      "actual_ast": 6,
       "updated_at": "2025-12-12T00:43:14.314548-05:00"
     },
     {
@@ -131,12 +131,12 @@
   ],
   "summary": {
     "total": 7,
-    "wins": 3,
-    "losses": 0,
+    "wins": 2,
+    "losses": 1,
     "pending": 4,
-    "win_rate": 100.0,
-    "roi": 2.73,
-    "roi_pct": 39.0,
+    "win_rate": 66.66666666666666,
+    "roi": 0.8200000000000001,
+    "roi_pct": 11.714285714285715,
     "clv_rate": 28.57142857142857,
     "clv_count": "2/7"
   }

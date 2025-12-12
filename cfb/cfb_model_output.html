@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFB Alpha Model - November 22, 2025</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card {
+            background: #1a1a1a;
+            border-radius: 1rem;
+            border: 1px solid #2a2a2a;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .header-card {
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #ff6b35;
+        }
+        .game-card {
+            padding: 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .game-card:last-child { border-bottom: none; }
+        .matchup { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
+        .game-time { color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }
+        .bet-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .bet-box {
+            background: #0a0a0a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #ff6b35;
+        }
+        .bet-title {
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+        }
+        .odds-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.25rem 0;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+        .odds-line strong { color: #ffffff; }
+        .confidence-bar-container { margin: 0.75rem 0; }
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        .confidence-pct {
+            font-weight: 700;
+            color: #ff6b35;
+        }
+        .confidence-bar {
+            height: 8px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f77f00 100%);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+        .pick {
+            font-weight: 700;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .pick small {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        .pick-yes { background-color: #064e3b; color: #10b981; border: 2px solid #10b981; }
+        .pick-none { background-color: #1e293b; color: #94a3b8; border: 2px solid #475569; }
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            background-color: #7c2d12;
+            color: #ff6b35;
+            margin: 0.25rem;
+        }
+        @media (max-width: 768px) {
+            .bet-section { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+            .matchup { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card header-card">
+            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">🏈 CFB MODEL PICKS</h1>
+            <p style="font-size: 1.25rem; opacity: 0.9;">EPA-Based Predictive Model</p>
+            <div>
+                <div class="badge">● EPA ANALYSIS</div>
+                <div class="badge">● SPREAD PREDICTIONS</div>
+                <div class="badge">● TOTAL PREDICTIONS</div>
+                <div class="badge">● VALUE BETTING</div>
+            </div>
+            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: November 22, 2025</p>
+            <p style="font-size: 1rem; margin-top: 0.5rem;">Games: 0 | Betting Opportunities: 0</p>
+        </div>
+
+        <div class="card">
+
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 1rem; color: #64748b; font-size: 0.875rem;">
+            Model based on EPA (Expected Points Added) & Advanced Analytics<br>
+            Always bet responsibly. Past performance doesn't guarantee future results.
+        </div>
+    </div>
+</body>
+</html>

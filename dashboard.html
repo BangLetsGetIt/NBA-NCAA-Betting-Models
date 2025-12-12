@@ -1,0 +1,697 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>American Betting League Standings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background: #000; color: #fff; }
+.streak-w { color: #22c55e; font-weight: 600; }
+.streak-l { color: #ef4444; font-weight: 600; }
+.unit-positive { color: #22c55e; }
+.unit-negative { color: #ef4444; }
+.rank-top-3 { font-weight: 900; color: #f59e0b; }
+.dynamic-glow { animation: glow 1.5s ease-in-out infinite alternate; border-color: #f59e0b; }
+@keyframes glow { 0% { box-shadow: 0 0 15px rgba(250,204,21,0.3); } 50% { box-shadow:0 0 25px rgba(250,204,21,0.6); } 100% { box-shadow:0 0 15px rgba(250,204,21,0.3); } }
+.box { background: #111; border:1px solid #333; border-radius:0.5rem; padding:1rem; }
+.box:hover { background: #222; }
+img.screenshot { border-radius: 0.5rem; box-shadow: 0 0 10px rgba(255,255,255,0.1); transition: transform 0.3s ease; }
+img.screenshot:hover { transform: scale(1.02); }
+.sparkline { height: 40px; width: 100%; }
+table th, table td { border-color: #333; }
+</style>
+</head>
+<body class="font-sans p-4 md:p-8">
+<div class="max-w-7xl mx-auto">
+<header class="mb-8">
+<h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2">American Betting League</h1>
+<p class="text-xl text-gray-400">Official Standings & Multi-Day Report</p>
+<p class="text-sm text-gray-500 mt-2">Last Updated: December 09, 2025 at 07:37 PM</p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+<div class="lg:col-span-2">
+<div class="box shadow-2xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-800">
+<thead class="bg-gray-900">
+<tr>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rank</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Bettor</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Unit</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Record (W-L-P)</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Win %</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Streak</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Units Yesterday</th>
+<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Trend (Last 5 Days)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-800">
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm rank-top-3">1</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Inferno Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">87.96</td>
+<td class="px-4 py-4 text-sm text-gray-300">195-168-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-w">W5</td>
+<td class="px-4 py-4 text-sm unit-positive">8.35</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm rank-top-3">2</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Build Your Bankroll</td>
+<td class="px-4 py-4 text-sm unit-positive">74.87</td>
+<td class="px-4 py-4 text-sm text-gray-300">365-377-3</td>
+<td class="px-4 py-4 text-sm text-gray-300">49%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">5.77</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm rank-top-3">3</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Wordd Cam DFS</td>
+<td class="px-4 py-4 text-sm unit-positive">69.48</td>
+<td class="px-4 py-4 text-sm text-gray-300">132-141-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">44%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">1.30</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">4</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Straight Jazz</td>
+<td class="px-4 py-4 text-sm unit-positive">65.47</td>
+<td class="px-4 py-4 text-sm text-gray-300">364-351-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">52%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">5</td>
+<td class="px-4 py-4 text-sm font-medium text-white">T&Ste Betting Co</td>
+<td class="px-4 py-4 text-sm unit-positive">58.29</td>
+<td class="px-4 py-4 text-sm text-gray-300">84-126-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">41%</td>
+<td class="px-4 py-4 text-sm streak-l">L9</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">6</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Utter Locks</td>
+<td class="px-4 py-4 text-sm unit-positive">52.24</td>
+<td class="px-4 py-4 text-sm text-gray-300">72-50-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">61%</td>
+<td class="px-4 py-4 text-sm streak-w">W3</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">7</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Wager Analyst</td>
+<td class="px-4 py-4 text-sm unit-positive">38.65</td>
+<td class="px-4 py-4 text-sm text-gray-300">208-244-8</td>
+<td class="px-4 py-4 text-sm text-gray-300">46%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">3.26</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">8</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Stottys Locks</td>
+<td class="px-4 py-4 text-sm unit-positive">37.51</td>
+<td class="px-4 py-4 text-sm text-gray-300">191-157-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">57%</td>
+<td class="px-4 py-4 text-sm streak-w">W3</td>
+<td class="px-4 py-4 text-sm unit-positive">5.95</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">9</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Tredub Sports</td>
+<td class="px-4 py-4 text-sm unit-positive">34.28</td>
+<td class="px-4 py-4 text-sm text-gray-300">78-64-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">53%</td>
+<td class="px-4 py-4 text-sm streak-w">W3</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">10</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Invest in Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">31.31</td>
+<td class="px-4 py-4 text-sm text-gray-300">122-152-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">47%</td>
+<td class="px-4 py-4 text-sm streak-w">W2</td>
+<td class="px-4 py-4 text-sm unit-positive">0.67</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">11</td>
+<td class="px-4 py-4 text-sm font-medium text-white">AD2</td>
+<td class="px-4 py-4 text-sm unit-positive">30.74</td>
+<td class="px-4 py-4 text-sm text-gray-300">334-214-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">65%</td>
+<td class="px-4 py-4 text-sm streak-w">W3</td>
+<td class="px-4 py-4 text-sm unit-positive">1.96</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">12</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Chef Book</td>
+<td class="px-4 py-4 text-sm unit-positive">16.70</td>
+<td class="px-4 py-4 text-sm text-gray-300">183-185-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">47%</td>
+<td class="px-4 py-4 text-sm ">-</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">13</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Up-To-Date Sports</td>
+<td class="px-4 py-4 text-sm unit-positive">15.03</td>
+<td class="px-4 py-4 text-sm text-gray-300">56-64-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">49%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-negative">-7.50</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">14</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Johnny Millz</td>
+<td class="px-4 py-4 text-sm unit-positive">13.94</td>
+<td class="px-4 py-4 text-sm text-gray-300">239-220-3</td>
+<td class="px-4 py-4 text-sm text-gray-300">52%</td>
+<td class="px-4 py-4 text-sm streak-l">L5</td>
+<td class="px-4 py-4 text-sm unit-negative">-5.96</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">15</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Hunnit Locks</td>
+<td class="px-4 py-4 text-sm unit-positive">13.63</td>
+<td class="px-4 py-4 text-sm text-gray-300">110-86-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">58%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">2.38</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">16</td>
+<td class="px-4 py-4 text-sm font-medium text-white">J Pet Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">13.37</td>
+<td class="px-4 py-4 text-sm text-gray-300">126-108-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">53%</td>
+<td class="px-4 py-4 text-sm streak-l">L3</td>
+<td class="px-4 py-4 text-sm unit-negative">-1.02</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">17</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Twin City Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">11.60</td>
+<td class="px-4 py-4 text-sm text-gray-300">358-336-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-w">W7</td>
+<td class="px-4 py-4 text-sm unit-positive">9.77</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">18</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Don Corleone Jones</td>
+<td class="px-4 py-4 text-sm unit-positive">10.72</td>
+<td class="px-4 py-4 text-sm text-gray-300">233-220-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">51%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-negative">-5.84</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">19</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Frankie Bones</td>
+<td class="px-4 py-4 text-sm unit-positive">3.70</td>
+<td class="px-4 py-4 text-sm text-gray-300">145-138-3</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm unit-negative">-0.56</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">20</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Balls Out Sports Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">1.65</td>
+<td class="px-4 py-4 text-sm text-gray-300">89-83-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">47%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">0.64</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">21</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Duck Duck Ca$h</td>
+<td class="px-4 py-4 text-sm unit-positive">1.60</td>
+<td class="px-4 py-4 text-sm text-gray-300">504-1159-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">29%</td>
+<td class="px-4 py-4 text-sm streak-w">W2</td>
+<td class="px-4 py-4 text-sm unit-positive">7.25</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">22</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Spread Best Bets</td>
+<td class="px-4 py-4 text-sm unit-positive">0.11</td>
+<td class="px-4 py-4 text-sm text-gray-300">73-72-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">23</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Staibo Bets LLC</td>
+<td class="px-4 py-4 text-sm unit-negative">-1.81</td>
+<td class="px-4 py-4 text-sm text-gray-300">9-9-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">24</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Babbracadabra Sports Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-2.64</td>
+<td class="px-4 py-4 text-sm text-gray-300">158-160-5</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">25</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Northwood Sports Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-2.80</td>
+<td class="px-4 py-4 text-sm text-gray-300">76-68-5</td>
+<td class="px-4 py-4 text-sm text-gray-300">51%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm unit-negative">-0.50</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">26</td>
+<td class="px-4 py-4 text-sm font-medium text-white">606bets</td>
+<td class="px-4 py-4 text-sm unit-negative">-4.07</td>
+<td class="px-4 py-4 text-sm text-gray-300">162-160-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">46%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-negative">-3.48</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">27</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Last Word Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-5.65</td>
+<td class="px-4 py-4 text-sm text-gray-300">126-153-3</td>
+<td class="px-4 py-4 text-sm text-gray-300">47%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm unit-negative">-8.77</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">28</td>
+<td class="px-4 py-4 text-sm font-medium text-white">King Beaver</td>
+<td class="px-4 py-4 text-sm unit-negative">-5.67</td>
+<td class="px-4 py-4 text-sm text-gray-300">74-78-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">40%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-positive">7.86</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">29</td>
+<td class="px-4 py-4 text-sm font-medium text-white">BJN Sports</td>
+<td class="px-4 py-4 text-sm unit-negative">-7.64</td>
+<td class="px-4 py-4 text-sm text-gray-300">43-41-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">2.26</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">30</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Bank Rolls Bets</td>
+<td class="px-4 py-4 text-sm unit-negative">-8.07</td>
+<td class="px-4 py-4 text-sm text-gray-300">25-35-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">42%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">31</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Average Guys Average Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-8.34</td>
+<td class="px-4 py-4 text-sm text-gray-300">146-156-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">49%</td>
+<td class="px-4 py-4 text-sm streak-l">L3</td>
+<td class="px-4 py-4 text-sm unit-negative">-3.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">32</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Dylans Daily Locks</td>
+<td class="px-4 py-4 text-sm unit-negative">-9.26</td>
+<td class="px-4 py-4 text-sm text-gray-300">94-98-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">51%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">1.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">33</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Bridge City Bets</td>
+<td class="px-4 py-4 text-sm unit-negative">-11.25</td>
+<td class="px-4 py-4 text-sm text-gray-300">57-68-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">49%</td>
+<td class="px-4 py-4 text-sm streak-l">L4</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">34</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Shnols Bets</td>
+<td class="px-4 py-4 text-sm unit-negative">-11.57</td>
+<td class="px-4 py-4 text-sm text-gray-300">3-6-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">33%</td>
+<td class="px-4 py-4 text-sm streak-l">L3</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">35</td>
+<td class="px-4 py-4 text-sm font-medium text-white">The Luminary</td>
+<td class="px-4 py-4 text-sm unit-negative">-12.17</td>
+<td class="px-4 py-4 text-sm text-gray-300">36-40-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">49%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">36</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Really Rico</td>
+<td class="px-4 py-4 text-sm unit-negative">-12.93</td>
+<td class="px-4 py-4 text-sm text-gray-300">199-203-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">45%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">2.89</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">37</td>
+<td class="px-4 py-4 text-sm font-medium text-white">WizOfWagers</td>
+<td class="px-4 py-4 text-sm unit-negative">-14.88</td>
+<td class="px-4 py-4 text-sm text-gray-300">317-286-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">52%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm unit-negative">-3.60</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">38</td>
+<td class="px-4 py-4 text-sm font-medium text-white">West Coast Capper</td>
+<td class="px-4 py-4 text-sm unit-negative">-16.53</td>
+<td class="px-4 py-4 text-sm text-gray-300">31-41-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">43%</td>
+<td class="px-4 py-4 text-sm streak-l">L4</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">39</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Bettor in Green</td>
+<td class="px-4 py-4 text-sm unit-negative">-16.80</td>
+<td class="px-4 py-4 text-sm text-gray-300">61-74-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">44%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">1.68</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">40</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Coach B</td>
+<td class="px-4 py-4 text-sm unit-negative">-17.46</td>
+<td class="px-4 py-4 text-sm text-gray-300">172-171-4</td>
+<td class="px-4 py-4 text-sm text-gray-300">51%</td>
+<td class="px-4 py-4 text-sm streak-l">L7</td>
+<td class="px-4 py-4 text-sm unit-negative">-12.86</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">41</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Big Tex</td>
+<td class="px-4 py-4 text-sm unit-negative">-21.45</td>
+<td class="px-4 py-4 text-sm text-gray-300">90-44-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">70%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">42</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Sean x Juice Room</td>
+<td class="px-4 py-4 text-sm unit-negative">-22.85</td>
+<td class="px-4 py-4 text-sm text-gray-300">29-55-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">36%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-negative">-1.50</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">43</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Parlay Cookin Logie</td>
+<td class="px-4 py-4 text-sm unit-negative">-24.90</td>
+<td class="px-4 py-4 text-sm text-gray-300">98-116-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L3</td>
+<td class="px-4 py-4 text-sm unit-negative">-19.20</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">44</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Group Gamblers</td>
+<td class="px-4 py-4 text-sm unit-negative">-25.85</td>
+<td class="px-4 py-4 text-sm text-gray-300">140-145-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm unit-negative">-7.22</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">45</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Xay Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-29.22</td>
+<td class="px-4 py-4 text-sm text-gray-300">98-131-2</td>
+<td class="px-4 py-4 text-sm text-gray-300">41%</td>
+<td class="px-4 py-4 text-sm streak-l">L2</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">46</td>
+<td class="px-4 py-4 text-sm font-medium text-white">ANDACTIONBTB</td>
+<td class="px-4 py-4 text-sm unit-negative">-31.69</td>
+<td class="px-4 py-4 text-sm text-gray-300">77-117-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">37%</td>
+<td class="px-4 py-4 text-sm streak-l">L4</td>
+<td class="px-4 py-4 text-sm unit-negative">-9.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">47</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Parlay Cookin Slingy</td>
+<td class="px-4 py-4 text-sm unit-negative">-33.36</td>
+<td class="px-4 py-4 text-sm text-gray-300">226-239-11</td>
+<td class="px-4 py-4 text-sm text-gray-300">51%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">3.40</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">48</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Blake Nitty</td>
+<td class="px-4 py-4 text-sm unit-negative">-40.24</td>
+<td class="px-4 py-4 text-sm text-gray-300">112-114-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">50%</td>
+<td class="px-4 py-4 text-sm streak-l">L1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">49</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Novadamus</td>
+<td class="px-4 py-4 text-sm unit-negative">-43.45</td>
+<td class="px-4 py-4 text-sm text-gray-300">55-103-1</td>
+<td class="px-4 py-4 text-sm text-gray-300">35%</td>
+<td class="px-4 py-4 text-sm streak-l">L7</td>
+<td class="px-4 py-4 text-sm unit-negative">-1.76</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">50</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Commonwealth Cappers</td>
+<td class="px-4 py-4 text-sm unit-negative">-67.68</td>
+<td class="px-4 py-4 text-sm text-gray-300">91-132-0</td>
+<td class="px-4 py-4 text-sm text-gray-300">40%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm ">0.00</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+<tr class="hover:bg-gray-800 transition-colors duration-150">
+<td class="px-4 py-4 text-sm ">51</td>
+<td class="px-4 py-4 text-sm font-medium text-white">Common Sense Picks</td>
+<td class="px-4 py-4 text-sm unit-negative">-88.71</td>
+<td class="px-4 py-4 text-sm text-gray-300">378-399-3</td>
+<td class="px-4 py-4 text-sm text-gray-300">46%</td>
+<td class="px-4 py-4 text-sm streak-w">W1</td>
+<td class="px-4 py-4 text-sm unit-positive">2.66</td>
+<td class="px-4 py-4 text-sm"></td>
+</tr>
+
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="lg:col-span-1 space-y-6">
+
+<div class="box shadow-2xl dynamic-glow">
+<h2 class="text-2xl font-bold text-yellow-400 mb-4">🏆 Bettor of The Day</h2>
+<p class="text-2xl font-semibold text-white">Twin City Bets</p>
+<p class="text-sm text-gray-400 mb-2">Rank #17</p>
+<p class="text-gray-300 mt-2">Units Yesterday: <span class="unit-positive">9.77</span></p>
+<p class="text-yellow-400 font-semibold text-md mt-1">Total Units: 11.60</p>
+</div>
+
+<div class="box border-green-600 shadow-2xl">
+<h2 class="text-2xl font-bold text-green-400 mb-4">📈 Biggest Risers</h2>
+<p class="text-xs text-gray-400 mb-3">Top performers from yesterday</p>
+
+<ul class="space-y-3">
+
+<li class="text-sm text-gray-200">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-white">1. Twin City Bets</span>
+<span class="text-yellow-400 font-bold ml-1">🏅</span>
+</div>
+<div class="text-green-400 font-bold">+9.77 units yesterday</div>
+<div class="sparkline mt-2"></div>
+</li>
+
+<li class="text-sm text-gray-200">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-white">2. Inferno Bets</span>
+<span class="text-yellow-400 font-bold ml-1">🏅</span>
+</div>
+<div class="text-green-400 font-bold">+8.35 units yesterday</div>
+<div class="sparkline mt-2"></div>
+</li>
+
+<li class="text-sm text-gray-200">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-white">3. King Beaver</span>
+<span class="text-yellow-400 font-bold ml-1">🏅</span>
+</div>
+<div class="text-green-400 font-bold">+7.86 units yesterday</div>
+<div class="sparkline mt-2"></div>
+</li>
+
+<li class="text-sm text-gray-200">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-white">4. Duck Duck Ca$h</span>
+<span class="text-yellow-400 font-bold ml-1">🏅</span>
+</div>
+<div class="text-green-400 font-bold">+7.25 units yesterday</div>
+<div class="sparkline mt-2"></div>
+</li>
+
+<li class="text-sm text-gray-200">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-white">5. Stottys Locks</span>
+<span class="text-yellow-400 font-bold ml-1">🏅</span>
+</div>
+<div class="text-green-400 font-bold">+5.95 units yesterday</div>
+<div class="sparkline mt-2"></div>
+</li>
+
+</ul>
+
+</div>
+
+<div class="box">
+<h2 class="text-2xl font-bold text-white mb-4">Top Performers</h2>
+
+<p class="text-gray-400">No screenshots uploaded yet.</p>
+
+</div>
+
+</div>
+</div>
+</div>
+</body>
+</html>

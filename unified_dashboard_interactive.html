@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Sports Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1d3a 50%, #0f1419 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2.5rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-radius: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.75rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card.profit .stat-value { color: #10b981; }
+        .stat-card.loss .stat-value { color: #ef4444; }
+        .stat-card.pending .stat-value { color: #f59e0b; }
+        .stat-card.winrate .stat-value { color: #3b82f6; }
+
+        /* Filters */
+        .filters {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.75rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        select:hover, input:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Picks Table */
+        .picks-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.25rem 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        th:hover {
+            color: #3b82f6;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .sport-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .sport-badge.nba { background: rgba(237, 100, 166, 0.2); color: #ec4899; }
+        .sport-badge.ncaa { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .sport-badge.mlb { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .sport-badge.cfb { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+
+        .pick-type {
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .pick-type.spread { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .pick-type.total { background: rgba(147, 51, 234, 0.2); color: #a78bfa; }
+        .pick-type.prop { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+
+        .matchup {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .pick-desc {
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .score-badge {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #10b981;
+        }
+
+        .edge-badge {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .odds {
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .no-results {
+            padding: 3rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* Parlay Builder */
+        .parlay-builder {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(16, 185, 129, 0.95);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            min-width: 250px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            display: none;
+        }
+
+        .parlay-builder.active {
+            display: block;
+        }
+
+        .parlay-header {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .parlay-count {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+        }
+
+        .parlay-odds {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .filter-grid { grid-template-columns: 1fr; }
+            th, td { padding: 0.75rem 0.5rem; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Interactive Sports Dashboard</h1>
+            <div class="subtitle">Filter, Sort, and Build Parlays</div>
+        </div>
+
+        <!-- Stats -->
+        <div id="stats" class="stats-grid"></div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-title">Filter Picks</div>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Sport</label>
+                    <select id="sportFilter">
+                        <option value="all">All Sports</option>
+                        <option value="NBA">NBA</option>
+                        <option value="NCAA">NCAA</option>
+                        <option value="MLB">MLB</option>
+                        <option value="CFB">CFB</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select id="statusFilter">
+                        <option value="all" selected>All</option>
+                        <option value="pending">Pending Only</option>
+                        <option value="completed">Completed Only</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Pick Type</label>
+                    <select id="typeFilter">
+                        <option value="all">All Types</option>
+                        <option value="Spread">Spreads</option>
+                        <option value="Total">Totals</option>
+                        <option value="Player Prop">Player Props</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Min AI Score</label>
+                    <input type="number" id="minScoreFilter" placeholder="e.g. 8.0" step="0.1" min="0" max="10">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Min Edge</label>
+                    <input type="number" id="minEdgeFilter" placeholder="e.g. 5.0" step="0.5" min="0">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" id="searchFilter" placeholder="Player, team, matchup...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Picks Table -->
+        <div class="picks-section">
+            <div class="section-header">
+                <span id="resultCount">0 Picks</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('sport')">Sport ▼</th>
+                        <th onclick="sortTable('type')">Type ▼</th>
+                        <th onclick="sortTable('matchup')">Matchup ▼</th>
+                        <th onclick="sortTable('pick')">Pick ▼</th>
+                        <th onclick="sortTable('odds')">Odds ▼</th>
+                        <th onclick="sortTable('score')">Score/Edge ▼</th>
+                    </tr>
+                </thead>
+                <tbody id="picksTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let allPicks = [];
+        let filteredPicks = [];
+        let currentSort = { column: 'score', ascending: false };
+
+        // Load data
+        fetch('unified_dashboard_data.json')
+            .then(res => res.json())
+            .then(data => {
+                allPicks = data.picks;
+                updateStats(data.overall_summary);
+                applyFilters();
+            });
+
+        // Update stats
+        function updateStats(summary) {
+            const statsHTML = `
+                <div class="stat-card pending">
+                    <div class="stat-value">${summary.pending}</div>
+                    <div class="stat-label">Active Picks</div>
+                </div>
+                <div class="stat-card winrate">
+                    <div class="stat-value">${summary.win_rate.toFixed(1)}%</div>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+                <div class="stat-card ${summary.profit_loss >= 0 ? 'profit' : 'loss'}">
+                    <div class="stat-value">${summary.profit_loss >= 0 ? '+' : ''}${summary.profit_loss.toFixed(0)}u</div>
+                    <div class="stat-label">Total P/L</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${summary.total}</div>
+                    <div class="stat-label">All-Time Picks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${summary.wins}-${summary.losses}</div>
+                    <div class="stat-label">Record</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHTML;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const sport = document.getElementById('sportFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            const minScore = parseFloat(document.getElementById('minScoreFilter').value) || 0;
+            const minEdge = parseFloat(document.getElementById('minEdgeFilter').value) || 0;
+            const search = document.getElementById('searchFilter').value.toLowerCase();
+
+            filteredPicks = allPicks.filter(pick => {
+                if (sport !== 'all' && pick.sport !== sport) return false;
+                if (status === 'pending' && pick.status !== 'pending') return false;
+                if (status === 'completed' && !['win', 'loss'].includes(pick.status)) return false;
+                if (type !== 'all' && pick.pick_type !== type) return false;
+                if (pick.ai_score && pick.ai_score < minScore) return false;
+                if (pick.edge && Math.abs(pick.edge) < minEdge) return false;
+                if (search && !JSON.stringify(pick).toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            sortPicks();
+            renderTable();
+        }
+
+        // Sort picks
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.ascending = !currentSort.ascending;
+            } else {
+                currentSort.column = column;
+                currentSort.ascending = false;
+            }
+            sortPicks();
+            renderTable();
+        }
+
+        function sortPicks() {
+            filteredPicks.sort((a, b) => {
+                let aVal, bVal;
+
+                switch(currentSort.column) {
+                    case 'sport': aVal = a.sport; bVal = b.sport; break;
+                    case 'type': aVal = a.pick_type; bVal = b.pick_type; break;
+                    case 'matchup': aVal = a.matchup; bVal = b.matchup; break;
+                    case 'pick': aVal = a.pick_description; bVal = b.pick_description; break;
+                    case 'odds': aVal = a.odds || 0; bVal = b.odds || 0; break;
+                    case 'score':
+                        aVal = a.ai_score || Math.abs(a.edge || 0);
+                        bVal = b.ai_score || Math.abs(b.edge || 0);
+                        break;
+                }
+
+                if (aVal < bVal) return currentSort.ascending ? -1 : 1;
+                if (aVal > bVal) return currentSort.ascending ? 1 : -1;
+                return 0;
+            });
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('picksTable');
+            document.getElementById('resultCount').textContent = `${filteredPicks.length} Picks`;
+
+            if (filteredPicks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-results">No picks match your filters</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filteredPicks.forEach(pick => {
+                const sportClass = pick.sport.toLowerCase();
+                const typeClass = pick.pick_type.toLowerCase().replace(' ', '-');
+                const odds = pick.odds ? (pick.odds > 0 ? `+${pick.odds}` : pick.odds) : 'N/A';
+
+                let scoreDisplay = '';
+                if (pick.ai_score) {
+                    scoreDisplay = `<span class="score-badge">${pick.ai_score.toFixed(2)}</span>`;
+                } else if (pick.edge) {
+                    scoreDisplay = `<span class="edge-badge">${Math.abs(pick.edge).toFixed(1)}</span>`;
+                }
+
+                html += `
+                    <tr>
+                        <td><span class="sport-badge ${sportClass}">${pick.sport}</span></td>
+                        <td><span class="pick-type ${typeClass}">${pick.pick_type}</span></td>
+                        <td class="matchup">${pick.matchup}</td>
+                        <td class="pick-desc">${pick.pick_description}</td>
+                        <td class="odds">${odds}</td>
+                        <td>${scoreDisplay}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Add event listeners
+        document.getElementById('sportFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('typeFilter').addEventListener('change', applyFilters);
+        document.getElementById('minScoreFilter').addEventListener('input', applyFilters);
+        document.getElementById('minEdgeFilter').addEventListener('input', applyFilters);
+        document.getElementById('searchFilter').addEventListener('input', applyFilters);
+    </script>
+</body>
+</html>

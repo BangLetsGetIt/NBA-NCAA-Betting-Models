@@ -1,0 +1,58 @@
+==========================================
+NCAA Model Run: Thu Dec 11 00:50:50 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 7 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-11
+  Newest: 2025-12-12
+[96mFetching completed game scores...[0m
+[93m⚠️  Could not fetch scores: 401[0m
+[93mNo completed games found.[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 2h)[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[91mERROR: The Odds API returned status 401[0m
+Response: {"message":"API key is deactivated. This could be due to cancelation or a failed payment","error_code":"DEACTIVATED_KEY","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#deactivated-key"}
+
+
+[93m⚠️  No games found from The Odds API in next 2 days.[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 2a5c564] Update model outputs - 2025-12-11 00:50:51
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ea722f3..2a5c564  main -> main
+✅ Successfully pushed to GitHub!

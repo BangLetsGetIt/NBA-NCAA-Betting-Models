@@ -1,0 +1,161 @@
+==========================================
+NBA Model Run: Tue Dec  2 01:14:42 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 6 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 35 games from API[0m
+[92m✓ Found 25 completed games[0m
+  ✓ Updating: Charlotte Hornets 103 @ Brooklyn Nets 116
+    Result: Win
+  ✓ Updating: Chicago Bulls 120 @ Orlando Magic 125
+    Result: Loss
+  ✓ Updating: Phoenix Suns 125 @ Los Angeles Lakers 108
+    Result: Loss
+  ✓ Updating: Charlotte Hornets 103 @ Brooklyn Nets 116
+    Result: Win
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[92m✅ Updated 4 picks! Record: 68-51-0[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched odds for 10 total games[0m
+[92m✓ Filtered to 6 games in next 7 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 234.5 (Edge: -12.0)[0m
+
+[1m[92m✅ Analyzed 6 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mMinnesota Timberwolves @ New Orleans Pelicans[0m
+  🕐 12/02/25 08:10 PM EST
+  📊 Spread: Market +9.5 | Model -5.9
+  🎯 Total: Market 234.5 | Model 222.5
+  [92m✅ BET: New Orleans Pelicans +9.5[0m
+     [96mModel projects New Orleans Pelicans to lose by only 5.9, covering +9.5.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 222 total points, bet the UNDER[0m
+  📈 Predicted: Minnesota Timberwolves 114, New Orleans Pelicans 108
+
+[1m[96mPortland Trail Blazers @ Toronto Raptors[0m
+  🕐 12/02/25 07:40 PM EST
+  📊 Spread: Market -5.0 | Model +6.5
+  🎯 Total: Market 232.5 | Model 221.1
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.5)[0m
+  [92m✅ BET: UNDER 232.5[0m
+     [96mModel projects 221 total points, bet the UNDER[0m
+  📈 Predicted: Portland Trail Blazers 107, Toronto Raptors 114
+
+[1m[96mWashington Wizards @ Philadelphia 76ers[0m
+  🕐 12/02/25 07:10 PM EST
+  📊 Spread: Market -12.5 | Model +8.7
+  🎯 Total: Market 234.5 | Model 223.2
+  [92m✅ BET: Washington Wizards +12.5[0m
+     [96mModel projects Philadelphia 76ers to win by only 8.7, not enough to cover -12.5.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 223 total points, bet the UNDER[0m
+  📈 Predicted: Washington Wizards 107, Philadelphia 76ers 116
+
+[1m[96mOklahoma City Thunder @ Golden State Warriors[0m
+  🕐 12/02/25 11:10 PM EST
+  📊 Spread: Market +12.0 | Model -1.8
+  🎯 Total: Market 221.5 | Model 223.9
+  [92m✅ BET: Golden State Warriors +12.0[0m
+     [96mModel projects Golden State Warriors to lose by only 1.8, covering +12.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Oklahoma City Thunder 113, Golden State Warriors 111
+
+[1m[96mNew York Knicks @ Boston Celtics[0m
+  🕐 12/02/25 08:10 PM EST
+  📊 Spread: Market -1.0 | Model +9.8
+  🎯 Total: Market 230.5 | Model 221.0
+  [92m✅ BET: Boston Celtics -1.0[0m
+     [96mModel projects Boston Celtics to win by 9.8, covering -1.0.[0m
+  [92m✅ BET: UNDER 230.5[0m
+     [96mModel projects 221 total points, bet the UNDER[0m
+  📈 Predicted: New York Knicks 106, Boston Celtics 115
+
+[1m[96mMemphis Grizzlies @ San Antonio Spurs[0m
+  🕐 12/02/25 08:10 PM EST
+  📊 Spread: Market -5.0 | Model -0.4
+  🎯 Total: Market 231.5 | Model 228.2
+  [92m✅ BET: Memphis Grizzlies +5.0[0m
+     [96mModel projects San Antonio Spurs to win by only 0.4, not enough to cover -5.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Memphis Grizzlies 114, San Antonio Spurs 114
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 122[0m
+[92mRecord: 68-51-0[0m
+[92mWin Rate: 57.1%[0m
+[92mProfit: +11.06 units[0m
+[92mROI: +8.4%[0m
+[1m==========================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 5a2e4e8] Update model outputs - 2025-12-02 01:15:23
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 149 insertions(+), 520 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   08f0906..5a2e4e8  main -> main
+✅ Successfully pushed to GitHub!

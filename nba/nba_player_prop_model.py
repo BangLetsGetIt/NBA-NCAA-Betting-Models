@@ -902,7 +902,7 @@ class NBAPlayerPropModel:
 
 if __name__ == "__main__":
     # Initialize model with API key
-    API_KEY = "671958bc1621170701241a09d5ecc627"
+    API_KEY = "c32141ecbcaa976a824db8cd16031208"
     model = NBAPlayerPropModel(API_KEY)
     
     print("🏀 NBA Player Props Model")

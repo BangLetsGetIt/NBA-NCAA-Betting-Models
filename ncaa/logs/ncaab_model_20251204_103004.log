@@ -1,0 +1,270 @@
+==========================================
+NCAA Model Run: Thu Dec  4 10:30:04 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 12 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-05
+  Newest: 2025-12-05
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 141 completed games[0m
+[96mFound 141 completed games from API[0m
+[93m⚠️  No match found: The Citadel Bulldogs @ Davidson Wildcats (2025-12-05)[0m
+[93m⚠️  No match found: Robert Morris Colonials @ Green Bay Phoenix (2025-12-05)[0m
+[93m⚠️  No match found: Rider Broncs @ Merrimack Warriors (2025-12-05)[0m
+[93m⚠️  No match found: Utah State Aggies @ South Florida Bulls (2025-12-05)[0m
+[93m⚠️  No match found: Utah State Aggies @ South Florida Bulls (2025-12-05)[0m
+[93m⚠️  No match found: Long Beach State 49ers @ UC Santa Barbara Gauchos (2025-12-05)[0m
+[93m⚠️  No match found: CSU Bakersfield Roadrunners @ CSU Northridge Matadors (2025-12-05)[0m
+[93m⚠️  No match found: Cal Poly Mustangs @ CSU Fullerton Titans (2025-12-05)[0m
+[93m⚠️  No match found: Long Beach State 49ers @ UC Santa Barbara Gauchos (2025-12-05)[0m
+[93m⚠️  No match found: UC Davis Aggies @ Hawai'i Rainbow Warriors (2025-12-05)[0m
+[93m⚠️  No match found: UC Davis Aggies @ Hawai'i Rainbow Warriors (2025-12-05)[0m
+[93m⚠️  No match found: UC Riverside Highlanders @ UC Irvine Anteaters (2025-12-05)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[93m⚠️  No stats cache found or cache is old. Using simulated model.[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched 10 games from The Odds API[0m
+[92m✓ 10 games in the next 7 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1257[0m
+
+[1m[92m✅ Analyzed 10 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Cal Poly Mustangs @ CSU Fullerton Titans ━━━[0m
+[96m🕐 12/04 10:00 PM[0m
+[96mℹ️ LIMITED: CSU Fullerton Titans - Limited data: 2-0 (100%) | +1.82u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +3.6 | Edge: +5.1
+  [92m✅ BET: CSU Fullerton Titans +1.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: CSU Fullerton Titans by +3.6 (Market: +1.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 178.5 | Model: 142.1 | Edge: -36.4
+  [92m✅ BET: UNDER 178.5[0m
+  [96mHIGH confidence (36.4 edge)[0m
+
+[35m📈 Cal Poly Mustangs 69.2, CSU Fullerton Titans 72.8[0m
+
+[1m[96m━━━ GAME 2: Utah State Aggies @ South Florida Bulls ━━━[0m
+[96m🕐 12/04 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +2.5 | Model: -1.7 | Edge: +0.8
+  [91m❌ NO BET[0m
+  [96mEdge (+0.8) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 162.5 | Model: 138.0 | Edge: -24.5
+  [92m✅ BET: UNDER 162.5[0m
+  [96mHIGH confidence (24.5 edge)[0m
+
+[35m📈 Utah State Aggies 69.8, South Florida Bulls 68.2[0m
+
+[1m[96m━━━ GAME 3: CSU Bakersfield Roadrunners @ CSU Northridge Matadors ━━━[0m
+[96m🕐 12/04 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: +6.9 | Edge: +3.4
+  [91m❌ NO BET[0m
+  [96mEdge (+3.4) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 136.7 | Edge: -19.8
+  [92m✅ BET: UNDER 156.5[0m
+  [96mHIGH confidence (19.8 edge)[0m
+
+[35m📈 CSU Bakersfield Roadrunners 64.9, CSU Northridge Matadors 71.8[0m
+
+[1m[96m━━━ GAME 4: The Citadel Bulldogs @ Davidson Wildcats ━━━[0m
+[96m🕐 12/04 07:00 PM[0m
+[91m🚫 COLD: The Citadel Bulldogs - Poor performer: 0-3 (0%) | -3.00u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -21.5 | Model: +2.5 | Edge: +19.0
+  [92m✅ BET: The Citadel Bulldogs +21.5[0m
+  [96mHIGH confidence. Model predicts The Citadel Bulldogs covers by +19.0 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 139.5 | Model: 134.3 | Edge: -5.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.2)[0m
+
+[35m📈 The Citadel Bulldogs 65.9, Davidson Wildcats 68.4[0m
+
+[1m[96m━━━ GAME 5: Long Beach State 49ers @ UC Santa Barbara Gauchos ━━━[0m
+[96m🕐 12/04 09:00 PM[0m
+[93m⚠️ CAUTION: Long Beach State 49ers - Below average: 1-2 (33%) | -1.09u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +0.3 | Edge: +12.2
+  [92m✅ BET: Long Beach State 49ers +12.5[0m
+  [96mHIGH confidence. Model predicts Long Beach State 49ers covers by +12.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 145.2 | Edge: +0.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.7)[0m
+
+[35m📈 Long Beach State 49ers 72.4, UC Santa Barbara Gauchos 72.8[0m
+
+[1m[96m━━━ GAME 6: UC Riverside Highlanders @ UC Irvine Anteaters ━━━[0m
+[96m🕐 12/04 10:00 PM[0m
+[96mℹ️ LIMITED: UC Riverside Highlanders - Limited data: 1-1 (50%) | -0.09u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +0.6 | Edge: +11.9
+  [92m✅ BET: UC Riverside Highlanders +12.5[0m
+  [96mHIGH confidence. Model predicts UC Riverside Highlanders covers by +11.9 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 140.5 | Edge: +0.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.0)[0m
+
+[35m📈 UC Riverside Highlanders 70.0, UC Irvine Anteaters 70.6[0m
+
+[1m[96m━━━ GAME 7: Robert Morris Colonials @ Green Bay Phoenix ━━━[0m
+[96m🕐 12/04 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: -1.0 | Edge: +0.5
+  [91m❌ NO BET[0m
+  [96mEdge (+0.5) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 137.5 | Model: 149.1 | Edge: +11.6
+  [92m✅ BET: OVER 137.5[0m
+  [96mHIGH confidence (11.6 edge)[0m
+
+[35m📈 Robert Morris Colonials 75.1, Green Bay Phoenix 74.0[0m
+
+[1m[96m━━━ GAME 8: UC Davis Aggies @ Hawai'i Rainbow Warriors ━━━[0m
+[96m🕐 12/05 12:00 AM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +12.7 | Edge: +4.2
+  [91m❌ NO BET[0m
+  [96mEdge (+4.2) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 146.5 | Model: 139.7 | Edge: -6.8
+  [92m✅ BET: UNDER 146.5[0m
+  [96mMEDIUM confidence (6.8 edge)[0m
+
+[35m📈 UC Davis Aggies 63.5, Hawai'i Rainbow Warriors 76.2[0m
+
+[1m[96m━━━ GAME 9: Rider Broncs @ Merrimack Warriors ━━━[0m
+[96m🕐 12/04 07:00 PM[0m
+[96mℹ️ LIMITED: Rider Broncs - Limited data: 0-2 (0%) | -2.00u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +4.2 | Edge: +5.3
+  [92m✅ BET: Rider Broncs +9.5[0m
+  [96mMEDIUM confidence. Model predicts Rider Broncs covers by +5.3 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 135.5 | Model: 130.0 | Edge: -5.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.5)[0m
+
+[35m📈 Rider Broncs 62.9, Merrimack Warriors 67.1[0m
+
+[1m[96m━━━ GAME 10: Duke Blue Devils @ Michigan State Spartans ━━━[0m
+[96m🕐 12/06 12:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +3.7 | Edge: +2.2
+  [91m❌ NO BET[0m
+  [96mEdge (+2.2) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 139.5 | Model: 143.5 | Edge: +4.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.0)[0m
+
+[35m📈 Duke Blue Devils 69.9, Michigan State Spartans 73.6[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1257[0m
+[92mRecord: 665-580-0[0m
+[92mWin Rate: 53.4%[0m
+[92mProfit: +25.15 units[0m
+[92mROI: +2.0%[0m
+[1m====================================================================================================[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 956bfab] Update model outputs - 2025-12-04 10:30:19
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 179 insertions(+), 187 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   9bd7199..956bfab  main -> main
+✅ Successfully pushed to GitHub!

@@ -16,10 +16,11 @@ Key Features:
 import requests
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 from jinja2 import Template
+import pytz
 
 # Load environment variables
 load_dotenv()
@@ -36,6 +37,7 @@ if not ODDS_API_KEY:
 ODDS_API_BASE = "https://api.the-odds-api.com/v4"
 SCRIPT_DIR = Path(__file__).parent
 OUTPUT_HTML = SCRIPT_DIR / "soccer_totals_output.html"  # Keep same filename for GitHub Pages
+TRACKING_FILE = SCRIPT_DIR / "soccer_picks_tracking.json"
 
 # Sharp +EV thresholds
 SPREAD_THRESHOLD = 0.25  # 0.25 goal spread edge to display
@@ -253,13 +255,18 @@ def analyze_game(game):
                 else:
                     recommendation = f"{away_team} {-market_spread:+.2f}"
                 
-                bets.append({
+                bet_data = {
                     'type': 'SPREAD',
-                    'market_line': f"{home_team} {market_spread:+.2f}",
+                    'market_line': market_spread,
                     'model_prediction': predicted_spread,
                     'edge': spread_edge,
                     'recommendation': recommendation if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE else None,
-                })
+                }
+                bets.append(bet_data)
+                
+                # Log confident picks
+                if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
+                    log_confident_pick(game, 'SPREAD', spread_edge, predicted_spread, market_spread, recommendation)
     
     # Analyze total (focus on unders)
     if total_market:
@@ -275,23 +282,34 @@ def analyze_game(game):
                 if under_edge >= TOTAL_THRESHOLD:
                     recommendation = f"Under {market_total}" if under_edge >= CONFIDENT_TOTAL_EDGE else None
                     
-                    bets.append({
+                    bet_data = {
                         'type': 'TOTAL',
-                        'market_line': f"{market_total}",
+                        'market_line': market_total,
                         'model_prediction': predicted_total,
                         'edge': -under_edge,  # Negative = under value
                         'recommendation': recommendation,
                         'direction': 'UNDER',
-                    })
+                    }
+                    bets.append(bet_data)
+                    
+                    # Log confident picks
+                    if under_edge >= CONFIDENT_TOTAL_EDGE:
+                        log_confident_pick(game, 'TOTAL', -under_edge, predicted_total, market_total, recommendation)
             elif total_edge >= TOTAL_THRESHOLD:  # Over value
-                bets.append({
+                recommendation = f"Over {market_total}" if total_edge >= CONFIDENT_TOTAL_EDGE else None
+                bet_data = {
                     'type': 'TOTAL',
-                    'market_line': f"{market_total}",
+                    'market_line': market_total,
                     'model_prediction': predicted_total,
                     'edge': total_edge,
-                    'recommendation': f"Over {market_total}" if total_edge >= CONFIDENT_TOTAL_EDGE else None,
+                    'recommendation': recommendation,
                     'direction': 'OVER',
-                })
+                }
+                bets.append(bet_data)
+                
+                # Log confident picks
+                if total_edge >= CONFIDENT_TOTAL_EDGE:
+                    log_confident_pick(game, 'TOTAL', total_edge, predicted_total, market_total, recommendation)
     
     return {
         'home_team': home_team,
@@ -494,7 +512,7 @@ body {
 <div class="bet-title bet-title-spread">📊 SPREAD</div>
 <div class="odds-line">
 <span>Market Line:</span>
-<strong>{{spread_bet.market_line}}</strong>
+<strong>{{"{:+.2f}".format(spread_bet.market_line)}}</strong>
 </div>
 <div class="odds-line">
 <span>Model Prediction:</span>
@@ -542,7 +560,7 @@ body {
 <div class="bet-title bet-title-total">🎯 TOTAL</div>
 <div class="odds-line">
 <span>Market Total:</span>
-<strong>{{total_bet.market_line}}</strong>
+<strong>{{"{:.2f}".format(total_bet.market_line)}}</strong>
 </div>
 <div class="odds-line">
 <span>Model Projects:</span>
@@ -600,6 +618,276 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
     print(f"\n✅ HTML saved: {OUTPUT_HTML}")
 
 # ============================================================================
+# TRACKING FUNCTIONS
+# ============================================================================
+
+def load_tracking():
+    """Load tracking data from JSON file"""
+    if TRACKING_FILE.exists():
+        with open(TRACKING_FILE, 'r') as f:
+            return json.load(f)
+    return {
+        'picks': [],
+        'summary': {
+            'total': 0,
+            'wins': 0,
+            'losses': 0,
+            'pushes': 0,
+            'pending': 0
+        }
+    }
+
+def save_tracking(tracking_data):
+    """Save tracking data to JSON file"""
+    with open(TRACKING_FILE, 'w') as f:
+        json.dump(tracking_data, f, indent=2)
+
+def log_confident_pick(game_data, pick_type, edge, model_line, market_line, recommendation):
+    """Log a confident pick to tracking file"""
+    tracking_data = load_tracking()
+    
+    home_team = game_data.get('home_team', '')
+    away_team = game_data.get('away_team', '')
+    commence_time = game_data.get('commence_time', '')
+    sport_key = game_data.get('sport_key', '')
+    league = game_data.get('league', 'Unknown')
+    
+    # Create pick ID
+    pick_id = f"{home_team}_{away_team}_{commence_time}_{pick_type.lower()}"
+    
+    # Check if already logged
+    if any(p.get('pick_id') == pick_id for p in tracking_data['picks']):
+        return
+    
+    # Determine direction
+    if pick_type == 'SPREAD':
+        if 'home' in recommendation.lower() or home_team in recommendation:
+            direction = 'HOME'
+            pick_text = f"{home_team} {market_line}"
+        else:
+            direction = 'AWAY'
+            pick_text = f"{away_team} {abs(market_line)}"
+    else:  # TOTAL
+        if 'under' in recommendation.lower():
+            direction = 'UNDER'
+            pick_text = f"UNDER {market_line}"
+        else:
+            direction = 'OVER'
+            pick_text = f"OVER {market_line}"
+    
+    pick = {
+        'pick_id': pick_id,
+        'date_logged': datetime.now().isoformat(),
+        'game_time': commence_time,
+        'home_team': home_team,
+        'away_team': away_team,
+        'matchup': f"{away_team} @ {home_team}",
+        'league': league,
+        'sport_key': sport_key,
+        'pick_type': pick_type,
+        'direction': direction,
+        'pick': pick_text,
+        'model_line': model_line,
+        'market_line': market_line,
+        'edge': edge,
+        'status': 'pending',
+        'result': None,
+        'actual_home_score': None,
+        'actual_away_score': None,
+        'profit_loss': None
+    }
+    
+    tracking_data['picks'].append(pick)
+    tracking_data['summary']['total'] = len(tracking_data['picks'])
+    tracking_data['summary']['pending'] = sum(1 for p in tracking_data['picks'] if p.get('status') == 'pending')
+    
+    save_tracking(tracking_data)
+    print(f"📝 LOGGED: {pick_type} - {pick_text} (Edge: {edge:+.2f})")
+
+def fetch_completed_soccer_scores():
+    """Fetch completed soccer scores from The Odds API"""
+    print("\n⚽ Fetching completed soccer scores...")
+    
+    sports = [
+        'soccer_epl',
+        'soccer_spain_la_liga',
+        'soccer_italy_serie_a',
+        'soccer_germany_bundesliga',
+        'soccer_france_ligue_one',
+        'soccer_usa_mls',
+    ]
+    
+    all_scores = []
+    
+    for sport in sports:
+        try:
+            scores_url = f"{ODDS_API_BASE}/sports/{sport}/scores/"
+            params = {
+                'apiKey': ODDS_API_KEY,
+                'daysFrom': 3  # Check last 3 days
+            }
+            
+            response = requests.get(scores_url, params=params, timeout=10)
+            
+            if response.status_code == 200:
+                scores = response.json()
+                completed = [s for s in scores if s.get('completed')]
+                all_scores.extend(completed)
+                if completed:
+                    print(f"   ✅ {get_league_from_sport_key(sport)}: {len(completed)} completed games")
+            else:
+                print(f"   ⚠️  {get_league_from_sport_key(sport)}: API returned {response.status_code}")
+        
+        except Exception as e:
+            print(f"   ⚠️  {get_league_from_sport_key(sport)}: Error - {e}")
+            continue
+    
+    print(f"\n📊 Total: {len(all_scores)} completed games found")
+    return all_scores
+
+def calculate_pick_result(pick, home_score, away_score):
+    """Calculate win/loss/push for a pick given actual scores"""
+    pick_type = pick.get('pick_type', '')
+    direction = pick.get('direction', '')
+    market_line = pick.get('market_line', 0)
+    
+    if pick_type == 'SPREAD':
+        actual_spread = home_score - away_score
+        
+        if direction == 'HOME':
+            # We bet home team with the spread
+            cover_margin = actual_spread - market_line
+        else:  # AWAY
+            # We bet away team with the spread
+            cover_margin = -actual_spread - market_line
+        
+        if abs(cover_margin) < 0.1:
+            return 'Push', 0
+        elif cover_margin > 0:
+            return 'Win', 91  # Standard -110 payout
+        else:
+            return 'Loss', -100
+    
+    elif pick_type == 'TOTAL':
+        actual_total = home_score + away_score
+        
+        if direction == 'UNDER':
+            diff = market_line - actual_total
+            if abs(diff) < 0.1:
+                return 'Push', 0
+            elif diff > 0:
+                return 'Win', 91
+            else:
+                return 'Loss', -100
+        else:  # OVER
+            diff = actual_total - market_line
+            if abs(diff) < 0.1:
+                return 'Push', 0
+            elif diff > 0:
+                return 'Win', 91
+            else:
+                return 'Loss', -100
+    
+    return None, 0
+
+def update_pick_results():
+    """Check for completed games and update pick results using real scores"""
+    tracking_data = load_tracking()
+    pending_picks = [p for p in tracking_data['picks'] if p.get('status') == 'pending']
+    
+    if not pending_picks:
+        print("\n✅ No pending picks to update")
+        return 0
+    
+    print(f"\n🔍 Checking {len(pending_picks)} pending picks...")
+    
+    # Fetch completed scores
+    completed_scores = fetch_completed_soccer_scores()
+    
+    if not completed_scores:
+        print("⚠️  No completed scores found")
+        return 0
+    
+    # Create lookup dict: (home_team, away_team, sport_key) -> (home_score, away_score)
+    scores_dict = {}
+    for score in completed_scores:
+        home_team = score.get('home_team', '')
+        away_team = score.get('away_team', '')
+        sport_key = score.get('sport_key', '')
+        scores = score.get('scores', [])
+        
+        if len(scores) >= 2:
+            home_score = scores[0].get('score', 0)
+            away_score = scores[1].get('score', 0)
+            key = (home_team, away_team, sport_key)
+            scores_dict[key] = (home_score, away_score)
+    
+    updated_count = 0
+    et = pytz.timezone('US/Eastern')
+    
+    for pick in pending_picks:
+        try:
+            home_team = pick.get('home_team', '')
+            away_team = pick.get('away_team', '')
+            sport_key = pick.get('sport_key', '')
+            
+            # Try to find score
+            key = (home_team, away_team, sport_key)
+            if key not in scores_dict:
+                # Try without sport_key (some APIs may not include it)
+                key_alt = (home_team, away_team, '')
+                if key_alt in scores_dict:
+                    home_score, away_score = scores_dict[key_alt]
+                else:
+                    continue
+            else:
+                home_score, away_score = scores_dict[key]
+            
+            # Calculate result
+            result, profit = calculate_pick_result(pick, home_score, away_score)
+            
+            if result is None:
+                continue
+            
+            # Update pick
+            pick['status'] = result.lower()
+            pick['result'] = result
+            pick['actual_home_score'] = home_score
+            pick['actual_away_score'] = away_score
+            pick['profit_loss'] = profit
+            pick['updated_at'] = datetime.now().isoformat()
+            
+            updated_count += 1
+            
+            result_symbol = "✅" if result == 'Win' else "❌" if result == 'Loss' else "➖"
+            print(f"  {result_symbol} {pick['matchup']}: {home_score}-{away_score} - {pick['pick']} ({result})")
+        
+        except Exception as e:
+            print(f"  ⚠️  Error updating pick: {e}")
+            continue
+    
+    # Recalculate summary
+    tracking_data['summary'] = {
+        'total': len(tracking_data['picks']),
+        'wins': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'win'),
+        'losses': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'loss'),
+        'pushes': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'push'),
+        'pending': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending')
+    }
+    
+    save_tracking(tracking_data)
+    
+    if updated_count > 0:
+        wins = tracking_data['summary']['wins']
+        losses = tracking_data['summary']['losses']
+        pushes = tracking_data['summary']['pushes']
+        print(f"\n✅ Updated {updated_count} picks! Record: {wins}-{losses}-{pushes}")
+    else:
+        print("\n⚠️  No picks were updated")
+    
+    return updated_count
+
+# ============================================================================
 # MAIN
 # ============================================================================
 
@@ -607,6 +895,9 @@ def main():
     print("=" * 80)
     print("⚽ SOCCER MODEL - FULL MATCHUP ANALYSIS")
     print("=" * 80)
+    
+    # Update pending picks with real results first
+    update_pick_results()
     
     # Fetch odds
     games = fetch_soccer_odds(ODDS_API_KEY)

@@ -1,0 +1,128 @@
+==========================================
+NBA Model Run: Tue Dec  9 01:12:35 EST 2025
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 1 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 21 games from API[0m
+[92m✓ Found 17 completed games[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 4 total games[0m
+[92m✓ Filtered to 3 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Orlando Magic +1.5 (Edge: +8.0)[0m
+
+[1m[92m✅ Analyzed 3 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mMiami Heat @ Orlando Magic[0m
+  🕐 12/09/25 06:10 PM EST
+  [92m🔥 HOT: Orlando Magic - Strong performer: 3-0 (100%) | +2.91u over 3 picks[0m
+  📊 Spread: Market +1.5 | Model +6.5
+  🎯 Total: Market 234.5 | Model 218.2
+  [92m✅ BET: Orlando Magic +1.5[0m
+     [96mModel projects Orlando Magic to win outright, easily covering +1.5.[0m
+  [92m✅ BET: UNDER 234.5[0m
+     [96mModel projects 218 total points, bet the UNDER[0m
+  📈 Predicted: Miami Heat 106, Orlando Magic 112
+
+[1m[96mPhoenix Suns @ Oklahoma City Thunder[0m
+  🕐 12/10/25 07:30 PM EST
+  [96mℹ️ LIMITED: Oklahoma City Thunder - Limited data: 1-1 (50%) | -0.10u (2 picks)[0m
+  📊 Spread: Market -15.5 | Model +22.8
+  🎯 Total: Market 224.5 | Model 227.5
+  [92m✅ BET: Oklahoma City Thunder -15.5[0m
+     [96mModel projects Oklahoma City Thunder to win by 22.8, covering -15.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Phoenix Suns 102, Oklahoma City Thunder 125
+
+[1m[96mNew York Knicks @ Toronto Raptors[0m
+  🕐 12/09/25 08:30 PM EST
+  📊 Spread: Market +4.5 | Model -0.3
+  🎯 Total: Market 225.5 | Model 221.8
+  [92m✅ BET: Toronto Raptors +4.5[0m
+     [96mModel projects Toronto Raptors to lose by only 0.3, covering +4.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: New York Knicks 111, Toronto Raptors 111
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 159[0m
+[92mRecord: 95-62-0[0m
+[92mWin Rate: 60.5%[0m
+[92mProfit: +25.96 units[0m
+[92mROI: +15.0%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 1c38a52] Update model outputs - 2025-12-09 01:13:12
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 80 insertions(+), 133 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   2d5e200..1c38a52  main -> main
+✅ Successfully pushed to GitHub!
