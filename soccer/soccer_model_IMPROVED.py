@@ -529,7 +529,13 @@ body {
 {% set is_under = total_bet.direction == 'UNDER' %}
 {% set pick_class = 'pick-yes' if abs(edge) >= CONFIDENT_TOTAL_EDGE else 'pick-none' %}
 {% set pick_icon = '✅' if abs(edge) >= CONFIDENT_TOTAL_EDGE else '⚠️' %}
-{% set explanation = 'SHARP +EV UNDER' if (abs(edge) >= CONFIDENT_TOTAL_EDGE and is_under) else ('Below threshold' if abs(edge) >= TOTAL_THRESHOLD else 'Insufficient edge') %}
+{% if abs(edge) >= CONFIDENT_TOTAL_EDGE and is_under %}
+{% set explanation = 'SHARP +EV UNDER' %}
+{% elif abs(edge) >= TOTAL_THRESHOLD %}
+{% set explanation = 'Below threshold' %}
+{% else %}
+{% set explanation = 'Insufficient edge' %}
+{% endif %}
 <div class="bet-box bet-box-total">
 <div class="bet-title bet-title-total">🎯 TOTAL</div>
 <div class="odds-line">
