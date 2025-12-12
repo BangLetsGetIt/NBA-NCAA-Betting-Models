@@ -342,11 +342,48 @@ def analyze_game(game):
 # HTML GENERATION (NBA Style)
 # ============================================================================
 
-def generate_html(analyses):
+def generate_html(analyses, tracking_data=None):
     """Generate NBA-style HTML with game cards"""
     
     # Filter to games with analysis
     analyses = [a for a in analyses if a and a.get('bets')]
+    
+    # Helper function to get CLV for a bet
+    def get_bet_clv(analysis, bet):
+        """Get CLV info for a bet from tracking data"""
+        if not tracking_data or not tracking_data.get('picks'):
+            return None
+        
+        home_team = analysis.get('home_team', '')
+        away_team = analysis.get('away_team', '')
+        commence_time = analysis.get('commence_time', '')
+        bet_type = bet.get('type', '')
+        
+        # Find matching pick
+        pick_id = f"{home_team}_{away_team}_{commence_time}_{bet_type.lower()}"
+        pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
+        
+        if not pick:
+            return None
+        
+        opening = pick.get('opening_odds')
+        latest = pick.get('latest_odds')
+        
+        if opening and latest and opening != latest:
+            # Positive CLV: latest < opening (odds got worse = better value)
+            is_positive = latest < opening
+            return {
+                'opening': opening,
+                'latest': latest,
+                'positive': is_positive
+            }
+        
+        return None
+    
+    # Add CLV info to each bet
+    for analysis in analyses:
+        for bet in analysis.get('bets', []):
+            bet['clv_info'] = get_bet_clv(analysis, bet)
     
     HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -544,6 +581,14 @@ body {
 <div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
 </div>
 </div>
+{% if spread_bet.clv_info %}
+{% set clv_color = '#4ade80' if spread_bet.clv_info.positive else '#f87171' %}
+{% set clv_icon = '✅' if spread_bet.clv_info.positive else '⚠️' %}
+<div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+<span style="color: {{clv_color}}; font-weight: 600;">{{clv_icon}} CLV:</span>
+<strong style="color: {{clv_color}};">Opening: {{spread_bet.clv_info.opening}} → Latest: {{spread_bet.clv_info.latest}}</strong>
+</div>
+{% endif %}
 <div class="pick {{pick_class}}">
 {{pick_icon}} {{spread_bet.recommendation if spread_bet.recommendation else 'NO BET'}}<br>
 <small>{{explanation}}</small>
@@ -592,6 +637,14 @@ body {
 <div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
 </div>
 </div>
+{% if total_bet.clv_info %}
+{% set clv_color = '#4ade80' if total_bet.clv_info.positive else '#f87171' %}
+{% set clv_icon = '✅' if total_bet.clv_info.positive else '⚠️' %}
+<div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+<span style="color: {{clv_color}}; font-weight: 600;">{{clv_icon}} CLV:</span>
+<strong style="color: {{clv_color}};">Opening: {{total_bet.clv_info.opening}} → Latest: {{total_bet.clv_info.latest}}</strong>
+</div>
+{% endif %}
 <div class="pick {{pick_class}}">
 {{pick_icon}} {{total_bet.recommendation if total_bet.recommendation else 'NO BET'}}<br>
 <small>{{explanation}}</small>
@@ -668,9 +721,21 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line, reco
     # Create pick ID
     pick_id = f"{home_team}_{away_team}_{commence_time}_{pick_type.lower()}"
     
-    # Check if already logged
-    if any(p.get('pick_id') == pick_id for p in tracking_data['picks']):
+    # Check if already logged - update odds if exists
+    existing_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
+    if existing_pick:
+        # Update odds if they've changed
+        odds = extract_odds_from_game(game_data, pick_type, recommendation)
+        if odds is not None:
+            if existing_pick.get('opening_odds') is None:
+                existing_pick['opening_odds'] = odds
+            existing_pick['latest_odds'] = odds
+            existing_pick['last_updated'] = datetime.now().isoformat()
+            save_tracking(tracking_data)
         return
+    
+    # Extract odds from game data
+    odds = extract_odds_from_game(game_data, pick_type, recommendation)
     
     # Determine direction
     if pick_type == 'SPREAD':
@@ -703,6 +768,9 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line, reco
         'model_line': model_line,
         'market_line': market_line,
         'edge': edge,
+        'odds': odds,
+        'opening_odds': odds,
+        'latest_odds': odds,
         'status': 'pending',
         'result': None,
         'actual_home_score': None,
@@ -716,6 +784,51 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line, reco
     
     save_tracking(tracking_data)
     print(f"📝 LOGGED: {pick_type} - {pick_text} (Edge: {edge:+.2f})")
+
+def extract_odds_from_game(game_data, pick_type, recommendation):
+    """Extract odds from game data for a specific pick"""
+    try:
+        bookmakers = game_data.get('bookmakers', [])
+        if not bookmakers:
+            return None
+        
+        bookmaker = bookmakers[0]  # Use first bookmaker
+        markets = bookmaker.get('markets', [])
+        
+        if pick_type == 'SPREAD':
+            spread_market = next((m for m in markets if m['key'] == 'spreads'), None)
+            if not spread_market:
+                return None
+            
+            # Find the outcome matching the recommendation
+            home_team = game_data.get('home_team', '')
+            away_team = game_data.get('away_team', '')
+            
+            if home_team in recommendation:
+                outcome = next((o for o in spread_market['outcomes'] if o['name'] == home_team), None)
+            else:
+                outcome = next((o for o in spread_market['outcomes'] if o['name'] == away_team), None)
+            
+            if outcome:
+                return outcome.get('price', -110)
+        
+        elif pick_type == 'TOTAL':
+            total_market = next((m for m in markets if m['key'] == 'totals'), None)
+            if not total_market:
+                return None
+            
+            # Find the outcome matching the recommendation
+            if 'under' in recommendation.lower():
+                outcome = next((o for o in total_market['outcomes'] if o['name'] == 'Under'), None)
+            else:
+                outcome = next((o for o in total_market['outcomes'] if o['name'] == 'Over'), None)
+            
+            if outcome:
+                return outcome.get('price', -110)
+        
+        return None
+    except Exception as e:
+        return None
 
 def fetch_completed_soccer_scores():
     """Fetch completed soccer scores from The Odds API"""
@@ -934,7 +1047,8 @@ def main():
     print(f"🔥 {sharp_bets} sharp +EV recommendations")
     
     # Generate HTML
-    generate_html(analyses)
+    tracking_data = load_tracking()
+    generate_html(analyses, tracking_data)
     
     print("\n" + "=" * 80)
 

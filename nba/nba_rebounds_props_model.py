@@ -741,6 +741,50 @@ def calculate_ai_score(player_data, prop_line, bet_type, opponent_rebounding=Non
 
     return round(final_score, 2)
 
+def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
+    """
+    Calculate Expected Value based on AI score and player stats
+    Higher AI score + larger edge = higher EV
+    Target: 60% hit rate for AI score 9.5+
+    """
+    # Convert American odds to implied probability
+    if odds > 0:
+        implied_prob = 100 / (odds + 100)
+    else:
+        implied_prob = abs(odds) / (abs(odds) + 100)
+    
+    # Calculate true probability from AI score and stats
+    # AI score 9.5+ = ~60% win probability (user's target)
+    # Scale based on edge above/below line
+    base_prob = 0.50  # Starting point
+    ai_multiplier = max(0, (ai_score - 9.0) / 1.0)  # Scale from 9.0-10.0 to 0-1.0
+    
+    # Edge factor: larger edge = higher true probability
+    if bet_type == 'over':
+        edge = season_avg - prop_line
+    else:  # under
+        edge = prop_line - season_avg
+    
+    edge_factor = min(abs(edge) / 2.0, 1.0)  # Normalize edge contribution
+    
+    # Recent form bonus
+    recent_factor = 0.0
+    if bet_type == 'over' and recent_avg > season_avg:
+        recent_factor = min((recent_avg - season_avg) / 2.0, 0.1)
+    elif bet_type == 'under' and recent_avg < season_avg:
+        recent_factor = min((season_avg - recent_avg) / 2.0, 0.1)
+    
+    true_prob = base_prob + (ai_multiplier * 0.15) + (edge_factor * 0.15) + recent_factor
+    true_prob = min(max(true_prob, 0.40), 0.70)  # Cap between 40-70%
+    
+    # Calculate EV
+    if odds > 0:
+        ev = (true_prob * (odds / 100)) - (1 - true_prob)
+    else:
+        ev = (true_prob * (100 / abs(odds))) - (1 - true_prob)
+    
+    return ev * 100  # Return as percentage
+
 def analyze_props(props_list, player_stats, rebounding_factors):
     """Analyze all player props using REAL NBA stats"""
     print(f"\n{Colors.CYAN}Analyzing {len(props_list)} player props with REAL stats...{Colors.END}")
@@ -781,6 +825,10 @@ def analyze_props(props_list, player_stats, rebounding_factors):
             recent_avg = player_data.get('recent_reb_avg', 0)
             
             if season_avg >= prop_line + 0.3 and recent_avg >= prop_line + 0.2:
+                # Calculate EV
+                ev = calculate_ev(over_score, prop_line, season_avg, recent_avg, prop['over_price'], 'over')
+                is_sharp = over_score >= AUTO_TRACK_THRESHOLD and ev > 0
+                
                 over_plays.append({
                     'player': player_name,
                     'prop': f"OVER {prop_line} REB",
@@ -791,7 +839,9 @@ def analyze_props(props_list, player_stats, rebounding_factors):
                     'game_time': prop['game_time'],
                     'season_avg': season_avg,
                     'recent_avg': recent_avg,
-                    'edge': round(season_avg - prop_line, 2)
+                    'edge': round(season_avg - prop_line, 2),
+                    'ev': round(ev, 2),
+                    'is_sharp': is_sharp
                 })
             else:
                 skipped_low_score += 1
@@ -804,6 +854,10 @@ def analyze_props(props_list, player_stats, rebounding_factors):
             recent_avg = player_data.get('recent_reb_avg', 0)
             
             if season_avg <= prop_line - 0.3 and recent_avg <= prop_line - 0.2:
+                # Calculate EV
+                ev = calculate_ev(under_score, prop_line, season_avg, recent_avg, prop['over_price'], 'under')
+                is_sharp = under_score >= AUTO_TRACK_THRESHOLD and ev > 0
+                
                 under_plays.append({
                     'player': player_name,
                     'prop': f"UNDER {prop_line} REB",
@@ -814,7 +868,9 @@ def analyze_props(props_list, player_stats, rebounding_factors):
                     'game_time': prop['game_time'],
                     'season_avg': season_avg,
                     'recent_avg': recent_avg,
-                    'edge': round(prop_line - season_avg, 2)
+                    'edge': round(prop_line - season_avg, 2),
+                    'ev': round(ev, 2),
+                    'is_sharp': is_sharp
                 })
             else:
                 skipped_low_score += 1
@@ -972,6 +1028,15 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
             game_time_formatted = format_game_time(play.get('game_time', ''))
             
+            # Create +EV and SHARP badges
+            ev_badge = ""
+            ev = play.get('ev', 0)
+            is_sharp = play.get('is_sharp', False)
+            if ev > 0:
+                ev_badge = f'<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+{ev:.1f}% EV</span>'
+                if is_sharp:
+                    ev_badge += '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span>'
+            
             # Get CLV for this play
             clv_info = get_play_clv(play)
             clv_display = ""
@@ -1020,7 +1085,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             </div>
                         </div>
                         <div class="pick pick-yes">
-                            ✅ {play['prop']}{tracked_badge}
+                            ✅ {play['prop']}{ev_badge}{tracked_badge}
                         </div>
                     </div>"""
         
@@ -1040,6 +1105,15 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
             game_time_formatted = format_game_time(play.get('game_time', ''))
+            
+            # Create +EV and SHARP badges
+            ev_badge = ""
+            ev = play.get('ev', 0)
+            is_sharp = play.get('is_sharp', False)
+            if ev > 0:
+                ev_badge = f'<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+{ev:.1f}% EV</span>'
+                if is_sharp:
+                    ev_badge += '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span>'
             
             # Get CLV for this play
             clv_info = get_play_clv(play)
@@ -1089,7 +1163,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             </div>
                         </div>
                         <div class="pick pick-no">
-                            ✅ {play['prop']}{tracked_badge}
+                            ✅ {play['prop']}{ev_badge}{tracked_badge}
                         </div>
                     </div>"""
         
