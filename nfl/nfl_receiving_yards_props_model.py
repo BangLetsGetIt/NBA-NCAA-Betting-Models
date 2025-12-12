@@ -13,9 +13,13 @@ import pytz
 from collections import defaultdict
 import statistics
 import time
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configuration
-API_KEY = os.environ.get('ODDS_API_KEY')
+API_KEY = os.getenv('ODDS_API_KEY')
 if not API_KEY:
     raise ValueError("ODDS_API_KEY environment variable not set")
 
