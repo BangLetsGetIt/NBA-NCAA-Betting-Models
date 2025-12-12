@@ -486,9 +486,10 @@ body {
 <div class="bet-section">
 {% if spread_bet %}
 {% set edge = spread_bet.edge %}
-{% set pick_class = 'pick-yes' if abs(edge) >= CONFIDENT_SPREAD_EDGE else 'pick-none' %}
-{% set pick_icon = '✅' if abs(edge) >= CONFIDENT_SPREAD_EDGE else '⚠️' %}
-{% set explanation = 'SHARP +EV' if abs(edge) >= CONFIDENT_SPREAD_EDGE else 'Below sharp threshold' %}
+{% set edge_abs = edge|abs %}
+{% set pick_class = 'pick-yes' if edge_abs >= CONFIDENT_SPREAD_EDGE else 'pick-none' %}
+{% set pick_icon = '✅' if edge_abs >= CONFIDENT_SPREAD_EDGE else '⚠️' %}
+{% set explanation = 'SHARP +EV' if edge_abs >= CONFIDENT_SPREAD_EDGE else 'Below sharp threshold' %}
 <div class="bet-box bet-box-spread">
 <div class="bet-title bet-title-spread">📊 SPREAD</div>
 <div class="odds-line">
@@ -527,11 +528,12 @@ body {
 {% if total_bet %}
 {% set edge = total_bet.edge %}
 {% set is_under = total_bet.direction == 'UNDER' %}
-{% set pick_class = 'pick-yes' if abs(edge) >= CONFIDENT_TOTAL_EDGE else 'pick-none' %}
-{% set pick_icon = '✅' if abs(edge) >= CONFIDENT_TOTAL_EDGE else '⚠️' %}
-{% if abs(edge) >= CONFIDENT_TOTAL_EDGE and is_under %}
+{% set edge_abs = edge|abs %}
+{% set pick_class = 'pick-yes' if edge_abs >= CONFIDENT_TOTAL_EDGE else 'pick-none' %}
+{% set pick_icon = '✅' if edge_abs >= CONFIDENT_TOTAL_EDGE else '⚠️' %}
+{% if edge_abs >= CONFIDENT_TOTAL_EDGE and is_under %}
 {% set explanation = 'SHARP +EV UNDER' %}
-{% elif abs(edge) >= TOTAL_THRESHOLD %}
+{% elif edge_abs >= TOTAL_THRESHOLD %}
 {% set explanation = 'Below threshold' %}
 {% else %}
 {% set explanation = 'Insufficient edge' %}
@@ -548,7 +550,7 @@ body {
 </div>
 <div class="odds-line">
 <span>Edge:</span>
-<strong>{{"{:.2f}".format(edge|abs)}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
+<strong>{{"{:.2f}".format(edge_abs)}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
 </div>
 <div class="confidence-bar-container">
 <div class="confidence-label">

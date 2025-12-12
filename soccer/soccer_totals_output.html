@@ -3,1989 +3,6056 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Soccer Totals Model - Sharp +EV Unders</title>
+<title>Soccer Model - Full Matchup Analysis</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
     background: #0a1628;
     color: #ffffff;
-    padding: 1rem;
+    padding: 1.5rem;
     min-height: 100vh;
 }
-.container { max-width: 1400px; margin: 0 auto; }
+.container { max-width: 1200px; margin: 0 auto; }
 .card {
     background: #1a2332;
     border-radius: 1.25rem;
     border: none;
-    padding: 1.5rem;
+    padding: 2rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 .header-card {
     text-align: center;
     background: #1a2332;
-    padding: 2rem 1.5rem;
+    border: none;
 }
-h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 0.5rem;
-}
-.subtitle {
-    color: #94a3b8;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-}
-.alert {
-    background: #0d2b1f;
-    border-left: 4px solid #00ff88;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    border-radius: 0.75rem;
-}
-.alert-text {
-    color: #00ff88;
-    font-weight: 600;
-    font-size: 0.9375rem;
-}
-.alert-warning {
-    background: #2a1f10;
-    border-left-color: #ffa726;
-}
-.alert-warning .alert-text {
-    color: #ffa726;
-}
-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #d4af37;
-    margin: 2rem 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #d4af37;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1a2332;
-    border-radius: 1rem;
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-}
-th, td {
-    padding: 0.875rem;
-    text-align: left;
+.game-card {
+    padding: 1.5rem;
     border-bottom: 1px solid #2a3441;
-    font-size: 0.875rem;
 }
-th {
-    background: #1a2332;
-    color: #94a3b8;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-tr:hover {
-    background: #2a3441;
-}
-.recommend {
-    background: linear-gradient(135deg, #0d2b1f, #0a1f15);
-    border-left: 4px solid #00ff88;
-    font-weight: 600;
-}
-.recommend.sharp {
-    background: linear-gradient(135deg, #0f3524, #0c2519);
-    border-left: 5px solid #00ff99;
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
-}
-.sharp-label {
-    background: rgba(0, 255, 153, 0.2);
-    color: #00ff99;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-left: 0.5rem;
-}
-.neutral {
-    background: #1a2332;
-}
+.game-card:last-child { border-bottom: none; }
+.matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+.game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
 .league-badge {
     background: rgba(96, 165, 250, 0.2);
     color: #60a5fa;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
     font-size: 0.75rem;
     font-weight: 600;
+    margin-left: 0.5rem;
 }
-.odds-badge {
-    background: rgba(212, 175, 55, 0.2);
-    color: #d4af37;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    border: 1px solid rgba(212, 175, 55, 0.3);
+.bet-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
 }
-.edge-positive {
-    color: #00ff88;
-    font-weight: 700;
-}
-.edge-neutral {
-    color: #ffa726;
-}
-.ev-badge {
-    background: rgba(0, 255, 136, 0.15);
-    color: #00ff88;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.8125rem;
-    font-weight: 700;
-}
-.kelly-badge {
-    background: rgba(96, 165, 250, 0.15);
-    color: #60a5fa;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-}
-.confidence {
-    font-size: 0.8125rem;
-}
-.conf-high { color: #00ff88; }
-.conf-med { color: #ffa726; }
-.conf-low { color: #ef4444; }
-.stats {
-    color: #94a3b8;
-    font-size: 0.8125rem;
-}
-.methodology {
-    background: #1a2332;
+.bet-box {
+    background: #2a3441;
+    padding: 1.25rem;
     border-radius: 1rem;
-    padding: 1.5rem;
-    margin-top: 2rem;
+    border-left: none;
+}
+.bet-box-spread {
+    border-left: 4px solid #60a5fa;
+}
+.bet-box-total {
+    border-left: 4px solid #f472b6;
+}
+.bet-title {
+    font-weight: 600;
     color: #94a3b8;
-    font-size: 0.8125rem;
-    line-height: 1.8;
-}
-.methodology h3 {
-    color: #d4af37;
-    margin-bottom: 1rem;
-    font-size: 1.125rem;
-}
-.methodology p {
     margin-bottom: 0.5rem;
-}
-.footer {
-    text-align: center;
-    margin-top: 2rem;
-    color: #94a3b8;
+    text-transform: uppercase;
     font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+.bet-title-spread { color: #60a5fa; }
+.bet-title-total { color: #f472b6; }
+.odds-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0;
+    font-size: 0.9375rem;
+    color: #94a3b8;
+}
+.odds-line strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+.confidence-bar-container {
+    margin: 0.75rem 0;
+}
+.confidence-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+.confidence-pct {
+    font-weight: 700;
+    color: #4ade80;
+}
+.confidence-bar {
+    height: 6px;
+    background: #1a2332;
+    border-radius: 999px;
+    overflow: hidden;
+    border: none;
+}
+.confidence-fill {
+    height: 100%;
+    background: #4ade80;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+.pick {
+    font-weight: 600;
+    padding: 0.875rem 1rem;
+    margin-top: 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.pick small {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    opacity: 0.85;
+    line-height: 1.4;
+}
+.pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
+.pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
+.pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
+.prediction {
+    background: #2a3441;
+    color: #4ade80;
+    padding: 1rem;
+    border-radius: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-top: 1rem;
+    border: 1px solid #2a3441;
 }
 @media (max-width: 768px) {
-    body { padding: 0.75rem; }
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    .card { padding: 1rem; }
-    table { font-size: 0.75rem; display: block; overflow-x: auto; }
-    th, td { padding: 0.5rem; }
-    .header-card { padding: 1.5rem 1rem; }
-}
-@media (max-width: 480px) {
-    th, td { padding: 0.4rem; font-size: 0.7rem; }
-    .subtitle { font-size: 0.75rem; }
+    body { padding: 1rem; }
+    .card { padding: 1.25rem; }
+    .game-card { padding: 1.25rem; }
+    .bet-section { grid-template-columns: 1fr; gap: 1rem; }
+    .matchup { font-size: 1.25rem; }
 }
 </style>
 </head>
 <body>
 <div class="container">
 <div class="card header-card">
-<h1>⚽ Soccer Totals Model - Sharp +EV Unders</h1>
-<div class="subtitle">Focusing on Unders Value | Generated December 11, 2025 at 11:45 PM ET</div>
+<h1>⚽ Soccer Model - Full Matchup Analysis</h1>
+<p style="color: #94a3b8; margin-top: 0.5rem;">Focusing on Unders Value | Generated December 12, 2025 at 12:13 AM ET</p>
 </div>
 
 
-<div class="card">
-<div class="alert">
-<div class="alert-text">🔥 21 RECOMMENDED BET(S) - Sharp +EV Unders with 8.0%+ Edge</div>
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Brighton and Hove Albion @ Liverpool<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Liverpool -0.50</strong>
 </div>
-
-<h2>💎 RECOMMENDED PLAYS (Unders +EV)</h2>
-<table>
-<tr>
-<th>Match</th><th>League</th><th>Line</th><th>Odds</th><th>Book</th>
-<th>Pred Total</th><th>Under Prob</th><th>Edge</th><th>EV</th><th>Kelly %</th><th>Conf</th>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">BetOnline.ag</td>
-<td class="stats">2.9</td>
-<td class="stats">72.1%</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">LowVig.ag</td>
-<td class="stats">2.9</td>
-<td class="stats">72.1%</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-122</span></td>
-<td class="stats">Bovada</td>
-<td class="stats">2.9</td>
-<td class="stats">75.8%</td>
-<td class="edge-positive">+20.9%</td>
-<td><span class="ev-badge">+38.0%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+123</span></td>
-<td class="stats">BetRivers</td>
-<td class="stats">2.9</td>
-<td class="stats">68.3%</td>
-<td class="edge-positive">+23.5%</td>
-<td><span class="ev-badge">+52.4%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+115</span></td>
-<td class="stats">BetMGM</td>
-<td class="stats">2.9</td>
-<td class="stats">68.3%</td>
-<td class="edge-positive">+21.8%</td>
-<td><span class="ev-badge">+46.9%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Barcelona vs CA Osasuna</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">BetUS</td>
-<td class="stats">2.9</td>
-<td class="stats">72.1%</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">BetOnline.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">71.6%</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">LowVig.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">71.6%</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">Bovada</td>
-<td class="stats">3.0</td>
-<td class="stats">71.6%</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Villarreal vs Barcelona</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">BetRivers</td>
-<td class="stats">3.0</td>
-<td class="stats">67.8%</td>
-<td class="edge-positive">+19.0%</td>
-<td><span class="ev-badge">+39.0%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">LowVig.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">74.4%</td>
-<td class="edge-positive">+21.3%</td>
-<td><span class="ev-badge">+40.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">BetOnline.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">74.4%</td>
-<td class="edge-positive">+21.3%</td>
-<td><span class="ev-badge">+40.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">Bovada</td>
-<td class="stats">3.0</td>
-<td class="stats">74.4%</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.8%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+128</span></td>
-<td class="stats">BetRivers</td>
-<td class="stats">3.0</td>
-<td class="stats">59.6%</td>
-<td class="edge-positive">+15.7%</td>
-<td><span class="ev-badge">+35.8%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+115</span></td>
-<td class="stats">BetMGM</td>
-<td class="stats">3.0</td>
-<td class="stats">59.6%</td>
-<td class="edge-positive">+13.1%</td>
-<td><span class="ev-badge">+28.1%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">BetUS</td>
-<td class="stats">3.0</td>
-<td class="stats">74.4%</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.8%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">LowVig.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">70.6%</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">BetOnline.ag</td>
-<td class="stats">3.0</td>
-<td class="stats">70.6%</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">Bovada</td>
-<td class="stats">3.0</td>
-<td class="stats">70.6%</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend sharp">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong><span class="sharp-label">SHARP</span></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+120</span></td>
-<td class="stats">BetRivers</td>
-<td class="stats">3.0</td>
-<td class="stats">59.6%</td>
-<td class="edge-positive">+14.1%</td>
-<td><span class="ev-badge">+31.1%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-<tr class="recommend ">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+110</span></td>
-<td class="stats">BetMGM</td>
-<td class="stats">3.0</td>
-<td class="stats">59.6%</td>
-<td class="edge-positive">+12.0%</td>
-<td><span class="ev-badge">+25.1%</span></td>
-<td><span class="kelly-badge">5.00%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-</table>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.10</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Liverpool -0.50<br>
+<small>SHARP +EV</small>
+</div>
 </div>
 
 
-<div class="card">
-<h2>📊 ALL TOTALS ANALYSIS</h2>
-<table>
-<tr>
-<th>Match</th><th>League</th><th>Line</th><th>Odds</th><th>Pred Total</th><th>Edge</th><th>EV</th><th>Conf</th>
-</tr>
 
 
 
 
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+123</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+23.5%</td>
-<td><span class="ev-badge">+52.4%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
 
 
 
 
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+115</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+21.8%</td>
-<td><span class="ev-badge">+46.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
 
-
-
-
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+22.6%</td>
-<td><span class="ev-badge">+45.6%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+20.6%</td>
-<td><span class="ev-badge">+41.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.8%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.8%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+21.3%</td>
-<td><span class="ev-badge">+40.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+21.3%</td>
-<td><span class="ev-badge">+40.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Villarreal vs Barcelona</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+19.0%</td>
-<td><span class="ev-badge">+39.0%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Barcelona vs CA Osasuna</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 4.0</td>
-<td><span class="odds-badge">-122</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+20.9%</td>
-<td><span class="ev-badge">+38.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+128</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+15.7%</td>
-<td><span class="ev-badge">+35.8%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Villarreal vs Barcelona</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Villarreal vs Barcelona</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Villarreal vs Barcelona</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.75</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+17.4%</td>
-<td><span class="ev-badge">+32.2%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+120</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+14.1%</td>
-<td><span class="ev-badge">+31.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>Bayern Munich vs FSV Mainz 05</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+115</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+13.1%</td>
-<td><span class="ev-badge">+28.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="recommend">
-<td><strong>1. FC Heidenheim vs Bayern Munich</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">+110</span></td>
-<td class="stats">3.0</td>
-<td class="edge-positive">+12.0%</td>
-<td><span class="ev-badge">+25.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-106</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+23.1%</td>
-<td><span class="ev-badge">+44.8%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-110</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+22.1%</td>
-<td><span class="ev-badge">+42.3%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+21.7%</td>
-<td><span class="ev-badge">+41.0%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-113</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+21.5%</td>
-<td><span class="ev-badge">+40.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Metz vs Paris Saint Germain</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-120</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+20.0%</td>
-<td><span class="ev-badge">+36.6%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+16.6%</td>
-<td><span class="ev-badge">+30.7%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-120</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+16.2%</td>
-<td><span class="ev-badge">+29.7%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-121</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+16.0%</td>
-<td><span class="ev-badge">+29.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-121</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+16.0%</td>
-<td><span class="ev-badge">+29.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-122</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+15.8%</td>
-<td><span class="ev-badge">+28.8%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-123</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+15.6%</td>
-<td><span class="ev-badge">+28.3%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-123</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+15.6%</td>
-<td><span class="ev-badge">+28.3%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-152</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+14.2%</td>
-<td><span class="ev-badge">+23.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+10.9%</td>
-<td><span class="ev-badge">+22.3%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Marseille vs AS Monaco</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-160</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+13.0%</td>
-<td><span class="ev-badge">+21.1%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-162</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+12.7%</td>
-<td><span class="ev-badge">+20.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>RC Lens vs Nice</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-165</span></td>
-<td class="stats">2.5</td>
-<td class="edge-positive">+12.2%</td>
-<td><span class="ev-badge">+19.7%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-143</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+9.6%</td>
-<td><span class="ev-badge">+16.3%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-145</span></td>
-<td class="stats">2.9</td>
-<td class="edge-positive">+9.3%</td>
-<td><span class="ev-badge">+15.6%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester City vs West Ham United</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">3.2</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+12.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester City vs West Ham United</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">3.2</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+12.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester City vs West Ham United</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">3.2</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+12.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+11.9%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+11.9%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>VfB Stuttgart vs TSG Hoffenheim</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+11.9%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Real Madrid vs Sevilla</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-114</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+11.7%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Real Madrid vs Sevilla</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-114</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+6.2%</td>
-<td><span class="ev-badge">+11.7%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-114</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+6.1%</td>
-<td><span class="ev-badge">+11.4%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-114</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+6.1%</td>
-<td><span class="ev-badge">+11.4%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Real Madrid vs Sevilla</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-115</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+6.0%</td>
-<td><span class="ev-badge">+11.3%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+125</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+4.5%</td>
-<td><span class="ev-badge">+10.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+125</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+4.5%</td>
-<td><span class="ev-badge">+10.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester City vs West Ham United</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-112</span></td>
-<td class="stats">3.2</td>
-<td class="edge-neutral">+5.3%</td>
-<td><span class="ev-badge">+10.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-181</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+6.4%</td>
-<td><span class="ev-badge">+9.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+140</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+4.1%</td>
-<td><span class="ev-badge">+9.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-167</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+5.9%</td>
-<td><span class="ev-badge">+9.4%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-162</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+5.8%</td>
-<td><span class="ev-badge">+9.4%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-120</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+4.8%</td>
-<td><span class="ev-badge">+8.8%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-165</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+5.4%</td>
-<td><span class="ev-badge">+8.7%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bournemouth vs Burnley</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+123</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+3.7%</td>
-<td><span class="ev-badge">+8.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-175</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+4.8%</td>
-<td><span class="ev-badge">+7.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester City vs West Ham United</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-118</span></td>
-<td class="stats">3.2</td>
-<td class="edge-neutral">+4.0%</td>
-<td><span class="ev-badge">+7.5%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-182</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+3.9%</td>
-<td><span class="ev-badge">+6.0%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Atlético Madrid vs Valencia</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+114</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+2.8%</td>
-<td><span class="ev-badge">+6.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-185</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+3.5%</td>
-<td><span class="ev-badge">+5.4%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+130</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+2.3%</td>
-<td><span class="ev-badge">+5.3%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Atalanta BC vs Cagliari</strong></td>
-<td><span class="league-badge">Serie A</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+117</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+2.4%</td>
-<td><span class="ev-badge">+5.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Eintracht Frankfurt vs Augsburg</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-186</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+3.4%</td>
-<td><span class="ev-badge">+5.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+110</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+2.5%</td>
-<td><span class="ev-badge">+5.2%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-124</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+2.8%</td>
-<td><span class="ev-badge">+5.0%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-124</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+2.8%</td>
-<td><span class="ev-badge">+5.0%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Atalanta BC vs Cagliari</strong></td>
-<td><span class="league-badge">Serie A</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+116</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+2.2%</td>
-<td><span class="ev-badge">+4.8%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Levante vs Villarreal</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">+102</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+2.3%</td>
-<td><span class="ev-badge">+4.7%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-125</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+2.6%</td>
-<td><span class="ev-badge">+4.6%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>TSG Hoffenheim vs Hamburger SV</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.25</td>
-<td><span class="odds-badge">-125</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+2.6%</td>
-<td><span class="ev-badge">+4.6%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Rennes vs Brest</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+108</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+1.4%</td>
-<td><span class="ev-badge">+3.0%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bournemouth vs Burnley</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+112</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+1.4%</td>
-<td><span class="ev-badge">+2.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+1.3%</td>
-<td><span class="ev-badge">+2.7%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bournemouth vs Burnley</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">-102</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+1.0%</td>
-<td><span class="ev-badge">+2.0%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-105</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+1.0%</td>
-<td><span class="ev-badge">+1.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-105</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+1.0%</td>
-<td><span class="ev-badge">+1.9%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+103</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+0.8%</td>
-<td><span class="ev-badge">+1.7%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bayer Leverkusen vs 1. FC Köln</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+103</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+0.8%</td>
-<td><span class="ev-badge">+1.7%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Atlético Madrid vs Valencia</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+0.7%</td>
-<td><span class="ev-badge">+1.5%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Rennes vs Brest</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+105</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+0.7%</td>
-<td><span class="ev-badge">+1.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.6%</td>
-<td><span class="ev-badge">+1.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.6%</td>
-<td><span class="ev-badge">+1.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.6%</td>
-<td><span class="ev-badge">+1.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Werder Bremen vs VfB Stuttgart</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">+100</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.6%</td>
-<td><span class="ev-badge">+1.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Borussia Monchengladbach vs VfL Wolfsburg</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+133</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.5%</td>
-<td><span class="ev-badge">+1.2%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Real Madrid vs Sevilla</strong></td>
-<td><span class="league-badge">La Liga</span></td>
-<td class="stats">U 3.5</td>
-<td><span class="odds-badge">-143</span></td>
-<td class="stats">3.0</td>
-<td class="edge-neutral">+0.7%</td>
-<td><span class="ev-badge">+1.1%</span></td>
-<td class="confidence conf-high">85%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bournemouth vs Burnley</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">-104</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+0.5%</td>
-<td><span class="ev-badge">+1.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Bournemouth vs Burnley</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">-104</span></td>
-<td class="stats">2.6</td>
-<td class="edge-neutral">+0.5%</td>
-<td><span class="ev-badge">+1.1%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Hamburger SV vs Eintracht Frankfurt</strong></td>
-<td><span class="league-badge">Bundesliga</span></td>
-<td class="stats">U 2.5</td>
-<td><span class="odds-badge">+132</span></td>
-<td class="stats">2.9</td>
-<td class="edge-neutral">+0.3%</td>
-<td><span class="ev-badge">+0.8%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+0.3%</td>
-<td><span class="ev-badge">+0.5%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Manchester United vs Bournemouth</strong></td>
-<td><span class="league-badge">Premier League</span></td>
-<td class="stats">U 3.0</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.8</td>
-<td class="edge-neutral">+0.3%</td>
-<td><span class="ev-badge">+0.5%</span></td>
-<td class="confidence conf-med">70%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Rennes vs Brest</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+0.3%</td>
-<td><span class="ev-badge">+0.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-
-
-
-<tr class="neutral">
-<td><strong>Rennes vs Brest</strong></td>
-<td><span class="league-badge">Ligue 1</span></td>
-<td class="stats">U 2.75</td>
-<td><span class="odds-badge">-108</span></td>
-<td class="stats">2.5</td>
-<td class="edge-neutral">+0.3%</td>
-<td><span class="ev-badge">+0.5%</span></td>
-<td class="confidence conf-low">55%</td>
-</tr>
-
-</table>
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.04 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.46 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
 </div>
 
-<div class="card methodology">
-<h3>📘 Model Methodology</h3>
-<p><strong>Focus:</strong> Unders value identification across major soccer leagues</p>
-<p><strong>Prediction Model:</strong> Based on team defensive/offensive ratings and league averages</p>
-<p><strong>Sharp Bet Criteria:</strong> Minimum 8.0% edge, positive EV, confidence ≥70.0%</p>
-<p><strong>Kelly %:</strong> Fractional Kelly (25.0%) for conservative bankroll management. Never exceeds 5%.</p>
-<p><strong>Confidence:</strong> Based on data availability for both teams. Higher confidence = more reliable ratings.</p>
-<p><strong>Edge:</strong> Model under probability minus market implied probability. Positive edge = value bet.</p>
-<p><strong>SHARP Label:</strong> Bets with 12.0%+ edge are marked as "SHARP" - highest confidence plays.</p>
 </div>
 
-<div class="footer">
-<p>Last updated: December 11, 2025 at 11:45 PM ET</p>
-<p>⚠️ Bet responsibly. This model focuses on unders value. Update team ratings regularly.</p>
+<div class="prediction">
+Predicted: Liverpool 2.07 - 0.97 Brighton and Hove Albion
 </div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Everton @ Chelsea<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Chelsea -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.65</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.15 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Chelsea -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.89 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.39 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Chelsea 1.77 - 1.12 Everton
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Fulham @ Burnley<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Burnley +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.05</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.55 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Fulham -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Burnley 1.28 - 1.33 Fulham
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Wolverhampton Wanderers @ Arsenal<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Arsenal -2.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.95</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+3.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Arsenal -2.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.00 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.50 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Arsenal 1.98 - 1.02 Wolverhampton Wanderers
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Aston Villa @ West Ham United<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>West Ham United +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.20</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.30 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.87 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.37 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: West Ham United 1.54 - 1.33 Aston Villa
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Manchester City @ Crystal Palace<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Crystal Palace +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.65</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-1.15 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Manchester City -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.06 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.56 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Crystal Palace 1.21 - 1.85 Manchester City
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Newcastle United @ Sunderland<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.83 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.33 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Sunderland 1.59 - 1.24 Newcastle United
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Tottenham Hotspur @ Nottingham Forest<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Nottingham Forest -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.00</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.50 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Nottingham Forest -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Nottingham Forest 1.37 - 1.37 Tottenham Hotspur
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Leeds United @ Brentford<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Brentford -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.10</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Brentford -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Brentford 1.43 - 1.33 Leeds United
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Bournemouth @ Manchester United<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-15</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Manchester United -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.45</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.95 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Manchester United -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.86 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.64 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Manchester United 1.66 - 1.2 Bournemouth
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Chelsea @ Newcastle United<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Newcastle United -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.10</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Newcastle United -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.90 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.40 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Newcastle United 1.5 - 1.4 Chelsea
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Burnley @ Bournemouth<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Bournemouth -1.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.95</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+2.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Bournemouth -1.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Bournemouth 1.81 - 0.86 Burnley
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Sunderland @ Brighton and Hove Albion<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Brighton and Hove Albion -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Brighton and Hove Albion -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.83 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.33 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Brighton and Hove Albion 1.59 - 1.24 Sunderland
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">West Ham United @ Manchester City<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Manchester City -1.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.25</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+2.75 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Manchester City -1.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.08 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.42 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Manchester City 2.17 - 0.92 West Ham United
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Liverpool @ Tottenham Hotspur<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Tottenham Hotspur +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.40</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.90 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Liverpool -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.04 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.54 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Tottenham Hotspur 1.32 - 1.72 Liverpool
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Arsenal @ Everton<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Everton +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.30</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.80 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Arsenal -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.99 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.49 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Everton 1.35 - 1.65 Arsenal
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Manchester United @ Aston Villa<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Aston Villa -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.40</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.90 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Aston Villa -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.90 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.40 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Aston Villa 1.65 - 1.25 Manchester United
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Nottingham Forest @ Fulham<span class="league-badge">Premier League</span></div>
+<div class="game-time">🕐 2025-12-22</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Fulham -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.50</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.00 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Fulham -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Fulham 1.59 - 1.09 Nottingham Forest
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Girona @ Real Sociedad<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-12</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Real Sociedad -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.60</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.35 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Real Sociedad -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.87 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.37 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Real Sociedad 1.74 - 1.14 Girona
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Valencia @ Atlético Madrid<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Atlético Madrid -1.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.30</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.80 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Atlético Madrid -1.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Atlético Madrid 1.52 - 1.22 Valencia
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Elche CF @ Mallorca<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Mallorca -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Mallorca -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.0</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.73 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.0<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Mallorca 1.54 - 1.19 Elche CF
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">CA Osasuna @ Barcelona<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Barcelona -2.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.30</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+3.30 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Barcelona -2.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.93 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.82 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.75<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Barcelona 2.12 - 0.82 CA Osasuna
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Espanyol @ Getafe<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Getafe -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.20</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>1.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.69 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.94 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 1.75<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Getafe 1.45 - 1.24 Espanyol
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Athletic Bilbao @ Celta Vigo<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.82 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.32 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Celta Vigo 1.41 - 1.41 Athletic Bilbao
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Real Madrid @ Alavés<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Alavés +1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.65</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-1.65 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Real Madrid -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Alavés 1.17 - 1.82 Real Madrid
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Mallorca @ Valencia<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-19</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Valencia -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.40</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.90 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Valencia -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.74 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.49 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Valencia 1.57 - 1.17 Mallorca
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Celta Vigo @ Oviedo<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.48 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Oviedo 1.54 - 1.19 Celta Vigo
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Real Sociedad @ Levante<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Levante +0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.05</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.30 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.83 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.33 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Levante 1.39 - 1.44 Real Sociedad
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Alavés @ CA Osasuna<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>CA Osasuna -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.25</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.50 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ CA Osasuna -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.0</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.70 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.70 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.0<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: CA Osasuna 1.48 - 1.23 Alavés
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Sevilla @ Real Madrid<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Real Madrid -1.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.10</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+2.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Real Madrid -1.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.45 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Real Madrid 2.08 - 0.97 Sevilla
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Atlético Madrid @ Girona<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Girona +0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.50</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.25 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Girona 1.64 - 1.14 Atlético Madrid
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Barcelona @ Villarreal<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Villarreal +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.20</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.70 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Barcelona -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.02 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.73 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.75<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Villarreal 1.41 - 1.61 Barcelona
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Rayo Vallecano @ Elche CF<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Elche CF +0.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.35 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.48 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Elche CF 1.54 - 1.19 Rayo Vallecano
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Getafe @ Real Betis<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Real Betis -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.70</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Real Betis -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.74 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.49 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Real Betis 1.72 - 1.02 Getafe
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Espanyol @ Athletic Bilbao<span class="league-badge">La Liga</span></div>
+<div class="game-time">🕐 2025-12-22</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Athletic Bilbao -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.70</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Athletic Bilbao -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.82 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.57 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Athletic Bilbao 1.76 - 1.06 Espanyol
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Pisa @ Lecce<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-12</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Lecce -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Lecce -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.0</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.78 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.78 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.0<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Lecce 1.56 - 1.21 Pisa
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Cremonese @ Torino<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Torino -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Torino -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.78 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.53 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Torino 1.56 - 1.21 Cremonese
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Lazio @ Parma<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Parma +0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.05</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.30 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.89 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.64 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Parma 1.42 - 1.47 Lazio
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Cagliari @ Atalanta BC<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Atalanta BC -1.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Atalanta BC -1.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Atalanta BC 1.56 - 1.21 Cagliari
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Sassuolo @ AC Milan<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>AC Milan -1.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.95</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+2.20 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ AC Milan -1.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.94 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.44 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: AC Milan 1.94 - 0.99 Sassuolo
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Hellas Verona @ Fiorentina<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Fiorentina -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.55</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.05 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Fiorentina -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.83 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.58 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Fiorentina 1.69 - 1.14 Hellas Verona
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Napoli @ Udinese<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Udinese +0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.15</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.65 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Napoli -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.91 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.66 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Udinese 1.38 - 1.53 Napoli
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Inter Milan @ Genoa<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Genoa +1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.45</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-1.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Inter Milan -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.00 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.50 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Genoa 1.27 - 1.73 Inter Milan
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Juventus @ Bologna<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.00 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.75 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Bologna 1.4 - 1.6 Juventus
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Como @ AS Roma<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-15</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>AS Roma -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ AS Roma -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.78 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.53 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: AS Roma 1.56 - 1.21 Como
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Cremonese @ Lazio<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Lazio -1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.75</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.75 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Lazio -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.89 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.39 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Lazio 1.82 - 1.07 Cremonese
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">AS Roma @ Juventus<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Juventus -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.05</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.55 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Juventus -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.97 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.72 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Juventus 2.01 - 0.96 AS Roma
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Pisa @ Cagliari<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Cagliari -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Cagliari -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.78 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.53 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Cagliari 1.56 - 1.21 Pisa
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Torino @ Sassuolo<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Sassuolo -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Sassuolo -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.78 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.53 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Sassuolo 1.56 - 1.21 Torino
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Udinese @ Fiorentina<span class="league-badge">Serie A</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Fiorentina -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.55</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.05 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Fiorentina -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.83 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.58 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Fiorentina 1.69 - 1.14 Udinese
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">RB Leipzig @ Union Berlin<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-12</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Union Berlin +0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.20</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.45 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below sharp threshold</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.21 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.46 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.75<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Union Berlin 1.5 - 1.71 RB Leipzig
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">1. FC Heidenheim @ FC St. Pauli<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>FC St. Pauli -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ FC St. Pauli -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.80 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: FC St. Pauli 1.7 - 1.35 1. FC Heidenheim
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Augsburg @ Eintracht Frankfurt<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Eintracht Frankfurt -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.10 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Eintracht Frankfurt -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Eintracht Frankfurt 1.7 - 1.35 Augsburg
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">VfL Wolfsburg @ Borussia Monchengladbach<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Borussia Monchengladbach -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Borussia Monchengladbach -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Borussia Monchengladbach 1.7 - 1.35 VfL Wolfsburg
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Hamburger SV @ TSG Hoffenheim<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>TSG Hoffenheim -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.10 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ TSG Hoffenheim -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: TSG Hoffenheim 1.7 - 1.35 Hamburger SV
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">1. FC Köln @ Bayer Leverkusen<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Bayer Leverkusen -1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.85</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Bayer Leverkusen -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Bayer Leverkusen 2.02 - 1.17 1. FC Köln
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Borussia Dortmund @ SC Freiburg<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>SC Freiburg +0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.30</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-0.55 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Borussia Dortmund -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.24 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.49 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.75<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: SC Freiburg 1.47 - 1.77 Borussia Dortmund
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">FSV Mainz 05 @ Bayern Munich<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Bayern Munich -2.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+1.30</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+4.05 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Bayern Munich -2.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>4.0</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.33 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.67 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 4.0<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Bayern Munich 2.31 - 1.02 FSV Mainz 05
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Union Berlin @ 1. FC Köln<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.55 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: 1. FC Köln 1.7 - 1.35 Union Berlin
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Werder Bremen @ Augsburg<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.55 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Augsburg 1.7 - 1.35 Werder Bremen
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Eintracht Frankfurt @ Hamburger SV<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.55 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Hamburger SV 1.7 - 1.35 Eintracht Frankfurt
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">SC Freiburg @ VfL Wolfsburg<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.55 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.5<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: VfL Wolfsburg 1.7 - 1.35 SC Freiburg
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">TSG Hoffenheim @ VfB Stuttgart<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.45 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: VfB Stuttgart 1.7 - 1.35 TSG Hoffenheim
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Bayer Leverkusen @ RB Leipzig<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-20</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>RB Leipzig -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.40</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.90 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ RB Leipzig -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.0</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.35 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.35 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">85%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 85%"></div>
+</div>
+</div>
+<div class="pick pick-none">
+⚠️ NO BET<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: RB Leipzig 1.88 - 1.48 Bayer Leverkusen
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">FC St. Pauli @ FSV Mainz 05<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>FSV Mainz 05 -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ FSV Mainz 05 -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.05 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.80 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: FSV Mainz 05 1.7 - 1.35 FC St. Pauli
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Bayern Munich @ 1. FC Heidenheim<span class="league-badge">Bundesliga</span></div>
+<div class="game-time">🕐 2025-12-21</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>1. FC Heidenheim +2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>-0.60</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-2.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Bayern Munich -2.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>3.33 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.42 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">70%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 70%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.75<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: 1. FC Heidenheim 1.36 - 1.97 Bayern Munich
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Nantes @ Angers<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-12</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Angers -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Angers -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>2.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.48 goals (OVER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Over 2.25<br>
+<small>Below threshold</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Angers 1.54 - 1.19 Nantes
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Brest @ Rennes<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Rennes -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Rennes -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Rennes 1.54 - 1.19 Brest
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Paris Saint Germain @ Metz<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Metz +1.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>-1.40 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Paris Saint Germain -1.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.5</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.77 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.5<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Metz 1.54 - 1.19 Paris Saint Germain
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Toulouse @ Paris FC<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-13</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Paris FC -0.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.60 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Paris FC -0.25<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Paris FC 1.54 - 1.19 Toulouse
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Le Havre @ Lyon<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Lyon -1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.35 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Lyon -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Lyon 1.54 - 1.19 Le Havre
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Lorient @ Strasbourg<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Strasbourg -0.75</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.10 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Strasbourg -0.75<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Strasbourg 1.54 - 1.19 Lorient
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">Nice @ RC Lens<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>RC Lens -1.00</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+1.35 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ RC Lens -1.00<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: RC Lens 1.54 - 1.19 Nice
+</div>
+</div>
+
+
+
+
+
+
+<div class="card game-card">
+<div class="matchup">AS Monaco @ Marseille<span class="league-badge">Ligue 1</span></div>
+<div class="game-time">🕐 2025-12-14</div>
+
+<div class="bet-section">
+
+
+
+
+
+
+<div class="bet-box bet-box-spread">
+<div class="bet-title bet-title-spread">📊 SPREAD</div>
+<div class="odds-line">
+<span>Market Line:</span>
+<strong>Marseille -0.50</strong>
+</div>
+<div class="odds-line">
+<span>Model Prediction:</span>
+<strong>+0.35</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>+0.85 goals</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Marseille -0.50<br>
+<small>SHARP +EV</small>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="bet-box bet-box-total">
+<div class="bet-title bet-title-total">🎯 TOTAL</div>
+<div class="odds-line">
+<span>Market Total:</span>
+<strong>3.25</strong>
+</div>
+<div class="odds-line">
+<span>Model Projects:</span>
+<strong>2.73 goals</strong>
+</div>
+<div class="odds-line">
+<span>Edge:</span>
+<strong>0.52 goals (UNDER)</strong>
+</div>
+<div class="confidence-bar-container">
+<div class="confidence-label">
+<span>Confidence</span>
+<span class="confidence-pct">55%</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" style="width: 55%"></div>
+</div>
+</div>
+<div class="pick pick-yes">
+✅ Under 3.25<br>
+<small>SHARP +EV UNDER</small>
+</div>
+</div>
+
+</div>
+
+<div class="prediction">
+Predicted: Marseille 1.54 - 1.19 AS Monaco
+</div>
+</div>
+
 
 </div>
 </body>
