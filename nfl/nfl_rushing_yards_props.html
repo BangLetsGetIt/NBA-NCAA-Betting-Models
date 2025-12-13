@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Receptions Props - A.I. Projections</title>
+    <title>NFL Rushing Yards Props - A.I. Projections</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -32,6 +32,54 @@
             padding: 1.25rem;
             border-radius: 1rem;
             border-left: none;
+        }
+        .ai-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid;
+        }
+        .ai-rating .rating-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        .ai-rating .rating-value {
+            font-weight: 700;
+            font-size: 0.9375rem;
+        }
+        .ai-rating .rating-badge {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin-left: auto;
+        }
+        .ai-rating-premium {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+            border-color: #4ade80;
+        }
+        .ai-rating-strong {
+            background: rgba(74, 222, 128, 0.10);
+            color: #4ade80;
+            border-color: #4ade80;
+        }
+        .ai-rating-good {
+            background: rgba(96, 165, 250, 0.10);
+            color: #60a5fa;
+            border-color: #60a5fa;
+        }
+        .ai-rating-standard {
+            background: rgba(251, 191, 36, 0.10);
+            color: #fbbf24;
+            border-color: #fbbf24;
+        }
+        .ai-rating-marginal {
+            background: rgba(251, 191, 36, 0.08);
+            color: #fbbf24;
+            border-color: #fbbf24;
         }
         .bet-title {
             font-weight: 600;
@@ -122,14 +170,14 @@
 <body>
     <div class="container">
         <div class="card header-card">
-            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
+            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Gridiron Analytics</h1>
             <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NFL Rushing Yards Props Model</p>
             <div>
                 <div class="badge">● REAL NFL STATS</div>
                 <div class="badge">● A.I. SCORE ≥ 9.5</div>
                 <div class="badge">● STRICT EDGE REQUIREMENTS</div>
             </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 12/13/25 02:03 PM ET</p>
+            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 12/13/25 02:16 PM ET</p>
         </div>
 
         
@@ -139,7 +187,6 @@
         
             <div class="card">
                 <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
-                
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                     <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
@@ -164,7 +211,6 @@
                         <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">8</div>
                     </div>
                 </div>
-                
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
                     <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
