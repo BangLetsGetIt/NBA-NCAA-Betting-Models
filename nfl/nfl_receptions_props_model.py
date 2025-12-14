@@ -1103,7 +1103,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
             position: relative;
-        }}}
+        }}
         .ai-rating {{
             display: flex;
             align-items: center;
