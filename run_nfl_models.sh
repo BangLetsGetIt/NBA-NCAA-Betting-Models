@@ -95,5 +95,22 @@ if [ $MAIN_EXIT -ne 0 ] || [ $REC_EXIT -ne 0 ] || [ $RUSH_EXIT -ne 0 ] || [ $PAS
     exit 1
 fi
 
+# Auto-push to GitHub if all models succeeded
+echo ""
+echo "=========================================="
+echo "📤 Pushing updates to GitHub..."
+echo "=========================================="
+cd "$SCRIPT_DIR"
+if [ -f "auto_push.sh" ]; then
+    bash auto_push.sh
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "✅ Successfully pushed to GitHub!"
+    else
+        echo ""
+        echo "⚠️  Push to GitHub had issues. You may want to push manually."
+    fi
+fi
+
 exit 0
 

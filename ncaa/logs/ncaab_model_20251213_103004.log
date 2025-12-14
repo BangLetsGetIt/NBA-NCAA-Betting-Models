@@ -1,0 +1,440 @@
+==========================================
+NCAA Model Run: Sat Dec 13 10:30:04 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 29 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-11
+  Newest: 2025-12-14
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 138 completed games[0m
+[96mFound 138 completed games from API[0m
+[93m⚠️  No match found: Jackson State Tigers @ Houston Cougars (2025-12-11)[0m
+[93m⚠️  No match found: Fresno State Bulldogs @ CSU Northridge Matadors (2025-12-11)[0m
+[93m⚠️  No match found: Arkansas @ Texas Tech (2025-12-13)[0m
+[93m⚠️  No match found: Arkansas @ Texas Tech (2025-12-13)[0m
+[93m⚠️  No match found: South Carolina Upstate @ North Carolina (2025-12-13)[0m
+[93m⚠️  No match found: South Carolina Upstate @ North Carolina (2025-12-13)[0m
+[93m⚠️  No match found: Cincinnati @ Georgia (2025-12-13)[0m
+[93m⚠️  No match found: Providence @ Butler (2025-12-13)[0m
+[93m⚠️  No match found: George Washington @ Florida (2025-12-13)[0m
+[93m⚠️  No match found: George Washington @ Florida (2025-12-13)[0m
+[93m⚠️  No match found: Mercer @ Clemson (2025-12-13)[0m
+[93m⚠️  No match found: Mercer @ Clemson (2025-12-13)[0m
+[93m⚠️  No match found: Hampton @ Howard (2025-12-13)[0m
+[93m⚠️  No match found: Hampton @ Howard (2025-12-13)[0m
+[93m⚠️  No match found: Memphis @ Louisville (2025-12-13)[0m
+[93m⚠️  No match found: Pittsburgh @ Villanova (2025-12-13)[0m
+[93m⚠️  No match found: Pittsburgh @ Villanova (2025-12-13)[0m
+[93m⚠️  No match found: The Citadel @ South Carolina (2025-12-14)[0m
+[93m⚠️  No match found: Indiana @ Kentucky (2025-12-14)[0m
+[93m⚠️  No match found: West Virginia @ Ohio State (2025-12-14)[0m
+[93m⚠️  No match found: West Virginia @ Ohio State (2025-12-14)[0m
+[93m⚠️  No match found: Michigan @ Maryland (2025-12-14)[0m
+[93m⚠️  No match found: Michigan @ Maryland (2025-12-14)[0m
+[93m⚠️  No match found: Rutgers @ Seton Hall (2025-12-14)[0m
+[93m⚠️  No match found: Rutgers @ Seton Hall (2025-12-14)[0m
+[93m⚠️  No match found: Arizona @ Alabama (2025-12-14)[0m
+[93m⚠️  No match found: Arizona @ Alabama (2025-12-14)[0m
+[93m⚠️  No match found: UCLA @ Gonzaga (2025-12-14)[0m
+[93m⚠️  No match found: UCLA @ Gonzaga (2025-12-14)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 3h)[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 93 games from The Odds API[0m
+[92m✓ 93 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1510[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 141.5 (Edge: -4.6)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1511[0m
+
+[1m[92m✅ Analyzed 17 games with complete odds[0m
+
+[93m📊 All picks sorted by edge (highest confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Michigan @ Maryland ━━━[0m
+[96m🕐 12/13 08:00 PM[0m
+[96mℹ️ LIMITED: Maryland - Limited data: 0-2 (0%) | -2.00u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +18.5 | Model: +4.0 | Edge: +22.5
+  [92m✅ BET: Maryland +18.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Maryland by +4.0 (Market: +18.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 159.7 | Edge: +3.2
+  [92m✅ BET: OVER 156.5[0m
+  [96mLOW confidence (3.2 edge)[0m
+
+[35m📈 Michigan 79.2, Maryland 83.2[0m
+
+[1m[96m━━━ GAME 2: South Carolina Upstate @ North Carolina ━━━[0m
+[96m🕐 12/13 02:00 PM[0m
+[96mℹ️ LIMITED: South Carolina Upstate - Limited data: 2-0 (100%) | +1.82u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -28.5 | Model: +7.5 | Edge: +21.0
+  [92m✅ BET: South Carolina Upstate +28.5[0m
+  [96mVERY HIGH confidence. Model predicts South Carolina Upstate covers by +21.0 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 143.4 | Edge: -7.1
+  [92m✅ BET: UNDER 150.5[0m
+  [96mMEDIUM confidence (7.1 edge)[0m
+
+[35m📈 South Carolina Upstate 67.9, North Carolina 75.4[0m
+
+[1m[96m━━━ GAME 3: The Citadel @ South Carolina ━━━[0m
+[96m🕐 12/13 07:00 PM[0m
+[91m🚫 COLD: The Citadel - Poor performer: 1-3 (25%) | -2.09u over 4 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -23.5 | Model: +4.8 | Edge: +18.7
+  [92m✅ BET: The Citadel +23.5[0m
+  [96mVERY HIGH confidence. Model predicts The Citadel covers by +18.7 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 141.5 | Model: 136.9 | Edge: -4.6
+  [92m✅ BET: UNDER 141.5[0m
+  [96mLOW confidence (4.6 edge)[0m
+
+[35m📈 The Citadel 66.0, South Carolina 70.8[0m
+
+[1m[96m━━━ GAME 4: Pittsburgh @ Villanova ━━━[0m
+[96m🕐 12/13 04:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +5.4 | Edge: +4.1
+  [92m✅ BET: Pittsburgh +9.5[0m
+  [96mLOW confidence. Model predicts Pittsburgh covers by +4.1 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 137.5 | Model: 156.0 | Edge: +18.5
+  [92m✅ BET: OVER 137.5[0m
+  [96mVERY HIGH confidence (18.5 edge)[0m
+
+[35m📈 Pittsburgh 75.3, Villanova 80.7[0m
+
+[1m[96m━━━ GAME 5: Providence @ Butler ━━━[0m
+[96m🕐 12/13 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +6.3 | Edge: +1.8
+  [91m❌ NO BET[0m
+  [96mEdge (+1.8) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 166.5 | Model: 151.1 | Edge: -15.4
+  [92m✅ BET: UNDER 166.5[0m
+  [96mVERY HIGH confidence (15.4 edge)[0m
+
+[35m📈 Providence 72.4, Butler 78.7[0m
+
+[1m[96m━━━ GAME 6: Arizona @ Alabama ━━━[0m
+[96m🕐 12/13 09:30 PM[0m
+[96mℹ️ LIMITED: Alabama - Limited data: 1-0 (100%) | +0.91u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.0 | Model: +4.4 | Edge: +5.4
+  [92m✅ BET: Alabama +1.0[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Alabama by +4.4 (Market: +1.0)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 178.0 | Model: 163.1 | Edge: -14.9
+  [92m✅ BET: UNDER 178.0[0m
+  [96mVERY HIGH confidence (14.9 edge)[0m
+
+[35m📈 Arizona 80.9, Alabama 85.3[0m
+
+[1m[96m━━━ GAME 7: West Virginia @ Ohio State ━━━[0m
+[96m🕐 12/13 08:00 PM[0m
+[96mℹ️ LIMITED: Ohio State - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +7.8 | Edge: +3.3
+  [92m✅ BET: Ohio State -4.5[0m
+  [96mLOW confidence. Model predicts Ohio State covers by +3.3 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 157.4 | Edge: +14.9
+  [92m✅ BET: OVER 142.5[0m
+  [96mVERY HIGH confidence (14.9 edge)[0m
+
+[35m📈 West Virginia 74.8, Ohio State 82.6[0m
+
+[1m[96m━━━ GAME 8: Rutgers @ Seton Hall ━━━[0m
+[96m🕐 12/13 08:00 PM[0m
+[93m⚠️ CAUTION: Rutgers - Below average: 2-3 (40%) | -1.18u over 5 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -11.5 | Model: -3.1 | Edge: +14.6
+  [92m✅ BET: Rutgers +11.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Rutgers by +3.1 (Market: +11.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 131.5 | Model: 146.2 | Edge: +14.7
+  [92m✅ BET: OVER 131.5[0m
+  [96mVERY HIGH confidence (14.7 edge)[0m
+
+[35m📈 Rutgers 74.7, Seton Hall 71.5[0m
+
+[1m[96m━━━ GAME 9: Mercer @ Clemson ━━━[0m
+[96m🕐 12/13 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -22.5 | Model: +8.1 | Edge: +14.4
+  [92m✅ BET: Mercer +22.5[0m
+  [96mVERY HIGH confidence. Model predicts Mercer covers by +14.4 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 149.5 | Model: 146.7 | Edge: -2.8
+  [91m❌ NO BET[0m
+  [96mEdge too small (-2.8)[0m
+
+[35m📈 Mercer 69.3, Clemson 77.4[0m
+
+[1m[96m━━━ GAME 10: UCLA @ Gonzaga ━━━[0m
+[96m🕐 12/13 11:30 PM[0m
+[96mℹ️ LIMITED: UCLA - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -10.5 | Model: +6.0 | Edge: +4.5
+  [92m✅ BET: UCLA +10.5[0m
+  [96mLOW confidence. Model predicts UCLA covers by +4.5 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 147.0 | Model: 160.8 | Edge: +13.8
+  [92m✅ BET: OVER 147.0[0m
+  [96mHIGH confidence (13.8 edge)[0m
+
+[35m📈 UCLA 78.8, Gonzaga 84.8[0m
+
+[1m[96m━━━ GAME 11: Memphis @ Louisville ━━━[0m
+[96m🕐 12/13 03:30 PM[0m
+[96mℹ️ LIMITED: Memphis - Limited data: 2-0 (100%) | +1.82u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.5 | Model: +4.3 | Edge: +11.2
+  [92m✅ BET: Memphis +15.5[0m
+  [96mHIGH confidence. Model predicts Memphis covers by +11.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 160.5 | Model: 156.8 | Edge: -3.7
+  [92m✅ BET: UNDER 160.5[0m
+  [96mLOW confidence (3.7 edge)[0m
+
+[35m📈 Memphis 76.3, Louisville 80.5[0m
+
+[1m[96m━━━ GAME 12: George Washington @ Florida ━━━[0m
+[96m🕐 12/13 02:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -14.5 | Model: +8.9 | Edge: +5.6
+  [92m✅ BET: George Washington +14.5[0m
+  [96mLOW confidence. Model predicts George Washington covers by +5.6 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 167.5 | Model: 156.7 | Edge: -10.8
+  [92m✅ BET: UNDER 167.5[0m
+  [96mHIGH confidence (10.8 edge)[0m
+
+[35m📈 George Washington 73.9, Florida 82.8[0m
+
+[1m[96m━━━ GAME 13: Hampton @ Howard ━━━[0m
+[96m🕐 12/13 03:00 PM[0m
+[96mℹ️ LIMITED: Howard - Limited data: 1-0 (100%) | +0.91u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +2.5 | Model: +5.8 | Edge: +8.3
+  [92m✅ BET: Howard +2.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Howard by +5.8 (Market: +2.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 141.5 | Model: 133.8 | Edge: -7.7
+  [92m✅ BET: UNDER 141.5[0m
+  [96mMEDIUM confidence (7.7 edge)[0m
+
+[35m📈 Hampton 64.0, Howard 69.8[0m
+
+[1m[96m━━━ GAME 14: Arkansas @ Texas Tech ━━━[0m
+[96m🕐 12/13 12:00 PM[0m
+[96mℹ️ LIMITED: Texas Tech - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +8.7 | Edge: +7.2
+  [92m✅ BET: Texas Tech -1.5[0m
+  [96mMEDIUM confidence. Model predicts Texas Tech covers by +7.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 157.5 | Model: 159.5 | Edge: +2.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.0)[0m
+
+[35m📈 Arkansas 76.7, Texas Tech 85.4[0m
+
+[1m[96m━━━ GAME 15: Indiana @ Kentucky ━━━[0m
+[96m🕐 12/13 07:30 PM[0m
+[96mℹ️ LIMITED: Kentucky - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +8.0 | Edge: +5.5
+  [92m✅ BET: Kentucky -2.5[0m
+  [96mLOW confidence. Model predicts Kentucky covers by +5.5 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 159.5 | Model: 159.8 | Edge: +0.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.3)[0m
+
+[35m📈 Indiana 75.9, Kentucky 83.9[0m
+
+[1m[96m━━━ GAME 16: UC Davis @ Oregon ━━━[0m
+[96m🕐 12/13 04:00 PM[0m
+[0m➖ NEUTRAL: UC Davis - Average performance: 2-2 (50%) | -0.18u over 4 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +9.5 | Edge: +3.0
+  [92m✅ BET: UC Davis +12.5[0m
+  [96mLOW confidence. Model predicts UC Davis covers by +3.0 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 146.6 | Edge: +2.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.1)[0m
+
+[35m📈 UC Davis 68.5, Oregon 78.0[0m
+
+[1m[96m━━━ GAME 17: Cincinnati @ Georgia ━━━[0m
+[96m🕐 12/13 02:00 PM[0m
+[96mℹ️ LIMITED: Cincinnati - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +5.0 | Edge: +2.5
+  [92m✅ BET: Cincinnati +7.5[0m
+  [96mLOW confidence. Model predicts Cincinnati covers by +2.5 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 157.5 | Model: 156.3 | Edge: -1.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.2)[0m
+
+[35m📈 Cincinnati 75.6, Georgia 80.7[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1511[0m
+[92mRecord: 780-701-0[0m
+[92mWin Rate: 52.7%[0m
+[92mProfit: +8.80 units[0m
+[92mROI: +0.6%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 842e07a] Update model outputs - 2025-12-13 10:30:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 274 insertions(+), 249 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ec55e85..842e07a  main -> main
+✅ Successfully pushed to GitHub!

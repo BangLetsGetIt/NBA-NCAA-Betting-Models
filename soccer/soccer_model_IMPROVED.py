@@ -198,6 +198,121 @@ def fetch_soccer_odds(api_key):
     return all_games
 
 # ============================================================================
+# A.I. RATING SYSTEM
+# ============================================================================
+
+def get_historical_performance_by_edge(tracking_data):
+    """Calculate win rates by edge magnitude for A.I. Rating system (soccer - goals)"""
+    picks = tracking_data.get('picks', [])
+    completed_picks = [p for p in picks if p.get('status') in ['win', 'loss']]
+    
+    from collections import defaultdict
+    edge_ranges = defaultdict(lambda: {'wins': 0, 'losses': 0})
+    
+    for pick in completed_picks:
+        edge = abs(float(pick.get('edge', 0)))
+        status = pick.get('status', '')
+        
+        # Soccer edge ranges (smaller than basketball - goals not points)
+        if edge >= 0.8:
+            range_key = "0.8+"
+        elif edge >= 0.6:
+            range_key = "0.6-0.79"
+        elif edge >= 0.4:
+            range_key = "0.4-0.59"
+        elif edge >= 0.3:
+            range_key = "0.3-0.39"
+        else:
+            range_key = "0-0.29"
+        
+        if status == 'win':
+            edge_ranges[range_key]['wins'] += 1
+        elif status == 'loss':
+            edge_ranges[range_key]['losses'] += 1
+    
+    performance_by_edge = {}
+    for range_key, stats in edge_ranges.items():
+        total = stats['wins'] + stats['losses']
+        if total >= 5:
+            win_rate = stats['wins'] / total if total > 0 else 0.5
+            performance_by_edge[range_key] = win_rate
+    
+    return performance_by_edge
+
+def calculate_ai_rating(analysis, historical_edge_performance):
+    """
+    Calculate A.I. Rating for soccer (adapted for goal-based edges)
+    Returns rating in 2.3-4.9 range
+    """
+    # Get max edge from bets (in goals)
+    max_edge = 0.0
+    has_spread_bet = False
+    has_total_bet = False
+    
+    for bet in analysis.get('bets', []):
+        edge = abs(bet.get('edge', 0))
+        max_edge = max(max_edge, edge)
+        if bet.get('type') == 'SPREAD':
+            has_spread_bet = True
+        elif bet.get('type') == 'TOTAL':
+            has_total_bet = True
+    
+    # Normalize soccer edge to 0-5 scale (0.9 goal edge = 5.0 rating for soccer)
+    if max_edge >= 0.9:
+        normalized_edge = 5.0
+    else:
+        normalized_edge = (max_edge / 0.18)  # 0.9 goals = 5.0
+        normalized_edge = min(5.0, max(0.0, normalized_edge))
+    
+    # Data quality
+    data_quality = 1.0 if analysis.get('home_score') else 0.85
+    
+    # Historical performance
+    historical_factor = 1.0
+    if historical_edge_performance:
+        if max_edge >= 0.8:
+            range_key = "0.8+"
+        elif max_edge >= 0.6:
+            range_key = "0.6-0.79"
+        elif max_edge >= 0.4:
+            range_key = "0.4-0.59"
+        elif max_edge >= 0.3:
+            range_key = "0.3-0.39"
+        else:
+            range_key = "0-0.29"
+        
+        if range_key in historical_edge_performance:
+            hist_win_rate = historical_edge_performance[range_key]
+            historical_factor = 0.9 + (hist_win_rate - 0.55) * 2.0
+            historical_factor = max(0.9, min(1.1, historical_factor))
+    
+    # Model confidence
+    confidence = 1.0
+    if max_edge >= 0.7:
+        confidence = 1.10
+    elif max_edge >= 0.5:
+        confidence = 1.05
+    elif max_edge >= 0.4:
+        confidence = 1.0
+    elif max_edge >= 0.3:
+        confidence = 0.98
+    else:
+        confidence = 0.95
+    
+    if has_spread_bet and has_total_bet:
+        confidence *= 1.03
+    confidence = max(0.9, min(1.15, confidence))
+    
+    # Calculate composite rating
+    composite_rating = normalized_edge * data_quality * historical_factor * confidence
+    
+    # Scale to 2.3-4.9 range
+    ai_rating = 2.3 + (composite_rating / 5.0) * 2.6
+    ai_rating = max(2.3, min(4.9, ai_rating))
+    
+    return round(ai_rating, 1)
+
+# ============================================================================
 # GAME ANALYSIS
 # ============================================================================
 
@@ -324,7 +439,7 @@ def analyze_game(game):
         except:
             pass
     
-    return {
+    analysis_dict = {
         'home_team': home_team,
         'away_team': away_team,
         'league': league,
@@ -337,6 +452,8 @@ def analyze_game(game):
         'confidence': confidence,
         'bets': bets,
     }
+    
+    return analysis_dict
 
 # ============================================================================
 # HTML GENERATION (NBA Style)
@@ -420,7 +537,41 @@ body {
 }
 .game-card:last-child { border-bottom: none; }
 .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
-.game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
+.game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem; }
+.ai-rating {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+}
+.ai-rating-premium {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+    border-color: #4ade80;
+}
+.ai-rating-strong {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border-color: #4ade80;
+}
+.ai-rating-good {
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+    border-color: #60a5fa;
+}
+.ai-rating-standard {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border-color: #fbbf24;
+}
+.ai-rating-marginal {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    border-color: #fbbf24;
+}
 .league-badge {
     background: rgba(96, 165, 250, 0.2);
     color: #60a5fa;
@@ -551,6 +702,30 @@ body {
 <div class="matchup">{{matchup}}<span class="league-badge">{{analysis.league}}</span></div>
 <div class="game-time">🕐 {{analysis.game_time_formatted}}</div>
 
+{% set ai_rating = analysis.ai_rating if analysis.ai_rating else 2.3 %}
+{% if ai_rating >= 4.5 %}
+    {% set rating_class = 'ai-rating-premium' %}
+    {% set rating_label = 'PREMIUM PLAY' %}
+    {% set rating_stars = '⭐⭐⭐' %}
+{% elif ai_rating >= 4.0 %}
+    {% set rating_class = 'ai-rating-strong' %}
+    {% set rating_label = 'STRONG PLAY' %}
+    {% set rating_stars = '⭐⭐' %}
+{% elif ai_rating >= 3.5 %}
+    {% set rating_class = 'ai-rating-good' %}
+    {% set rating_label = 'GOOD PLAY' %}
+    {% set rating_stars = '⭐' %}
+{% elif ai_rating >= 3.0 %}
+    {% set rating_class = 'ai-rating-standard' %}
+    {% set rating_label = 'STANDARD PLAY' %}
+    {% set rating_stars = '' %}
+{% else %}
+    {% set rating_class = 'ai-rating-marginal' %}
+    {% set rating_label = 'MARGINAL PLAY' %}
+    {% set rating_stars = '' %}
+{% endif %}
+<div class="ai-rating {{rating_class}}">🎯 A.I. Rating: {{"%.1f"|format(ai_rating)}} {{rating_stars}} ({{rating_label}})</div>
+
 <div class="bet-section">
 {% if spread_bet %}
 {% set edge = spread_bet.edge %}
@@ -664,10 +839,85 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
 </div>
 {% endfor %}
 
+{% if tracking_summary and tracking_summary.total > 0 %}
+<div class="card">
+<h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
+<div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{{tracking_summary.total}}</div>
+</div>
+<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
+{% set completed = tracking_summary.wins + tracking_summary.losses %}
+{% if completed > 0 %}
+{% if tracking_summary.win_rate >= 55 %}
+{% set win_rate_color = '#4ade80' %}
+{% elif tracking_summary.win_rate >= 52 %}
+{% set win_rate_color = '#fbbf24' %}
+{% else %}
+{% set win_rate_color = '#f87171' %}
+{% endif %}
+{% else %}
+{% set win_rate_color = '#94a3b8' %}
+{% endif %}
+<div style="font-size: 2rem; font-weight: 700; color: {{win_rate_color}};">{{tracking_summary.win_rate_str}}%{% if completed == 0 %} (N/A){% endif %}</div>
+</div>
+<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
+<div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{{tracking_summary.wins}}-{{tracking_summary.losses}}{% if tracking_summary.pushes > 0 %}-{{tracking_summary.pushes}}{% endif %}</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">({{tracking_summary.wins + tracking_summary.losses + tracking_summary.pushes}} completed)</div>
+</div>
+<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
+{% set completed = tracking_summary.wins + tracking_summary.losses %}
+{% if completed > 0 %}
+{% set roi_color = '#4ade80' if tracking_summary.roi >= 0 else '#f87171' %}
+{% else %}
+{% set roi_color = '#94a3b8' %}
+{% endif %}
+<div style="font-size: 2rem; font-weight: 700; color: {{roi_color}};">{{tracking_summary.roi_str}}u</div>
+<div style="font-size: 0.75rem; color: {{roi_color}}; margin-top: 0.25rem;">{{tracking_summary.roi_pct_str}}% ROI{% if completed == 0 %} (Pending){% endif %}</div>
+</div>
+<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
+<div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">{{tracking_summary.pending}}</div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
+<div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
+<div style="font-size: 1.5rem; font-weight: 700; color: {% if tracking_summary.clv_rate >= 50 %}#4ade80{% else %}#f87171{% endif %};">{{tracking_summary.clv_rate_str}}%</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{tracking_summary.clv_count}} positive CLV</div>
+</div>
+<div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Sharp Thresholds</div>
+<div style="font-size: 1rem; font-weight: 600; color: #ffffff;">Spread: {{CONFIDENT_SPREAD_EDGE}}+ goals</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Total: {{CONFIDENT_TOTAL_EDGE}}+ goals</div>
+</div>
+</div>
+</div>
+{% endif %}
+
 </div>
 </body>
 </html>
 """
+    
+    # Calculate tracking summary
+    tracking_summary = None
+    if tracking_data and tracking_data.get('picks'):
+        summary = calculate_tracking_summary(tracking_data['picks'])
+        # Format numeric values as strings for template
+        tracking_summary = {
+            **summary,
+            'win_rate_str': f"{summary['win_rate']:.1f}",
+            'roi_str': f"{summary['roi']:+.2f}",
+            'roi_pct_str': f"{summary['roi_pct']:+.1f}",
+            'clv_rate_str': f"{summary['clv_rate']:.1f}"
+        }
     
     template = Template(HTML_TEMPLATE)
     html = template.render(
@@ -676,6 +926,7 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
         CONFIDENT_SPREAD_EDGE=CONFIDENT_SPREAD_EDGE,
         CONFIDENT_TOTAL_EDGE=CONFIDENT_TOTAL_EDGE,
         TOTAL_THRESHOLD=TOTAL_THRESHOLD,
+        tracking_summary=tracking_summary,
     )
     
     with open(OUTPUT_HTML, 'w', encoding='utf-8') as f:
@@ -687,20 +938,51 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
 # TRACKING FUNCTIONS
 # ============================================================================
 
+def calculate_tracking_summary(picks):
+    """Calculate summary statistics from picks"""
+    total = len(picks)
+    wins = len([p for p in picks if p.get('status', '').lower() == 'win'])
+    losses = len([p for p in picks if p.get('status', '').lower() == 'loss'])
+    pushes = len([p for p in picks if p.get('status', '').lower() == 'push'])
+    pending = len([p for p in picks if p.get('status', '').lower() == 'pending'])
+
+    completed = wins + losses + pushes
+    win_rate = (wins / (wins + losses) * 100) if (wins + losses) > 0 else 0.0
+    
+    # Calculate ROI (assuming -110 odds standard)
+    roi = (wins * 0.91) - (losses * 1.0)
+    roi_pct = (roi / total * 100) if total > 0 else 0.0
+
+    # Calculate CLV
+    clv_picks = [p for p in picks if p.get('opening_odds') and p.get('latest_odds')]
+    positive_clv = len([p for p in clv_picks if p.get('latest_odds', 0) < p.get('opening_odds', 0)])
+    clv_rate = (positive_clv / len(clv_picks) * 100) if clv_picks else 0.0
+
+    return {
+        'total': total,
+        'wins': wins,
+        'losses': losses,
+        'pushes': pushes,
+        'pending': pending,
+        'win_rate': win_rate,
+        'roi': roi,
+        'roi_pct': roi_pct,
+        'clv_rate': clv_rate,
+        'clv_count': f"{positive_clv}/{len(clv_picks)}"
+    }
+
 def load_tracking():
     """Load tracking data from JSON file"""
     if TRACKING_FILE.exists():
         with open(TRACKING_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            # Recalculate summary to ensure it's up to date
+            if 'picks' in data:
+                data['summary'] = calculate_tracking_summary(data['picks'])
+            return data
     return {
         'picks': [],
-        'summary': {
-            'total': 0,
-            'wins': 0,
-            'losses': 0,
-            'pushes': 0,
-            'pending': 0
-        }
+        'summary': calculate_tracking_summary([])
     }
 
 def save_tracking(tracking_data):
@@ -779,8 +1061,7 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line, reco
     }
     
     tracking_data['picks'].append(pick)
-    tracking_data['summary']['total'] = len(tracking_data['picks'])
-    tracking_data['summary']['pending'] = sum(1 for p in tracking_data['picks'] if p.get('status') == 'pending')
+    tracking_data['summary'] = calculate_tracking_summary(tracking_data['picks'])
     
     save_tracking(tracking_data)
     print(f"📝 LOGGED: {pick_type} - {pick_text} (Edge: {edge:+.2f})")
@@ -877,6 +1158,14 @@ def calculate_pick_result(pick, home_score, away_score):
     direction = pick.get('direction', '')
     market_line = pick.get('market_line', 0)
     
+    # Ensure numeric types
+    try:
+        market_line = float(market_line)
+        home_score = float(home_score)
+        away_score = float(away_score)
+    except (ValueError, TypeError):
+        return None, 0
+    
     if pick_type == 'SPREAD':
         actual_spread = home_score - away_score
         
@@ -943,10 +1232,13 @@ def update_pick_results():
         scores = score.get('scores', [])
         
         if len(scores) >= 2:
-            home_score = scores[0].get('score', 0)
-            away_score = scores[1].get('score', 0)
-            key = (home_team, away_team, sport_key)
-            scores_dict[key] = (home_score, away_score)
+            try:
+                home_score = float(scores[0].get('score', 0))
+                away_score = float(scores[1].get('score', 0))
+                key = (home_team, away_team, sport_key)
+                scores_dict[key] = (home_score, away_score)
+            except (ValueError, TypeError):
+                continue
     
     updated_count = 0
     et = pytz.timezone('US/Eastern')
@@ -993,13 +1285,7 @@ def update_pick_results():
             continue
     
     # Recalculate summary
-    tracking_data['summary'] = {
-        'total': len(tracking_data['picks']),
-        'wins': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'win'),
-        'losses': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'loss'),
-        'pushes': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'push'),
-        'pending': sum(1 for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending')
-    }
+    tracking_data['summary'] = calculate_tracking_summary(tracking_data['picks'])
     
     save_tracking(tracking_data)
     
@@ -1036,9 +1322,17 @@ def main():
     print("\n🔍 Analyzing games...")
     analyses = []
     
+    # Get historical performance for rating
+    tracking_data = load_tracking()
+    historical_edge_performance = get_historical_performance_by_edge(tracking_data)
+    
     for game in games:
         analysis = analyze_game(game)
         if analysis:
+            # Calculate A.I. Rating
+            ai_rating = calculate_ai_rating(analysis, historical_edge_performance)
+            analysis['ai_rating'] = ai_rating
+            
             analyses.append(analysis)
     
     # Count recommendations
@@ -1048,6 +1342,17 @@ def main():
     
     # Generate HTML
     tracking_data = load_tracking()
+    
+    # Sort analyses by A.I. Rating
+    def get_sort_score(analysis):
+        rating = analysis.get('ai_rating', 2.3)
+        max_edge = 0.0
+        for bet in analysis.get('bets', []):
+            max_edge = max(max_edge, abs(bet.get('edge', 0)))
+        return (rating, max_edge)
+    
+    analyses = sorted(analyses, key=get_sort_score, reverse=True)
+    
     generate_html(analyses, tracking_data)
     
     print("\n" + "=" * 80)

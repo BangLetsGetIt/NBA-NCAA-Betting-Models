@@ -17,8 +17,13 @@ import statistics
 import time
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables - prioritize root .env
+from pathlib import Path
+root_env = Path(__file__).parent.parent / '.env'
+if root_env.exists():
+    load_dotenv(root_env, override=True)
+else:
+    load_dotenv()
 
 # Configuration
 API_KEY = os.getenv('ODDS_API_KEY')
@@ -204,8 +209,19 @@ def save_tracking(tracking_data):
         print(f"{Colors.RED}✗ Error saving tracking: {e}{Colors.END}")
         return False
 
-def calculate_tracking_summary(picks):
-    """Calculate summary statistics from picks"""
+def calculate_tracking_summary(picks, displayed_plays=None):
+    """Calculate summary statistics from picks, optionally filtered to displayed plays only"""
+    if displayed_plays:
+        # Create set of displayed play IDs for filtering
+        displayed_ids = set()
+        for play in displayed_plays:
+            prop_line = float(play['prop'].split()[1])
+            bet_type = 'over' if 'OVER' in play['prop'] else 'under'
+            displayed_ids.add(f"{play['player']}_{prop_line}_{bet_type}")
+        
+        # Filter picks to only those currently displayed
+        picks = [p for p in picks if f"{p['player']}_{p['prop_line']}_{p['bet_type']}" in displayed_ids]
+    
     total = len(picks)
     wins = len([p for p in picks if p.get('status', '').lower() == 'win'])
     losses = len([p for p in picks if p.get('status', '').lower() == 'loss'])
@@ -406,6 +422,9 @@ def get_player_props():
 
             odds_response = requests.get(odds_url, params=odds_params, timeout=15)
 
+            if odds_response.status_code != 200:
+                continue
+
             if odds_response.status_code == 200:
                 odds_data = odds_response.json()
                 if 'bookmakers' in odds_data and odds_data['bookmakers']:
@@ -424,21 +443,24 @@ def get_player_props():
                                         continue
                                     
                                     try:
+                                        prop_line = outcome.get('point')
+                                        if prop_line is None:
+                                            continue
+                                        
                                         player_team, player_opponent = match_player_to_team(
                                             player_name, home_team, away_team, rosters
                                         )
 
                                         prop = {
                                             'player': player_name,
-                                            'prop_line': outcome.get('point'),
+                                            'prop_line': float(prop_line),
                                             'over_price': outcome.get('price', -110),
                                             'team': player_team,
                                             'opponent': player_opponent,
                                             'game_time': event.get('commence_time')
                                         }
                                         all_props.append(prop)
-                                    except Exception as e:
-                                        print(f"{Colors.YELLOW}    Error processing {player_name}: {e}{Colors.END}")
+                                    except Exception:
                                         continue
 
             print(f"{Colors.CYAN}  Game {i}/{len(events[:10])}: {away_team} @ {home_team}{Colors.END}")
@@ -854,43 +876,43 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             clv_color = '#4ade80' if tracking_summary.get('clv_rate', 0) >= 50 else '#f87171'
             tracking_section = f"""
             <div class="card">
-                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
+                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 NFL Passing Yards Model Tracking</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
                         <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['total']}</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
                         <div style="font-size: 2rem; font-weight: 700; color: {win_rate_color if completed > 0 else '#94a3b8'};">{tracking_summary['win_rate']:.1f}%{' (N/A)' if completed == 0 else ''}</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
                         <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['wins']}-{tracking_summary['losses']}</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">({completed} completed)</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
                         <div style="font-size: 2rem; font-weight: 700; color: {roi_color if completed > 0 else '#94a3b8'};">{tracking_summary['roi']:+.2f}u</div>
                         <div style="font-size: 0.75rem; color: {roi_color if completed > 0 else '#94a3b8'}; margin-top: 0.25rem;">{tracking_summary.get('roi_pct', 0):+.1f}% ROI{' (Pending)' if completed == 0 else ''}</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
                         <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">{tracking_summary['pending']}</div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
                         <div style="font-size: 1.5rem; font-weight: 700; color: {clv_color};">{tracking_summary.get('clv_rate', 0):.1f}%</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{tracking_summary.get('clv_count', '0/0')} positive CLV</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Avg A.I. Score</div>
                         <div style="font-size: 1.5rem; font-weight: 700; color: #60a5fa;">9.7+</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Elite plays only</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Edge Requirements</div>
                         <div style="font-size: 1rem; font-weight: 600; color: #ffffff;">{MIN_EDGE_OVER_LINE}+ OVER / {MIN_EDGE_UNDER_LINE}+ UNDER</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Strict thresholds</div>
@@ -910,29 +932,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
             game_time_formatted = format_game_time(play.get('game_time', ''))
             
-            ai_rating = play.get('ai_rating', 2.3)
-            if ai_rating >= 4.5:
-                rating_class = 'ai-rating-premium'
-                rating_label = 'PREMIUM PLAY'
-                rating_stars = '⭐⭐⭐'
-            elif ai_rating >= 4.0:
-                rating_class = 'ai-rating-strong'
-                rating_label = 'STRONG PLAY'
-                rating_stars = '⭐⭐'
-            elif ai_rating >= 3.5:
-                rating_class = 'ai-rating-good'
-                rating_label = 'GOOD PLAY'
-                rating_stars = '⭐'
-            elif ai_rating >= 3.0:
-                rating_class = 'ai-rating-standard'
-                rating_label = 'STANDARD PLAY'
-                rating_stars = ''
-            else:
-                rating_class = 'ai-rating-marginal'
-                rating_label = 'MARGINAL PLAY'
-                rating_stars = ''
-            
-            rating_display = f'<div class="ai-rating {rating_class}"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">{ai_rating:.1f}</span> {rating_stars} <span class="rating-badge">({rating_label})</span></div>'
+
             
             ev_badge = ""
             ev = play.get('ev', 0)
@@ -970,7 +970,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             <span>🕐 Game Time:</span>
                             <strong>{game_time_formatted}</strong>
                         </div>
-                        {rating_display}
+                        
                         <div class="odds-line">
                             <span>Season Avg:</span>
                             <strong>{play.get('season_avg', 'N/A')}</strong>
@@ -1010,29 +1010,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
             confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
             game_time_formatted = format_game_time(play.get('game_time', ''))
             
-            ai_rating = play.get('ai_rating', 2.3)
-            if ai_rating >= 4.5:
-                rating_class = 'ai-rating-premium'
-                rating_label = 'PREMIUM PLAY'
-                rating_stars = '⭐⭐⭐'
-            elif ai_rating >= 4.0:
-                rating_class = 'ai-rating-strong'
-                rating_label = 'STRONG PLAY'
-                rating_stars = '⭐⭐'
-            elif ai_rating >= 3.5:
-                rating_class = 'ai-rating-good'
-                rating_label = 'GOOD PLAY'
-                rating_stars = '⭐'
-            elif ai_rating >= 3.0:
-                rating_class = 'ai-rating-standard'
-                rating_label = 'STANDARD PLAY'
-                rating_stars = ''
-            else:
-                rating_class = 'ai-rating-marginal'
-                rating_label = 'MARGINAL PLAY'
-                rating_stars = ''
-            
-            rating_display = f'<div class="ai-rating {rating_class}"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">{ai_rating:.1f}</span> {rating_stars} <span class="rating-badge">({rating_label})</span></div>'
+
             
             ev_badge = ""
             ev = play.get('ev', 0)
@@ -1070,7 +1048,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             <span>🕐 Game Time:</span>
                             <strong>{game_time_formatted}</strong>
                         </div>
-                        {rating_display}
+                        
                         <div class="odds-line">
                             <span>Season Avg:</span>
                             <strong>{play.get('season_avg', 'N/A')}</strong>
@@ -1110,14 +1088,14 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #0a1628;
+            background: #000000;
             color: #ffffff;
             padding: 1.5rem;
             min-height: 100vh;
         }}
         .container {{ max-width: 1200px; margin: 0 auto; }}
         .card {{
-            background: #1a2332;
+            background: #1a1a1a;
             border-radius: 1.25rem;
             border: none;
             padding: 2rem;
@@ -1126,15 +1104,19 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         }}
         .header-card {{
             text-align: center;
-            background: #1a2332;
+            background: #1a1a1a;
             border: none;
         }}
         .bet-box {{
-            background: #2a3441;
-            padding: 1.25rem;
-            border-radius: 1rem;
-            border-left: none;
-        }}
+            background: #262626;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 1.75rem;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }}}
         .ai-rating {{
             display: flex;
             align-items: center;
@@ -1218,7 +1200,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         }}
         .confidence-bar {{
             height: 6px;
-            background: #1a2332;
+            background: #1a1a1a;
             border-radius: 999px;
             overflow: hidden;
             border: none;
@@ -1326,7 +1308,10 @@ def main():
     print(f"\n{Colors.CYAN}Auto-tracking picks with A.I. Score >= {AUTO_TRACK_THRESHOLD}...{Colors.END}")
     tracked_count = 0
 
-    for play in over_plays + under_plays:
+    # Only track plays that are currently being displayed (top plays)
+    displayed_plays = over_plays[:TOP_PLAYS_COUNT] + under_plays[:TOP_PLAYS_COUNT]
+    
+    for play in displayed_plays:
         if play['ai_score'] >= AUTO_TRACK_THRESHOLD:
             matching_prop = next((p for p in props_list if p['player'] == play['player'] and p['prop_line'] == float(play['prop'].split()[1])), None)
             if matching_prop:
@@ -1349,7 +1334,10 @@ def main():
         print(f"{Colors.YELLOW}  No new picks to track{Colors.END}")
 
     tracking_data = load_tracking()
-    summary = tracking_data['summary']
+    # Recalculate summary based on currently displayed plays only
+    displayed_plays = over_plays[:TOP_PLAYS_COUNT] + under_plays[:TOP_PLAYS_COUNT]
+    summary = calculate_tracking_summary(tracking_data['picks'], displayed_plays)
+    tracking_data['summary'] = summary  # Update tracking data with filtered summary
 
     print(f"\n{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.CYAN}TRACKING SUMMARY{Colors.END}")
@@ -1364,13 +1352,11 @@ def main():
 
     for i, play in enumerate(over_plays[:10], 1):
         tracked_marker = "📊" if play['ai_score'] >= AUTO_TRACK_THRESHOLD else "  "
-        ai_rating = play.get('ai_rating', 2.3)
-        rating_stars = '⭐' * (int(ai_rating) - 2) if ai_rating >= 3.0 else ''
         print(f"{tracked_marker} {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
               f"{Colors.GREEN}{play['prop']:15s}{Colors.END} | "
               f"{play['team']:3s} vs {play['opponent']:3s} | "
               f"{Colors.BOLD}A.I.: {play['ai_score']:.2f}{Colors.END} | "
-              f"Rating: {ai_rating:.1f} {rating_stars}")
+              )
 
     print(f"\n{Colors.BOLD}{Colors.RED}{'='*80}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.RED}TOP UNDER PLAYS{Colors.END}")
@@ -1378,13 +1364,11 @@ def main():
 
     for i, play in enumerate(under_plays[:10], 1):
         tracked_marker = "📊" if play['ai_score'] >= AUTO_TRACK_THRESHOLD else "  "
-        ai_rating = play.get('ai_rating', 2.3)
-        rating_stars = '⭐' * (int(ai_rating) - 2) if ai_rating >= 3.0 else ''
         print(f"{tracked_marker} {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
               f"{Colors.RED}{play['prop']:15s}{Colors.END} | "
               f"{play['team']:3s} vs {play['opponent']:3s} | "
               f"{Colors.BOLD}A.I.: {play['ai_score']:.2f}{Colors.END} | "
-              f"Rating: {ai_rating:.1f} {rating_stars}")
+              )
 
     print(f"\n{Colors.YELLOW}📊 = Auto-tracked (A.I. Score >= {AUTO_TRACK_THRESHOLD}){Colors.END}")
 

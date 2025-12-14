@@ -5,8 +5,8 @@
 
 cd "/Users/rico/sports-models"
 
-# Add all HTML and CSV output files
-git add nba/*.html nba/*.csv ncaa/*.html ncaa/*.csv nba/*.json ncaa/*.json 2>/dev/null
+# Add all HTML, CSV, and JSON output files
+git add nba/*.html nba/*.csv ncaa/*.html ncaa/*.csv nfl/*.html nfl/*.json soccer/*.html soccer/*.json nba/*.json ncaa/*.json 2>/dev/null
 
 # Check if there are changes to commit
 if git diff --staged --quiet; then

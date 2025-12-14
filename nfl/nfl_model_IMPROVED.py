@@ -15,7 +15,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+# Try root .env first (if exists), then local .env
+root_env = Path(__file__).parent.parent / '.env'
+if root_env.exists():
+    load_dotenv(dotenv_path=root_env, override=True)
+else:
+    load_dotenv()
 
 # ============================================================================
 # CONFIGURATION
@@ -567,14 +572,14 @@ def generate_picks_html(analyses, stats):
            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
            body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-                background: #0a1628;
+                background: #000000;
                 color: #ffffff;
                 padding: 1.5rem;
                 min-height: 100vh;
             }}
            .container {{ max-width: 1200px; margin: 0 auto; }}
            .card {{
-                background: #1a2332;
+                background: #1a1a1a;
                 border-radius: 1.25rem;
                 border: none;
                 padding: 2rem;
@@ -583,7 +588,7 @@ def generate_picks_html(analyses, stats):
             }}
            .header-card {{
                 text-align: center;
-                background: #1a2332;
+                background: #1a1a1a;
                 border: none;
             }}
            .game-card {{
@@ -600,7 +605,7 @@ def generate_picks_html(analyses, stats):
                 margin-top: 1rem;
             }}
            .bet-box {{
-                background: #2a3441;
+                background: #262626;
                 padding: 1.25rem;
                 border-radius: 1rem;
                 border-left: none;
@@ -652,7 +657,7 @@ def generate_picks_html(analyses, stats):
            }}
            .confidence-bar {{
                 height: 6px;
-                background: #1a2332;
+                background: #1a1a1a;
                 border-radius: 999px;
                 overflow: hidden;
                 border: none;
@@ -683,7 +688,7 @@ def generate_picks_html(analyses, stats):
            .pick-no {{ background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }}
            .pick-none {{ background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }}
            .prediction {{
-                background: #2a3441;
+                background: #262626;
                 color: #4ade80;
                 padding: 1rem;
                 border-radius: 1rem;

@@ -1,0 +1,62 @@
+==========================================
+Soccer Model Run: Fri Dec 12 17:47:07 EST 2025
+==========================================
+Running Soccer model...
+================================================================================
+⚽ SOCCER MODEL - FULL MATCHUP ANALYSIS
+================================================================================
+
+🔍 Checking 104 pending picks...
+
+⚽ Fetching completed soccer scores...
+   ✅ La Liga: 1 completed games
+   ✅ Serie A: 1 completed games
+   ✅ Bundesliga: 1 completed games
+   ✅ Ligue 1: 1 completed games
+
+📊 Total: 4 completed games found
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'str'
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'str'
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'float'
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'float'
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'str'
+  ⚠️  Error updating pick: unsupported operand type(s) for -: 'str' and 'float'
+
+⚠️  No picks were updated
+
+⚽ Fetching soccer odds (spreads & totals)...
+   ✅ Premier League: 20 games
+   ✅ La Liga: 19 games
+   ✅ Serie A: 15 games
+   ✅ Bundesliga: 17 games
+   ✅ Ligue 1: 17 games
+
+📊 Total: 88 games found
+
+🔍 Analyzing games...
+📝 LOGGED: TOTAL - OVER 2.25 (Edge: +0.48)
+
+✅ Analyzed 79 games
+🔥 99 sharp +EV recommendations
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/soccer/soccer_model_IMPROVED.py", line 1130, in <module>
+    main()
+    ~~~~^^
+  File "/Users/rico/sports-models/soccer/soccer_model_IMPROVED.py", line 1125, in main
+    generate_html(analyses, tracking_data)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/rico/sports-models/soccer/soccer_model_IMPROVED.py", line 721, in generate_html
+    template = Template(HTML_TEMPLATE)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1214, in __new__
+    return env.from_string(source, template_class=cls)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 1111, in from_string
+    return cls.from_code(self, self.compile(source), gs, None)
+                               ~~~~~~~~~~~~^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "<unknown>", line 291, in template
+jinja2.exceptions.TemplateSyntaxError: expected token 'end of print statement', got ':'

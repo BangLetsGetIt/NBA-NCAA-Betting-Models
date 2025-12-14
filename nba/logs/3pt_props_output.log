@@ -97,3 +97,125 @@ After doing this, you may fix the identity used for this commit with:
 To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
    df08b46..07ce35e  main -> main
 ✅ Successfully pushed to GitHub!
+==========================================
+NBA 3PT Props Model Run: Sat Dec 13 05:00:04 EST 2025
+==========================================
+Running NBA 3PT Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3-POINT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mChecking 12 pending picks...[0m
+[96m  Checking Brandon Miller (Charlotte Hornets) from 2025-12-12...[0m
+    [92mWIN[0m: Brandon Miller made 2 3-pointers (line: 3.5, bet: UNDER)
+[96m  Checking Anthony Edwards (Minnesota Timberwolves) from 2025-12-12...[0m
+[93m    Could not fetch stats, skipping...[0m
+[96m  Checking Ja Morant (Memphis Grizzlies) from 2025-12-12...[0m
+    [91mLOSS[0m: Ja Morant made 2 3-pointers (line: 1.5, bet: UNDER)
+[96m  Checking Klay Thompson (Dallas Mavericks) from 2025-12-12...[0m
+    [92mWIN[0m: Klay Thompson made 3 3-pointers (line: 1.5, bet: OVER)
+[96m  Checking Donte DiVincenzo (Minnesota Timberwolves) from 2025-12-12...[0m
+    [92mWIN[0m: Donte DiVincenzo made 4 3-pointers (line: 1.5, bet: OVER)
+[96m  Checking Brandin Podziemski (Golden State Warriors) from 2025-12-12...[0m
+    [91mLOSS[0m: Brandin Podziemski made 0 3-pointers (line: 0.5, bet: OVER)
+[96m  Checking Moses Moody (Golden State Warriors) from 2025-12-12...[0m
+    [92mWIN[0m: Moses Moody made 1 3-pointers (line: 0.5, bet: OVER)
+[96m  Checking Buddy Hield (Golden State Warriors) from 2025-12-12...[0m
+    [92mWIN[0m: Buddy Hield made 2 3-pointers (line: 2.5, bet: UNDER)
+[96m  Checking Quinten Post (Golden State Warriors) from 2025-12-12...[0m
+    [91mLOSS[0m: Quinten Post made 4 3-pointers (line: 3.5, bet: UNDER)
+[96m  Checking Naz Reid (Minnesota Timberwolves) from 2025-12-12...[0m
+    [92mWIN[0m: Naz Reid made 3 3-pointers (line: 3.5, bet: UNDER)
+[96m  Checking Quinten Post (Golden State Warriors) from 2025-12-12...[0m
+    [91mLOSS[0m: Quinten Post made 4 3-pointers (line: 2.5, bet: UNDER)
+
+[92m✓ Updated 10 picks[0m
+
+[96mFetching REAL NBA player 3PT statistics...[0m
+[96m  Fetching season stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 499 players[0m
+
+[96mFetching opponent 3PT defense stats...[0m
+[92m✓ Fetched defense stats for 43 teams[0m
+
+[96mFetching player prop odds...[0m
+[96m  Found 10 upcoming games[0m
+[96m  Game 1/10: New York Knicks @ Orlando Magic - 24 props[0m
+[96m  Game 2/10: San Antonio Spurs @ Oklahoma City Thunder - 24 props[0m
+[96m  Game 3/10: Washington Wizards @ Indiana Pacers - 14 props[0m
+[96m  Game 4/10: Charlotte Hornets @ Cleveland Cavaliers - 14 props[0m
+[96m  Game 5/10: Philadelphia 76ers @ Atlanta Hawks - 22 props[0m
+[96m  Game 6/10: Milwaukee Bucks @ Brooklyn Nets - 12 props[0m
+[96m  Game 7/10: New Orleans Pelicans @ Chicago Bulls - 18 props[0m
+[96m  Game 8/10: Sacramento Kings @ Minnesota Timberwolves - 18 props[0m
+[96m  Game 9/10: Los Angeles Lakers @ Phoenix Suns - 16 props[0m
+[96m  Game 10/10: Golden State Warriors @ Portland Trail Blazers - 14 props[0m
+[92m✓ Fetched 176 total player props[0m
+[93m  API requests remaining: 19662[0m
+
+[96mAnalyzing 176 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 4 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 6 props (no player stats found)[0m
+[93m  Skipped 332 props (score below 9.5)[0m
+
+[96mAuto-tracking picks with A.I. Score >= 9.7...[0m
+[92m✓ Tracked 3 new picks[0m
+
+[1m[96m================================================================================[0m
+[1m[96mTRACKING SUMMARY[0m
+[1m[96m================================================================================[0m
+Total Picks: 54 | Wins: 21 | Losses: 28 | Pending: 5
+Win Rate: 42.9% | ROI: -8.89u (-16.5%)
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+📊 [96m 1. Jalen Williams           [0m | [91mUNDER 1.5 3PT  [0m | Oklahoma City Thunder vs San Antonio Spurs | [1mA.I.: 10.00[0m
+📊 [96m 2. Darius Garland           [0m | [91mUNDER 2.5 3PT  [0m | Cleveland Cavaliers vs Charlotte Hornets | [1mA.I.: 10.00[0m
+📊 [96m 3. Keegan Murray            [0m | [91mUNDER 2.5 3PT  [0m | Sacramento Kings vs Minnesota Timberwolves | [1mA.I.: 10.00[0m
+📊 [96m 4. Dennis Schroder          [0m | [91mUNDER 1.5 3PT  [0m | Minnesota Timberwolves vs Sacramento Kings | [1mA.I.: 9.88[0m
+
+[93m📊 = Auto-tracked (A.I. Score >= 9.7)[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main b9fba05] Update model outputs - 2025-12-13 05:00:20
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 150 insertions(+), 280 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   3d3f11b..b9fba05  main -> main
+✅ Successfully pushed to GitHub!

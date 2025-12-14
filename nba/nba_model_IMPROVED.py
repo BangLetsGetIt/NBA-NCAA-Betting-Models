@@ -547,6 +547,156 @@ def calculate_tracking_stats(tracking_data):
 
     return stats
 
+def get_historical_performance_by_edge(tracking_data):
+    """Calculate win rates by edge magnitude for A.I. Rating system"""
+    picks = tracking_data.get('picks', [])
+    completed_picks = [p for p in picks if p.get('status') in ['win', 'loss']]
+    
+    # Group picks by edge range
+    edge_ranges = defaultdict(lambda: {'wins': 0, 'losses': 0})
+    
+    for pick in completed_picks:
+        edge = abs(float(pick.get('edge', 0)))
+        status = pick.get('status', '')
+        
+        # Create edge range buckets
+        if edge >= 10:
+            range_key = "10+"
+        elif edge >= 8:
+            range_key = "8-9.9"
+        elif edge >= 6:
+            range_key = "6-7.9"
+        elif edge >= 4:
+            range_key = "4-5.9"
+        elif edge >= 3:
+            range_key = "3-3.9"
+        else:
+            range_key = "0-2.9"
+        
+        if status == 'win':
+            edge_ranges[range_key]['wins'] += 1
+        elif status == 'loss':
+            edge_ranges[range_key]['losses'] += 1
+    
+    # Calculate win rates
+    performance_by_edge = {}
+    for range_key, stats in edge_ranges.items():
+        total = stats['wins'] + stats['losses']
+        if total >= 5:  # Only use ranges with sufficient data
+            win_rate = stats['wins'] / total if total > 0 else 0.5
+            performance_by_edge[range_key] = win_rate
+    
+    return performance_by_edge
+
+def calculate_ai_rating(game_data, team_performance, historical_edge_performance):
+    """
+    Calculate A.I. Rating that supplements edge-based approach
+    
+    Rating considers:
+    1. Normalized edge (0-5 scale)
+    2. Data quality indicators
+    3. Historical performance on similar games
+    4. Model confidence indicators
+    5. Team performance indicators
+    
+    Returns rating in 2.3-4.9 range (matching reference model)
+    """
+    # 1. BASE: Normalized edge score
+    max_edge = max(abs(game_data.get('spread_edge', 0)), abs(game_data.get('total_edge', 0)))
+    
+    # Normalize edge to 0-5 scale (15 edge = 5.0 rating)
+    if max_edge >= 15:
+        normalized_edge = 5.0
+    else:
+        normalized_edge = max_edge / 3.0
+        normalized_edge = min(5.0, max(0.0, normalized_edge))
+    
+    # 2. DATA QUALITY FACTOR (0.85-1.0)
+    # Assume high quality if we have predicted scores (stats available)
+    has_predicted_score = 'Predicted Score' in game_data and game_data['Predicted Score']
+    data_quality = 1.0 if has_predicted_score else 0.85
+    
+    # 3. HISTORICAL PERFORMANCE FACTOR (0.9-1.1)
+    # How has model performed on similar edge ranges?
+    historical_factor = 1.0  # Default neutral
+    
+    if historical_edge_performance:
+        # Find appropriate edge range
+        if max_edge >= 10:
+            range_key = "10+"
+        elif max_edge >= 8:
+            range_key = "8-9.9"
+        elif max_edge >= 6:
+            range_key = "6-7.9"
+        elif max_edge >= 4:
+            range_key = "4-5.9"
+        elif max_edge >= 3:
+            range_key = "3-3.9"
+        else:
+            range_key = "0-2.9"
+        
+        if range_key in historical_edge_performance:
+            hist_win_rate = historical_edge_performance[range_key]
+            # Convert win rate to multiplier: 60% = 1.0, 55% = 0.95, 65% = 1.05
+            historical_factor = 0.9 + (hist_win_rate - 0.55) * 2.0
+            historical_factor = max(0.9, min(1.1, historical_factor))
+    
+    # 4. MODEL CONFIDENCE FACTOR (0.9-1.15)
+    # Based on edge magnitude and consistency
+    confidence = 1.0
+    
+    # Larger edges suggest stronger model confidence
+    if max_edge >= 12:
+        confidence = 1.10  # Very large edges
+    elif max_edge >= 8:
+        confidence = 1.05  # Large edges
+    elif max_edge >= 6:
+        confidence = 1.0   # Medium edges
+    elif max_edge >= 4:
+        confidence = 0.98  # Smaller edges
+    else:
+        confidence = 0.95  # Small edges
+    
+    # Boost confidence if both spread and total have edges
+    has_spread_bet = '✅' in game_data.get('ATS Pick', '')
+    has_total_bet = '✅' in game_data.get('Total Pick', '')
+    if has_spread_bet and has_total_bet:
+        confidence *= 1.03  # Small boost for multiple edges
+    
+    confidence = max(0.9, min(1.15, confidence))
+    
+    # 5. TEAM PERFORMANCE INDICATOR FACTOR (0.9-1.1)
+    # Boost rating if betting on historically profitable team
+    team_factor = 1.0
+    team_indicator = game_data.get('team_indicator')
+    if team_indicator:
+        label = team_indicator.get('label', '').upper()
+        if label in ['HOT', 'GOOD']:
+            team_factor = 1.05  # Small boost for proven teams
+        elif label in ['NEUTRAL+']:
+            team_factor = 1.02  # Tiny boost
+        elif label in ['COLD']:
+            team_factor = 0.95  # Small penalty for cold teams
+    
+    # 6. CALCULATE COMPOSITE RATING
+    base_rating = normalized_edge
+    
+    # Apply factors (multiplicative)
+    composite_rating = (
+        base_rating * 
+        data_quality * 
+        historical_factor * 
+        confidence * 
+        team_factor
+    )
+    
+    # 7. SCALE TO 2.3-4.9 RANGE (matching reference model)
+    # Maps 0-5 range to 2.3-4.9 range
+    ai_rating = 2.3 + (composite_rating / 5.0) * 2.6
+    ai_rating = max(2.3, min(4.9, ai_rating))  # Clamp to range
+    
+    return round(ai_rating, 1)
+
 def generate_tracking_html():
     """Generate HTML dashboard for tracking picks"""
     tracking_data = load_picks_tracking()
@@ -812,14 +962,14 @@ def generate_tracking_html():
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #0a1628;
+            background: #000000;
             color: #ffffff;
             padding: 1.5rem;
             min-height: 100vh;
         }
         .container { max-width: 1400px; margin: 0 auto; }
         .card {
-            background: #1a2332;
+            background: #1a1a1a;
             border-radius: 1.25rem;
             border: none;
             padding: 2rem;
@@ -827,7 +977,7 @@ def generate_tracking_html():
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .stat-card {
-            background: #2a3441;
+            background: #262626;
             border: none;
             border-radius: 1rem;
             padding: 1.5rem;
@@ -876,10 +1026,10 @@ def generate_tracking_html():
             color: #94a3b8;
         }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #2a3441; }
+        thead { background: #262626; }
         th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
         td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
-        tr:hover { background: #2a3441; }
+        tr:hover { background: #262626; }
         .text-center { text-align: center; }
         .text-green-400 { color: #4ade80; }
         .text-blue-400 { color: #60a5fa; }
@@ -1034,7 +1184,7 @@ def generate_tracking_html():
             <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
 
             <!-- Overall Performance Card -->
-            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
                 <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     📊 Overall Performance
                 </h3>
@@ -1065,7 +1215,7 @@ def generate_tracking_html():
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ spread_wins + spread_losses + spread_pushes }} picks)</h4>
                         <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ spread_wins }}-{{ spread_losses }}{% if spread_pushes > 0 %}-{{ spread_pushes }}{% endif %}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1073,7 +1223,7 @@ def generate_tracking_html():
                             <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">{{ "%.2f"|format((spread_wins * 100 - spread_losses * 110) / 100) }}u</span></div>
                         </div>
                     </div>
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ total_wins + total_losses + total_pushes }} picks)</h4>
                         <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ total_wins }}-{{ total_losses }}{% if total_pushes > 0 %}-{{ total_pushes }}{% endif %}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1085,7 +1235,7 @@ def generate_tracking_html():
             </div>
 
             <!-- Today's/Yesterday's Record -->
-            <div style="background: #2a3441; border-radius: 1rem; padding: 1.5rem;">
+            <div style="background: #262626; border-radius: 1rem; padding: 1.5rem;">
                 <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">{{ display_label }}</h3>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
                     <div style="text-align: center;">
@@ -1146,7 +1296,7 @@ def generate_tracking_html():
             </div>
 
             <!-- Last 100 Picks -->
-            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
                 <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     📊 Last 100 Picks
                 </h3>
@@ -1173,7 +1323,7 @@ def generate_tracking_html():
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_100.spreads.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ last_100.spreads.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1181,7 +1331,7 @@ def generate_tracking_html():
                             <div><span class="text-gray-400">ROI:</span> <span class="{% if last_100.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_100.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.spreads.roi) }}%</span></div>
                         </div>
                     </div>
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_100.totals.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ last_100.totals.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1193,7 +1343,7 @@ def generate_tracking_html():
             </div>
 
             <!-- Last 50 Picks -->
-            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
                 <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     🚀 Last 50 Picks
                 </h3>
@@ -1220,7 +1370,7 @@ def generate_tracking_html():
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_50.spreads.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.spreads.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1228,7 +1378,7 @@ def generate_tracking_html():
                             <div><span class="text-gray-400">ROI:</span> <span class="{% if last_50.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_50.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.spreads.roi) }}%</span></div>
                         </div>
                     </div>
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_50.totals.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.totals.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1240,7 +1390,7 @@ def generate_tracking_html():
             </div>
 
             <!-- Last 20 Picks -->
-            <div style="background: #2a3441; border-radius: 1.25rem; padding: 2rem;">
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
                 <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     ⚡ Last 20 Picks (Hot Streak)
                 </h3>
@@ -1267,7 +1417,7 @@ def generate_tracking_html():
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_20.spreads.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.spreads.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1275,7 +1425,7 @@ def generate_tracking_html():
                             <div><span class="text-gray-400">ROI:</span> <span class="{% if last_20.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_20.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.spreads.roi) }}%</span></div>
                         </div>
                     </div>
-                    <div style="background: #1a2332; border-radius: 1rem; padding: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
                         <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_20.totals.count }} picks)</h4>
                         <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.totals.record }}</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
@@ -1746,6 +1896,10 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
 
     # Load historical team performance
     team_performance = get_team_historical_performance()
+    
+    # Load historical edge performance for A.I. Rating calculation
+    tracking_data = load_picks_tracking()
+    historical_edge_performance = get_historical_performance_by_edge(tracking_data)
 
     for game in games:
         try:
@@ -1882,6 +2036,10 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 "total_edge": total_edge,
                 "team_indicator": team_indicator
             }
+            
+            # Calculate A.I. Rating (supplements edge-based approach)
+            ai_rating = calculate_ai_rating(result, team_performance, historical_edge_performance)
+            result["ai_rating"] = ai_rating
 
             results.append(result)
 
@@ -1912,6 +2070,29 @@ def display_terminal(results):
     for r in results:
         print(f"{Colors.BOLD}{Colors.CYAN}{r['Matchup']}{Colors.END}")
         print(f"  🕐 {r['GameTime']}")
+        
+        # Display A.I. Rating prominently
+        ai_rating = r.get('ai_rating', 2.3)
+        rating_stars = '⭐' * (int(ai_rating) - 2) if ai_rating >= 3.0 else ''
+        
+        # Color code rating
+        if ai_rating >= 4.5:
+            rating_color = Colors.GREEN
+            rating_label = "PREMIUM PLAY"
+        elif ai_rating >= 4.0:
+            rating_color = Colors.GREEN
+            rating_label = "STRONG PLAY"
+        elif ai_rating >= 3.5:
+            rating_color = Colors.CYAN
+            rating_label = "GOOD PLAY"
+        elif ai_rating >= 3.0:
+            rating_color = Colors.YELLOW
+            rating_label = "STANDARD PLAY"
+        else:
+            rating_color = Colors.YELLOW
+            rating_label = "MARGINAL PLAY"
+        
+        print(f"  {rating_color}{Colors.BOLD}🎯 A.I. Rating: {ai_rating:.1f} {rating_stars} ({rating_label}){Colors.END}")
 
         # Display team performance indicator if available
         if r.get('team_indicator'):
@@ -1955,14 +2136,14 @@ def save_html(results):
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
                 font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-                background: #0a1628;
+                background: #000000;
                 color: #ffffff;
                 padding: 1.5rem;
                 min-height: 100vh;
             }
            .container { max-width: 1200px; margin: 0 auto; }
            .card {
-                background: #1a2332;
+                background: #1a1a1a;
                 border-radius: 1.25rem;
                 border: none;
                 padding: 2rem;
@@ -1971,7 +2152,7 @@ def save_html(results):
             }
            .header-card {
                 text-align: center;
-                background: #1a2332;
+                background: #1a1a1a;
                 border: none;
             }
            .game-card {
@@ -1980,7 +2161,41 @@ def save_html(results):
             }
            .game-card:last-child { border-bottom: none; }
            .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
-           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 1rem; }
+           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem; }
+           .ai-rating {
+                display: inline-block;
+                padding: 0.75rem 1.25rem;
+                border-radius: 0.75rem;
+                font-weight: 700;
+                font-size: 1.125rem;
+                margin-bottom: 1rem;
+                border-left: 4px solid;
+           }
+           .ai-rating-premium {
+                background: rgba(74, 222, 128, 0.2);
+                color: #4ade80;
+                border-color: #4ade80;
+           }
+           .ai-rating-strong {
+                background: rgba(74, 222, 128, 0.15);
+                color: #4ade80;
+                border-color: #4ade80;
+           }
+           .ai-rating-good {
+                background: rgba(96, 165, 250, 0.15);
+                color: #60a5fa;
+                border-color: #60a5fa;
+           }
+           .ai-rating-standard {
+                background: rgba(251, 191, 36, 0.15);
+                color: #fbbf24;
+                border-color: #fbbf24;
+           }
+           .ai-rating-marginal {
+                background: rgba(251, 191, 36, 0.1);
+                color: #fbbf24;
+                border-color: #fbbf24;
+           }
            .bet-section {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1988,7 +2203,7 @@ def save_html(results):
                 margin-top: 1rem;
             }
            .bet-box {
-                background: #2a3441;
+                background: #262626;
                 padding: 1.25rem;
                 border-radius: 1rem;
                 border-left: none;
@@ -2040,7 +2255,7 @@ def save_html(results):
            }
            .confidence-bar {
                 height: 6px;
-                background: #1a2332;
+                background: #1a1a1a;
                 border-radius: 999px;
                 overflow: hidden;
                 border: none;
@@ -2071,7 +2286,7 @@ def save_html(results):
            .pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
            .pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
            .prediction {
-                background: #2a3441;
+                background: #262626;
                 color: #4ade80;
                 padding: 1rem;
                 border-radius: 1rem;
@@ -2176,6 +2391,11 @@ def save_html(results):
                     padding: 0.75rem 0.875rem;
                     font-size: 0.8125rem;
                 }
+                
+                .ai-rating {
+                    padding: 0.625rem 1rem;
+                    font-size: 1rem;
+                }
 
                 .confidence-bar {
                     height: 5px;
@@ -2235,6 +2455,11 @@ def save_html(results):
                     padding: 0.625rem 0.75rem;
                     font-size: 0.75rem;
                 }
+                
+                .ai-rating {
+                    padding: 0.5rem 0.875rem;
+                    font-size: 0.875rem;
+                }
 
                 .badge {
                     display: block;
@@ -2269,6 +2494,37 @@ def save_html(results):
                 <div class="game-card">
                     <div class="matchup">{{ game.Matchup }}</div>
                     <div class="game-time">🕐 {{ game.GameTime }}</div>
+                    
+                    {% if game.ai_rating %}
+                        {% set ai_rating = game.ai_rating %}
+                    {% else %}
+                        {% set ai_rating = 2.3 %}
+                    {% endif %}
+                    {% if ai_rating >= 4.5 %}
+                        {% set rating_class = 'ai-rating-premium' %}
+                        {% set rating_label = 'PREMIUM PLAY' %}
+                        {% set rating_stars = '⭐⭐⭐' %}
+                    {% elif ai_rating >= 4.0 %}
+                        {% set rating_class = 'ai-rating-strong' %}
+                        {% set rating_label = 'STRONG PLAY' %}
+                        {% set rating_stars = '⭐⭐' %}
+                    {% elif ai_rating >= 3.5 %}
+                        {% set rating_class = 'ai-rating-good' %}
+                        {% set rating_label = 'GOOD PLAY' %}
+                        {% set rating_stars = '⭐' %}
+                    {% elif ai_rating >= 3.0 %}
+                        {% set rating_class = 'ai-rating-standard' %}
+                        {% set rating_label = 'STANDARD PLAY' %}
+                        {% set rating_stars = '' %}
+                    {% else %}
+                        {% set rating_class = 'ai-rating-marginal' %}
+                        {% set rating_label = 'MARGINAL PLAY' %}
+                        {% set rating_stars = '' %}
+                    {% endif %}
+                    
+                    <div class="ai-rating {{ rating_class }}">
+                        🎯 A.I. Rating: {{ "%.1f"|format(ai_rating) }} {{ rating_stars }} ({{ rating_label }})
+                    </div>
 
                     {% if game.team_indicator %}
                     <div class="team-indicator team-indicator-{{ game.team_indicator.label|lower }}">
@@ -2408,15 +2664,20 @@ def main():
 
         # Sort all results by highest edge (spread or total)
         # This puts the most confident plays first
-        def get_max_edge(game):
-            # Get the highest edge for this game (either spread or total)
+        # Sort by A.I. Rating (primary), with edge as tiebreaker
+        def get_sort_score(game):
+            # Primary: A.I. Rating (2.3-4.9 range)
+            rating = game.get('ai_rating', 2.3)
+            # Secondary: Maximum edge (for tiebreaking)
             spread_edge = abs(game.get('spread_edge', 0))
             total_edge = abs(game.get('total_edge', 0))
-            return max(spread_edge, total_edge)
+            max_edge = max(spread_edge, total_edge)
+            # Return tuple: (rating, edge) for sorting
+            return (rating, max_edge)
 
-        sorted_results = sorted(results, key=get_max_edge, reverse=True)
+        sorted_results = sorted(results, key=get_sort_score, reverse=True)
 
-        print(f"{Colors.YELLOW}📊 All picks sorted by edge (highest confidence first){Colors.END}\n")
+        print(f"{Colors.YELLOW}📊 All picks sorted by A.I. Rating (quality/confidence first){Colors.END}\n")
 
         display_terminal(sorted_results)
         save_csv(sorted_results)
