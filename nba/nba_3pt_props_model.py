@@ -1359,6 +1359,20 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
                         </div>"""
             
+            # Get team logo and short names
+            team_logo_url = get_team_logo_url(play['team'])
+            logo_html = f'<img src="{team_logo_url}" alt="{play["team"]}" class="team-logo">' if team_logo_url else ''
+            short_team = get_short_team_name(play['team'])
+            short_opponent = get_short_team_name(play['opponent'])
+            home_team = play.get('home_team', '')
+            away_team = play.get('away_team', '')
+            
+            # Format matchup: away @ home
+            if play['team'] == home_team:
+                matchup_display = f"{short_opponent} @ {short_team}"
+            else:
+                matchup_display = f"{short_team} @ {short_opponent}"
+            
             over_html += f"""
                     <div class="bet-box">
                         <div class="prop-title" style="color: #10b981;">{play['prop']}</div>
@@ -1458,6 +1472,20 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                             <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
                             <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
                         </div>"""
+            
+            # Get team logo and short names for UNDER plays
+            team_logo_url = get_team_logo_url(play['team'])
+            logo_html = f'<img src="{team_logo_url}" alt="{play["team"]}" class="team-logo">' if team_logo_url else ''
+            short_team = get_short_team_name(play['team'])
+            short_opponent = get_short_team_name(play['opponent'])
+            home_team = play.get('home_team', '')
+            away_team = play.get('away_team', '')
+            
+            # Format matchup: away @ home
+            if play['team'] == home_team:
+                matchup_display = f"{short_opponent} @ {short_team}"
+            else:
+                matchup_display = f"{short_team} @ {short_opponent}"
             
             under_html += f"""
                     <div class="bet-box">

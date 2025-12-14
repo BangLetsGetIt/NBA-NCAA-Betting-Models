@@ -1039,6 +1039,45 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         except:
             return game_time_str if game_time_str else 'TBD'
     
+    # Helper function to get shortened team name
+    def get_short_team_name(team_name):
+        """Get shortened team name (city or nickname) for display"""
+        short_name_map = {
+            "Atlanta Hawks": "Hawks", "Boston Celtics": "Celtics", "Brooklyn Nets": "Nets",
+            "Charlotte Hornets": "Hornets", "Chicago Bulls": "Bulls", "Cleveland Cavaliers": "Cavaliers",
+            "Dallas Mavericks": "Mavericks", "Denver Nuggets": "Nuggets", "Detroit Pistons": "Pistons",
+            "Golden State Warriors": "Warriors", "Houston Rockets": "Rockets", "Indiana Pacers": "Pacers",
+            "LA Clippers": "Clippers", "Los Angeles Clippers": "Clippers", "Los Angeles Lakers": "Lakers",
+            "LA Lakers": "Lakers", "Memphis Grizzlies": "Grizzlies", "Miami Heat": "Heat",
+            "Milwaukee Bucks": "Bucks", "Minnesota Timberwolves": "Timberwolves", "New Orleans Pelicans": "Pelicans",
+            "New York Knicks": "Knicks", "Oklahoma City Thunder": "Thunder", "Orlando Magic": "Magic",
+            "Philadelphia 76ers": "76ers", "Phoenix Suns": "Suns", "Portland Trail Blazers": "Trail Blazers",
+            "Sacramento Kings": "Kings", "San Antonio Spurs": "Spurs", "Toronto Raptors": "Raptors",
+            "Utah Jazz": "Jazz", "Washington Wizards": "Wizards"
+        }
+        return short_name_map.get(team_name, team_name)
+
+    # Helper function to get team logo URL
+    def get_team_logo_url(team_name):
+        """Map team names to NBA.com logo URLs using team IDs"""
+        team_id_map = {
+            "Atlanta Hawks": "1610612737", "Boston Celtics": "1610612738", "Brooklyn Nets": "1610612751",
+            "Charlotte Hornets": "1610612766", "Chicago Bulls": "1610612741", "Cleveland Cavaliers": "1610612739",
+            "Dallas Mavericks": "1610612742", "Denver Nuggets": "1610612743", "Detroit Pistons": "1610612765",
+            "Golden State Warriors": "1610612744", "Houston Rockets": "1610612745", "Indiana Pacers": "1610612754",
+            "LA Clippers": "1610612746", "Los Angeles Clippers": "1610612746", "Los Angeles Lakers": "1610612747",
+            "LA Lakers": "1610612747", "Memphis Grizzlies": "1610612763", "Miami Heat": "1610612748",
+            "Milwaukee Bucks": "1610612749", "Minnesota Timberwolves": "1610612750", "New Orleans Pelicans": "1610612740",
+            "New York Knicks": "1610612752", "Oklahoma City Thunder": "1610612760", "Orlando Magic": "1610612753",
+            "Philadelphia 76ers": "1610612755", "Phoenix Suns": "1610612756", "Portland Trail Blazers": "1610612757",
+            "Sacramento Kings": "1610612758", "San Antonio Spurs": "1610612759", "Toronto Raptors": "1610612761",
+            "Utah Jazz": "1610612762", "Washington Wizards": "1610612764"
+        }
+        team_id = team_id_map.get(team_name, "")
+        if team_id:
+            return f"https://cdn.nba.com/logos/nba/{team_id}/primary/L/logo.svg"
+        return ""
+
     # Helper function to get CLV for a play
     def get_play_clv(play):
         if not tracking_data or not tracking_data.get('picks'):
@@ -1178,7 +1217,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                 opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
                 latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
                 clv_display = f"""
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+                        <div class="odds-line clv-line">
                             <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
                             <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
                         </div>"""
@@ -1294,7 +1333,7 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
                 opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
                 latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
                 clv_display = f"""
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+                        <div class="odds-line clv-line">
                             <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
                             <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
                         </div>"""
