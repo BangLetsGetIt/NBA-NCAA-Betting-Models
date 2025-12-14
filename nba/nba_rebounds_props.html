@@ -8,30 +8,52 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #0a1628;
+            background: #000000;
             color: #ffffff;
-            padding: 1.5rem;
+            padding: 2rem;
             min-height: 100vh;
         }
         .container { max-width: 1200px; margin: 0 auto; }
         .card {
-            background: #1a2332;
-            border-radius: 1.25rem;
-            border: none;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            background: #1a1a1a;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         .header-card {
             text-align: center;
-            background: #1a2332;
-            border: none;
+            background: #1a1a1a;
         }
         .bet-box {
-            background: #2a3441;
+            background: #262626;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 1.75rem;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .stat-box {
+            background: #262626;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             padding: 1.25rem;
             border-radius: 1rem;
-            border-left: none;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        .team-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            opacity: 0.95;
+            filter: brightness(1.1);
         }
         .ai-rating {
             display: flex;
@@ -91,14 +113,53 @@
         }
         .odds-line {
             display: flex;
-            justify-content: space-between;
-            margin: 0.25rem 0;
+            justify-content: flex-start;
+            align-items: center;
+            margin: 0.5rem 0;
             font-size: 0.9375rem;
             color: #94a3b8;
+        }
+        .prop-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            letter-spacing: 0.02em;
         }
         .odds-line strong {
             color: #ffffff;
             font-weight: 600;
+        }
+        .odds-line.clv-line {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .confidence-bar-container {
+            margin: 1rem 0;
+        }
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.625rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        .confidence-pct {
+            font-weight: 700;
+            color: #10b981;
+        }
+        .confidence-bar {
+            height: 8px;
+            background: #1a1a1a;
+            border-radius: 999px;
+            overflow: hidden;
+            border: none;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            border-radius: 999px;
+            transition: width 0.3s ease;
         }
         .confidence-bar-container {
             margin: 0.75rem 0;
@@ -177,188 +238,25 @@
                 <div class="badge">● A.I. SCORE ≥ 9.5</div>
                 <div class="badge">● STRICT EDGE REQUIREMENTS</div>
             </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 12/13/25 02:59 PM ET</p>
+            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 12/14/25 12:15 AM ET</p>
         </div>
 
         
             <div class="card">
                 <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #4ade80;">TOP OVER PLAYS</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
-                        <div class="bet-title" style="color: #4ade80;">#1 • OVER 8.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Isaiah Hartenstein</strong>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #10b981;">OVER 8.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Victor Wembanyama<img src="https://cdn.nba.com/logos/nba/1610612759/primary/L/logo.svg" alt="San Antonio Spurs" class="team-logo"></strong>
                         </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Oklahoma City Thunder vs San Antonio Spurs</strong>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Spurs @ Thunder</strong>
                         </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/13 09:00 PM ET</strong>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/13 09:26 PM ET</strong>
                         </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>10.7</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>9.8</strong>
-                        </div>
-                        
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
-                            <span style="color: #f87171; font-weight: 600;">⚠️ CLV:</span>
-                            <strong style="color: #f87171;">Opening: +104 → Latest: +108</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+42.8% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
-                        <div class="bet-title" style="color: #4ade80;">#2 • OVER 4.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Keldon Johnson</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>San Antonio Spurs vs Oklahoma City Thunder</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/13 09:00 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>6.5</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>7.0</strong>
-                        </div>
-                        
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 4.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+49.8% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
-                        <div class="bet-title" style="color: #4ade80;">#3 • OVER 3.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Julian Champagnie</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Oklahoma City Thunder vs San Antonio Spurs</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/13 09:00 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.8</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>5.4</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>6.9</strong>
-                        </div>
-                        
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
-                            <span style="color: #f87171; font-weight: 600;">⚠️ CLV:</span>
-                            <strong style="color: #f87171;">Opening: -144 → Latest: -132</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 3.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+23.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
-                        <div class="bet-title" style="color: #4ade80;">#4 • OVER 4.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Stephon Castle</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>San Antonio Spurs vs Oklahoma City Thunder</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/13 09:00 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.6</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>6.1</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>7.5</strong>
-                        </div>
-                        
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
-                            <span style="color: #f87171; font-weight: 600;">⚠️ CLV:</span>
-                            <strong style="color: #f87171;">Opening: -158 → Latest: -138</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 4.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+20.7% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #4ade80;">
-                        <div class="bet-title" style="color: #4ade80;">#5 • OVER 8.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Victor Wembanyama</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>San Antonio Spurs vs Oklahoma City Thunder</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/13 09:00 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-strong"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.4</span> ⭐⭐ <span class="rating-badge">(STRONG PLAY)</span></div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
                             <strong>12.9</strong>
@@ -378,71 +276,24 @@
                             </div>
                         </div>
                         <div class="pick pick-yes">
-                            ✅ OVER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+17.9% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                            ✅ OVER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+26.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-        
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #f87171;">TOP UNDER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <div class="bet-box" style="border-left: 4px solid #f87171;">
-                        <div class="bet-title" style="color: #f87171;">#1 • UNDER 3.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Andrew Nembhard</strong>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #10b981;">OVER 3.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Jarace Walker<img src="https://cdn.nba.com/logos/nba/1610612754/primary/L/logo.svg" alt="Indiana Pacers" class="team-logo"></strong>
                         </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Indiana Pacers vs Washington Wizards</strong>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Pacers @ Wizards</strong>
                         </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
+                        <div class="odds-line" style="text-align: left;">
                             <strong>12/14 03:10 PM ET</strong>
                         </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
-                            <strong>2.3</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>2.8</strong>
-                        </div>
-                        
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-no">
-                            ✅ UNDER 3.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+40.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #f87171;">
-                        <div class="bet-title" style="color: #f87171;">#2 • UNDER 5.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Jay Huff</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Indiana Pacers vs Washington Wizards</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/14 03:10 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>3.7</strong>
+                            <strong>5.0</strong>
                         </div>
                         <div class="odds-line">
                             <span>Recent Avg:</span>
@@ -458,25 +309,241 @@
                                 <div class="confidence-fill" style="width: 100%"></div>
                             </div>
                         </div>
-                        <div class="pick pick-no">
-                            ✅ UNDER 5.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+36.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        <div class="pick pick-yes">
+                            ✅ OVER 3.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+40.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
                         </div>
                     </div>
-                    <div class="bet-box" style="border-left: 4px solid #f87171;">
-                        <div class="bet-title" style="color: #f87171;">#3 • UNDER 7.5 REB</div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #10b981;">OVER 4.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Jalen Smith<img src="https://cdn.nba.com/logos/nba/1610612741/primary/L/logo.svg" alt="Chicago Bulls" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Bulls @ Pelicans</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/14 07:10 PM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
                         <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Miles Bridges</strong>
+                            <span>Season Avg:</span>
+                            <strong>6.1</strong>
                         </div>
                         <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Charlotte Hornets vs Cleveland Cavaliers</strong>
+                            <span>Recent Avg:</span>
+                            <strong>6.4</strong>
+                        </div>
+                        
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-yes">
+                            ✅ OVER 4.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+23.9% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #10b981;">OVER 9.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Victor Wembanyama<img src="https://cdn.nba.com/logos/nba/1610612759/primary/L/logo.svg" alt="San Antonio Spurs" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Spurs @ Knicks</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/16 08:40 AM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-strong"><span class="rating-value">4.4</span> ⭐⭐</div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>12.9</strong>
                         </div>
                         <div class="odds-line">
-                            <span>🕐 Game Time:</span>
+                            <span>Recent Avg:</span>
+                            <strong>12.9</strong>
+                        </div>
+                        
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-yes">
+                            ✅ OVER 9.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+18.6% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #10b981;">OVER 7.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Isaiah Hartenstein<img src="https://cdn.nba.com/logos/nba/1610612760/primary/L/logo.svg" alt="Oklahoma City Thunder" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Thunder @ Spurs</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/13 09:26 PM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-strong"><span class="rating-value">4.2</span> ⭐⭐</div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>10.7</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>9.8</strong>
+                        </div>
+                        
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-yes">
+                            ✅ OVER 7.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+16.7% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        
+            <div class="card">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #f87171;">TOP UNDER PLAYS</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #ef4444;">UNDER 3.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Andrew Nembhard<img src="https://cdn.nba.com/logos/nba/1610612754/primary/L/logo.svg" alt="Indiana Pacers" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Pacers @ Wizards</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/14 03:10 PM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>2.3</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>2.8</strong>
+                        </div>
+                        
+                        <div class="odds-line clv-line">
+                            <span style="color: #f87171; font-weight: 600;">⚠️ CLV:</span>
+                            <strong style="color: #f87171;">Opening: +100 → Latest: +110</strong>
+                        </div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-no">
+                            ✅ UNDER 3.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+47.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #ef4444;">UNDER 5.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Jay Huff<img src="https://cdn.nba.com/logos/nba/1610612754/primary/L/logo.svg" alt="Indiana Pacers" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Pacers @ Wizards</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/14 03:10 PM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>3.7</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>4.7</strong>
+                        </div>
+                        
+                        <div class="odds-line clv-line">
+                            <span style="color: #4ade80; font-weight: 600;">✅ CLV:</span>
+                            <strong style="color: #4ade80;">Opening: -106 → Latest: -125</strong>
+                        </div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-no">
+                            ✅ UNDER 5.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+26.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #ef4444;">UNDER 9.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Jarrett Allen<img src="https://cdn.nba.com/logos/nba/1610612739/primary/L/logo.svg" alt="Cleveland Cavaliers" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Cavaliers @ Hornets</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
                             <strong>12/14 03:40 PM ET</strong>
                         </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
+                        <div class="odds-line">
+                            <span>Season Avg:</span>
+                            <strong>7.6</strong>
+                        </div>
+                        <div class="odds-line">
+                            <span>Recent Avg:</span>
+                            <strong>8.0</strong>
+                        </div>
+                        
+                        <div class="confidence-bar-container">
+                            <div class="confidence-label">
+                                <span>A.I. Score</span>
+                                <span class="confidence-pct">10.00</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="pick pick-no">
+                            ✅ UNDER 9.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+47.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                        </div>
+                    </div>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #ef4444;">UNDER 7.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Miles Bridges<img src="https://cdn.nba.com/logos/nba/1610612766/primary/L/logo.svg" alt="Charlotte Hornets" class="team-logo"></strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>Hornets @ Cavaliers</strong>
+                        </div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>12/14 03:40 PM ET</strong>
+                        </div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
                             <strong>6.2</strong>
@@ -486,7 +553,7 @@
                             <strong>5.1</strong>
                         </div>
                         
-                        <div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
+                        <div class="odds-line clv-line">
                             <span style="color: #4ade80; font-weight: 600;">✅ CLV:</span>
                             <strong style="color: #4ade80;">Opening: +120 → Latest: +118</strong>
                         </div>
@@ -503,28 +570,25 @@
                             ✅ UNDER 7.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+54.0% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
                         </div>
                     </div>
-                    <div class="bet-box" style="border-left: 4px solid #f87171;">
-                        <div class="bet-title" style="color: #f87171;">#4 • UNDER 8.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Onyeka Okongwu</strong>
+                    <div class="bet-box">
+                        <div class="prop-title" style="color: #ef4444;">UNDER 8.5 REB</div>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Joel Embiid<img src="https://cdn.nba.com/logos/nba/1610612755/primary/L/logo.svg" alt="Philadelphia 76ers" class="team-logo"></strong>
                         </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Atlanta Hawks vs Philadelphia 76ers</strong>
+                        <div class="odds-line" style="text-align: left;">
+                            <strong>76ers @ Hawks</strong>
                         </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
+                        <div class="odds-line" style="text-align: left;">
                             <strong>12/14 06:10 PM ET</strong>
                         </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
+                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
                         <div class="odds-line">
                             <span>Season Avg:</span>
-                            <strong>7.2</strong>
+                            <strong>5.9</strong>
                         </div>
                         <div class="odds-line">
                             <span>Recent Avg:</span>
-                            <strong>7.0</strong>
+                            <strong>6.5</strong>
                         </div>
                         
                         <div class="confidence-bar-container">
@@ -537,44 +601,7 @@
                             </div>
                         </div>
                         <div class="pick pick-no">
-                            ✅ UNDER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+52.6% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
-                        </div>
-                    </div>
-                    <div class="bet-box" style="border-left: 4px solid #f87171;">
-                        <div class="bet-title" style="color: #f87171;">#5 • UNDER 7.5 REB</div>
-                        <div class="odds-line">
-                            <span>Player:</span>
-                            <strong>Derik Queen</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Matchup:</span>
-                            <strong>Chicago Bulls vs New Orleans Pelicans</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>🕐 Game Time:</span>
-                            <strong>12/14 07:10 PM ET</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-label">A.I. Rating:</span> <span class="rating-value">4.9</span> ⭐⭐⭐ <span class="rating-badge">(PREMIUM PLAY)</span></div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>6.3</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>6.2</strong>
-                        </div>
-                        
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-no">
-                            ✅ UNDER 7.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+51.2% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
+                            ✅ UNDER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(74, 222, 128, 0.2); color: #4ade80; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+38.6% EV</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(96, 165, 250, 0.2); color: #60a5fa; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span><span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(248, 113, 113, 0.2); color: #f87171; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>
                         </div>
                     </div>
                 </div>
@@ -582,45 +609,45 @@
 
         
             <div class="card">
-                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
+                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 NBA Rebounds Model Tracking</h2>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">37</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">45</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #f87171;">31.8%</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #f87171;">30.4%</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">7-15</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">(22 completed)</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">7-16</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">(23 completed)</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #f87171;">-8.63u</div>
-                        <div style="font-size: 0.75rem; color: #f87171; margin-top: 0.25rem;">-23.3% ROI</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #f87171;">-9.63u</div>
+                        <div style="font-size: 0.75rem; color: #f87171; margin-top: 0.25rem;">-21.4% ROI</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
+                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">10</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">12</div>
                     </div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #f87171;">21.6%</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">8/37 positive CLV</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #f87171;">20.0%</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">9/45 positive CLV</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Avg A.I. Score</div>
                         <div style="font-size: 1.5rem; font-weight: 700; color: #60a5fa;">9.7+</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Elite plays only</div>
                     </div>
-                    <div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
+                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Edge Requirements</div>
                         <div style="font-size: 1rem; font-weight: 600; color: #ffffff;">1.5+ OVER / 1.2+ UNDER</div>
                         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Strict thresholds</div>
