@@ -1146,473 +1146,598 @@ def analyze_props(props_list, player_stats, reb_factors):
 
 
 # =============================================================================
+# HTML Helper Functions
+# =============================================================================
+
+def get_team_abbreviation(team_name):
+    """Map full team names to ESPN abbreviation format for logos"""
+    abbrev_map = {
+        "Atlanta Hawks": "atl",
+        "Boston Celtics": "bos",
+        "Brooklyn Nets": "bkn",
+        "Charlotte Hornets": "cha",
+        "Chicago Bulls": "chi",
+        "Cleveland Cavaliers": "cle",
+        "Dallas Mavericks": "dal",
+        "Denver Nuggets": "den",
+        "Detroit Pistons": "det",
+        "Golden State Warriors": "gsw",
+        "Houston Rockets": "hou",
+        "Indiana Pacers": "ind",
+        "LA Clippers": "lac",
+        "Los Angeles Clippers": "lac",
+        "Los Angeles Lakers": "lal",
+        "LA Lakers": "lal",
+        "Memphis Grizzlies": "mem",
+        "Miami Heat": "mia",
+        "Milwaukee Bucks": "mil",
+        "Minnesota Timberwolves": "min",
+        "New Orleans Pelicans": "no",
+        "New York Knicks": "ny",
+        "Oklahoma City Thunder": "okc",
+        "Orlando Magic": "orl",
+        "Philadelphia 76ers": "phi",
+        "Phoenix Suns": "phx",
+        "Portland Trail Blazers": "por",
+        "Sacramento Kings": "sac",
+        "San Antonio Spurs": "sa",
+        "Toronto Raptors": "tor",
+        "Utah Jazz": "utah",
+        "Washington Wizards": "was"
+    }
+    return abbrev_map.get(team_name, "nba").lower()
+
+def format_game_datetime(game_time_str):
+    """Format game time to 'Mon, Dec 15 • 7:10 PM ET' format"""
+    try:
+        if not game_time_str:
+            return 'TBD'
+        dt_obj = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+        et_tz = pytz.timezone('US/Eastern')
+        dt_et = dt_obj.astimezone(et_tz)
+        try:
+            return dt_et.strftime('%a, %b %d • %-I:%M %p ET')
+        except ValueError:
+            return dt_et.strftime('%a, %b %d • %#I:%M %p ET')
+    except:
+        return game_time_str if game_time_str else 'TBD'
+
+def calculate_player_stats(player_name, tracking_data):
+    """Calculate per-player stats from tracking data."""
+    if not tracking_data or not tracking_data.get('picks'):
+        return None
+    
+    player_picks = [p for p in tracking_data['picks'] 
+                   if p.get('player') == player_name and p.get('status') in ['win', 'loss']]
+    
+    if not player_picks:
+        return None
+    
+    wins = sum(1 for p in player_picks if p.get('status') == 'win')
+    losses = sum(1 for p in player_picks if p.get('status') == 'loss')
+    
+    if wins + losses == 0:
+        return None
+    
+    total_profit_cents = 0
+    for p in player_picks:
+        if 'profit_loss' in p:
+            total_profit_cents += p['profit_loss']
+        else:
+            odds = p.get('opening_odds') or p.get('odds', -110)
+            if p.get('status') == 'win':
+                if odds > 0:
+                    total_profit_cents += int(odds)
+                else:
+                    total_profit_cents += int((100.0 / abs(odds)) * 100)
+            else:
+                total_profit_cents -= 100
+    
+    total_profit_units = total_profit_cents / 100.0
+    player_roi = (total_profit_units / len(player_picks) * 100) if player_picks else 0.0
+    
+    return {
+        'season_record': f'{wins}-{losses}',
+        'player_roi': round(player_roi, 1)
+    }
+
+def generate_reasoning_tags(play, player_data, opponent_factors):
+    """Generate reasoning tags based on play data"""
+    tags = []
+    
+    # Opponent rebounding tags
+    if opponent_factors:
+        opp_reb_allowed = opponent_factors.get('opp_reb_allowed', 45)
+        reb_factor = opponent_factors.get('reb_factor', 1.0)
+        
+        if opp_reb_allowed >= 48:
+            tags.append({"text": f"Opp allows {opp_reb_allowed:.1f} RPG (Weak)", "color": "green"})
+        elif opp_reb_allowed <= 42:
+            tags.append({"text": f"Opp allows {opp_reb_allowed:.1f} RPG (Elite)", "color": "red"})
+        else:
+            tags.append({"text": f"Opp allows {opp_reb_allowed:.1f} RPG", "color": "blue"})
+    
+    # Recent form tags
+    if player_data:
+        season_avg = player_data.get('season_reb_avg', 0)
+        recent_avg = player_data.get('recent_reb_avg', 0)
+    else:
+        season_avg = play.get('season_avg', 0)
+        recent_avg = play.get('recent_avg', 0)
+    
+    if recent_avg > 0:
+        if recent_avg > season_avg + 1.5:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games (Hot)", "color": "green"})
+        elif recent_avg < season_avg - 1.5:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games (Cold)", "color": "red"})
+        else:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games", "color": "blue"})
+    
+    # Edge tags
+    edge = play.get('edge', 0)
+    if abs(edge) >= 3.0:
+        edge_text = f"Strong Edge {edge:+.1f}" if edge > 0 else f"Strong Edge {edge:.1f}"
+        tags.append({"text": edge_text, "color": "green" if edge > 0 else "red"})
+    elif abs(edge) >= 1.5:
+        edge_text = f"Edge {edge:+.1f}" if edge > 0 else f"Edge {edge:.1f}"
+        tags.append({"text": edge_text, "color": "green" if edge > 0 else "blue"})
+    
+    return tags
+
+
+# =============================================================================
 # HTML output
 # =============================================================================
 
-def generate_html_output(over_plays, under_plays, stats=None):
-    """Generate HTML output matching the card-based style used by other props models."""
+def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None, reb_factors=None, player_stats=None):
+    """Generate HTML output matching the modern styling guide"""
     from datetime import datetime as dt
-
-    et = pytz.timezone("US/Eastern")
+    et = pytz.timezone('US/Eastern')
     now = dt.now(et)
-    date_str = now.strftime("%m/%d/%y")
-    time_str = now.strftime("%I:%M %p ET")
-
-    def format_game_time(game_time_str):
-        try:
-            if not game_time_str:
-                return "TBD"
-            dt_obj = datetime.fromisoformat(game_time_str.replace("Z", "+00:00"))
-            dt_et = dt_obj.astimezone(et)
-            return dt_et.strftime("%m/%d %I:%M %p ET")
-        except Exception:
-            return game_time_str if game_time_str else "TBD"
-
+    
     # Helper function to format odds for display
     def format_odds(odds_value):
-        """Format odds value to American odds format (e.g., -110, +150)"""
         if odds_value is None:
             return 'N/A'
         try:
             odds = int(odds_value)
-            if odds > 0:
-                return f'+{odds}'
-            else:
-                return str(odds)
+            return f'+{odds}' if odds > 0 else str(odds)
         except:
             return str(odds_value) if odds_value else 'N/A'
-
+    
+    # Helper function to get short team name
     def get_short_team_name(team_name):
         short_name_map = {
-            "Atlanta Hawks": "Hawks",
-            "Boston Celtics": "Celtics",
-            "Brooklyn Nets": "Nets",
-            "Charlotte Hornets": "Hornets",
-            "Chicago Bulls": "Bulls",
-            "Cleveland Cavaliers": "Cavaliers",
-            "Dallas Mavericks": "Mavericks",
-            "Denver Nuggets": "Nuggets",
-            "Detroit Pistons": "Pistons",
-            "Golden State Warriors": "Warriors",
-            "Houston Rockets": "Rockets",
-            "Indiana Pacers": "Pacers",
-            "LA Clippers": "Clippers",
-            "Los Angeles Clippers": "Clippers",
-            "Los Angeles Lakers": "Lakers",
-            "LA Lakers": "Lakers",
-            "Memphis Grizzlies": "Grizzlies",
-            "Miami Heat": "Heat",
-            "Milwaukee Bucks": "Bucks",
-            "Minnesota Timberwolves": "Timberwolves",
-            "New Orleans Pelicans": "Pelicans",
-            "New York Knicks": "Knicks",
-            "Oklahoma City Thunder": "Thunder",
-            "Orlando Magic": "Magic",
-            "Philadelphia 76ers": "76ers",
-            "Phoenix Suns": "Suns",
-            "Portland Trail Blazers": "Trail Blazers",
-            "Sacramento Kings": "Kings",
-            "San Antonio Spurs": "Spurs",
-            "Toronto Raptors": "Raptors",
-            "Utah Jazz": "Jazz",
-            "Washington Wizards": "Wizards",
+            "Atlanta Hawks": "Hawks", "Boston Celtics": "Celtics", "Brooklyn Nets": "Nets",
+            "Charlotte Hornets": "Hornets", "Chicago Bulls": "Bulls", "Cleveland Cavaliers": "Cavaliers",
+            "Dallas Mavericks": "Mavericks", "Denver Nuggets": "Nuggets", "Detroit Pistons": "Pistons",
+            "Golden State Warriors": "Warriors", "Houston Rockets": "Rockets", "Indiana Pacers": "Pacers",
+            "LA Clippers": "Clippers", "Los Angeles Clippers": "Clippers", "Los Angeles Lakers": "Lakers",
+            "LA Lakers": "Lakers", "Memphis Grizzlies": "Grizzlies", "Miami Heat": "Heat",
+            "Milwaukee Bucks": "Bucks", "Minnesota Timberwolves": "Timberwolves", "New Orleans Pelicans": "Pelicans",
+            "New York Knicks": "Knicks", "Oklahoma City Thunder": "Thunder", "Orlando Magic": "Magic",
+            "Philadelphia 76ers": "76ers", "Phoenix Suns": "Suns", "Portland Trail Blazers": "Trail Blazers",
+            "Sacramento Kings": "Kings", "San Antonio Spurs": "Spurs", "Toronto Raptors": "Raptors",
+            "Utah Jazz": "Jazz", "Washington Wizards": "Wizards"
         }
         return short_name_map.get(team_name, team_name)
+    
+    player_stats_lookup = player_stats or {}
+    defense_lookup = reb_factors or {}
 
-    def get_team_logo_url(team_name):
-        team_id_map = {
-            "Atlanta Hawks": "1610612737",
-            "Boston Celtics": "1610612738",
-            "Brooklyn Nets": "1610612751",
-            "Charlotte Hornets": "1610612766",
-            "Chicago Bulls": "1610612741",
-            "Cleveland Cavaliers": "1610612739",
-            "Dallas Mavericks": "1610612742",
-            "Denver Nuggets": "1610612743",
-            "Detroit Pistons": "1610612765",
-            "Golden State Warriors": "1610612744",
-            "Houston Rockets": "1610612745",
-            "Indiana Pacers": "1610612754",
-            "LA Clippers": "1610612746",
-            "Los Angeles Clippers": "1610612746",
-            "Los Angeles Lakers": "1610612747",
-            "LA Lakers": "1610612747",
-            "Memphis Grizzlies": "1610612763",
-            "Miami Heat": "1610612748",
-            "Milwaukee Bucks": "1610612749",
-            "Minnesota Timberwolves": "1610612750",
-            "New Orleans Pelicans": "1610612740",
-            "New York Knicks": "1610612752",
-            "Oklahoma City Thunder": "1610612760",
-            "Orlando Magic": "1610612753",
-            "Philadelphia 76ers": "1610612755",
-            "Phoenix Suns": "1610612756",
-            "Portland Trail Blazers": "1610612757",
-            "Sacramento Kings": "1610612758",
-            "San Antonio Spurs": "1610612759",
-            "Toronto Raptors": "1610612761",
-            "Utah Jazz": "1610612762",
-            "Washington Wizards": "1610612764",
-        }
-        team_id = team_id_map.get(team_name, "")
-        return f"https://cdn.nba.com/logos/nba/{team_id}/primary/L/logo.svg" if team_id else ""
-
-    def rating_badge(ai_rating):
-        if ai_rating >= 4.5:
-            return "ai-rating-premium", "⭐⭐⭐"
-        if ai_rating >= 4.0:
-            return "ai-rating-strong", "⭐⭐"
-        if ai_rating >= 3.5:
-            return "ai-rating-good", "⭐"
-        if ai_rating >= 3.0:
-            return "ai-rating-standard", ""
-        return "ai-rating-marginal", ""
-
-    def build_cards(plays, color, pick_class):
-        cards = ""
-        for play in plays:
-            confidence_pct = min(int((play["ai_score"] / 10.0) * 100), 100)
-            game_time_formatted = format_game_time(play.get("game_time", ""))
-
-            ai_rating = float(play.get("ai_rating", 2.3) or 2.3)
-            rclass, stars = rating_badge(ai_rating)
-            rating_display = f'<div class="ai-rating {rclass}"><span class="rating-value">{ai_rating:.1f}</span> {stars}</div>'
-
-            ev = float(play.get("ev", 0) or 0)
-            ev_badge = ""
-            if ev > 0:
-                ev_badge = (
-                    f'<span style="display: inline-block; padding: 0.25rem 0.5rem; '
-                    f'background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; '
-                    f'font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+{ev:.1f}% EV</span>'
-                )
-
-            team_logo_url = get_team_logo_url(play.get("team") or "")
-            logo_html = f'<img src="{team_logo_url}" alt="{play.get("team", "")}" class="team-logo">' if team_logo_url else ""
-
-            short_team = get_short_team_name(play.get("team") or "")
-            short_opponent = get_short_team_name(play.get("opponent") or "")
-            home_team = play.get("home_team") or ""
-
-            if play.get("team") == home_team:
-                matchup_display = f"{short_opponent} @ {short_team}"
-            else:
-                matchup_display = f"{short_team} @ {short_opponent}"
-
-            cards += f"""
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: {color};">{play['prop']}</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">{play['player']}{logo_html}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{matchup_display}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{game_time_formatted}</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: {color};">{format_odds(play.get('odds'))}</strong>
-                        </div>
-                        {rating_display}
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>{play.get('season_avg', 'N/A')}</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>{play.get('recent_avg', 'N/A')}</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">{play['ai_score']:.2f}</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: {confidence_pct}%"></div>
-                            </div>
-                        </div>
-                        <div class="pick {pick_class}">
-                            ✅ {play['prop']}{ev_badge}
-                        </div>
-                    </div>
-            """
-        return cards
-
+    # Generate OVER plays cards
     over_html = ""
     if over_plays:
-        cards = build_cards(over_plays, "#10b981", "pick-yes")
-        over_html = f"""
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #10b981;">TOP OVER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-                    {cards}
+        over_html = '<section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: {}</span></div>'.format(MIN_AI_SCORE)
+        
+        for play in over_plays:
+            prop_str = play.get('prop', '')
+            line_match = re.search(r'(\d+\.?\d*)\s*REB', prop_str)
+            prop_line_display = line_match.group(0) if line_match else prop_str.replace('OVER ', '').replace('UNDER ', '')
+            
+            game_datetime_str = format_game_datetime(play.get('game_time', ''))
+            team_abbrev = get_team_abbreviation(play.get('team', ''))
+            logo_url = f"https://a.espncdn.com/i/teamlogos/nba/500/{team_abbrev}.png"
+            
+            short_team = get_short_team_name(play.get('team', ''))
+            short_opponent = get_short_team_name(play.get('opponent', ''))
+            home_team = play.get('home_team', '')
+            matchup_display = f"{short_opponent} @ {short_team}" if play.get('team') == home_team else f"{short_team} @ {short_opponent}"
+            
+            player_data = player_stats_lookup.get(play.get('player'))
+            opponent_factors = defense_lookup.get(play.get('opponent'))
+            
+            player_stats_data = calculate_player_stats(play.get('player'), tracking_data) if tracking_data else None
+            tags = generate_reasoning_tags(play, player_data, opponent_factors)
+            tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n' for tag in tags])
+            
+            season_avg = play.get('season_avg', 0)
+            edge = play.get('edge', 0)
+            model_prediction = season_avg + edge if edge > 0 else season_avg - abs(edge)
+            ai_score = play.get('ai_score', 0)
+            win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
+            
+            player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f'''
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
+                </div>'''
+            
+            ev = play.get('ev', 0)
+            ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
+            ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
+            
+            over_html += f'''
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>{play.get('player', '')}</h2>
+                        <div class="matchup-info">{matchup_display}</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">{game_datetime_str}</div>
                 </div>
             </div>
-        """
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span> 
+                        <span class="line">{prop_line_display}</span> 
+                        <span class="bet-odds">{format_odds(play.get('odds'))}</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>{model_prediction:.1f} REB</strong> (Edge: {edge:+.1f})
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">{play.get('ai_score', 0):.1f}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val {ev_color_class}">{ev_display}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">{int(win_prob)}%</span>
+                    </div>
+                </div>
+                {player_stats_html}
+                <div class="tags-container">
+                    {tags_html}
+                </div>
+            </div>
+        </div>'''
+        
+        over_html += "</section>"
 
+    # Generate UNDER plays cards
     under_html = ""
     if under_plays:
-        cards = build_cards(under_plays, "#ef4444", "pick-no")
-        under_html = f"""
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #ef4444;">TOP UNDER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-                    {cards}
+        for play in under_plays:
+            prop_str = play.get('prop', '')
+            line_match = re.search(r'(\d+\.?\d*)\s*REB', prop_str)
+            prop_line_display = line_match.group(0) if line_match else prop_str.replace('OVER ', '').replace('UNDER ', '')
+            
+            game_datetime_str = format_game_datetime(play.get('game_time', ''))
+            team_abbrev = get_team_abbreviation(play.get('team', ''))
+            logo_url = f"https://a.espncdn.com/i/teamlogos/nba/500/{team_abbrev}.png"
+            
+            short_team = get_short_team_name(play.get('team', ''))
+            short_opponent = get_short_team_name(play.get('opponent', ''))
+            home_team = play.get('home_team', '')
+            matchup_display = f"{short_opponent} @ {short_team}" if play.get('team') == home_team else f"{short_team} @ {short_opponent}"
+            
+            player_data = player_stats_lookup.get(play.get('player'))
+            opponent_factors = defense_lookup.get(play.get('opponent'))
+            
+            player_stats_data = calculate_player_stats(play.get('player'), tracking_data) if tracking_data else None
+            tags = generate_reasoning_tags(play, player_data, opponent_factors)
+            tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n' for tag in tags])
+            
+            season_avg = play.get('season_avg', 0)
+            edge = play.get('edge', 0)
+            model_prediction = season_avg - abs(edge)
+            ai_score = play.get('ai_score', 0)
+            win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
+            
+            player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f'''
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
+                </div>'''
+            
+            ev = play.get('ev', 0)
+            ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
+            ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
+            
+            under_html += f'''
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>{play.get('player', '')}</h2>
+                        <div class="matchup-info">{matchup_display}</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">{game_datetime_str}</div>
                 </div>
             </div>
-        """
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span> 
+                        <span class="line">{prop_line_display}</span> 
+                        <span class="bet-odds">{format_odds(play.get('odds'))}</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>{model_prediction:.1f} REB</strong> (Edge: {edge:.1f})
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">{play.get('ai_score', 0):.1f}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val {ev_color_class}">{ev_display}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">{int(win_prob)}%</span>
+                    </div>
+                </div>
+                {player_stats_html}
+                <div class="tags-container">
+                    {tags_html}
+                </div>
+            </div>
+        </div>'''
 
-    # Generate stats card if stats provided - ALWAYS show tracking section
-    stats_html = ""
-    if stats:
+    # Summary stats grid
+    summary_html = ""
+    if stats and stats.get('total', 0) > 0:
+        roi_pct = stats.get('roi_pct', 0)
+        win_rate = stats.get('win_rate', 0)
+        wins = stats.get('wins', 0)
+        losses = stats.get('losses', 0)
+        roi_color_class = "txt-green" if roi_pct > 0 else "txt-red"
+        roi_sign = '+' if roi_pct > 0 else ''
+        summary_html = f'''
+    <section>
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">Season ROI</div>
+                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value">{win_rate:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Record</div>
+                <div class="stat-value">{wins}-{losses}</div>
+            </div>
+        </div>
+    </section>'''
+    
+    # Model performance section
+    performance_html = ""
+    if stats and stats.get('total', 0) > 0:
         total = stats['total']
         wins = stats['wins']
         losses = stats['losses']
         win_rate = stats['win_rate']
         roi_pct = stats['roi_pct']
-        total_profit = stats['total_profit']
         
-        roi_color = '#10b981' if roi_pct > 0 else '#ef4444'
+        roi_color_class = "txt-green" if roi_pct > 0 else "txt-red"
         roi_sign = '+' if roi_pct > 0 else ''
-        profit_sign = '+' if total_profit > 0 else ''
         
         over_record = stats['over_record']
-        over_win_rate = stats['over_win_rate']
         over_roi = stats['over_roi']
-        over_roi_color = '#10b981' if over_roi > 0 else '#ef4444'
+        over_roi_color_class = "txt-green" if over_roi > 0 else "txt-red"
         over_roi_sign = '+' if over_roi > 0 else ''
         
         under_record = stats['under_record']
-        under_win_rate = stats['under_win_rate']
         under_roi = stats['under_roi']
-        under_roi_color = '#10b981' if under_roi > 0 else '#ef4444'
+        under_roi_color_class = "txt-green" if under_roi > 0 else "txt-red"
         under_roi_sign = '+' if under_roi > 0 else ''
         
-        stats_html = f"""
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #3b82f6;">NBA Rebounds Model Performance</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">Overall Record</div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: #ffffff;">{wins}-{losses}</div>
-                        <div style="font-size: 1rem; color: #10b981; margin-top: 0.25rem;">{win_rate:.1f}% Win Rate</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">ROI</div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: {roi_color};">{roi_sign}{roi_pct:.1f}%</div>
-                        <div style="font-size: 1rem; color: {roi_color}; margin-top: 0.25rem;">{profit_sign}{total_profit:.2f} Units</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">OVER Bets</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">{over_record}</div>
-                        <div style="font-size: 0.875rem; margin-top: 0.25rem;">
-                            <span style="color: #10b981;">{over_win_rate:.1f}% Win</span> | 
-                            <span style="color: {over_roi_color};">{over_roi_sign}{over_roi:.1f}% ROI</span>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">UNDER Bets</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">{under_record}</div>
-                        <div style="font-size: 0.875rem; margin-top: 0.25rem;">
-                            <span style="color: #ef4444;">{under_win_rate:.1f}% Win</span> | 
-                            <span style="color: {under_roi_color};">{under_roi_sign}{under_roi:.1f}% ROI</span>
-                        </div>
-                    </div>
-                </div>
+        performance_html = f'''
+    <section>
+        <div class="section-title">NBA Rebounds Model Performance</div>
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">Overall Record</div>
+                <div class="stat-value">{wins}-{losses}</div>
             </div>
-        """
+            <div class="stat-box">
+                <div class="stat-label">ROI</div>
+                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">OVER: {over_record}</div>
+                <div class="stat-value {over_roi_color_class}">{over_roi_sign}{over_roi:.1f}% ROI</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">UNDER: {under_record}</div>
+                <div class="stat-value {under_roi_color_class}">{under_roi_sign}{under_roi:.1f}% ROI</div>
+            </div>
+        </div>
+    </section>'''
     
-    footer_text = (
-        f"Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ {MIN_AI_SCORE}<br>"
-        f"Using strict edge requirements: {MIN_EDGE_OVER_LINE}+ above line (OVER) / {MIN_EDGE_UNDER_LINE}+ below line (UNDER)"
-    )
-
-    html = f"""<!DOCTYPE html>
+    html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Rebounds Props - A.I. Projections</title>
+    <title>NBA Rebounds Props Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        :root {{
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }}
+
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            padding: 2rem;
-            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        .card {{
-            background: #1a1a1a;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+        .container {{ max-width: 800px; margin: 0 auto; }}
+
+        header {{
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }}
-        .header-card {{ text-align: center; background: #1a1a1a; }}
-        .bet-box {{
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.75rem;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            position: relative;
+        h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
+        .date-sub {{ color: var(--text-secondary); font-size: 14px; margin-top: 5px; }}
+
+        .summary-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
         }}
         .stat-box {{
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.25rem;
-            border-radius: 1rem;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
         }}
-        .team-logo {{
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.95;
-            filter: brightness(1.1);
+        .stat-label {{ font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }}
+        .stat-value {{ font-size: 20px; font-weight: 700; }}
+
+        .section-title {{
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
         }}
-        .ai-rating {{
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }}
-        .ai-rating .rating-value {{ font-weight: 700; font-size: 0.875rem; }}
-        .ai-rating-premium {{ background: rgba(16, 185, 129, 0.15); color: #10b981; }}
-        .ai-rating-strong {{ background: rgba(16, 185, 129, 0.12); color: #10b981; }}
-        .ai-rating-good {{ background: rgba(59, 130, 246, 0.12); color: #3b82f6; }}
-        .ai-rating-standard {{ background: rgba(245, 158, 11, 0.12); color: #f59e0b; }}
-        .ai-rating-marginal {{ background: rgba(245, 158, 11, 0.08); color: #f59e0b; }}
-        .prop-title {{
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            letter-spacing: 0.02em;
-        }}
-        .odds-line {{
-            display: flex;
-            justify-content: space-between;
-            margin: 0.5rem 0;
-            font-size: 0.9375rem;
-            color: #94a3b8;
-        }}
-        .odds-line strong {{ color: #ffffff; font-weight: 600; }}
-        .confidence-bar-container {{ margin: 1rem 0; }}
-        .confidence-label {{
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.625rem;
-            font-size: 0.875rem;
-            color: #94a3b8;
-        }}
-        .confidence-pct {{ font-weight: 700; color: #10b981; }}
-        .confidence-bar {{
-            height: 8px;
-            background: #1a1a1a;
-            border-radius: 999px;
+        .section-title span.highlight {{ color: var(--accent-green); margin-left: 8px; font-size: 14px; }}
+
+        .prop-card {{
+            background-color: var(--bg-card);
+            border-radius: 16px;
             overflow: hidden;
-            border: none;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }}
-        .confidence-fill {{
-            height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            border-radius: 999px;
-            transition: width 0.3s ease;
+
+        .card-header {{
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
         }}
-        .pick {{
-            font-weight: 600;
-            padding: 1rem 1.25rem;
-            margin-top: 1rem;
-            border-radius: 0.875rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            border: none;
-        }}
-        .pick-yes {{
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-        }}
-        .pick-no {{
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-        }}
-        .badge {{
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            margin: 0.375rem;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }}
-        @media (max-width: 1024px) {{
-            .container {{ max-width: 100%; }}
-            .card {{ padding: 2rem; }}
-        }}
-        @media (max-width: 768px) {{
-            body {{ padding: 1.5rem; }}
-            .card {{ padding: 1.75rem; }}
-            .bet-box {{ padding: 1.5rem; }}
-            .pick {{ font-size: 0.9375rem; padding: 0.875rem 1rem; }}
-        }}
-        @media (max-width: 480px) {{
-            body {{ padding: 1rem; }}
-            .card {{ padding: 1.5rem; margin-bottom: 1.5rem; }}
-            .bet-box {{ padding: 1.25rem; }}
-            .prop-title {{ font-size: 1rem; }}
-            .odds-line {{ font-size: 0.8125rem; }}
-            .pick {{ font-size: 0.875rem; padding: 0.75rem; }}
+
+        .header-left {{ display: flex; align-items: center; gap: 12px; }}
+        .team-logo {{ width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }}
+        .player-info h2 {{ margin: 0; font-size: 18px; line-height: 1.2; }}
+        .matchup-info {{ color: var(--text-secondary); font-size: 13px; margin-top: 2px; }}
+        .game-meta {{ text-align: right; }}
+        .game-date-time {{ font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }}
+
+        .card-body {{ padding: 20px; }}
+        .bet-main-row {{ margin-bottom: 15px; }}
+        .bet-selection {{ font-size: 22px; font-weight: 800; }}
+        .bet-selection .line {{ color: var(--text-primary); }}
+        .bet-odds {{ font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }}
+
+        .model-subtext {{ color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }}
+        .model-subtext strong {{ color: var(--text-primary); }}
+
+        .metrics-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }}
+        .metric-item {{ background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }}
+        .metric-lbl {{ display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }}
+        .metric-val {{ font-size: 16px; font-weight: 700; }}
+
+        .player-stats {{ background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }}
+        .player-stats-label {{ font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }}
+        .player-stats-value {{ font-size: 16px; font-weight: 700; }}
+        .player-stats-item {{ text-align: center; flex: 1; }}
+        .player-stats-divider {{ width: 1px; height: 30px; background-color: var(--border-color); }}
+
+        .tags-container {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+        .tag {{ font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }}
+
+        .txt-green {{ color: var(--accent-green); }}
+        .txt-red {{ color: var(--accent-red); }}
+        
+        .tag-green {{ background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }}
+        .tag-red {{ background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }}
+        .tag-blue {{ background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }}
+
+        @media (max-width: 600px) {{
+            .summary-grid {{ grid-template-columns: repeat(2, 1fr); }}
+            .stat-box:last-child {{ grid-column: span 2; }}
+            .card-header {{ padding: 12px 15px; }}
+            .team-logo {{ width: 38px; height: 38px; }}
+            .player-info h2 {{ font-size: 16px; }}
         }}
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card header-card">
-            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
-            <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NBA Rebounds Props Model</p>
-            <div>
-                <div class="badge">● REAL NBA STATS API</div>
-                <div class="badge">● A.I. SCORE ≥ {MIN_AI_SCORE}</div>
-                <div class="badge">● STRICT EDGE REQUIREMENTS</div>
-            </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {date_str} {time_str}</p>
-        </div>
 
-        {over_html}
+<div class="container">
+    <header>
+        <h1>NBA Rebounds Props Model</h1>
+        <div class="date-sub">Profitable Version • Season {CURRENT_SEASON}</div>
+    </header>
 
-        {under_html}
+    {summary_html}
 
-        {stats_html}
+    {over_html}
 
-        <div class="card" style="text-align: center;">
-            <p style="color: #94a3b8; font-size: 0.875rem; line-height: 1.8;">{footer_text}</p>
-        </div>
-    </div>
+    {under_html}
+
+    {performance_html}
+</div>
+
 </body>
-</html>"""
+</html>'''
 
     return html
 
@@ -1687,7 +1812,7 @@ def main():
         )
 
     print(f"\n{Colors.CYAN}Generating HTML report...{Colors.END}")
-    html_content = generate_html_output(over_plays, under_plays, stats)
+    html_content = generate_html_output(over_plays, under_plays, stats, tracking_data, reb_factors, player_stats)
     save_html(html_content)
 
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
