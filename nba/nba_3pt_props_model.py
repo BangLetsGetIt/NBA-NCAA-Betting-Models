@@ -814,21 +814,6 @@ def get_player_props():
             home_team = event["home_team"]
             away_team = event["away_team"]
 
-            # Skip games that haven't started or completed yet
-            try:
-                game_time_str = event.get("commence_time")
-                if game_time_str:
-                    game_time_utc = datetime.fromisoformat(game_time_str.replace("Z", "+00:00"))
-                    current_time = datetime.now(pytz.UTC)
-                    hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
-
-                    # Skip if game hasn't started (future) or hasn't completed (less than 4 hours ago)
-                    if hours_since_game < 4:
-                        continue  # Skip this game
-            except Exception as e:
-                # If we can't parse the time, skip this game to be safe
-                continue
-
             odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
             odds_params = {
                 "apiKey": API_KEY,
