@@ -3281,11 +3281,11 @@
       "edge": 8.8,
       "pick": "\u2705 BET: Indiana Pacers -10.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 89,
+      "actual_away_score": 108
     },
     {
       "pick_id": "Cleveland Cavaliers_Charlotte Hornets_2025-12-14T20:40:00Z_spread",
@@ -3300,11 +3300,11 @@
       "edge": 11.7,
       "pick": "\u2705 BET: Cleveland Cavaliers -11.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 111,
+      "actual_away_score": 119
     },
     {
       "pick_id": "Cleveland Cavaliers_Charlotte Hornets_2025-12-14T20:40:00Z_total",
@@ -3319,11 +3319,11 @@
       "edge": -12.2,
       "pick": "\u2705 BET: UNDER 234.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 111,
+      "actual_away_score": 119
     },
     {
       "pick_id": "Chicago Bulls_New Orleans Pelicans_2025-12-15T00:10:00Z_spread",
@@ -3400,12 +3400,69 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null
+    },
+    {
+      "pick_id": "Chicago Bulls_New Orleans Pelicans_2025-12-15T00:12:00Z_spread",
+      "date_logged": "2025-12-14T20:22:13.508851",
+      "game_date": "2025-12-15T00:12:00Z",
+      "home_team": "Chicago Bulls",
+      "away_team": "New Orleans Pelicans",
+      "matchup": "New Orleans Pelicans @ Chicago Bulls",
+      "pick_type": "Spread",
+      "model_line": 14.1,
+      "market_line": 2.5,
+      "edge": 16.6,
+      "pick": "\u2705 BET: Chicago Bulls +2.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
+    },
+    {
+      "pick_id": "Phoenix Suns_Los Angeles Lakers_2025-12-15T01:11:00Z_spread",
+      "date_logged": "2025-12-14T20:22:13.513040",
+      "game_date": "2025-12-15T01:11:00Z",
+      "home_team": "Phoenix Suns",
+      "away_team": "Los Angeles Lakers",
+      "matchup": "Los Angeles Lakers @ Phoenix Suns",
+      "pick_type": "Spread",
+      "model_line": 6.4,
+      "market_line": 3.5,
+      "edge": 9.9,
+      "pick": "\u2705 BET: Phoenix Suns +3.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
+    },
+    {
+      "pick_id": "Miami Heat_Toronto Raptors_2025-12-16T00:40:00Z_total",
+      "date_logged": "2025-12-14T20:22:13.528607",
+      "game_date": "2025-12-16T00:40:00Z",
+      "home_team": "Miami Heat",
+      "away_team": "Toronto Raptors",
+      "matchup": "Toronto Raptors @ Miami Heat",
+      "pick_type": "Total",
+      "model_line": 222.2,
+      "market_line": 237.5,
+      "edge": -15.3,
+      "pick": "\u2705 BET: UNDER 237.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null
     }
   ],
   "summary": {
-    "total_picks": 179,
-    "wins": 98,
-    "losses": 74,
+    "total_picks": 182,
+    "wins": 99,
+    "losses": 76,
     "pushes": 0,
     "pending": 7
   }
