@@ -3,418 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Rebounds Props - A.I. Projections</title>
+    <title>NBA Rebounds Props Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            padding: 2rem;
-            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .card {
-            background: #1a1a1a;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }
-        .header-card { text-align: center; background: #1a1a1a; }
-        .bet-box {
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.75rem;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            position: relative;
+        h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
         }
         .stat-box {
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.25rem;
-            border-radius: 1rem;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
         }
-        .team-logo {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.95;
-            filter: brightness(1.1);
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 20px; font-weight: 700; }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
         }
-        .ai-rating {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .ai-rating .rating-value { font-weight: 700; font-size: 0.875rem; }
-        .ai-rating-premium { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .ai-rating-strong { background: rgba(16, 185, 129, 0.12); color: #10b981; }
-        .ai-rating-good { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-        .ai-rating-standard { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-        .ai-rating-marginal { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
-        .prop-title {
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            letter-spacing: 0.02em;
-        }
-        .odds-line {
-            display: flex;
-            justify-content: space-between;
-            margin: 0.5rem 0;
-            font-size: 0.9375rem;
-            color: #94a3b8;
-        }
-        .odds-line strong { color: #ffffff; font-weight: 600; }
-        .confidence-bar-container { margin: 1rem 0; }
-        .confidence-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.625rem;
-            font-size: 0.875rem;
-            color: #94a3b8;
-        }
-        .confidence-pct { font-weight: 700; color: #10b981; }
-        .confidence-bar {
-            height: 8px;
-            background: #1a1a1a;
-            border-radius: 999px;
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
             overflow: hidden;
-            border: none;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }
-        .confidence-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            border-radius: 999px;
-            transition: width 0.3s ease;
+
+        .card-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
         }
-        .pick {
-            font-weight: 600;
-            padding: 1rem 1.25rem;
-            margin-top: 1rem;
-            border-radius: 0.875rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            border: none;
-        }
-        .pick-yes {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-        }
-        .pick-no {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-        }
-        .badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            margin: 0.375rem;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        @media (max-width: 1024px) {
-            .container { max-width: 100%; }
-            .card { padding: 2rem; }
-        }
-        @media (max-width: 768px) {
-            body { padding: 1.5rem; }
-            .card { padding: 1.75rem; }
-            .bet-box { padding: 1.5rem; }
-            .pick { font-size: 0.9375rem; padding: 0.875rem 1rem; }
-        }
-        @media (max-width: 480px) {
-            body { padding: 1rem; }
-            .card { padding: 1.5rem; margin-bottom: 1.5rem; }
-            .bet-box { padding: 1.25rem; }
-            .prop-title { font-size: 1rem; }
-            .odds-line { font-size: 0.8125rem; }
-            .pick { font-size: 0.875rem; padding: 0.75rem; }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .game-meta { text-align: right; }
+        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+
+        .card-body { padding: 20px; }
+        .bet-main-row { margin-bottom: 15px; }
+        .bet-selection { font-size: 22px; font-weight: 800; }
+        .bet-selection .line { color: var(--text-primary); }
+        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+
+        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext strong { color: var(--text-primary); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .metric-val { font-size: 16px; font-weight: 700; }
+
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats-item { text-align: center; flex: 1; }
+        .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
+
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
+        
+        .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+        .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+        .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-box:last-child { grid-column: span 2; }
+            .card-header { padding: 12px 15px; }
+            .team-logo { width: 38px; height: 38px; }
+            .player-info h2 { font-size: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card header-card">
-            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
-            <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NBA Rebounds Props Model</p>
-            <div>
-                <div class="badge">● REAL NBA STATS API</div>
-                <div class="badge">● A.I. SCORE ≥ 9.5</div>
-                <div class="badge">● STRICT EDGE REQUIREMENTS</div>
+
+<div class="container">
+    <header>
+        <h1>NBA Rebounds Props Model</h1>
+        <div class="date-sub">Profitable Version • Season 2025-26</div>
+    </header>
+
+    
+
+    <section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 9.5</span></div>
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" alt="Denver Nuggets Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Steven Adams</h2>
+                        <div class="matchup-info">Rockets @ Nuggets</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 9:40 PM ET</div>
+                </div>
             </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: 12/15/25 04:14 PM ET</p>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span> 
+                        <span class="line">7.5 REB</span> 
+                        <span class="bet-odds">+120</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>10.7 REB</strong> (Edge: +1.6)
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">10.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val txt-green">+54.0%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">51%</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 0.0 RPG (Elite)</span>
+<span class="tag tag-blue">Avg 8.6 L10 Games</span>
+<span class="tag tag-green">Edge +1.6</span>
+
+                </div>
+            </div>
+        </div>
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="New York Knicks Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Mitchell Robinson</h2>
+                        <div class="matchup-info">Spurs @ Knicks</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Tue, Dec 16 • 8:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span> 
+                        <span class="line">6.5 REB</span> 
+                        <span class="bet-odds">+104</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>9.9 REB</strong> (Edge: +1.7)
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">10.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val txt-green">+42.8%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">51%</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 0.0 RPG (Elite)</span>
+<span class="tag tag-blue">Avg 8.3 L10 Games</span>
+<span class="tag tag-green">Edge +1.7</span>
+
+                </div>
+            </div>
+        </div>
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png" alt="Miami Heat Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Kel'el Ware</h2>
+                        <div class="matchup-info">Raptors @ Heat</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span> 
+                        <span class="line">7.5 REB</span> 
+                        <span class="bet-odds">-102</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>12.7 REB</strong> (Edge: +2.6)
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">10.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val txt-green">+38.6%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">51%</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 0.0 RPG (Elite)</span>
+<span class="tag tag-blue">Avg 10.3 L10 Games</span>
+<span class="tag tag-green">Edge +2.6</span>
+
+                </div>
+            </div>
+        </div></section>
+
+    
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/utah.png" alt="Utah Jazz Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Kyle Filipowski</h2>
+                        <div class="matchup-info">Mavericks @ Jazz</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 9:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span> 
+                        <span class="line">8.5 REB</span> 
+                        <span class="bet-odds">-122</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>4.1 REB</strong> (Edge: 2.2)
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">10.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val txt-green">+27.4%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">51%</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 0.0 RPG (Elite)</span>
+<span class="tag tag-blue">Avg 7.1 L10 Games</span>
+<span class="tag tag-green">Edge +2.2</span>
+
+                </div>
+            </div>
+        </div>
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/utah.png" alt="Utah Jazz Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Ace Bailey</h2>
+                        <div class="matchup-info">Mavericks @ Jazz</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 9:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span> 
+                        <span class="line">4.5 REB</span> 
+                        <span class="bet-odds">-132</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>2.1 REB</strong> (Edge: 1.2)
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">10.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val txt-green">+23.0%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">51%</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 0.0 RPG (Elite)</span>
+<span class="tag tag-blue">Avg 3.1 L10 Games</span>
+
+                </div>
+            </div>
         </div>
 
-        
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #10b981;">TOP OVER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-                    
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #10b981;">OVER 7.5 REB</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Steven Adams<img src="https://cdn.nba.com/logos/nba/1610612743/primary/L/logo.svg" alt="Denver Nuggets" class="team-logo"></strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>Rockets @ Nuggets</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>12/15 09:40 PM ET</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: #10b981;">+120</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>9.1</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>8.6</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 7.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+54.0% EV</span>
-                        </div>
-                    </div>
-            
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #10b981;">OVER 6.5 REB</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Mitchell Robinson<img src="https://cdn.nba.com/logos/nba/1610612752/primary/L/logo.svg" alt="New York Knicks" class="team-logo"></strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>Spurs @ Knicks</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>12/16 08:40 PM ET</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: #10b981;">+104</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>8.2</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>8.3</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 6.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+42.8% EV</span>
-                        </div>
-                    </div>
-            
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #10b981;">OVER 7.5 REB</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Kel'el Ware<img src="https://cdn.nba.com/logos/nba/1610612748/primary/L/logo.svg" alt="Miami Heat" class="team-logo"></strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>Raptors @ Heat</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>12/15 07:40 PM ET</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: #10b981;">-102</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>10.1</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>10.3</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ OVER 7.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+38.6% EV</span>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
+    
+</div>
 
-        
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #ef4444;">TOP UNDER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-                    
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #ef4444;">UNDER 8.5 REB</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Kyle Filipowski<img src="https://cdn.nba.com/logos/nba/1610612762/primary/L/logo.svg" alt="Utah Jazz" class="team-logo"></strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>Mavericks @ Jazz</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>12/15 09:10 PM ET</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: #ef4444;">-130</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.9</span> ⭐⭐⭐</div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>6.3</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>7.1</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-no">
-                            ✅ UNDER 8.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+23.9% EV</span>
-                        </div>
-                    </div>
-            
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #ef4444;">UNDER 4.5 REB</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">Ace Bailey<img src="https://cdn.nba.com/logos/nba/1610612762/primary/L/logo.svg" alt="Utah Jazz" class="team-logo"></strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>Mavericks @ Jazz</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>12/15 09:10 PM ET</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Odds:</span>
-                            <strong style="color: #ef4444;">-132</strong>
-                        </div>
-                        <div class="ai-rating ai-rating-premium"><span class="rating-value">4.8</span> ⭐⭐⭐</div>
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>3.3</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>3.1</strong>
-                        </div>
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">10.00</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-no">
-                            ✅ UNDER 4.5 REB<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+23.0% EV</span>
-                        </div>
-                    </div>
-            
-                </div>
-            </div>
-        
-
-        
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #3b82f6;">NBA Rebounds Model Performance</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">Overall Record</div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: #ffffff;">0-0</div>
-                        <div style="font-size: 1rem; color: #10b981; margin-top: 0.25rem;">0.0% Win Rate</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">ROI</div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: #ef4444;">0.0%</div>
-                        <div style="font-size: 1rem; color: #ef4444; margin-top: 0.25rem;">0.00 Units</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">OVER Bets</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">0-0</div>
-                        <div style="font-size: 0.875rem; margin-top: 0.25rem;">
-                            <span style="color: #10b981;">0.0% Win</span> | 
-                            <span style="color: #ef4444;">0.0% ROI</span>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">UNDER Bets</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">0-0</div>
-                        <div style="font-size: 0.875rem; margin-top: 0.25rem;">
-                            <span style="color: #ef4444;">0.0% Win</span> | 
-                            <span style="color: #ef4444;">0.0% ROI</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-
-        <div class="card" style="text-align: center;">
-            <p style="color: #94a3b8; font-size: 0.875rem; line-height: 1.8;">Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ 9.5<br>Using strict edge requirements: 2.0+ above line (OVER) / 1.5+ below line (UNDER)</p>
-        </div>
-    </div>
 </body>
 </html>
