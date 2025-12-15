@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Points Props Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+
+        /* Summary Stats */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 20px; font-weight: 700; }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
+        }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+
+        /* Prop Card */
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+
+        /* --- UPDATED HEADER STYLES --- */
+        .card-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Space between logo and name */
+        }
+
+        .team-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            padding: 2px;
+            object-fit: contain;
+        }
+
+        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+
+        .game-meta {
+            text-align: right;
+        }
+        .game-date-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #333;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* ----------------------------- */
+
+        .card-body { padding: 20px; }
+
+        .bet-main-row { margin-bottom: 15px; }
+        .bet-selection { font-size: 22px; font-weight: 800; }
+        .bet-selection .line { color: var(--text-primary); }
+        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+
+        .model-subtext {
+            color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .model-subtext strong { color: var(--text-primary); }
+
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .metric-val { font-size: 16px; font-weight: 700; }
+
+        /* Player Stats Section */
+        .player-stats {
+            background-color: var(--bg-card-secondary);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        .player-stats-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .player-stats-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .player-stats-item {
+            text-align: center;
+            flex: 1;
+        }
+        .player-stats-divider {
+            width: 1px;
+            height: 30px;
+            background-color: var(--border-color);
+        }
+
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
+        
+        .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+        .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+        .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-box:last-child { grid-column: span 2; }
+            .card-header { padding: 12px 15px; }
+            .team-logo { width: 38px; height: 38px; }
+            .player-info h2 { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>NBA Points Props Model</h1>
+        <div class="date-sub">Profitable Version • Season 2025-26</div>
+    </header>
+
+    <section>
+        <div class="summary-grid">
+            <div class="stat-box"><div class="stat-label">Season ROI</div><div class="stat-value txt-green">+14.2%</div></div>
+            <div class="stat-box"><div class="stat-label">Win Rate</div><div class="stat-value">58.8%</div></div>
+            <div class="stat-box"><div class="stat-label">Record</div><div class="stat-value">64-45</div></div>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 9.5</span></div>
+
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" alt="OKC Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Shai Gilgeous-Alexander</h2>
+                        <div class="matchup-info">OKC vs WAS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection"><span class="txt-green">OVER</span> <span class="line">31.5 PTS</span> <span class="bet-odds">-115</span></div>
+                </div>
+                <div class="model-subtext">Model Predicts: <strong>36.4 PTS</strong> (Edge: +4.9)</div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.4</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+18.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">64%</span></div>
+                </div>
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">8-5</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">+22.3%</div>
+                    </div>
+                </div>
+                <div class="tags-container">
+                    <span class="tag tag-red">Opp allows 124.5 PPG (#30)</span>
+                    <span class="tag tag-green">Avg 34.2 L10 Games</span>
+                    <span class="tag tag-blue">High Pace Matchup</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png" alt="ORL Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Paolo Banchero</h2>
+                        <div class="matchup-info">ORL @ MIA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 8:00 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection"><span class="txt-red">UNDER</span> <span class="line">23.5 PTS</span> <span class="bet-odds">-110</span></div>
+                </div>
+                <div class="model-subtext">Model Predicts: <strong>19.8 PTS</strong> (Edge: -3.7)</div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">9.8</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.1%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">59%</span></div>
+                </div>
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">5-3</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">+15.8%</div>
+                    </div>
+                </div>
+                <div class="tags-container">
+                    <span class="tag tag-green">Elite Opp Defense (MIA)</span>
+                    <span class="tag tag-blue">Slow Pace Game</span>
+                    <span class="tag tag-red">Avg 21.0 L5 Games</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png" alt="IND Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>Tyrese Haliburton</h2>
+                        <div class="matchup-info">IND vs ATL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">Mon, Dec 15 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection"><span class="txt-green">OVER</span> <span class="line">20.5 PTS</span> <span class="bet-odds">+105</span></div>
+                </div>
+                <div class="model-subtext">Model Predicts: <strong>24.1 PTS</strong> (Edge: +3.6)</div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">9.6</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+14.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">57%</span></div>
+                </div>
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">3-2</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">+18.1%</div>
+                    </div>
+                </div>
+                <div class="tags-container">
+                    <span class="tag tag-red">Bad Opp Defense (ATL)</span>
+                    <span class="tag tag-blue">Highest Projected Total</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+</body>
+</html>
