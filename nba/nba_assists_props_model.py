@@ -535,7 +535,7 @@ def get_nba_player_assists_stats():
 
 
 def get_opponent_assists_factors():
-    """Fetch team-level matchup factors relevant to assists."""
+    """Fetch team-level matchup factors relevant to assists (what opponents allow)."""
     print(f"\n{Colors.CYAN}Fetching opponent assists factors...{Colors.END}")
 
     if os.path.exists(TEAM_ASSISTS_CACHE):
@@ -548,32 +548,69 @@ def get_opponent_assists_factors():
     assists_factors: dict[str, dict] = {}
 
     try:
-        team_stats = leaguedashteamstats.LeagueDashTeamStats(
+        # NBA team names (filter out WNBA teams)
+        nba_teams = {
+            'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets',
+            'Chicago Bulls', 'Cleveland Cavaliers', 'Dallas Mavericks', 'Denver Nuggets',
+            'Detroit Pistons', 'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers',
+            'LA Clippers', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies',
+            'Miami Heat', 'Milwaukee Bucks', 'Minnesota Timberwolves', 'New Orleans Pelicans',
+            'New York Knicks', 'Oklahoma City Thunder', 'Orlando Magic', 'Philadelphia 76ers',
+            'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs',
+            'Toronto Raptors', 'Utah Jazz', 'Washington Wizards'
+        }
+
+        # Fetch opponent stats (what each team ALLOWS)
+        opp_stats = leaguedashteamstats.LeagueDashTeamStats(
             season=CURRENT_SEASON,
-            measure_type_detailed_defense="Base",
-            per_mode_detailed="PerGame",
+            measure_type_detailed_defense="Opponent",
             timeout=30,
         )
-        team_df = team_stats.get_data_frames()[0]
+        opp_df = opp_stats.get_data_frames()[0]
         time.sleep(0.6)
 
-        for _, row in team_df.iterrows():
+        # Fetch advanced stats for pace
+        adv_stats = leaguedashteamstats.LeagueDashTeamStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense="Advanced",
+            timeout=30,
+        )
+        adv_df = adv_stats.get_data_frames()[0]
+        time.sleep(0.6)
+
+        # Create lookup for advanced stats
+        adv_lookup = {}
+        for _, row in adv_df.iterrows():
             team_name = row.get("TEAM_NAME", "")
-            if not team_name:
+            if team_name:
+                adv_lookup[team_name] = {
+                    "pace": row.get("PACE", 100)
+                }
+
+        # Process opponent stats
+        for _, row in opp_df.iterrows():
+            team_name = row.get("TEAM_NAME", "")
+            if not team_name or team_name not in nba_teams:
                 continue
 
-            opp_ast = float(row.get("OPP_AST", 0) or 0)
-            pace = float(row.get("PACE", 100) or 100)
+            # Opponent assists allowed PER GAME
+            opp_ast_total = float(row.get("OPP_AST", 0) or 0)
+            games_played = row.get("GP", 1)
+            opp_ast_per_game = opp_ast_total / games_played if games_played > 0 else 0
+
+            # Get pace from advanced stats
+            adv_data = adv_lookup.get(team_name, {})
+            pace = float(adv_data.get("pace", 100))
 
             # Typical league baselines
             baseline_opp_ast = 25.0
 
             # Assists factor based on opponent assists allowed and pace
-            assists_factor = (opp_ast / baseline_opp_ast) * (pace / 100.0)
+            assists_factor = (opp_ast_per_game / baseline_opp_ast) * (pace / 100.0)
 
             assists_factors[team_name] = {
-                "opp_ast_allowed": round(opp_ast, 2),
-                "pace": round(pace, 2),
+                "opp_ast_allowed": round(opp_ast_per_game, 1),
+                "pace": round(pace, 1),
                 "assists_factor": round(assists_factor, 3),
             }
 
@@ -605,7 +642,7 @@ def get_nba_team_rosters():
         "Philadelphia 76ers": ["Embiid", "Maxey", "Harris", "Oubre", "Batum", "McCain", "Drummond", "Reed", "Martin", "George"],
         "Brooklyn Nets": ["Johnson", "Claxton", "Thomas", "Finney-Smith", "Sharpe", "Whitehead", "Clowney", "Schroder", "Wilson"],
         "Utah Jazz": ["Markkanen", "Sexton", "Clarkson", "Collins", "Kessler", "Hendricks", "Williams"],
-        "Los Angeles Lakers": ["James", "Davis", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
+        "Los Angeles Lakers": ["James", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
         "Toronto Raptors": ["Quickley", "Poeltl", "Dick", "Battle", "Agbaji", "Shead", "Brown"],
         "Minnesota Timberwolves": ["Edwards", "Gobert", "McDaniels", "Conley", "Reid", "Alexander-Walker", "DiVincenzo", "Randle"],
         "New Orleans Pelicans": ["Williamson", "Ingram", "McCollum", "Murphy", "Alvarado", "Hawkins", "Jones"],
@@ -617,7 +654,7 @@ def get_nba_team_rosters():
         "San Antonio Spurs": ["Wembanyama", "Vassell", "Johnson", "Sochan", "Jones", "Branham", "Collins", "Castle", "Fox", "Barnes", "Harper"],
         "Los Angeles Clippers": ["Leonard", "Harden", "Westbrook", "Zubac", "Mann", "Powell", "Coffey", "Dunn"],
         "Denver Nuggets": ["Jokic", "Murray", "Porter", "Gordon", "Watson", "Braun", "Strawther", "Westbrook"],
-        "Dallas Mavericks": ["Doncic", "Irving", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
+        "Dallas Mavericks": ["Doncic", "Irving", "Davis", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
         "Sacramento Kings": ["Sabonis", "Murray", "DeRozan", "Huerter", "Monk", "McDermott"],
         "Memphis Grizzlies": ["Morant", "Bane", "Jackson", "Smart", "Williams", "Konchar", "Edey", "Wells"],
         "Cleveland Cavaliers": ["Mitchell", "Garland", "Mobley", "Allen", "LeVert", "Strus", "Okoro", "Wade"],

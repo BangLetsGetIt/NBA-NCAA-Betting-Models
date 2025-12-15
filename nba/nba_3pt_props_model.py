@@ -539,7 +539,7 @@ def get_nba_player_3pt_stats():
 
 
 def get_opponent_3pt_factors():
-    """Fetch team-level matchup factors relevant to 3-pointers."""
+    """Fetch team-level matchup factors relevant to 3-pointers (what opponents allow)."""
     print(f"\n{Colors.CYAN}Fetching opponent 3-pointers factors...{Colors.END}")
 
     if os.path.exists(TEAM_3PT_CACHE):
@@ -552,42 +552,81 @@ def get_opponent_3pt_factors():
     three_factors: dict[str, dict] = {}
 
     try:
-        team_stats = leaguedashteamstats.LeagueDashTeamStats(
+        # NBA team names (filter out WNBA teams)
+        nba_teams = {
+            'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets',
+            'Chicago Bulls', 'Cleveland Cavaliers', 'Dallas Mavericks', 'Denver Nuggets',
+            'Detroit Pistons', 'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers',
+            'LA Clippers', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies',
+            'Miami Heat', 'Milwaukee Bucks', 'Minnesota Timberwolves', 'New Orleans Pelicans',
+            'New York Knicks', 'Oklahoma City Thunder', 'Orlando Magic', 'Philadelphia 76ers',
+            'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs',
+            'Toronto Raptors', 'Utah Jazz', 'Washington Wizards'
+        }
+
+        # Fetch opponent stats (what each team ALLOWS)
+        opp_stats = leaguedashteamstats.LeagueDashTeamStats(
             season=CURRENT_SEASON,
-            measure_type_detailed_defense="Base",
-            per_mode_detailed="PerGame",
+            measure_type_detailed_defense="Opponent",
             timeout=30,
         )
-        team_df = team_stats.get_data_frames()[0]
+        opp_df = opp_stats.get_data_frames()[0]
         time.sleep(0.6)
 
-        for _, row in team_df.iterrows():
+        # Fetch advanced stats for pace
+        adv_stats = leaguedashteamstats.LeagueDashTeamStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense="Advanced",
+            timeout=30,
+        )
+        adv_df = adv_stats.get_data_frames()[0]
+        time.sleep(0.6)
+
+        # Create lookup for advanced stats
+        adv_lookup = {}
+        for _, row in adv_df.iterrows():
             team_name = row.get("TEAM_NAME", "")
-            if not team_name:
+            if team_name:
+                adv_lookup[team_name] = {
+                    "pace": row.get("PACE", 100)
+                }
+
+        # Process opponent stats
+        for _, row in opp_df.iterrows():
+            team_name = row.get("TEAM_NAME", "")
+            if not team_name or team_name not in nba_teams:
                 continue
 
-            opp_fg3m = float(row.get("OPP_FG3M", 0) or 0)
-            opp_fg3a = float(row.get("OPP_FG3A", 0) or 0)
+            # Opponent 3PT stats allowed PER GAME
+            opp_fg3m_total = float(row.get("OPP_FG3M", 0) or 0)
+            opp_fg3a_total = float(row.get("OPP_FG3A", 0) or 0)
             opp_fg3_pct = float(row.get("OPP_FG3_PCT", 0) or 0)
-            pace = float(row.get("PACE", 100) or 100)
+            games_played = row.get("GP", 1)
+
+            opp_fg3m_per_game = opp_fg3m_total / games_played if games_played > 0 else 0
+            opp_fg3a_per_game = opp_fg3a_total / games_played if games_played > 0 else 0
+
+            # Get pace from advanced stats
+            adv_data = adv_lookup.get(team_name, {})
+            pace = float(adv_data.get("pace", 100))
 
             # Typical league baselines
             baseline_opp_fg3m = 12.5
             baseline_opp_fg3a = 35.0
 
             # Factor based on opponent 3P defense (higher allowed = better for shooter)
-            fg3m_allowed_factor = (opp_fg3m / baseline_opp_fg3m) if baseline_opp_fg3m > 0 else 1.0
-            fg3a_allowed_factor = (opp_fg3a / baseline_opp_fg3a) if baseline_opp_fg3a > 0 else 1.0
+            fg3m_allowed_factor = (opp_fg3m_per_game / baseline_opp_fg3m) if baseline_opp_fg3m > 0 else 1.0
+            fg3a_allowed_factor = (opp_fg3a_per_game / baseline_opp_fg3a) if baseline_opp_fg3a > 0 else 1.0
             # Higher pace = more opportunities
             pace_factor = pace / 100.0
 
             three_factor = fg3m_allowed_factor * fg3a_allowed_factor * pace_factor
 
             three_factors[team_name] = {
-                "opp_fg3m_allowed": round(opp_fg3m, 2),
-                "opp_fg3a_allowed": round(opp_fg3a, 2),
+                "opp_fg3m_allowed": round(opp_fg3m_per_game, 1),
+                "opp_fg3a_allowed": round(opp_fg3a_per_game, 1),
                 "opp_fg3_pct_allowed": round(opp_fg3_pct, 3),
-                "pace": round(pace, 2),
+                "pace": round(pace, 1),
                 "three_point_factor": round(three_factor, 3),
             }
 
@@ -619,7 +658,7 @@ def get_nba_team_rosters():
         "Philadelphia 76ers": ["Embiid", "Maxey", "Harris", "Oubre", "Batum", "McCain", "Drummond", "Reed", "Martin", "George"],
         "Brooklyn Nets": ["Johnson", "Claxton", "Thomas", "Finney-Smith", "Sharpe", "Whitehead", "Clowney", "Schroder", "Wilson"],
         "Utah Jazz": ["Markkanen", "Sexton", "Clarkson", "Collins", "Kessler", "Hendricks", "Williams"],
-        "Los Angeles Lakers": ["James", "Davis", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
+        "Los Angeles Lakers": ["James", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
         "Toronto Raptors": ["Quickley", "Poeltl", "Dick", "Battle", "Agbaji", "Shead", "Brown"],
         "Minnesota Timberwolves": ["Edwards", "Gobert", "McDaniels", "Conley", "Reid", "Alexander-Walker", "DiVincenzo", "Randle"],
         "New Orleans Pelicans": ["Williamson", "Ingram", "McCollum", "Murphy", "Alvarado", "Hawkins", "Jones"],
@@ -631,7 +670,7 @@ def get_nba_team_rosters():
         "San Antonio Spurs": ["Wembanyama", "Vassell", "Johnson", "Sochan", "Jones", "Branham", "Collins", "Castle", "Fox", "Barnes", "Harper"],
         "Los Angeles Clippers": ["Leonard", "Harden", "Westbrook", "Zubac", "Mann", "Powell", "Coffey", "Dunn"],
         "Denver Nuggets": ["Jokic", "Murray", "Porter", "Gordon", "Watson", "Braun", "Strawther", "Westbrook"],
-        "Dallas Mavericks": ["Doncic", "Irving", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
+        "Dallas Mavericks": ["Doncic", "Irving", "Davis", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
         "Sacramento Kings": ["Sabonis", "Murray", "DeRozan", "Huerter", "Monk", "McDermott"],
         "Memphis Grizzlies": ["Morant", "Bane", "Jackson", "Smart", "Williams", "Konchar", "Edey", "Wells"],
         "Cleveland Cavaliers": ["Mitchell", "Garland", "Mobley", "Allen", "LeVert", "Strus", "Okoro", "Wade"],

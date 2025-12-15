@@ -539,7 +539,7 @@ def get_nba_player_rebounds_stats():
 
 
 def get_opponent_rebounding_factors():
-    """Fetch team-level matchup factors relevant to rebounding."""
+    """Fetch team-level matchup factors relevant to rebounding (what opponents allow)."""
     print(f"\n{Colors.CYAN}Fetching opponent rebounding factors...{Colors.END}")
 
     if os.path.exists(TEAM_REBOUNDING_CACHE):
@@ -552,39 +552,77 @@ def get_opponent_rebounding_factors():
     reb_factors: dict[str, dict] = {}
 
     try:
-        team_stats = leaguedashteamstats.LeagueDashTeamStats(
+        # NBA team names (filter out WNBA teams)
+        nba_teams = {
+            'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets',
+            'Chicago Bulls', 'Cleveland Cavaliers', 'Dallas Mavericks', 'Denver Nuggets',
+            'Detroit Pistons', 'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers',
+            'LA Clippers', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies',
+            'Miami Heat', 'Milwaukee Bucks', 'Minnesota Timberwolves', 'New Orleans Pelicans',
+            'New York Knicks', 'Oklahoma City Thunder', 'Orlando Magic', 'Philadelphia 76ers',
+            'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs',
+            'Toronto Raptors', 'Utah Jazz', 'Washington Wizards'
+        }
+
+        # Fetch opponent stats (what each team ALLOWS)
+        opp_stats = leaguedashteamstats.LeagueDashTeamStats(
             season=CURRENT_SEASON,
-            measure_type_detailed_defense="Base",
-            per_mode_detailed="PerGame",
+            measure_type_detailed_defense="Opponent",
             timeout=30,
         )
-        team_df = team_stats.get_data_frames()[0]
+        opp_df = opp_stats.get_data_frames()[0]
         time.sleep(0.6)
 
-        for _, row in team_df.iterrows():
+        # Fetch advanced stats for pace
+        adv_stats = leaguedashteamstats.LeagueDashTeamStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense="Advanced",
+            timeout=30,
+        )
+        adv_df = adv_stats.get_data_frames()[0]
+        time.sleep(0.6)
+
+        # Create lookup for advanced stats
+        adv_lookup = {}
+        for _, row in adv_df.iterrows():
             team_name = row.get("TEAM_NAME", "")
-            if not team_name:
+            if team_name:
+                adv_lookup[team_name] = {
+                    "pace": row.get("PACE", 100)
+                }
+
+        # Process opponent stats
+        for _, row in opp_df.iterrows():
+            team_name = row.get("TEAM_NAME", "")
+            if not team_name or team_name not in nba_teams:
                 continue
 
-            opp_reb = float(row.get("OPP_REB", 0) or 0)
-            opp_oreb = row.get("OPP_OREB")
-            opp_oreb = float(opp_oreb) if opp_oreb is not None else None
-            pace = float(row.get("PACE", 100) or 100)
+            # Opponent rebounds allowed PER GAME
+            opp_reb_total = float(row.get("OPP_REB", 0) or 0)
+            opp_oreb_total = float(row.get("OPP_OREB", 0) or 0)
+            games_played = row.get("GP", 1)
+            
+            opp_reb_per_game = opp_reb_total / games_played if games_played > 0 else 0
+            opp_oreb_per_game = opp_oreb_total / games_played if games_played > 0 else 0
+
+            # Get pace from advanced stats
+            adv_data = adv_lookup.get(team_name, {})
+            pace = float(adv_data.get("pace", 100))
 
             # Typical league baselines
             baseline_opp_reb = 44.0
             baseline_opp_oreb = 11.0
 
             oreb_allowed_factor = 1.0
-            if opp_oreb is not None and opp_oreb > 0:
-                oreb_allowed_factor = max(0.85, min(1.20, opp_oreb / baseline_opp_oreb))
+            if opp_oreb_per_game > 0:
+                oreb_allowed_factor = max(0.85, min(1.20, opp_oreb_per_game / baseline_opp_oreb))
 
-            reb_factor = (opp_reb / baseline_opp_reb) * (pace / 100.0) * oreb_allowed_factor
+            reb_factor = (opp_reb_per_game / baseline_opp_reb) * (pace / 100.0) * oreb_allowed_factor
 
             reb_factors[team_name] = {
-                "opp_reb_allowed": round(opp_reb, 2),
-                "opp_oreb_allowed": round(opp_oreb, 2) if opp_oreb is not None else None,
-                "pace": round(pace, 2),
+                "opp_reb_allowed": round(opp_reb_per_game, 1),
+                "opp_oreb_allowed": round(opp_oreb_per_game, 1),
+                "pace": round(pace, 1),
                 "rebounding_factor": round(reb_factor, 3),
             }
 
@@ -616,7 +654,7 @@ def get_nba_team_rosters():
         "Philadelphia 76ers": ["Embiid", "Maxey", "Harris", "Oubre", "Batum", "McCain", "Drummond", "Reed", "Martin", "George"],
         "Brooklyn Nets": ["Johnson", "Claxton", "Thomas", "Finney-Smith", "Sharpe", "Whitehead", "Clowney", "Schroder", "Wilson"],
         "Utah Jazz": ["Markkanen", "Sexton", "Clarkson", "Collins", "Kessler", "Hendricks", "Williams"],
-        "Los Angeles Lakers": ["James", "Davis", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
+        "Los Angeles Lakers": ["James", "Reaves", "Russell", "Hachimura", "Reddish", "Prince", "Christie", "Knecht"],
         "Toronto Raptors": ["Quickley", "Poeltl", "Dick", "Battle", "Agbaji", "Shead", "Brown"],
         "Minnesota Timberwolves": ["Edwards", "Gobert", "McDaniels", "Conley", "Reid", "Alexander-Walker", "DiVincenzo", "Randle"],
         "New Orleans Pelicans": ["Williamson", "Ingram", "McCollum", "Murphy", "Alvarado", "Hawkins", "Jones"],
@@ -628,7 +666,7 @@ def get_nba_team_rosters():
         "San Antonio Spurs": ["Wembanyama", "Vassell", "Johnson", "Sochan", "Jones", "Branham", "Collins", "Castle", "Fox", "Barnes", "Harper"],
         "Los Angeles Clippers": ["Leonard", "Harden", "Westbrook", "Zubac", "Mann", "Powell", "Coffey", "Dunn"],
         "Denver Nuggets": ["Jokic", "Murray", "Porter", "Gordon", "Watson", "Braun", "Strawther", "Westbrook"],
-        "Dallas Mavericks": ["Doncic", "Irving", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
+        "Dallas Mavericks": ["Doncic", "Irving", "Davis", "Washington", "Gafford", "Lively", "Grimes", "Kleber", "Exum"],
         "Sacramento Kings": ["Sabonis", "Murray", "DeRozan", "Huerter", "Monk", "McDermott"],
         "Memphis Grizzlies": ["Morant", "Bane", "Jackson", "Smart", "Williams", "Konchar", "Edey", "Wells"],
         "Cleveland Cavaliers": ["Mitchell", "Garland", "Mobley", "Allen", "LeVert", "Strus", "Okoro", "Wade"],
