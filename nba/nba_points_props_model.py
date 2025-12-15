@@ -8,6 +8,7 @@ Focuses on scoring ability, opponent defense, and matchup advantages
 import requests
 import json
 import os
+import re
 from datetime import datetime, timedelta
 import pytz
 from collections import defaultdict
@@ -26,19 +27,20 @@ load_dotenv()
 # Configuration
 API_KEY = os.getenv('ODDS_API_KEY')
 if not API_KEY:
-    raise ValueError("ODDS_API_KEY environment variable not set. Please add it to your .env file.")
+    # Keep the script importable so scheduled grading can still run.
+    # The key is only required when fetching odds (get_player_props()).
+    print("⚠️  ODDS_API_KEY environment variable not set. Odds fetching will fail until it's provided.")
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "nba_points_props.html")
-TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_points_props_tracking.json")
 PLAYER_STATS_CACHE = os.path.join(SCRIPT_DIR, "nba_player_points_stats_cache.json")
 TEAM_DEFENSE_CACHE = os.path.join(SCRIPT_DIR, "nba_team_defense_cache.json")
+TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_points_props_tracking.json")
 
 # Model Parameters - EXTREMELY STRICT FOR PROFITABILITY
 MIN_AI_SCORE = 9.5  # Only show high-confidence plays
 TOP_PLAYS_COUNT = 5  # Quality over quantity
 RECENT_GAMES_WINDOW = 10  # 10 games for recent form
-AUTO_TRACK_THRESHOLD = 9.7  # Only track elite plays
 CURRENT_SEASON = '2025-26'
 
 # Edge requirements - Points are more predictable than assists, but still strict
@@ -55,6 +57,328 @@ class Colors:
     BLUE = '\033[94m'
     BOLD = '\033[1m'
     END = '\033[0m'
+
+# =============================================================================
+# TRACKING FUNCTIONS
+# =============================================================================
+
+def load_tracking_data():
+    """Load tracking data from JSON file"""
+    if os.path.exists(TRACKING_FILE):
+        with open(TRACKING_FILE, 'r') as f:
+            return json.load(f)
+    return {'picks': [], 'summary': {}}
+
+def save_tracking_data(tracking_data):
+    """Save tracking data to JSON file"""
+    with open(TRACKING_FILE, 'w') as f:
+        json.dump(tracking_data, f, indent=2)
+
+def track_new_picks(over_plays, under_plays):
+    """Track new picks in the tracking file"""
+    tracking_data = load_tracking_data()
+    
+    print(f"\n{Colors.CYAN}{'='*90}{Colors.END}")
+    print(f"{Colors.CYAN}📊 TRACKING NEW PICKS{Colors.END}")
+    print(f"{Colors.CYAN}{'='*90}{Colors.END}")
+    
+    new_count = 0
+    updated_count = 0
+    
+    for play in over_plays + under_plays:
+        # Extract prop line from prop string (e.g., "OVER 23.5 PTS" -> 23.5)
+        prop_str = play.get('prop', '')
+        bet_type = 'over' if 'OVER' in prop_str else 'under'
+        
+        # Parse prop line from string
+        import re
+        match = re.search(r'(\d+\.?\d*)', prop_str)
+        prop_line = float(match.group(1)) if match else 0
+        
+        # Generate unique pick ID
+        pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
+        
+        # Check if pick already exists
+        existing_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
+        
+        if existing_pick:
+            # Update latest odds if different
+            if existing_pick.get('latest_odds') != play.get('odds'):
+                existing_pick['latest_odds'] = play.get('odds')
+                existing_pick['last_updated'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+                updated_count += 1
+        else:
+            # Add new pick
+            new_pick = {
+                'pick_id': pick_id,
+                'player': play['player'],
+                'prop_line': prop_line,
+                'bet_type': bet_type,
+                'team': play.get('team'),
+                'opponent': play.get('opponent'),
+                'ai_score': play.get('ai_score'),
+                'odds': play.get('odds'),
+                'opening_odds': play.get('odds'),
+                'latest_odds': play.get('odds'),
+                'game_time': play.get('game_time'),
+                'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
+                'status': 'pending',
+                'result': None,
+                'actual_pts': None
+            }
+            tracking_data['picks'].append(new_pick)
+            new_count += 1
+    
+    save_tracking_data(tracking_data)
+    
+    if new_count > 0:
+        print(f"{Colors.GREEN}✓ Tracked {new_count} new picks{Colors.END}")
+    if updated_count > 0:
+        print(f"{Colors.YELLOW}✓ Updated odds for {updated_count} existing picks{Colors.END}")
+    if new_count == 0 and updated_count == 0:
+        print(f"{Colors.CYAN}No new picks to track{Colors.END}")
+
+def grade_pending_picks():
+    """Grade pending picks by fetching actual stats from NBA API"""
+    tracking_data = load_tracking_data()
+    pending_picks = [p for p in tracking_data['picks'] if p.get('status') == 'pending']
+    
+    if not pending_picks:
+        print(f"\n{Colors.GREEN}✓ No pending picks to grade{Colors.END}")
+        return
+    
+    print(f"\n{Colors.CYAN}{'='*90}{Colors.END}")
+    print(f"{Colors.CYAN}🎯 GRADING PENDING PICKS{Colors.END}")
+    print(f"{Colors.CYAN}{'='*90}{Colors.END}")
+    print(f"\n{Colors.YELLOW}📋 Found {len(pending_picks)} pending picks...{Colors.END}\n")
+    
+    graded_count = 0
+    
+    for pick in pending_picks:
+        # Check if game has passed (add 4 hour buffer for games to complete)
+        try:
+            game_time_str = pick.get('game_time')
+            if not game_time_str:
+                continue
+                
+            game_time_utc = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+            current_time = datetime.now(pytz.UTC)
+            hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
+            
+            if hours_since_game < 4:
+                continue  # Game too recent, wait for stats
+            
+            # Fetch actual points from NBA API
+            player_name = pick.get('player')
+            team_name = pick.get('team')
+            game_date = game_time_utc.strftime('%Y-%m-%d')
+            
+            actual_pts = fetch_player_points_from_nba_api(player_name, team_name, game_date)
+            
+            if actual_pts is None:
+                print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date}{Colors.END}")
+                continue
+            
+            # Grade the pick
+            prop_line = pick.get('prop_line')
+            bet_type = pick.get('bet_type')
+            
+            if bet_type == 'over':
+                is_win = actual_pts > prop_line
+            else:  # under
+                is_win = actual_pts < prop_line
+            
+            # Calculate profit/loss - USE OPENING ODDS (the odds the bet was actually placed at)
+            # opening_odds is the odds when pick was first tracked, odds might be updated later
+            odds = pick.get('opening_odds') or pick.get('odds', -110)
+            if is_win:
+                if odds > 0:
+                    profit_loss = int(odds)  # Store as cents
+                else:
+                    profit_loss = int((100.0 / abs(odds)) * 100)  # Store as cents
+                status = 'win'
+                result = 'WIN'
+                result_color = Colors.GREEN
+            else:
+                profit_loss = -100  # Lost 1 unit (100 cents)
+                status = 'loss'
+                result = 'LOSS'
+                result_color = Colors.RED
+            
+            # Update pick - CRITICAL: Always set profit_loss when grading
+            pick['status'] = status
+            pick['result'] = result
+            pick['actual_pts'] = actual_pts
+            pick['profit_loss'] = profit_loss  # Always set this for accurate ROI
+            pick['updated_at'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+            
+            print(f"    {result_color}{result}{Colors.END}: {player_name} had {actual_pts} points (line: {prop_line}, bet: {bet_type.upper()}) | Profit: {profit_loss/100.0:.2f} units")
+            graded_count += 1
+            
+        except Exception as e:
+            print(f"{Colors.RED}  Error grading pick {pick.get('player')}: {e}{Colors.END}")
+            continue
+    
+    if graded_count > 0:
+        save_tracking_data(tracking_data)
+        print(f"\n{Colors.GREEN}✓ Graded {graded_count} picks{Colors.END}")
+    else:
+        print(f"\n{Colors.YELLOW}No picks ready for grading yet{Colors.END}")
+
+def backfill_profit_loss():
+    """Backfill profit_loss for graded picks that are missing it - CRITICAL for accurate ROI"""
+    tracking_data = load_tracking_data()
+    updated_count = 0
+    
+    for pick in tracking_data['picks']:
+        # Only process picks that are graded but missing profit_loss
+        if pick.get('status') in ['win', 'loss'] and 'profit_loss' not in pick:
+            # USE OPENING ODDS (the odds the bet was actually placed at)
+            odds = pick.get('opening_odds') or pick.get('odds', -110)
+            if pick.get('status') == 'win':
+                if odds > 0:
+                    # Positive odds: +150 means bet $100 to win $150, profit = 150 cents
+                    profit_loss = int(odds)
+                else:
+                    # Negative odds: -110 means bet $110 to win $100, profit = (100/110)*100 = 91 cents
+                    profit_loss = int((100.0 / abs(odds)) * 100)
+            else:  # loss
+                # Lost the bet: -100 cents (lost 1 unit)
+                profit_loss = -100
+            
+            pick['profit_loss'] = profit_loss
+            pick['profit_loss_backfilled'] = True
+            updated_count += 1
+    
+    if updated_count > 0:
+        save_tracking_data(tracking_data)
+        print(f"{Colors.GREEN}✓ Backfilled profit_loss for {updated_count} picks{Colors.END}")
+    
+    return updated_count
+
+def calculate_tracking_stats(tracking_data):
+    """Calculate performance statistics from tracking data - CRITICAL: Requires profit_loss field"""
+    completed_picks = [p for p in tracking_data['picks'] if p.get('status') in ['win', 'loss']]
+    
+    if not completed_picks:
+        return {
+            'total': 0,
+            'wins': 0,
+            'losses': 0,
+            'win_rate': 0.0,
+            'total_profit': 0.0,
+            'roi': 0.0,
+            'roi_pct': 0.0,
+            'over_record': '0-0',
+            'over_win_rate': 0.0,
+            'over_roi': 0.0,
+            'under_record': '0-0',
+            'under_win_rate': 0.0,
+            'under_roi': 0.0
+        }
+    
+    # Validate that all completed picks have profit_loss
+    missing_profit = [p for p in completed_picks if 'profit_loss' not in p]
+    if missing_profit:
+        print(f"{Colors.YELLOW}⚠ WARNING: {len(missing_profit)} completed picks missing profit_loss - ROI may be inaccurate{Colors.END}")
+        print(f"{Colors.YELLOW}  Run backfill_profit_loss() to fix this{Colors.END}")
+    
+    wins = sum(1 for p in completed_picks if p.get('status') == 'win')
+    losses = sum(1 for p in completed_picks if p.get('status') == 'loss')
+    total = wins + losses
+    win_rate = (wins / total * 100) if total > 0 else 0.0
+    
+    # Calculate profit in units (cents / 100) - only use picks with profit_loss
+    # If profit_loss is missing, calculate it on the fly (shouldn't happen after backfill)
+    total_profit_cents = 0
+    for p in completed_picks:
+        if 'profit_loss' in p:
+            total_profit_cents += p['profit_loss']
+        else:
+            # Calculate on the fly if missing (fallback) - use opening_odds
+            odds = p.get('opening_odds') or p.get('odds', -110)
+            if p.get('status') == 'win':
+                if odds > 0:
+                    total_profit_cents += int(odds)
+                else:
+                    total_profit_cents += int((100.0 / abs(odds)) * 100)
+            else:
+                total_profit_cents -= 100
+    
+    total_profit_units = total_profit_cents / 100.0
+    
+    # ROI = (profit / total bets) * 100
+    roi_pct = (total_profit_units / total * 100) if total > 0 else 0.0
+    
+    # Calculate OVER stats
+    over_picks = [p for p in completed_picks if p.get('bet_type') == 'over']
+    over_wins = sum(1 for p in over_picks if p.get('status') == 'win')
+    over_losses = sum(1 for p in over_picks if p.get('status') == 'loss')
+    over_total = over_wins + over_losses
+    over_win_rate = (over_wins / over_total * 100) if over_total > 0 else 0.0
+    
+    over_profit_cents = 0
+    for p in over_picks:
+        if 'profit_loss' in p:
+            over_profit_cents += p['profit_loss']
+        else:
+            # Calculate on the fly if missing - use opening_odds
+            odds = p.get('opening_odds') or p.get('odds', -110)
+            if p.get('status') == 'win':
+                if odds > 0:
+                    over_profit_cents += int(odds)
+                else:
+                    over_profit_cents += int((100.0 / abs(odds)) * 100)
+            else:
+                over_profit_cents -= 100
+    
+    over_profit_units = over_profit_cents / 100.0
+    over_roi = (over_profit_units / over_total * 100) if over_total > 0 else 0.0
+    
+    # Calculate UNDER stats
+    under_picks = [p for p in completed_picks if p.get('bet_type') == 'under']
+    under_wins = sum(1 for p in under_picks if p.get('status') == 'win')
+    under_losses = sum(1 for p in under_picks if p.get('status') == 'loss')
+    under_total = under_wins + under_losses
+    under_win_rate = (under_wins / under_total * 100) if under_total > 0 else 0.0
+    
+    under_profit_cents = 0
+    for p in under_picks:
+        if 'profit_loss' in p:
+            under_profit_cents += p['profit_loss']
+        else:
+            # Calculate on the fly if missing - use opening_odds
+            odds = p.get('opening_odds') or p.get('odds', -110)
+            if p.get('status') == 'win':
+                if odds > 0:
+                    under_profit_cents += int(odds)
+                else:
+                    under_profit_cents += int((100.0 / abs(odds)) * 100)
+            else:
+                under_profit_cents -= 100
+    
+    under_profit_units = under_profit_cents / 100.0
+    under_roi = (under_profit_units / under_total * 100) if under_total > 0 else 0.0
+    
+    return {
+        'total': total,
+        'wins': wins,
+        'losses': losses,
+        'win_rate': round(win_rate, 2),
+        'total_profit': round(total_profit_units, 2),
+        'roi': round(total_profit_units, 2),
+        'roi_pct': round(roi_pct, 2),
+        'over_record': f'{over_wins}-{over_losses}',
+        'over_win_rate': round(over_win_rate, 2),
+        'over_roi': round(over_roi, 2),
+        'under_record': f'{under_wins}-{under_losses}',
+        'under_win_rate': round(under_win_rate, 2),
+        'under_roi': round(under_roi, 2)
+    }
+
+# =============================================================================
+# DATA FETCHING
+# =============================================================================
 
 def get_nba_player_points_stats():
     """
@@ -252,7 +576,7 @@ def get_nba_team_rosters():
         'Chicago Bulls': ['LaVine', 'Vucevic', 'Williams', 'Dosunmu', 'White', 'Giddey', 'Ball'],
         'Charlotte Hornets': ['Ball', 'Miller', 'Bridges', 'Williams', 'Richards', 'Martin', 'Knueppel', 'Green'],
         'Detroit Pistons': ['Cunningham', 'Ivey', 'Duren', 'Harris', 'Beasley', 'Stewart', 'Thompson', 'Holland', 'Robinson'],
-        'Houston Rockets': ['Green', 'Smith', 'Sengun', 'VanVleet', 'Dillon', 'Thompson', 'Whitmore', 'Eason'],
+        'Houston Rockets': ['Green', 'Smith', 'Sengun', 'VanVleet', 'Dillon', 'Thompson', 'Whitmore', 'Eason', 'Sheppard'],
         'Portland Trail Blazers': ['Simons', 'Grant', 'Sharpe', 'Ayton', 'Thybulle', 'Camara', 'Henderson', 'Clingan'],
     }
     return rosters
@@ -281,109 +605,9 @@ def match_player_to_team(player_name, home_team, away_team, rosters):
     # Fallback: default to home team if no match found
     return home_team, away_team
 
-def load_tracking():
-    """Load tracking data from JSON file"""
-    if os.path.exists(TRACKING_FILE):
-        try:
-            with open(TRACKING_FILE, 'r') as f:
-                return json.load(f)
-        except:
-            pass
-    return {'picks': [], 'summary': {'total': 0, 'wins': 0, 'losses': 0, 'pending': 0, 'win_rate': 0.0, 'roi': 0.0}}
-
-def save_tracking(tracking_data):
-    """Save tracking data to JSON file"""
-    try:
-        with open(TRACKING_FILE, 'w') as f:
-            json.dump(tracking_data, indent=2, fp=f)
-        return True
-    except Exception as e:
-        print(f"{Colors.RED}✗ Error saving tracking: {e}{Colors.END}")
-        return False
-
-def calculate_tracking_summary(picks, displayed_plays=None):
-    """Calculate summary statistics from picks, optionally filtered to displayed plays only"""
-    if displayed_plays:
-        # Create set of displayed play IDs for filtering
-        displayed_ids = set()
-        for play in displayed_plays:
-            prop_line = float(play['prop'].split()[1])
-            bet_type = 'over' if 'OVER' in play['prop'] else 'under'
-            displayed_ids.add(f"{play['player']}_{prop_line}_{bet_type}")
-        
-        # Filter picks to only those currently displayed
-        picks = [p for p in picks if f"{p['player']}_{p['prop_line']}_{p['bet_type']}" in displayed_ids]
-    
-    total = len(picks)
-    wins = len([p for p in picks if p.get('status', '').lower() == 'win'])
-    losses = len([p for p in picks if p.get('status', '').lower() == 'loss'])
-    pending = len([p for p in picks if p.get('status', '').lower() == 'pending'])
-
-    completed = wins + losses
-    win_rate = (wins / completed * 100) if completed > 0 else 0.0
-    roi = (wins * 0.91 - losses * 1.0)
-    roi_pct = (roi / total * 100) if total > 0 else 0.0
-
-    clv_picks = [p for p in picks if p.get('opening_odds') and p.get('latest_odds')]
-    positive_clv = len([p for p in clv_picks if p.get('latest_odds', 0) < p.get('opening_odds', 0)])
-    clv_rate = (positive_clv / len(clv_picks) * 100) if clv_picks else 0.0
-
-    return {
-        'total': total,
-        'wins': wins,
-        'losses': losses,
-        'pending': pending,
-        'win_rate': win_rate,
-        'roi': roi,
-        'roi_pct': roi_pct,
-        'clv_rate': clv_rate,
-        'clv_count': f"{positive_clv}/{len(clv_picks)}"
-    }
-
 # ============================================================================
 # A.I. RATING SYSTEM (Probability-Based for Props)
 # ============================================================================
-
-def get_historical_performance_by_edge_props(tracking_data):
-    """Calculate win rates by EV/edge magnitude for props (probability-based)"""
-    picks = tracking_data.get('picks', [])
-    completed_picks = [p for p in picks if p.get('status') in ['win', 'loss']]
-    
-    from collections import defaultdict
-    edge_ranges = defaultdict(lambda: {'wins': 0, 'losses': 0})
-    
-    for pick in completed_picks:
-        # Use EV as edge proxy (EV is percentage-based)
-        ev = abs(float(pick.get('ev', 0)))
-        status = pick.get('status', '')
-        
-        # Probability/EV edge range buckets (in percentage points)
-        if ev >= 15:
-            range_key = "15%+"
-        elif ev >= 12:
-            range_key = "12-14.9%"
-        elif ev >= 10:
-            range_key = "10-11.9%"
-        elif ev >= 8:
-            range_key = "8-9.9%"
-        elif ev >= 5:
-            range_key = "5-7.9%"
-        else:
-            range_key = "0-4.9%"
-        
-        if status == 'win':
-            edge_ranges[range_key]['wins'] += 1
-        elif status == 'loss':
-            edge_ranges[range_key]['losses'] += 1
-    
-    performance_by_edge = {}
-    for range_key, stats in edge_ranges.items():
-        total = stats['wins'] + stats['losses']
-        if total >= 5:  # Only use ranges with sufficient data
-            win_rate = stats['wins'] / total if total > 0 else 0.5
-            performance_by_edge[range_key] = win_rate
-    
-    return performance_by_edge
 
 def calculate_probability_edge(ai_score, season_avg, recent_avg, prop_line, odds, bet_type):
     """Calculate probability edge for props (model prob - market prob)"""
@@ -417,7 +641,7 @@ def calculate_probability_edge(ai_score, season_avg, recent_avg, prop_line, odds
     prob_edge = abs(model_prob - implied_prob)
     return prob_edge
 
-def calculate_ai_rating_props(play, historical_edge_performance):
+def calculate_ai_rating_props(play):
     """
     Calculate A.I. Rating for props models (probability-based edges)
     Returns rating in 2.3-4.9 range
@@ -445,28 +669,6 @@ def calculate_ai_rating_props(play, historical_edge_performance):
     # Data quality (assume high if we have AI score and stats)
     data_quality = 1.0 if play.get('ai_score', 0) >= 9.0 else 0.85
     
-    # Historical performance factor
-    historical_factor = 1.0
-    if historical_edge_performance:
-        ev = abs(play.get('ev', 0))
-        if ev >= 15:
-            range_key = "15%+"
-        elif ev >= 12:
-            range_key = "12-14.9%"
-        elif ev >= 10:
-            range_key = "10-11.9%"
-        elif ev >= 8:
-            range_key = "8-9.9%"
-        elif ev >= 5:
-            range_key = "5-7.9%"
-        else:
-            range_key = "0-4.9%"
-        
-        if range_key in historical_edge_performance:
-            hist_win_rate = historical_edge_performance[range_key]
-            historical_factor = 0.9 + (hist_win_rate - 0.55) * 2.0
-            historical_factor = max(0.9, min(1.1, historical_factor))
-    
     # Model confidence factor (based on AI score and EV)
     confidence = 1.0
     ai_score = play.get('ai_score', 0)
@@ -485,51 +687,14 @@ def calculate_ai_rating_props(play, historical_edge_performance):
     
     confidence = max(0.9, min(1.15, confidence))
     
-    # Calculate composite rating
-    composite_rating = normalized_edge * data_quality * historical_factor * confidence
+    # Calculate composite rating (without historical factor)
+    composite_rating = normalized_edge * data_quality * confidence
     
     # Scale to 2.3-4.9 range
     ai_rating = 2.3 + (composite_rating / 5.0) * 2.6
     ai_rating = max(2.3, min(4.9, ai_rating))
     
     return round(ai_rating, 1)
-
-def track_pick(player_name, prop_line, bet_type, team, opponent, ai_score, odds, game_time):
-    """Add a pick to tracking file"""
-    tracking_data = load_tracking()
-    pick_id = f"{player_name}_{prop_line}_{bet_type}_{game_time}"
-    
-    existing = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
-    if existing:
-        if odds != existing.get('odds'):
-            existing['opening_odds'] = existing.get('opening_odds', existing.get('odds'))
-            existing['latest_odds'] = odds
-            existing['last_updated'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
-            save_tracking(tracking_data)
-        return False
-
-    pick = {
-        'pick_id': pick_id,
-        'player': player_name,
-        'prop_line': prop_line,
-        'bet_type': bet_type,
-        'team': team,
-        'opponent': opponent,
-        'ai_score': ai_score,
-        'odds': odds,
-        'opening_odds': odds,
-        'latest_odds': odds,
-        'game_time': game_time,
-        'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
-        'status': 'pending',
-        'result': None,
-        'actual_pts': None
-    }
-
-    tracking_data['picks'].append(pick)
-    # Don't recalculate summary here - it will be recalculated in main() based on displayed plays
-    save_tracking(tracking_data)
-    return True
 
 def fetch_player_points_from_nba_api(player_name, team_name, game_date_str):
     """
@@ -592,72 +757,6 @@ def fetch_player_points_from_nba_api(player_name, team_name, game_date_str):
         print(f"{Colors.YELLOW}  Error fetching stats from NBA API for {player_name}: {str(e)}{Colors.END}")
         return None
 
-def update_pick_results():
-    """Check pending picks and update their status using NBA API"""
-    tracking_data = load_tracking()
-    pending_picks = [p for p in tracking_data['picks'] if p.get('status', '').lower() == 'pending']
-
-    if not pending_picks:
-        return 0
-
-    print(f"\n{Colors.CYAN}Checking {len(pending_picks)} pending picks...{Colors.END}")
-    updated = 0
-    et = pytz.timezone('US/Eastern')
-    current_time = datetime.now(et)
-
-    for pick in pending_picks:
-        try:
-            game_dt = datetime.fromisoformat(pick['game_time'].replace('Z', '+00:00'))
-            game_dt_et = game_dt.astimezone(et)
-            hours_ago = (current_time - game_dt_et).total_seconds() / 3600
-
-            # Only check games that finished at least 4 hours ago
-            if hours_ago > 4:
-                game_date_str = game_dt_et.strftime('%Y-%m-%d')
-                player_name = pick['player']
-                team_name = pick['team']
-                
-                print(f"{Colors.CYAN}  Checking {player_name} ({team_name}) from {game_date_str}...{Colors.END}")
-                
-                # Fetch actual points
-                actual_points = fetch_player_points_from_nba_api(player_name, team_name, game_date_str)
-                
-                if actual_points is None:
-                    print(f"{Colors.YELLOW}    Could not fetch stats, skipping...{Colors.END}")
-                    continue
-                
-                # Determine win/loss
-                prop_line = pick['prop_line']
-                bet_type = pick['bet_type'].lower()
-                
-                if bet_type == 'over':
-                    is_win = actual_points > prop_line
-                else:  # under
-                    is_win = actual_points < prop_line
-                
-                # Update pick
-                pick['status'] = 'win' if is_win else 'loss'
-                pick['result'] = 'WIN' if is_win else 'LOSS'
-                pick['actual_pts'] = actual_points
-                pick['updated_at'] = current_time.isoformat()
-                
-                result_str = f"{Colors.GREEN}WIN{Colors.END}" if is_win else f"{Colors.RED}LOSS{Colors.END}"
-                print(f"    {result_str}: {player_name} had {actual_points} points (line: {prop_line}, bet: {bet_type.upper()})")
-                updated += 1
-                
-                # Small delay to avoid rate limiting
-                time.sleep(0.5)
-
-        except Exception as e:
-            print(f"{Colors.RED}    Error processing pick: {e}{Colors.END}")
-            continue
-
-    if updated > 0:
-        # Save updated picks - summary will be recalculated in main() based on displayed plays
-        save_tracking(tracking_data)
-        print(f"\n{Colors.GREEN}✓ Updated {updated} picks{Colors.END}")
-
-    return updated
 
 def get_player_props():
     """Fetch player points prop odds from The Odds API"""
@@ -680,6 +779,21 @@ def get_player_props():
             event_id = event['id']
             home_team = event['home_team']
             away_team = event['away_team']
+
+            # Skip games that haven't started or completed yet
+            try:
+                game_time_str = event.get('commence_time')
+                if game_time_str:
+                    game_time_utc = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+                    current_time = datetime.now(pytz.UTC)
+                    hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
+                    
+                    # Skip if game hasn't started (future) or hasn't completed (less than 4 hours ago)
+                    if hours_since_game < 4:
+                        continue  # Skip this game
+            except Exception as e:
+                # If we can't parse the time, skip this game to be safe
+                continue
 
             odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
             odds_params = {
@@ -893,7 +1007,7 @@ def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
     
     return ev * 100  # Return as percentage
 
-def analyze_props(props_list, player_stats, defense_factors, historical_edge_performance=None):
+def analyze_props(props_list, player_stats, defense_factors):
     """Analyze all player props using REAL NBA stats"""
     print(f"\n{Colors.CYAN}Analyzing {len(props_list)} player props with REAL stats...{Colors.END}")
 
@@ -935,7 +1049,6 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
             if season_avg >= prop_line + 0.5 and recent_avg >= prop_line + 0.3:
                 # Calculate EV
                 ev = calculate_ev(over_score, prop_line, season_avg, recent_avg, prop['over_price'], 'over')
-                is_sharp = over_score >= AUTO_TRACK_THRESHOLD and ev > 0
                 
                 # Calculate probability edge
                 prob_edge = calculate_probability_edge(over_score, season_avg, recent_avg, prop_line, prop['over_price'], 'over')
@@ -945,6 +1058,8 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
                     'prop': f"OVER {prop_line} PTS",
                     'team': prop['team'],
                     'opponent': opponent_team,
+                    'home_team': prop.get('home_team', ''),
+                    'away_team': prop.get('away_team', ''),
                     'ai_score': over_score,
                     'odds': prop['over_price'],
                     'game_time': prop['game_time'],
@@ -952,14 +1067,12 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
                     'recent_avg': recent_avg,
                     'edge': round(season_avg - prop_line, 2),
                     'ev': round(ev, 2),
-                    'probability_edge': prob_edge,
-                    'is_sharp': is_sharp
+                    'probability_edge': prob_edge
                 }
                 
                 # Calculate A.I. Rating
-                if historical_edge_performance:
-                    ai_rating = calculate_ai_rating_props(play_dict, historical_edge_performance)
-                    play_dict['ai_rating'] = ai_rating
+                ai_rating = calculate_ai_rating_props(play_dict)
+                play_dict['ai_rating'] = ai_rating
                 
                 over_plays.append(play_dict)
             else:
@@ -975,7 +1088,6 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
             if season_avg <= prop_line - 0.5 and recent_avg <= prop_line - 0.3:
                 # Calculate EV
                 ev = calculate_ev(under_score, prop_line, season_avg, recent_avg, prop['over_price'], 'under')
-                is_sharp = under_score >= AUTO_TRACK_THRESHOLD and ev > 0
                 
                 # Calculate probability edge
                 prob_edge = calculate_probability_edge(under_score, season_avg, recent_avg, prop_line, prop['over_price'], 'under')
@@ -985,6 +1097,8 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
                     'prop': f"UNDER {prop_line} PTS",
                     'team': prop['team'],
                     'opponent': opponent_team,
+                    'home_team': prop.get('home_team', ''),
+                    'away_team': prop.get('away_team', ''),
                     'ai_score': under_score,
                     'odds': prop['over_price'],
                     'game_time': prop['game_time'],
@@ -992,14 +1106,12 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
                     'recent_avg': recent_avg,
                     'edge': round(prop_line - season_avg, 2),
                     'ev': round(ev, 2),
-                    'probability_edge': prob_edge,
-                    'is_sharp': is_sharp
+                    'probability_edge': prob_edge
                 }
                 
                 # Calculate A.I. Rating
-                if historical_edge_performance:
-                    ai_rating = calculate_ai_rating_props(play_dict, historical_edge_performance)
-                    play_dict['ai_rating'] = ai_rating
+                ai_rating = calculate_ai_rating_props(play_dict)
+                play_dict['ai_rating'] = ai_rating
                 
                 under_plays.append(play_dict)
             else:
@@ -1044,28 +1156,175 @@ def analyze_props(props_list, player_stats, defense_factors, historical_edge_per
 
     return over_plays, under_plays
 
-def generate_html_output(over_plays, under_plays, tracking_summary=None, tracking_data=None):
+def get_team_abbreviation(team_name):
+    """Map full team names to ESPN abbreviation format for logos"""
+    abbrev_map = {
+        "Atlanta Hawks": "atl",
+        "Boston Celtics": "bos",
+        "Brooklyn Nets": "bkn",
+        "Charlotte Hornets": "cha",
+        "Chicago Bulls": "chi",
+        "Cleveland Cavaliers": "cle",
+        "Dallas Mavericks": "dal",
+        "Denver Nuggets": "den",
+        "Detroit Pistons": "det",
+        "Golden State Warriors": "gsw",
+        "Houston Rockets": "hou",
+        "Indiana Pacers": "ind",
+        "LA Clippers": "lac",
+        "Los Angeles Clippers": "lac",
+        "Los Angeles Lakers": "lal",
+        "LA Lakers": "lal",
+        "Memphis Grizzlies": "mem",
+        "Miami Heat": "mia",
+        "Milwaukee Bucks": "mil",
+        "Minnesota Timberwolves": "min",
+        "New Orleans Pelicans": "no",
+        "New York Knicks": "ny",
+        "Oklahoma City Thunder": "okc",
+        "Orlando Magic": "orl",
+        "Philadelphia 76ers": "phi",
+        "Phoenix Suns": "phx",
+        "Portland Trail Blazers": "por",
+        "Sacramento Kings": "sac",
+        "San Antonio Spurs": "sa",
+        "Toronto Raptors": "tor",
+        "Utah Jazz": "utah",
+        "Washington Wizards": "was"
+    }
+    return abbrev_map.get(team_name, "nba").lower()
+
+def format_game_datetime(game_time_str):
+    """Format game time to 'Mon, Dec 15 • 7:10 PM ET' format"""
+    try:
+        if not game_time_str:
+            return 'TBD'
+        dt_obj = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+        et_tz = pytz.timezone('US/Eastern')
+        dt_et = dt_obj.astimezone(et_tz)
+        # Use %-I on Mac/Unix (no leading zero), %#I on Windows
+        try:
+            return dt_et.strftime('%a, %b %d • %-I:%M %p ET')
+        except ValueError:
+            # Windows format
+            return dt_et.strftime('%a, %b %d • %#I:%M %p ET')
+    except:
+        return game_time_str if game_time_str else 'TBD'
+
+def calculate_player_stats(player_name, tracking_data):
+    """Calculate per-player stats from tracking data. Returns dict with season_record and player_roi, or None if no data."""
+    if not tracking_data or not tracking_data.get('picks'):
+        return None
+    
+    player_picks = [p for p in tracking_data['picks'] 
+                   if p.get('player') == player_name and p.get('status') in ['win', 'loss']]
+    
+    if not player_picks:
+        return None
+    
+    wins = sum(1 for p in player_picks if p.get('status') == 'win')
+    losses = sum(1 for p in player_picks if p.get('status') == 'loss')
+    
+    if wins + losses == 0:
+        return None
+    
+    # Calculate player ROI
+    total_profit_cents = 0
+    for p in player_picks:
+        if 'profit_loss' in p:
+            total_profit_cents += p['profit_loss']
+        else:
+            # Fallback calculation
+            odds = p.get('opening_odds') or p.get('odds', -110)
+            if p.get('status') == 'win':
+                if odds > 0:
+                    total_profit_cents += int(odds)
+                else:
+                    total_profit_cents += int((100.0 / abs(odds)) * 100)
+            else:
+                total_profit_cents -= 100
+    
+    total_profit_units = total_profit_cents / 100.0
+    player_roi = (total_profit_units / len(player_picks) * 100) if player_picks else 0.0
+    
+    return {
+        'season_record': f'{wins}-{losses}',
+        'player_roi': round(player_roi, 1)
+    }
+
+def generate_reasoning_tags(play, player_data, opponent_defense):
+    """Generate reasoning tags based on play data, player stats, and opponent defense"""
+    tags = []
+    
+    # Opponent defense tags
+    if opponent_defense:
+        opp_pts_allowed = opponent_defense.get('opp_pts_allowed', 110)
+        pace = opponent_defense.get('pace', 100)
+        def_factor = opponent_defense.get('defense_factor', 1.0)
+        
+        # Rank opponent defense (rough estimate - higher points allowed = worse defense)
+        if opp_pts_allowed >= 120:
+            tags.append({"text": f"Opp allows {opp_pts_allowed:.1f} PPG (Weak Defense)", "color": "green"})
+        elif opp_pts_allowed <= 108:
+            tags.append({"text": f"Opp allows {opp_pts_allowed:.1f} PPG (Elite Defense)", "color": "red"})
+        else:
+            tags.append({"text": f"Opp allows {opp_pts_allowed:.1f} PPG", "color": "blue"})
+        
+        # Pace tags
+        if pace >= 102:
+            tags.append({"text": "High Pace Matchup", "color": "blue"})
+        elif pace <= 96:
+            tags.append({"text": "Slow Pace Game", "color": "blue"})
+    
+    # Recent form tags (use play data if player_data not available)
+    if player_data:
+        season_avg = player_data.get('season_pts_avg', 0)
+        recent_avg = player_data.get('recent_pts_avg', 0)
+    else:
+        # Fallback to play data
+        season_avg = play.get('season_avg', 0)
+        recent_avg = play.get('recent_avg', 0)
+    
+    if recent_avg > 0:
+        if recent_avg > season_avg + 2:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games (Hot)", "color": "green"})
+        elif recent_avg < season_avg - 2:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games (Cold)", "color": "red"})
+        else:
+            tags.append({"text": f"Avg {recent_avg:.1f} L10 Games", "color": "blue"})
+    
+    # Edge tags
+    edge = play.get('edge', 0)
+    if abs(edge) >= 4.0:
+        edge_text = f"Strong Edge {edge:+.1f}" if edge > 0 else f"Strong Edge {edge:.1f}"
+        tags.append({"text": edge_text, "color": "green" if edge > 0 else "red"})
+    elif abs(edge) >= 2.0:
+        edge_text = f"Edge {edge:+.1f}" if edge > 0 else f"Edge {edge:.1f}"
+        tags.append({"text": edge_text, "color": "green" if edge > 0 else "blue"})
+    
+    return tags
+
+def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None, defense_factors=None, player_stats=None):
     """
-    Generate HTML output matching NBA model card-based style
+    Generate HTML output matching the modern styling guide
     """
     from datetime import datetime as dt
     et = pytz.timezone('US/Eastern')
     now = dt.now(et)
-    date_str = now.strftime('%m/%d/%y')
-    time_str = now.strftime('%I:%M %p ET')
     
-    # Helper function to format game time
-    def format_game_time(game_time_str):
-        """Format game time from ISO format to readable date/time"""
+    # Helper function to format odds for display
+    def format_odds(odds_value):
+        """Format odds value to American odds format (e.g., -110, +150)"""
+        if odds_value is None:
+            return 'N/A'
         try:
-            if not game_time_str:
-                return 'TBD'
-            dt_obj = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
-            et_tz = pytz.timezone('US/Eastern')
-            dt_et = dt_obj.astimezone(et_tz)
-            return dt_et.strftime('%m/%d %I:%M %p ET')
+            odds = int(odds_value)
+            if odds > 0:
+                return f'+{odds}'
+            else:
+                return str(odds)
         except:
-            return game_time_str if game_time_str else 'TBD'
+            return str(odds_value) if odds_value else 'N/A'
     
     # Helper function to get short team name (city or nickname)
     def get_short_team_name(team_name):
@@ -1106,594 +1365,547 @@ def generate_html_output(over_plays, under_plays, tracking_summary=None, trackin
         }
         return short_name_map.get(team_name, team_name)
     
-    # Helper function to get team logo URL
-    def get_team_logo_url(team_name):
-        """Map team names to NBA.com logo URLs using team IDs"""
-        # NBA.com uses numeric team IDs, not abbreviations
-        team_id_map = {
-            "Atlanta Hawks": "1610612737",
-            "Boston Celtics": "1610612738",
-            "Brooklyn Nets": "1610612751",
-            "Charlotte Hornets": "1610612766",
-            "Chicago Bulls": "1610612741",
-            "Cleveland Cavaliers": "1610612739",
-            "Dallas Mavericks": "1610612742",
-            "Denver Nuggets": "1610612743",
-            "Detroit Pistons": "1610612765",
-            "Golden State Warriors": "1610612744",
-            "Houston Rockets": "1610612745",
-            "Indiana Pacers": "1610612754",
-            "LA Clippers": "1610612746",
-            "Los Angeles Clippers": "1610612746",
-            "Los Angeles Lakers": "1610612747",
-            "LA Lakers": "1610612747",
-            "Memphis Grizzlies": "1610612763",
-            "Miami Heat": "1610612748",
-            "Milwaukee Bucks": "1610612749",
-            "Minnesota Timberwolves": "1610612750",
-            "New Orleans Pelicans": "1610612740",
-            "New York Knicks": "1610612752",
-            "Oklahoma City Thunder": "1610612760",
-            "Orlando Magic": "1610612753",
-            "Philadelphia 76ers": "1610612755",
-            "Phoenix Suns": "1610612756",
-            "Portland Trail Blazers": "1610612757",
-            "Sacramento Kings": "1610612758",
-            "San Antonio Spurs": "1610612759",
-            "Toronto Raptors": "1610612761",
-            "Utah Jazz": "1610612762",
-            "Washington Wizards": "1610612764"
-        }
-        team_id = team_id_map.get(team_name, "")
-        if team_id:
-            return f"https://cdn.nba.com/logos/nba/{team_id}/primary/L/logo.svg"
-        return ""
+    # Get lookup dictionaries
+    player_stats_lookup = player_stats or {}
+    defense_lookup = defense_factors or {}
     
-    # Helper function to get CLV for a play
-    def get_play_clv(play):
-        if not tracking_data or not tracking_data.get('picks'):
-            return None
-        prop_line = float(play['prop'].split()[1])
-        bet_type = 'over' if 'OVER' in play['prop'] else 'under'
-        # Try to find matching tracked pick
-        for pick in tracking_data['picks']:
-            if (pick['player'] == play['player'] and 
-                pick['prop_line'] == prop_line and 
-                pick['bet_type'] == bet_type):
-                opening = pick.get('opening_odds')
-                latest = pick.get('latest_odds')
-                if opening and latest and opening != latest:
-                    # Positive CLV calculation for American odds:
-                    # For positive odds (+): latest < opening = odds got worse = better value = positive CLV
-                    # For negative odds (-): latest < opening = odds got worse = better value = positive CLV
-                    # So: latest < opening always means positive CLV (we got better value)
-                    is_positive = latest < opening
-                    return {
-                        'opening': opening,
-                        'latest': latest,
-                        'positive': is_positive,
-                        'change': latest - opening
-                    }
-        return None
-
-    # Format tracking summary (will be placed at bottom)
-    tracking_section = ""
-    if tracking_summary and tracking_summary['total'] > 0:
-        completed = tracking_summary['wins'] + tracking_summary['losses']
-        # Show tracking even if no completed picks yet
-        if True:
-            win_rate_color = '#10b981' if tracking_summary['win_rate'] >= 55 else ('#f59e0b' if tracking_summary['win_rate'] >= 52 else '#ef4444')
-            roi_color = '#10b981' if tracking_summary['roi'] >= 0 else '#ef4444'
-            clv_color = '#10b981' if tracking_summary.get('clv_rate', 0) >= 50 else '#ef4444'
-            tracking_section = f"""
-            <div class="card">
-                <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 NBA Points Model Tracking</h2>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                    <div class="stat-box">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['total']}</div>
-                    </div>
-                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: {win_rate_color if completed > 0 else '#94a3b8'};">{tracking_summary['win_rate']:.1f}%{' (N/A)' if completed == 0 else ''}</div>
-                    </div>
-                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{tracking_summary['wins']}-{tracking_summary['losses']}</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">({completed} completed)</div>
-                    </div>
-                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: {roi_color if completed > 0 else '#94a3b8'};">{tracking_summary['roi']:+.2f}u</div>
-                        <div style="font-size: 0.75rem; color: {roi_color if completed > 0 else '#94a3b8'}; margin-top: 0.25rem;">{tracking_summary.get('roi_pct', 0):+.1f}% ROI{' (Pending)' if completed == 0 else ''}</div>
-                    </div>
-                    <div style="background: #262626; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;">{tracking_summary['pending']}</div>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; padding-top: 2rem;">
-                    <div class="stat-box" style="padding: 1.5rem;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: {clv_color};">{tracking_summary.get('clv_rate', 0):.1f}%</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{tracking_summary.get('clv_count', '0/0')} positive CLV</div>
-                    </div>
-                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Avg A.I. Score</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">9.7+</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Elite plays only</div>
-                    </div>
-                    <div style="background: #262626; padding: 1rem; border-radius: 0.75rem;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Edge Requirements</div>
-                        <div style="font-size: 1rem; font-weight: 600; color: #ffffff;">{MIN_EDGE_OVER_LINE}+ OVER / {MIN_EDGE_UNDER_LINE}+ UNDER</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Strict thresholds</div>
-                    </div>
-                </div>
-            </div>"""
 
     # Generate OVER plays cards
     over_html = ""
     if over_plays:
-        over_html = """
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #10b981;">TOP OVER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">"""
+        over_html = '<section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: {}</span></div>'.format(MIN_AI_SCORE)
         
-        for i, play in enumerate(over_plays, 1):
-            tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
-            confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
-            game_time_formatted = format_game_time(play.get('game_time', ''))
+        for play in over_plays:
+            # Extract prop line from prop string (e.g., "OVER 31.5 PTS" -> "31.5 PTS")
+            prop_str = play.get('prop', '')
+            line_match = re.search(r'(\d+\.?\d*)\s*PTS', prop_str)
+            prop_line_display = line_match.group(0) if line_match else prop_str.replace('OVER ', '').replace('UNDER ', '')
             
-            # A.I. Rating display
-            ai_rating = play.get('ai_rating', 2.3)
-            if ai_rating >= 4.5:
-                rating_class = 'ai-rating-premium'
-                rating_label = 'PREMIUM PLAY'
-                rating_stars = '⭐⭐⭐'
-            elif ai_rating >= 4.0:
-                rating_class = 'ai-rating-strong'
-                rating_label = 'STRONG PLAY'
-                rating_stars = '⭐⭐'
-            elif ai_rating >= 3.5:
-                rating_class = 'ai-rating-good'
-                rating_label = 'GOOD PLAY'
-                rating_stars = '⭐'
-            elif ai_rating >= 3.0:
-                rating_class = 'ai-rating-standard'
-                rating_label = 'STANDARD PLAY'
-                rating_stars = ''
-            else:
-                rating_class = 'ai-rating-marginal'
-                rating_label = 'MARGINAL PLAY'
-                rating_stars = ''
+            # Format game date/time
+            game_datetime_str = format_game_datetime(play.get('game_time', ''))
             
-            rating_display = f'<div class="ai-rating {rating_class}"><span class="rating-value">{ai_rating:.1f}</span> {rating_stars}</div>'
+            # Get team abbreviation and ESPN logo URL
+            team_abbrev = get_team_abbreviation(play.get('team', ''))
+            logo_url = f"https://a.espncdn.com/i/teamlogos/nba/500/{team_abbrev}.png"
             
-            # Create +EV and SHARP badges
-            ev_badge = ""
-            ev = play.get('ev', 0)
-            is_sharp = play.get('is_sharp', False)
-            if ev > 0:
-                ev_badge = f'<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+{ev:.1f}% EV</span>'
-                if is_sharp:
-                    ev_badge += '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span>'
-            
-            # Get CLV for this play
-            clv_info = get_play_clv(play)
-            clv_display = ""
-            if clv_info:
-                clv_color = '#10b981' if clv_info['positive'] else '#ef4444'
-                clv_icon = '✅' if clv_info['positive'] else '⚠️'
-                opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
-                latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
-                clv_display = f"""
-                        <div class="odds-line clv-line">
-                            <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
-                            <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
-                        </div>"""
-            
-            # Get team logo and short names
-            team_logo_url = get_team_logo_url(play['team'])
-            logo_html = f'<img src="{team_logo_url}" alt="{play["team"]}" class="team-logo">' if team_logo_url else ''
-            short_team = get_short_team_name(play['team'])
-            short_opponent = get_short_team_name(play['opponent'])
+            # Format matchup
+            short_team = get_short_team_name(play.get('team', ''))
+            short_opponent = get_short_team_name(play.get('opponent', ''))
             home_team = play.get('home_team', '')
-            away_team = play.get('away_team', '')
-            
-            # Format matchup: away @ home
-            if play['team'] == home_team:
-                # Player's team is home, so show: opponent @ team
+            if play.get('team') == home_team:
                 matchup_display = f"{short_opponent} @ {short_team}"
             else:
-                # Player's team is away, so show: team @ opponent
                 matchup_display = f"{short_team} @ {short_opponent}"
             
-            over_html += f"""
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #10b981;">{play['prop']}</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">{play['player']}{logo_html}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{matchup_display}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{game_time_formatted}</strong>
-                        </div>
-                        {rating_display}
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>{play.get('season_avg', 'N/A')}</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>{play.get('recent_avg', 'N/A')}</strong>
-                        </div>
-                        {clv_display}
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">{play['ai_score']:.2f}</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: {confidence_pct}%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-yes">
-                            ✅ {play['prop']}{ev_badge}{tracked_badge}
-                        </div>
-                    </div>"""
-        
-        over_html += """
+            # Get player data and opponent defense for tags
+            player_data = player_stats_lookup.get(play.get('player'))
+            opponent_defense = None
+            opponent_team = play.get('opponent')
+            if opponent_team in defense_lookup:
+                opponent_defense = defense_lookup[opponent_team]
+            else:
+                for team_name, factors in defense_lookup.items():
+                    if opponent_team.lower() in team_name.lower() or team_name.lower() in opponent_team.lower():
+                        opponent_defense = factors
+                        break
+            
+            # Calculate player stats
+            player_stats_data = None
+            if tracking_data:
+                player_stats_data = calculate_player_stats(play.get('player'), tracking_data)
+            
+            # Generate reasoning tags
+            tags = generate_reasoning_tags(play, player_data, opponent_defense)
+            tags_html = ""
+            for tag in tags:
+                tags_html += f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n'
+            
+            # Calculate model prediction and edge
+            season_avg = play.get('season_avg', 0)
+            edge = play.get('edge', 0)
+            model_prediction = season_avg + edge if edge > 0 else season_avg - abs(edge)
+            
+            # Calculate win probability (rough estimate from AI score)
+            ai_score = play.get('ai_score', 0)
+            win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
+            
+            # Player stats HTML (conditional)
+            player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f"""
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
                 </div>
-            </div>"""
+                """
+            
+            # EV formatting
+            ev = play.get('ev', 0)
+            ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
+            ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
+            
+            over_html += f"""
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>{play.get('player', '')}</h2>
+                        <div class="matchup-info">{matchup_display}</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">{game_datetime_str}</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span> 
+                        <span class="line">{prop_line_display}</span> 
+                        <span class="bet-odds">{format_odds(play.get('odds'))}</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>{model_prediction:.1f} PTS</strong> (Edge: {edge:+.1f})
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">{play.get('ai_score', 0):.1f}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val {ev_color_class}">{ev_display}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">{int(win_prob)}%</span>
+                    </div>
+                </div>
+                {player_stats_html}
+                <div class="tags-container">
+                    {tags_html}
+                </div>
+            </div>
+        </div>
+        """
+        
+        over_html += "</section>"
 
     # Generate UNDER plays cards
     under_html = ""
     if under_plays:
-        under_html = """
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #ef4444;">TOP UNDER PLAYS</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">"""
-        
-        for i, play in enumerate(under_plays, 1):
-            tracked_badge = '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📊 TRACKED</span>' if play['ai_score'] >= AUTO_TRACK_THRESHOLD else ""
-            confidence_pct = min(int((play['ai_score'] / 10.0) * 100), 100)
-            game_time_formatted = format_game_time(play.get('game_time', ''))
+        for play in under_plays:
+            # Extract prop line from prop string (e.g., "UNDER 23.5 PTS" -> "23.5 PTS")
+            prop_str = play.get('prop', '')
+            line_match = re.search(r'(\d+\.?\d*)\s*PTS', prop_str)
+            prop_line_display = line_match.group(0) if line_match else prop_str.replace('OVER ', '').replace('UNDER ', '')
             
-            # A.I. Rating display
-            ai_rating = play.get('ai_rating', 2.3)
-            if ai_rating >= 4.5:
-                rating_class = 'ai-rating-premium'
-                rating_label = 'PREMIUM PLAY'
-                rating_stars = '⭐⭐⭐'
-            elif ai_rating >= 4.0:
-                rating_class = 'ai-rating-strong'
-                rating_label = 'STRONG PLAY'
-                rating_stars = '⭐⭐'
-            elif ai_rating >= 3.5:
-                rating_class = 'ai-rating-good'
-                rating_label = 'GOOD PLAY'
-                rating_stars = '⭐'
-            elif ai_rating >= 3.0:
-                rating_class = 'ai-rating-standard'
-                rating_label = 'STANDARD PLAY'
-                rating_stars = ''
-            else:
-                rating_class = 'ai-rating-marginal'
-                rating_label = 'MARGINAL PLAY'
-                rating_stars = ''
+            # Format game date/time
+            game_datetime_str = format_game_datetime(play.get('game_time', ''))
             
-            rating_display = f'<div class="ai-rating {rating_class}"><span class="rating-value">{ai_rating:.1f}</span> {rating_stars}</div>'
+            # Get team abbreviation and ESPN logo URL
+            team_abbrev = get_team_abbreviation(play.get('team', ''))
+            logo_url = f"https://a.espncdn.com/i/teamlogos/nba/500/{team_abbrev}.png"
             
-            # Create +EV and SHARP badges
-            ev_badge = ""
-            ev = play.get('ev', 0)
-            is_sharp = play.get('is_sharp', False)
-            if ev > 0:
-                ev_badge = f'<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">+{ev:.1f}% EV</span>'
-                if is_sharp:
-                    ev_badge += '<span style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">SHARP</span>'
-            
-            # Get CLV for this play
-            clv_info = get_play_clv(play)
-            clv_display = ""
-            if clv_info:
-                clv_color = '#10b981' if clv_info['positive'] else '#ef4444'
-                clv_icon = '✅' if clv_info['positive'] else '⚠️'
-                opening_str = f"{clv_info['opening']:+.0f}" if clv_info['opening'] > 0 else f"{clv_info['opening']}"
-                latest_str = f"{clv_info['latest']:+.0f}" if clv_info['latest'] > 0 else f"{clv_info['latest']}"
-                clv_display = f"""
-                        <div class="odds-line clv-line">
-                            <span style="color: {clv_color}; font-weight: 600;">{clv_icon} CLV:</span>
-                            <strong style="color: {clv_color};">Opening: {opening_str} → Latest: {latest_str}</strong>
-                        </div>"""
-            
-            # Get team logo and short names
-            team_logo_url = get_team_logo_url(play['team'])
-            logo_html = f'<img src="{team_logo_url}" alt="{play["team"]}" class="team-logo">' if team_logo_url else ''
-            short_team = get_short_team_name(play['team'])
-            short_opponent = get_short_team_name(play['opponent'])
+            # Format matchup
+            short_team = get_short_team_name(play.get('team', ''))
+            short_opponent = get_short_team_name(play.get('opponent', ''))
             home_team = play.get('home_team', '')
-            away_team = play.get('away_team', '')
-            
-            # Format matchup: away @ home
-            if play['team'] == home_team:
-                # Player's team is home, so show: opponent @ team
+            if play.get('team') == home_team:
                 matchup_display = f"{short_opponent} @ {short_team}"
             else:
-                # Player's team is away, so show: team @ opponent
                 matchup_display = f"{short_team} @ {short_opponent}"
             
-            under_html += f"""
-                    <div class="bet-box">
-                        <div class="prop-title" style="color: #ef4444;">{play['prop']}</div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">{play['player']}{logo_html}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{matchup_display}</strong>
-                        </div>
-                        <div class="odds-line" style="text-align: left;">
-                            <strong>{game_time_formatted}</strong>
-                        </div>
-                        {rating_display}
-                        <div class="odds-line">
-                            <span>Season Avg:</span>
-                            <strong>{play.get('season_avg', 'N/A')}</strong>
-                        </div>
-                        <div class="odds-line">
-                            <span>Recent Avg:</span>
-                            <strong>{play.get('recent_avg', 'N/A')}</strong>
-                        </div>
-                        {clv_display}
-                        <div class="confidence-bar-container">
-                            <div class="confidence-label">
-                                <span>A.I. Score</span>
-                                <span class="confidence-pct">{play['ai_score']:.2f}</span>
-                            </div>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: {confidence_pct}%"></div>
-                            </div>
-                        </div>
-                        <div class="pick pick-no">
-                            ✅ {play['prop']}{ev_badge}{tracked_badge}
-                        </div>
-                    </div>"""
-        
-        under_html += """
+            # Get player data and opponent defense for tags
+            player_data = player_stats_lookup.get(play.get('player'))
+            opponent_defense = None
+            opponent_team = play.get('opponent')
+            if opponent_team in defense_lookup:
+                opponent_defense = defense_lookup[opponent_team]
+            else:
+                for team_name, factors in defense_lookup.items():
+                    if opponent_team.lower() in team_name.lower() or team_name.lower() in opponent_team.lower():
+                        opponent_defense = factors
+                        break
+            
+            # Calculate player stats
+            player_stats_data = None
+            if tracking_data:
+                player_stats_data = calculate_player_stats(play.get('player'), tracking_data)
+            
+            # Generate reasoning tags
+            tags = generate_reasoning_tags(play, player_data, opponent_defense)
+            tags_html = ""
+            for tag in tags:
+                tags_html += f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n'
+            
+            # Calculate model prediction and edge
+            season_avg = play.get('season_avg', 0)
+            edge = play.get('edge', 0)
+            model_prediction = season_avg - abs(edge)  # For UNDER, subtract the edge
+            
+            # Calculate win probability (rough estimate from AI score)
+            ai_score = play.get('ai_score', 0)
+            win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
+            
+            # Player stats HTML (conditional)
+            player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f"""
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
                 </div>
-            </div>"""
+                """
+            
+            # EV formatting
+            ev = play.get('ev', 0)
+            ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
+            ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
+            
+            under_html += f"""
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
+                    <div class="player-info">
+                        <h2>{play.get('player', '')}</h2>
+                        <div class="matchup-info">{matchup_display}</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="game-date-time">{game_datetime_str}</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span> 
+                        <span class="line">{prop_line_display}</span> 
+                        <span class="bet-odds">{format_odds(play.get('odds'))}</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>{model_prediction:.1f} PTS</strong> (Edge: {edge:.1f})
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AI SCORE</span>
+                        <span class="metric-val txt-green">{play.get('ai_score', 0):.1f}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EV</span>
+                        <span class="metric-val {ev_color_class}">{ev_display}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">WIN %</span>
+                        <span class="metric-val">{int(win_prob)}%</span>
+                    </div>
+                </div>
+                {player_stats_html}
+                <div class="tags-container">
+                    {tags_html}
+                </div>
+            </div>
+        </div>
+        """
 
-    footer_text = f"Powered by REAL NBA Stats API • Only showing picks with A.I. Score ≥ {MIN_AI_SCORE}<br>Using strict edge requirements: {MIN_EDGE_OVER_LINE}+ above line (OVER) / {MIN_EDGE_UNDER_LINE}+ below line (UNDER)<br>📊 = Auto-tracked (A.I. Score >= {AUTO_TRACK_THRESHOLD})"
+    # Summary stats grid
+    summary_html = ""
+    if stats and stats.get('total', 0) > 0:
+        roi_pct = stats.get('roi_pct', 0)
+        win_rate = stats.get('win_rate', 0)
+        wins = stats.get('wins', 0)
+        losses = stats.get('losses', 0)
+        roi_color_class = "txt-green" if roi_pct > 0 else "txt-red"
+        roi_sign = '+' if roi_pct > 0 else ''
+        summary_html = f"""
+    <section>
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">Season ROI</div>
+                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value">{win_rate:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Record</div>
+                <div class="stat-value">{wins}-{losses}</div>
+            </div>
+        </div>
+    </section>
+        """
+    
+    # Model performance section (keep existing stats_html but update styling)
+    performance_html = ""
+    if stats and stats.get('total', 0) > 0:
+        total = stats['total']
+        wins = stats['wins']
+        losses = stats['losses']
+        win_rate = stats['win_rate']
+        roi_pct = stats['roi_pct']
+        total_profit = stats['total_profit']
+        
+        roi_color_class = "txt-green" if roi_pct > 0 else "txt-red"
+        roi_sign = '+' if roi_pct > 0 else ''
+        profit_sign = '+' if total_profit > 0 else ''
+        
+        over_record = stats['over_record']
+        over_win_rate = stats['over_win_rate']
+        over_roi = stats['over_roi']
+        over_roi_color_class = "txt-green" if over_roi > 0 else "txt-red"
+        over_roi_sign = '+' if over_roi > 0 else ''
+        
+        under_record = stats['under_record']
+        under_win_rate = stats['under_win_rate']
+        under_roi = stats['under_roi']
+        under_roi_color_class = "txt-green" if under_roi > 0 else "txt-red"
+        under_roi_sign = '+' if under_roi > 0 else ''
+        
+        performance_html = f"""
+    <section>
+        <div class="section-title">NBA Points Model Performance</div>
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">Overall Record</div>
+                <div class="stat-value">{wins}-{losses}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ROI</div>
+                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">OVER: {over_record}</div>
+                <div class="stat-value {over_roi_color_class}">{over_roi_sign}{over_roi:.1f}% ROI</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">UNDER: {under_record}</div>
+                <div class="stat-value {under_roi_color_class}">{under_roi_sign}{under_roi:.1f}% ROI</div>
+            </div>
+        </div>
+    </section>
+        """
     
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Points Props - A.I. Projections</title>
+    <title>NBA Points Props Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        :root {{
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }}
+
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            padding: 2rem;
-            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        .card {{
-            background: #1a1a1a;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+        .container {{ max-width: 800px; margin: 0 auto; }}
+
+        header {{
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }}
-        .header-card {{
-            text-align: center;
-            background: #1a1a1a;
-        }}
-        .bet-box {{
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.75rem;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            position: relative;
+        h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
+        .date-sub {{ color: var(--text-secondary); font-size: 14px; margin-top: 5px; }}
+
+        /* Summary Stats */
+        .summary-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
         }}
         .stat-box {{
-            background: #262626;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 1.25rem;
-            border-radius: 1rem;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
         }}
-        .team-logo {{
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.95;
-            filter: brightness(1.1);
+        .stat-label {{ font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }}
+        .stat-value {{ font-size: 20px; font-weight: 700; }}
+
+        .section-title {{
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
         }}
-        .ai-rating {{
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
+        .section-title span.highlight {{ color: var(--accent-green); margin-left: 8px; font-size: 14px; }}
+
+        /* Prop Card */
+        .prop-card {{
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }}
+
+        .card-header {{
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }}
+
+        .header-left {{
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 12px;
         }}
-        .ai-rating .rating-value {{
-            font-weight: 700;
-            font-size: 0.875rem;
+
+        .team-logo {{
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            padding: 2px;
+            object-fit: contain;
         }}
-        .ai-rating-premium {{
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
+
+        .player-info h2 {{ margin: 0; font-size: 18px; line-height: 1.2; }}
+        .matchup-info {{ color: var(--text-secondary); font-size: 13px; margin-top: 2px; }}
+
+        .game-meta {{
+            text-align: right;
         }}
-        .ai-rating-strong {{
-            background: rgba(16, 185, 129, 0.12);
-            color: #10b981;
+        .game-date-time {{
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #333;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
         }}
-        .ai-rating-good {{
-            background: rgba(59, 130, 246, 0.12);
-            color: #3b82f6;
+
+        .card-body {{ padding: 20px; }}
+
+        .bet-main-row {{ margin-bottom: 15px; }}
+        .bet-selection {{ font-size: 22px; font-weight: 800; }}
+        .bet-selection .line {{ color: var(--text-primary); }}
+        .bet-odds {{ font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }}
+
+        .model-subtext {{
+            color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }}
-        .ai-rating-standard {{
-            background: rgba(245, 158, 11, 0.12);
-            color: #f59e0b;
+        .model-subtext strong {{ color: var(--text-primary); }}
+
+        .metrics-grid {{
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
         }}
-        .ai-rating-marginal {{
-            background: rgba(245, 158, 11, 0.08);
-            color: #f59e0b;
+        .metric-item {{ background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }}
+        .metric-lbl {{ display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }}
+        .metric-val {{ font-size: 16px; font-weight: 700; }}
+
+        /* Player Stats Section */
+        .player-stats {{
+            background-color: var(--bg-card-secondary);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
         }}
-        .prop-title {{
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            letter-spacing: 0.02em;
-        }}
-        .bet-title {{
-            font-weight: 600;
-            color: #94a3b8;
-            margin-bottom: 0.75rem;
+        .player-stats-label {{
+            font-size: 11px;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }}
-        .odds-line {{
-            display: flex;
-            justify-content: space-between;
-            margin: 0.5rem 0;
-            font-size: 0.9375rem;
-            color: #94a3b8;
-        }}
-        .odds-line.clv-line {{
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }}
-        .odds-line strong {{
-            color: #ffffff;
-            font-weight: 600;
-        }}
-        .confidence-bar-container {{
-            margin: 1rem 0;
-        }}
-        .confidence-label {{
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.625rem;
-            font-size: 0.875rem;
-            color: #94a3b8;
-        }}
-        .confidence-pct {{
+        .player-stats-value {{
+            font-size: 16px;
             font-weight: 700;
-            color: #10b981;
         }}
-        .confidence-bar {{
-            height: 8px;
-            background: #1a1a1a;
-            border-radius: 999px;
-            overflow: hidden;
-            border: none;
+        .player-stats-item {{
+            text-align: center;
+            flex: 1;
         }}
-        .confidence-fill {{
-            height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            border-radius: 999px;
-            transition: width 0.3s ease;
+        .player-stats-divider {{
+            width: 1px;
+            height: 30px;
+            background-color: var(--border-color);
         }}
-        .pick {{
-            font-weight: 600;
-            padding: 1rem 1.25rem;
-            margin-top: 1rem;
-            border-radius: 0.875rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            border: none;
-        }}
-        .pick-yes {{ 
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-        }}
-        .pick-no {{ 
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-        }}
-        .badge {{
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.625rem;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            margin: 0.375rem;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }}
-        @media (max-width: 1024px) {{
-            .container {{ max-width: 100%; }}
-            .card {{ padding: 2rem; }}
-        }}
-        @media (max-width: 768px) {{
-            body {{ padding: 1.5rem; }}
-            .card {{ padding: 1.75rem; }}
-            .bet-box {{ padding: 1.5rem; }}
-            .pick {{ font-size: 0.9375rem; padding: 0.875rem 1rem; }}
-        }}
-        @media (max-width: 480px) {{
-            body {{ padding: 1rem; }}
-            .card {{ padding: 1.5rem; margin-bottom: 1.5rem; }}
-            .bet-box {{ padding: 1.25rem; }}
-            .prop-title {{ font-size: 1rem; }}
-            .bet-title {{ font-size: 0.6875rem; }}
-            .odds-line {{ font-size: 0.8125rem; }}
-            .pick {{ font-size: 0.875rem; padding: 0.75rem; }}
+
+        .tags-container {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+        .tag {{ font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }}
+
+        .txt-green {{ color: var(--accent-green); }}
+        .txt-red {{ color: var(--accent-red); }}
+        
+        .tag-green {{ background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }}
+        .tag-red {{ background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }}
+        .tag-blue {{ background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }}
+
+        @media (max-width: 600px) {{
+            .summary-grid {{ grid-template-columns: repeat(2, 1fr); }}
+            .stat-box:last-child {{ grid-column: span 2; }}
+            .card-header {{ padding: 12px 15px; }}
+            .team-logo {{ width: 38px; height: 38px; }}
+            .player-info h2 {{ font-size: 16px; }}
         }}
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card header-card">
-            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
-            <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NBA Points Props Model</p>
-            <div>
-                <div class="badge">● REAL NBA STATS API</div>
-                <div class="badge">● A.I. SCORE ≥ {MIN_AI_SCORE}</div>
-                <div class="badge">● STRICT EDGE REQUIREMENTS</div>
-            </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {date_str} {time_str}</p>
-        </div>
 
-        {over_html}
+<div class="container">
+    <header>
+        <h1>NBA Points Props Model</h1>
+        <div class="date-sub">Profitable Version • Season {CURRENT_SEASON}</div>
+    </header>
 
-        {under_html}
+    {summary_html}
 
-        {tracking_section}
+    {over_html}
 
-        <div class="card" style="text-align: center;">
-            <p style="color: #94a3b8; font-size: 0.875rem; line-height: 1.8;">{footer_text}</p>
-        </div>
-    </div>
+    {under_html}
+
+    {performance_html}
+</div>
+
 </body>
 </html>"""
 
@@ -1716,67 +1928,33 @@ def main():
     print(f"{Colors.BOLD}{Colors.CYAN}NBA POINTS PROPS A.I. MODEL{Colors.END}")
     print(f"{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.END}")
 
-    updated = update_pick_results()
+    # Grade pending picks first (before generating new ones)
+    grade_pending_picks()
+    
+    # CRITICAL: Backfill profit_loss for any graded picks missing it (fixes ROI calculation)
+    backfill_profit_loss()
+
     player_stats = get_nba_player_points_stats()
     defense_factors = get_opponent_defense_factors()
     props_list = get_player_props()
-    # Load historical performance for rating calculation
-    tracking_data = load_tracking()
-    historical_edge_performance = get_historical_performance_by_edge_props(tracking_data)
     
-    over_plays, under_plays = analyze_props(props_list, player_stats, defense_factors, historical_edge_performance)
+    over_plays, under_plays = analyze_props(props_list, player_stats, defense_factors)
 
-    print(f"\n{Colors.CYAN}Auto-tracking picks with A.I. Score >= {AUTO_TRACK_THRESHOLD}...{Colors.END}")
-    tracked_count = 0
+    # Track new picks
+    track_new_picks(over_plays, under_plays)
     
-    # Track ALL plays meeting threshold (preserve complete history)
-    # displayed_plays is only used for filtering pending count in summary
-    displayed_plays = over_plays[:TOP_PLAYS_COUNT] + under_plays[:TOP_PLAYS_COUNT]
-    
-    for play in over_plays + under_plays:
-        if play['ai_score'] >= AUTO_TRACK_THRESHOLD:
-            matching_prop = next((p for p in props_list if p['player'] == play['player'] and p['prop_line'] == float(play['prop'].split()[1])), None)
-            if matching_prop:
-                bet_type = 'over' if 'OVER' in play['prop'] else 'under'
-                if track_pick(
-                    play['player'],
-                    float(play['prop'].split()[1]),
-                    bet_type,
-                    play['team'],
-                    play['opponent'],
-                    play['ai_score'],
-                    play.get('odds', -110),
-                    matching_prop['game_time']
-                ):
-                    tracked_count += 1
-
-    if tracked_count > 0:
-        print(f"{Colors.GREEN}✓ Tracked {tracked_count} new picks{Colors.END}")
-    else:
-        print(f"{Colors.YELLOW}  No new picks to track{Colors.END}")
-
-    tracking_data = load_tracking()
-    # Calculate summary: all plays for wins/losses/total, displayed plays for pending count
-    displayed_plays = over_plays[:TOP_PLAYS_COUNT] + under_plays[:TOP_PLAYS_COUNT]
-    summary = calculate_tracking_summary(tracking_data['picks'], displayed_plays)
-    tracking_data['summary'] = summary  # Update tracking data with summary
-
-    print(f"\n{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.CYAN}TRACKING SUMMARY{Colors.END}")
-    print(f"{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.END}")
-    print(f"Total Picks: {summary['total']} | Wins: {summary['wins']} | Losses: {summary['losses']} | Pending: {summary['pending']}")
-    if summary['wins'] + summary['losses'] > 0:
-        print(f"Win Rate: {summary['win_rate']:.1f}% | ROI: {summary['roi']:+.2f}u ({summary['roi_pct']:+.1f}%)")
+    # Calculate tracking stats for HTML display
+    tracking_data = load_tracking_data()
+    stats = calculate_tracking_stats(tracking_data)
 
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}TOP OVER PLAYS{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
 
     for i, play in enumerate(over_plays[:10], 1):
-        tracked_marker = "📊" if play['ai_score'] >= AUTO_TRACK_THRESHOLD else "  "
         ai_rating = play.get('ai_rating', 2.3)
         rating_stars = '⭐' * (int(ai_rating) - 2) if ai_rating >= 3.0 else ''
-        print(f"{tracked_marker} {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
+        print(f"  {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
               f"{Colors.GREEN}{play['prop']:15s}{Colors.END} | "
               f"{play['team']:3s} vs {play['opponent']:3s} | "
               f"{Colors.BOLD}A.I.: {play['ai_score']:.2f}{Colors.END} | "
@@ -1787,19 +1965,16 @@ def main():
     print(f"{Colors.BOLD}{Colors.RED}{'='*80}{Colors.END}")
 
     for i, play in enumerate(under_plays[:10], 1):
-        tracked_marker = "📊" if play['ai_score'] >= AUTO_TRACK_THRESHOLD else "  "
         ai_rating = play.get('ai_rating', 2.3)
         rating_stars = '⭐' * (int(ai_rating) - 2) if ai_rating >= 3.0 else ''
-        print(f"{tracked_marker} {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
+        print(f"  {Colors.CYAN}{i:2d}. {play['player']:25s}{Colors.END} | "
               f"{Colors.RED}{play['prop']:15s}{Colors.END} | "
               f"{play['team']:3s} vs {play['opponent']:3s} | "
               f"{Colors.BOLD}A.I.: {play['ai_score']:.2f}{Colors.END} | "
               f"Rating: {ai_rating:.1f} {rating_stars}")
 
-    print(f"\n{Colors.YELLOW}📊 = Auto-tracked (A.I. Score >= {AUTO_TRACK_THRESHOLD}){Colors.END}")
-
     print(f"\n{Colors.CYAN}Generating HTML report...{Colors.END}")
-    html_content = generate_html_output(over_plays, under_plays, summary, tracking_data)
+    html_content = generate_html_output(over_plays, under_plays, stats, tracking_data, defense_factors, player_stats)
     save_html(html_content)
 
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
