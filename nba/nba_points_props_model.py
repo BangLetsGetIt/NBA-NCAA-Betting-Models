@@ -479,7 +479,7 @@ def get_nba_player_points_stats():
 def get_opponent_defense_factors():
     """
     Fetch team defense stats to identify matchup advantages
-    Returns dict with opponent defense factors (points allowed, pace, defensive rating)
+    Returns dict with opponent defense factors (points allowed per game, pace, defensive rating)
     """
     print(f"\n{Colors.CYAN}Fetching opponent defense factors...{Colors.END}")
 
@@ -494,29 +494,65 @@ def get_opponent_defense_factors():
     defense_factors = {}
 
     try:
-        # Fetch team stats
-        team_stats = leaguedashteamstats.LeagueDashTeamStats(
+        # Fetch opponent stats (what each team ALLOWS)
+        opp_stats = leaguedashteamstats.LeagueDashTeamStats(
             season=CURRENT_SEASON,
-            measure_type_detailed_defense='Base',
+            measure_type_detailed_defense='Opponent',
             timeout=30
         )
-        team_df = team_stats.get_data_frames()[0]
+        opp_df = opp_stats.get_data_frames()[0]
         time.sleep(0.6)
+        
+        # Fetch advanced stats for pace and defensive rating
+        adv_stats = leaguedashteamstats.LeagueDashTeamStats(
+            season=CURRENT_SEASON,
+            measure_type_detailed_defense='Advanced',
+            timeout=30
+        )
+        adv_df = adv_stats.get_data_frames()[0]
+        time.sleep(0.6)
+        
+        # Create lookup for advanced stats
+        adv_lookup = {}
+        for _, row in adv_df.iterrows():
+            team_name = row.get('TEAM_NAME', '')
+            if team_name:
+                adv_lookup[team_name] = {
+                    'pace': row.get('PACE', 100),
+                    'def_rating': row.get('DEF_RATING', 110)
+                }
 
-        # Process team defense stats
-        for _, row in team_df.iterrows():
+        # NBA team names (filter out WNBA teams)
+        nba_teams = {
+            'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets',
+            'Chicago Bulls', 'Cleveland Cavaliers', 'Dallas Mavericks', 'Denver Nuggets',
+            'Detroit Pistons', 'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers',
+            'LA Clippers', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies',
+            'Miami Heat', 'Milwaukee Bucks', 'Minnesota Timberwolves', 'New Orleans Pelicans',
+            'New York Knicks', 'Oklahoma City Thunder', 'Orlando Magic', 'Philadelphia 76ers',
+            'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs',
+            'Toronto Raptors', 'Utah Jazz', 'Washington Wizards'
+        }
+
+        # Process opponent stats
+        for _, row in opp_df.iterrows():
             team_name = row.get('TEAM_NAME', '')
             if not team_name:
                 continue
+            
+            # Skip non-NBA teams (WNBA teams, G-League, etc.)
+            if team_name not in nba_teams:
+                continue
 
-            # Opponent points stats (what they allow)
-            opp_pts = row.get('OPP_PTS', 0)  # Opponent points allowed
+            # Opponent points allowed PER GAME
+            opp_pts_total = row.get('OPP_PTS', 0)
+            games_played = row.get('GP', 1)
+            opp_pts_per_game = opp_pts_total / games_played if games_played > 0 else 0
             
-            # Team pace
-            pace = row.get('PACE', 100)
-            
-            # Defensive rating (lower is better)
-            def_rating = row.get('DEF_RATING', 110)
+            # Get pace and defensive rating from advanced stats
+            adv_data = adv_lookup.get(team_name, {})
+            pace = adv_data.get('pace', 100)
+            def_rating = adv_data.get('def_rating', 110)
             
             # Calculate defense advantage factors
             # High opponent points allowed = easier to score
@@ -524,10 +560,10 @@ def get_opponent_defense_factors():
             # Low defensive rating = better defense = harder to score
             
             defense_factors[team_name] = {
-                'opp_pts_allowed': round(opp_pts, 2),
-                'pace': round(pace, 2),
-                'def_rating': round(def_rating, 2),
-                'defense_factor': round((opp_pts / 110.0) * (pace / 100) * (110.0 / def_rating), 2)  # Higher = better for scoring
+                'opp_pts_allowed': round(opp_pts_per_game, 1),
+                'pace': round(pace, 1),
+                'def_rating': round(def_rating, 1),
+                'defense_factor': round((opp_pts_per_game / 110.0) * (pace / 100) * (110.0 / def_rating), 2)
             }
 
         # Cache results
