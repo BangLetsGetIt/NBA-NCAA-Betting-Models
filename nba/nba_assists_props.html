@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Assists Props Model</title>
+    <title>CourtSide Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -34,9 +34,11 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
-        h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
         .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
 
+        /* Summary Stats */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -60,6 +62,7 @@
         }
         .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
 
+        /* Prop Card */
         .prop-card {
             background-color: var(--bg-card);
             border-radius: 16px;
@@ -128,7 +131,8 @@
 
 <div class="container">
     <header>
-        <h1>NBA Assists Props Model</h1>
+        <h1>CourtSide Analytics</h1>
+        <div class="subheader">NBA Assists Model</div>
         <div class="date-sub">Profitable Version • Season 2025-26</div>
     </header>
 
@@ -179,146 +183,9 @@
 
                 </div>
             </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/lac.png" alt="Los Angeles Clippers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>James Harden</h2>
-                        <div class="matchup-info">Grizzlies @ Clippers</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/15 10:41 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">6.5 AST</span> 
-                        <span class="bet-odds">-186</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>9.9 AST</strong> (Edge: +1.7)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">9.8</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+7.6%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">50%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-
-                </div>
-            </div>
         </div></section>
 
     
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png" alt="Houston Rockets Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Alperen Sengun</h2>
-                        <div class="matchup-info">Rockets @ Nuggets</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/15 09:43 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">10.5 AST</span> 
-                        <span class="bet-odds">-320</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>3.5 AST</strong> (Edge: 3.5)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-8.1%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Strong Edge</span>
-<span class="tag tag-green">Premium Pick</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/lac.png" alt="Los Angeles Clippers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Kris Dunn</h2>
-                        <div class="matchup-info">Grizzlies @ Clippers</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/15 10:41 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">4.5 AST</span> 
-                        <span class="bet-odds">-200</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>1.1 AST</strong> (Edge: 1.7)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+5.0%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-green">Hot Streak</span>
-
-                </div>
-            </div>
-        </div>
 
     
 </div>
