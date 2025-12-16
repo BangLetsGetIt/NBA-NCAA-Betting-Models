@@ -40,7 +40,7 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
         }
 
         header h1 {
@@ -237,7 +237,16 @@
         <header>
             <div>
                 <h1>NBA PROPS & LINES</h1>
-                <div class="date-sub">Generated: 2025-12-16 01:02 AM ET</div>
+                <div class="date-sub">Generated: 2025-12-16 01:16 AM ET</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="metric-title">SEASON RECORD</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                    104-83-1 (55.3%)
+                </div>
+                <div style="font-size: 0.9rem; color: var(--accent-green);">
+                     +11.9u
+                </div>
             </div>
         </header>
 
@@ -322,349 +331,129 @@
 
         </div>
         
-
-        <!-- TRACKING DATA INJECTION -->
         
-        <div class="tracking-section">
-            <div class="tracking-header">🎯 Upcoming Bets (Pending)</div>
-            <div class="prop-card" style="padding: 0; overflow: hidden;">
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Matchup</th>
-                                <th>Type</th>
-                                <th>Selection</th>
-                                <th>Line</th>
-                                <th>Edge</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <tr>
-                                <td class="text-gray">12/16 08:40 PM</td>
-                                <td class="font-bold">San Antonio Spurs @ New York Knicks</td>
-                                <td>Spread</td>
-                                <td class="text-green">✅ BET: New York Knicks -2.5</td>
-                                <td>-2.5</td>
-                                <td>+11.1</td>
-                                <td><span class="badge badge-pending">PENDING</span></td>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
+        
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" 
+                         alt="Chicago Bulls" 
+                         class="team-logo"
+                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                    <div class="matchup-info">
+                        <h2>Cleveland Cavaliers @ Chicago Bulls</h2>
+                        <div class="matchup-sub">Chicago Bulls Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17/25 08:10 PM EST</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+5.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -5.8
+                    <span class="edge-val">Edge: -0.8</span>
                 </div>
             </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 240.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 232.6
+                    <span class="edge-val">Edge: +7.9</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">AI SCORE</div>
+                    
+                    <div class="metric-value ">3.5</div>
+                </div>
+                <!-- Calculate Max EV/Confidence -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">63%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Cleveland Cavaliers 119, Chicago Bulls 113</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                
+                
+                <div class="tag tag-green">Edge too small (-0.8)...</div>
+                
+            </div>
+
         </div>
         
 
-        
+        <!-- PERFORMANCE STATS (Last 100) -->
         <div class="tracking-section">
-            <div class="tracking-header">📊 Recent Results (Last 20)</div>
-            <div class="prop-card" style="padding: 0; overflow: hidden;">
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Matchup</th>
-                                <th>Type</th>
-                                <th>Selection</th>
-                                <th>Result</th>
-                                <th>Profit</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <tr>
-                                <td class="text-gray">12/15 09:11 PM</td>
-                                <td class="font-bold">Dallas Mavericks @ Utah Jazz</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 253.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/15 09:10 PM</td>
-                                <td class="font-bold">Dallas Mavericks @ Utah Jazz</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 239.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/15 07:40 PM</td>
-                                <td class="font-bold">Toronto Raptors @ Miami Heat</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 237.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/15 07:13 PM</td>
-                                <td class="font-bold">Detroit Pistons @ Boston Celtics</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Boston Celtics +2.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 09:12 PM</td>
-                                <td class="font-bold">Golden State Warriors @ Portland Trail Blazers</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 248.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 09:10 PM</td>
-                                <td class="font-bold">Golden State Warriors @ Portland Trail Blazers</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 235.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 08:11 PM</td>
-                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Phoenix Suns +3.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 08:11 PM</td>
-                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 238.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 08:10 PM</td>
-                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Phoenix Suns +2.0</td>
-                                <td class="text-gray">Push</td>
-                                <td class="text-gray">
-                                    +0.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-push">push</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 07:12 PM</td>
-                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Chicago Bulls +2.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 07:12 PM</td>
-                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
-                                <td>Total</td>
-                                <td>✅ BET: OVER 211.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 07:10 PM</td>
-                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Chicago Bulls -4.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 07:10 PM</td>
-                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 242.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 03:40 PM</td>
-                                <td class="font-bold">Charlotte Hornets @ Cleveland Cavaliers</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Cleveland Cavaliers -11.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 03:40 PM</td>
-                                <td class="font-bold">Charlotte Hornets @ Cleveland Cavaliers</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 234.5</td>
-                                <td class="text-gray">Win</td>
-                                <td class="text-green">
-                                    +1.00u
-                                </td>
-                                <td>
-                                    <span class="badge badge-win">win</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/14 03:10 PM</td>
-                                <td class="font-bold">Washington Wizards @ Indiana Pacers</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Indiana Pacers -10.0</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/13 09:00 PM</td>
-                                <td class="font-bold">San Antonio Spurs @ Oklahoma City Thunder</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Oklahoma City Thunder -10.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/13 05:30 PM</td>
-                                <td class="font-bold">New York Knicks @ Orlando Magic</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Orlando Magic +4.0</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/12 10:12 PM</td>
-                                <td class="font-bold">Minnesota Timberwolves @ Golden State Warriors</td>
-                                <td>Total</td>
-                                <td>✅ BET: UNDER 242.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="text-gray">12/12 08:10 PM</td>
-                                <td class="font-bold">Utah Jazz @ Memphis Grizzlies</td>
-                                <td>Spread</td>
-                                <td>✅ BET: Memphis Grizzlies -6.5</td>
-                                <td class="text-gray">Loss</td>
-                                <td class="text-red">
-                                    -1.10u
-                                </td>
-                                <td>
-                                    <span class="badge badge-loss">loss</span>
-                                </td>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
+            <div class="tracking-header">🔥 Recent Performance (Last 100)</div>
+            
+            <div class="prop-card" style="padding: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="metric-box">
+                        <div class="metric-title">Record</div>
+                        <div class="metric-value">56-43-1</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Win Rate</div>
+                        <div class="metric-value good">56.0%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">Profit</div>
+                        <div class="metric-value good">+8.7u</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">ROI</div>
+                        <div class="metric-value good">+8.7%</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #60a5fa; font-size: 1rem; margin-bottom: 0.5rem; text-align: center;">SPREADS (52)</h4>
+                        <div style="text-align: center; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">28-23-1</div>
+                        <div style="display: flex; justify-content: space-around; font-size: 0.9rem;">
+                            <div>WR: <span class="">54%</span></div>
+                            <div>ROI: <span class="text-green">+5.2%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 1rem;">
+                        <h4 style="color: #f472b6; font-size: 1rem; margin-bottom: 0.5rem; text-align: center;">TOTALS (48)</h4>
+                        <div style="text-align: center; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">28-20</div>
+                        <div style="display: flex; justify-content: space-around; font-size: 0.9rem;">
+                            <div>WR: <span class="text-green">58%</span></div>
+                            <div>ROI: <span class="text-green">+12.5%</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
 
     </div>
 </body>
