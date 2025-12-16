@@ -117,6 +117,44 @@
         .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
         .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+        
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .text-red { color: var(--accent-red); }
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .metric-value.good { color: var(--accent-green); }
 
         @media (max-width: 600px) {
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
@@ -135,6 +173,8 @@
         <div class="subheader">NBA Assists Model</div>
         <div class="date-sub">Profitable Version • Season 2025-26</div>
     </header>
+
+    
 
     
 
