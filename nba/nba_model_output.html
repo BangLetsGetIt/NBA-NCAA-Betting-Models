@@ -79,10 +79,25 @@
             gap: 1rem;
         }
 
+        .team-logos-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
         .team-logo {
             width: 44px;
             height: 44px;
             object-fit: contain;
+        }
+
+        .away-logo {
+            opacity: 0.85; /* Slightly dimmed to show home team prominence */
+        }
+
+        .home-logo {
+            /* Home team logo is more prominent */
         }
 
         .matchup-info h2 {
@@ -237,7 +252,7 @@
         <header>
             <div>
                 <h1>CourtSide Analytics NBA Picks</h1>
-                <div class="date-sub">Generated: 2025-12-16 10:20 AM ET</div>
+                <div class="date-sub">Generated: 2025-12-16 03:20 PM ET</div>
             </div>
             <div style="text-align: right;">
                 <div class="metric-title">SEASON RECORD</div>
@@ -254,13 +269,21 @@
         
         
         
+        
+        
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/nyk.png" 
-                         alt="New York Knicks" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/sas.png" 
+                             alt="San Antonio Spurs" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/nyk.png" 
+                             alt="New York Knicks" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                    </div>
                     <div class="matchup-info">
                         <h2>San Antonio Spurs @ New York Knicks</h2>
                         <div class="matchup-sub">New York Knicks Home Game</div>
@@ -285,13 +308,13 @@
             <div class="bet-row" style="border-bottom: none;">
                 
                     
-                    <div class="main-pick green">UNDER 234.5</div>
+                    <div class="main-pick green">UNDER 233.5</div>
                     
                 
                 
                 <div class="model-context">
                     Model: 222.2
-                    <span class="edge-val">Edge: +12.3</span>
+                    <span class="edge-val">Edge: +11.3</span>
                 </div>
             </div>
 
@@ -300,7 +323,7 @@
                 <div class="metric-box">
                     <div class="metric-title">AI SCORE</div>
                     
-                    <div class="metric-value good">4.7</div>
+                    <div class="metric-value good">4.4</div>
                 </div>
                 <!-- Calculate Max EV/Confidence -->
                 
@@ -325,6 +348,8 @@
                 
                 
                 
+                
+                
                 <div class="tag tag-green">Model projects New York Knicks to win by 13.6, covering -2.5...</div>
                 
             </div>
@@ -334,91 +359,21 @@
         
         
         
+        
+        
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" 
-                         alt="Minnesota Timberwolves" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="matchup-info">
-                        <h2>Memphis Grizzlies @ Minnesota Timberwolves</h2>
-                        <div class="matchup-sub">Minnesota Timberwolves Home Game</div>
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" 
+                             alt="Cleveland Cavaliers" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" 
+                             alt="Chicago Bulls" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
                     </div>
-                </div>
-                <div class="game-time-badge">12/17/25 08:10 PM EST</div>
-            </div>
-
-            <!-- SPREAD BET BLOCK -->
-            <div class="bet-row">
-                
-                <div class="main-pick">-7.5</div>
-                
-                
-                <div class="model-context">
-                    Model: +8.0
-                    <span class="edge-val">Edge: +0.5</span>
-                </div>
-            </div>
-
-            <!-- TOTAL BET BLOCK -->
-            <div class="bet-row" style="border-bottom: none;">
-                
-                    
-                    <div class="main-pick green">UNDER 236.5</div>
-                    
-                
-                
-                <div class="model-context">
-                    Model: 228.1
-                    <span class="edge-val">Edge: +8.4</span>
-                </div>
-            </div>
-
-            <!-- METRICS ROW -->
-            <div class="metrics-row">
-                <div class="metric-box">
-                    <div class="metric-title">AI SCORE</div>
-                    
-                    <div class="metric-value ">3.9</div>
-                </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
-                <div class="metric-box">
-                    <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">64%</div>
-                </div>
-                <div class="metric-box">
-                    <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value">Memphis Grizzlies 110, Minnesota Timberwolves 118</div>
-                </div>
-            </div>
-
-            <!-- TAGS -->
-            <div class="tags-row">
-                
-                
-                
-                <div class="tag tag-green">Edge too small (+0.5)...</div>
-                
-            </div>
-
-        </div>
-        
-        
-        
-        
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" 
-                         alt="Chicago Bulls" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
                     <div class="matchup-info">
                         <h2>Cleveland Cavaliers @ Chicago Bulls</h2>
                         <div class="matchup-sub">Chicago Bulls Home Game</div>
@@ -481,7 +436,97 @@
                 
                 
                 
+                
+                
                 <div class="tag tag-green">Edge too small (-0.8)...</div>
+                
+            </div>
+
+        </div>
+        
+        
+        
+        
+        
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/mem.png" 
+                             alt="Memphis Grizzlies" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" 
+                             alt="Minnesota Timberwolves" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                    </div>
+                    <div class="matchup-info">
+                        <h2>Memphis Grizzlies @ Minnesota Timberwolves</h2>
+                        <div class="matchup-sub">Minnesota Timberwolves Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17/25 08:10 PM EST</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-8.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +8.0
+                    <span class="edge-val">Edge: +0.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 233.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 228.1
+                    <span class="edge-val">Edge: +5.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">AI SCORE</div>
+                    
+                    <div class="metric-value ">3.1</div>
+                </div>
+                <!-- Calculate Max EV/Confidence -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">59%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Memphis Grizzlies 110, Minnesota Timberwolves 118</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                
+                
+                
+                
+                <div class="tag tag-green">Edge too small (+0.0)...</div>
                 
             </div>
 
