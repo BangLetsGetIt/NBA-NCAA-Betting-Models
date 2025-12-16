@@ -10,13 +10,12 @@
     <style>
         :root {
             --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --bg-card-secondary: #2a2a2a;
+            --bg-card: #1c1c1e;
+            --bg-metric: #2c2c2e;
             --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --accent-blue: #60a5fa;
+            --text-secondary: #8e8e93;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
             --border-color: #333333;
         }
 
@@ -31,55 +30,47 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 850px;
             margin: 0 auto;
         }
 
         header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
         }
 
         .date-sub {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
         }
 
         .prop-card {
             background-color: var(--bg-card);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .prop-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-            border-color: #444;
-        }
-
+        /* Header Section */
         .card-header {
-            background-color: #252525;
-            padding: 1.25rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
         }
 
         .header-left {
@@ -89,172 +80,165 @@
         }
 
         .team-logo {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
-        .player-info h2 {
-            font-size: 1.25rem;
+        .matchup-info h2 {
+            font-size: 1.1rem;
             font-weight: 700;
-            margin: 0;
             color: var(--text-primary);
+            margin-bottom: 2px;
         }
 
-        .matchup-info {
+        .matchup-sub {
             font-size: 0.85rem;
             color: var(--text-secondary);
-            font-weight: 500;
-            margin-top: 2px;
         }
 
-        .game-meta {
-            text-align: right;
-        }
-
-        .game-date-time {
+        .game-time-badge {
+            background-color: var(--bg-metric);
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 0.8rem;
             color: var(--text-secondary);
-            background: rgba(255,255,255,0.05);
-            padding: 4px 10px;
-            border-radius: 99px;
             font-weight: 500;
         }
 
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Betting Row */
-        .bet-main-row {
-            display: flex;
-            gap: 1rem;
+        /* Bet Section */
+        .bet-row {
             margin-bottom: 1.5rem;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-card-secondary);
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .bet-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
-        .bet-type-col {
-            flex: 1;
+        .main-pick {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
         }
         
-        .bet-label {
-            font-size: 0.75rem;
+        .main-pick.green { color: var(--accent-green); }
+        .main-pick.red { color: var(--accent-red); }
+
+        .model-context {
             color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .edge-val {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-box {
+            background-color: var(--bg-metric);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .metric-title {
+            font-size: 0.7rem;
             text-transform: uppercase;
+            color: var(--text-secondary);
             letter-spacing: 0.05em;
             margin-bottom: 4px;
             font-weight: 600;
         }
 
-        .bet-selection {
+        .metric-value {
             font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .bet-odds {
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.95rem;
-            margin-left: 6px;
-        }
-
-        .model-edge-box {
-            text-align: center;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            min-width: 120px;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .metric-item {
-            background-color: var(--bg-card-secondary);
-            padding: 1rem;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .metric-lbl {
-            display: block;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .metric-val {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-primary);
         }
+        
+        .metric-value.good { color: var(--accent-green); }
 
-        /* Indicators */
-        .tags-container {
+        /* Tags */
+        .tags-row {
             display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
         }
 
         .tag {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.25rem 0.75rem;
+            padding: 6px 12px;
             border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
         
-        .indicator-box {
-            background: var(--bg-card-secondary);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .tag-red { background: rgba(255, 59, 48, 0.15); color: #ff453a; }
+        .tag-blue { background: rgba(10, 132, 255, 0.15); color: #5ac8fa; }
+        .tag-green { background: rgba(48, 209, 88, 0.15); color: #32d74b; }
+
+        /* Table Styles */
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
         }
-
-        /* Utility Colors */
-        .txt-green { color: var(--accent-green) !important; }
-        .txt-red { color: var(--accent-red) !important; }
-        .txt-blue { color: var(--accent-blue) !important; }
         
-        .tag-green { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.2); }
-        .tag-red { background: rgba(248, 113, 113, 0.15); color: var(--accent-red); border: 1px solid rgba(248, 113, 113, 0.2); }
-        .tag-blue { background: rgba(96, 165, 250, 0.15); color: var(--accent-blue); border: 1px solid rgba(96, 165, 250, 0.2); }
-        .tag-yellow { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.2); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        thead { background: var(--bg-metric); }
+        th { padding: 0.75rem 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.9rem; text-align: left; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: rgba(255, 149, 0, 0.15); color: #ff9f0a; }
+        .badge-win { background: rgba(50, 215, 75, 0.15); color: #32d74b; }
+        .badge-loss { background: rgba(255, 69, 58, 0.15); color: #ff453a; }
+        .badge-push { background: rgba(142, 142, 147, 0.15); color: #8e8e93; }
 
-        @media (max-width: 600px) {
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+        .text-gray { color: var(--text-secondary); }
+        .font-bold { font-weight: 700; }
+
+        @media (max-width: 768px) {
             body { padding: 1rem; }
-            .card-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .game-meta { text-align: left; }
-            .bet-main-row { flex-direction: column; align-items: stretch; text-align: center; }
+            .metrics-row { flex-direction: column; gap: 0.5rem; }
+            .metric-box { padding: 0.8rem 0.5rem; }
+            .main-pick { font-size: 1.5rem; }
+            .header-left { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .card-header { align-items: flex-start; }
+            
+            table { display: block; overflow-x: auto; white-space: nowrap; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏀 NBA PROPS & LINES</h1>
-            <div class="date-sub">2025-12-15 09:21 PM  • season 2024-25</div>
+            <div>
+                <h1>NBA PROPS & LINES</h1>
+                <div class="date-sub">Generated: 2025-12-16 01:02 AM ET</div>
+            </div>
         </header>
 
         
@@ -264,592 +248,424 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/utah.png" 
-                         alt="Utah Jazz" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="player-info">
-                        <h2>Dallas Mavericks @ Utah Jazz</h2>
-                        <div class="matchup-info">HOME: Utah Jazz</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">12/15/25 09:11 PM EST</div>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <!-- SPREAD SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Spread</div>
-                        <div class="bet-selection">
-                            -3.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">+0.4</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            -3.1
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">
-                                Dallas Mavericks +3.5
-                            </div>
-                        
-                    </div>
-                </div>
-
-                <!-- TOTAL SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Total</div>
-                        <div class="bet-selection">
-                            253.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">227.4</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +26.1
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">UNDER</div>
-                        
-                    </div>
-                </div>
-
-                <!-- AI RATING & METRICS -->
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        
-                        <span class="metric-val txt-green">
-                            4.9/5.0
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">PREDICTED SCORE</span>
-                        <span class="metric-val" style="font-size: 1rem;">
-                            Dallas Mavericks 114, Utah Jazz 114
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">CONFIDENCE</span>
-                        
-                        
-                        
-                        
-                        <span class="metric-val txt-green">
-                            99%
-                        </span>
-                    </div>
-                </div>
-
-                
-                <div class="indicator-box">
-                    <span style="font-size: 1.25rem;">✅</span>
-                    <div>
-                        <strong class="txt-green">GOOD</strong>
-                        <span style="color: var(--text-secondary);"> • Dallas Mavericks - Good record: 4-2 (67%) | +1.90u over 6 picks</span>
-                    </div>
-                </div>
-                
-
-                <div class="tags-container">
-                    
-                        <span class="tag tag-blue">Model projects Utah Jazz to win by only 0.4, not enough to cover -3.5....</span>
-                    
-                    
-                        <span class="tag tag-blue">Model projects 227 total points, bet the UNDER</span>
-                    
-                </div>
-
-            </div>
-        </div>
-        
-        
-        
-        
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png" 
-                         alt="Miami Heat" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="player-info">
-                        <h2>Toronto Raptors @ Miami Heat</h2>
-                        <div class="matchup-info">HOME: Miami Heat</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">12/15/25 07:44 PM EST</div>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <!-- SPREAD SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Spread</div>
-                        <div class="bet-selection">
-                            -5.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">+12.4</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +6.9
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">
-                                Miami Heat -5.5
-                            </div>
-                        
-                    </div>
-                </div>
-
-                <!-- TOTAL SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Total</div>
-                        <div class="bet-selection">
-                            210.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">222.2</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +11.7
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">OVER</div>
-                        
-                    </div>
-                </div>
-
-                <!-- AI RATING & METRICS -->
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        
-                        <span class="metric-val txt-green">
-                            4.4/5.0
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">PREDICTED SCORE</span>
-                        <span class="metric-val" style="font-size: 1rem;">
-                            Toronto Raptors 105, Miami Heat 117
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">CONFIDENCE</span>
-                        
-                        
-                        
-                        
-                        <span class="metric-val txt-green">
-                            97%
-                        </span>
-                    </div>
-                </div>
-
-                
-
-                <div class="tags-container">
-                    
-                        <span class="tag tag-blue">Model projects Miami Heat to win by 12.4, covering -5.5....</span>
-                    
-                    
-                        <span class="tag tag-blue">Model projects 222 total points, bet the OVER</span>
-                    
-                </div>
-
-            </div>
-        </div>
-        
-        
-        
-        
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/bos.png" 
-                         alt="Boston Celtics" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="player-info">
-                        <h2>Detroit Pistons @ Boston Celtics</h2>
-                        <div class="matchup-info">HOME: Boston Celtics</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">12/15/25 07:13 PM EST</div>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <!-- SPREAD SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Spread</div>
-                        <div class="bet-selection">
-                            +2.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">+8.9</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +11.4
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">
-                                Boston Celtics +2.5
-                            </div>
-                        
-                    </div>
-                </div>
-
-                <!-- TOTAL SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Total</div>
-                        <div class="bet-selection">
-                            221.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">223.1</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-secondary">
-                            +1.6
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-red">NO PLAY</div>
-                        
-                    </div>
-                </div>
-
-                <!-- AI RATING & METRICS -->
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        
-                        <span class="metric-val txt-green">
-                            4.4/5.0
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">PREDICTED SCORE</span>
-                        <span class="metric-val" style="font-size: 1rem;">
-                            Detroit Pistons 107, Boston Celtics 116
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">CONFIDENCE</span>
-                        
-                        
-                        
-                        
-                        <span class="metric-val txt-green">
-                            99%
-                        </span>
-                    </div>
-                </div>
-
-                
-                <div class="indicator-box">
-                    <span style="font-size: 1.25rem;">🔥</span>
-                    <div>
-                        <strong class="txt-green">HOT</strong>
-                        <span style="color: var(--text-secondary);"> • Boston Celtics - Strong performer: 4-0 (100%) | +4.00u over 4 picks</span>
-                    </div>
-                </div>
-                
-
-                <div class="tags-container">
-                    
-                        <span class="tag tag-blue">Model projects Boston Celtics to win outright, easily covering +2.5....</span>
-                    
-                    
-                </div>
-
-            </div>
-        </div>
-        
-        
-        
-        
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" 
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/nyk.png" 
                          alt="New York Knicks" 
                          class="team-logo"
                          onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="player-info">
+                    <div class="matchup-info">
                         <h2>San Antonio Spurs @ New York Knicks</h2>
-                        <div class="matchup-info">HOME: New York Knicks</div>
+                        <div class="matchup-sub">New York Knicks Home Game</div>
                     </div>
                 </div>
-                <div class="game-meta">
-                    <div class="game-date-time">12/16/25 08:40 PM EST</div>
+                <div class="game-time-badge">12/16/25 08:40 PM EST</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">New York Knicks -2.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +13.6
+                    <span class="edge-val">Edge: +11.1</span>
                 </div>
             </div>
 
-            <div class="card-body">
-                <!-- SPREAD SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Spread</div>
-                        <div class="bet-selection">
-                            -2.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">+13.6</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +11.1
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">
-                                New York Knicks -2.5
-                            </div>
-                        
-                    </div>
-                </div>
-
-                <!-- TOTAL SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Total</div>
-                        <div class="bet-selection">
-                            229.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">222.2</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +7.3
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">UNDER</div>
-                        
-                    </div>
-                </div>
-
-                <!-- AI RATING & METRICS -->
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        
-                        <span class="metric-val txt-green">
-                            4.4/5.0
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">PREDICTED SCORE</span>
-                        <span class="metric-val" style="font-size: 1rem;">
-                            San Antonio Spurs 104, New York Knicks 118
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">CONFIDENCE</span>
-                        
-                        
-                        
-                        
-                        <span class="metric-val txt-green">
-                            99%
-                        </span>
-                    </div>
-                </div>
-
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
                 
-                <div class="indicator-box">
-                    <span style="font-size: 1.25rem;">🔥</span>
-                    <div>
-                        <strong class="txt-green">HOT</strong>
-                        <span style="color: var(--text-secondary);"> • New York Knicks - Strong performer: 4-0 (100%) | +3.91u over 4 picks</span>
-                    </div>
-                </div>
+                    
+                    <div class="main-pick green">UNDER 231.5</div>
+                    
                 
-
-                <div class="tags-container">
-                    
-                        <span class="tag tag-blue">Model projects New York Knicks to win by 13.6, covering -2.5....</span>
-                    
-                    
-                        <span class="tag tag-blue">Model projects 222 total points, bet the UNDER</span>
-                    
+                
+                <div class="model-context">
+                    Model: 222.2
+                    <span class="edge-val">Edge: +9.3</span>
                 </div>
+            </div>
 
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">AI SCORE</div>
+                    
+                    <div class="metric-value good">4.4</div>
+                </div>
+                <!-- Calculate Max EV/Confidence -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">San Antonio Spurs 104, New York Knicks 118</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-blue">🔥 New York Knicks - Strong performer: 4-0 (100%) | +3.91u over 4 picks</div>
+                
+                
+                
+                <div class="tag tag-green">Model projects New York Knicks to win by 13.6, covering -2.5...</div>
+                
+            </div>
+
+        </div>
+        
+
+        <!-- TRACKING DATA INJECTION -->
+        
+        <div class="tracking-section">
+            <div class="tracking-header">🎯 Upcoming Bets (Pending)</div>
+            <div class="prop-card" style="padding: 0; overflow: hidden;">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>Type</th>
+                                <th>Selection</th>
+                                <th>Line</th>
+                                <th>Edge</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td class="text-gray">12/16 08:40 PM</td>
+                                <td class="font-bold">San Antonio Spurs @ New York Knicks</td>
+                                <td>Spread</td>
+                                <td class="text-green">✅ BET: New York Knicks -2.5</td>
+                                <td>-2.5</td>
+                                <td>+11.1</td>
+                                <td><span class="badge badge-pending">PENDING</span></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
+
         
-        
-        
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" 
-                         alt="Denver Nuggets" 
-                         class="team-logo"
-                         onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
-                    <div class="player-info">
-                        <h2>Houston Rockets @ Denver Nuggets</h2>
-                        <div class="matchup-info">HOME: Denver Nuggets</div>
-                    </div>
+        <div class="tracking-section">
+            <div class="tracking-header">📊 Recent Results (Last 20)</div>
+            <div class="prop-card" style="padding: 0; overflow: hidden;">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>Type</th>
+                                <th>Selection</th>
+                                <th>Result</th>
+                                <th>Profit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td class="text-gray">12/15 09:11 PM</td>
+                                <td class="font-bold">Dallas Mavericks @ Utah Jazz</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 253.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/15 09:10 PM</td>
+                                <td class="font-bold">Dallas Mavericks @ Utah Jazz</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 239.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/15 07:40 PM</td>
+                                <td class="font-bold">Toronto Raptors @ Miami Heat</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 237.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/15 07:13 PM</td>
+                                <td class="font-bold">Detroit Pistons @ Boston Celtics</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Boston Celtics +2.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 09:12 PM</td>
+                                <td class="font-bold">Golden State Warriors @ Portland Trail Blazers</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 248.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 09:10 PM</td>
+                                <td class="font-bold">Golden State Warriors @ Portland Trail Blazers</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 235.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 08:11 PM</td>
+                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Phoenix Suns +3.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 08:11 PM</td>
+                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 238.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 08:10 PM</td>
+                                <td class="font-bold">Los Angeles Lakers @ Phoenix Suns</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Phoenix Suns +2.0</td>
+                                <td class="text-gray">Push</td>
+                                <td class="text-gray">
+                                    +0.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-push">push</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 07:12 PM</td>
+                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Chicago Bulls +2.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 07:12 PM</td>
+                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
+                                <td>Total</td>
+                                <td>✅ BET: OVER 211.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 07:10 PM</td>
+                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Chicago Bulls -4.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 07:10 PM</td>
+                                <td class="font-bold">New Orleans Pelicans @ Chicago Bulls</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 242.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 03:40 PM</td>
+                                <td class="font-bold">Charlotte Hornets @ Cleveland Cavaliers</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Cleveland Cavaliers -11.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 03:40 PM</td>
+                                <td class="font-bold">Charlotte Hornets @ Cleveland Cavaliers</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 234.5</td>
+                                <td class="text-gray">Win</td>
+                                <td class="text-green">
+                                    +1.00u
+                                </td>
+                                <td>
+                                    <span class="badge badge-win">win</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/14 03:10 PM</td>
+                                <td class="font-bold">Washington Wizards @ Indiana Pacers</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Indiana Pacers -10.0</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/13 09:00 PM</td>
+                                <td class="font-bold">San Antonio Spurs @ Oklahoma City Thunder</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Oklahoma City Thunder -10.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/13 05:30 PM</td>
+                                <td class="font-bold">New York Knicks @ Orlando Magic</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Orlando Magic +4.0</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/12 10:12 PM</td>
+                                <td class="font-bold">Minnesota Timberwolves @ Golden State Warriors</td>
+                                <td>Total</td>
+                                <td>✅ BET: UNDER 242.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="text-gray">12/12 08:10 PM</td>
+                                <td class="font-bold">Utah Jazz @ Memphis Grizzlies</td>
+                                <td>Spread</td>
+                                <td>✅ BET: Memphis Grizzlies -6.5</td>
+                                <td class="text-gray">Loss</td>
+                                <td class="text-red">
+                                    -1.10u
+                                </td>
+                                <td>
+                                    <span class="badge badge-loss">loss</span>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
                 </div>
-                <div class="game-meta">
-                    <div class="game-date-time">12/15/25 09:40 PM EST</div>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <!-- SPREAD SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Spread</div>
-                        <div class="bet-selection">
-                            +1.0
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">+4.9</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +5.9
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">
-                                Denver Nuggets +1.0
-                            </div>
-                        
-                    </div>
-                </div>
-
-                <!-- TOTAL SECTION -->
-                <div class="bet-main-row">
-                    <div class="bet-type-col">
-                        <div class="bet-label">Total</div>
-                        <div class="bet-selection">
-                            237.5
-                            <span class="bet-odds">(-110)</span>
-                        </div>
-                    </div>
-                    <div class="model-edge-box">
-                        <div class="bet-label">Model</div>
-                        <div style="font-weight: 700; color: #fff;">227.2</div>
-                        <div class="bet-label" style="margin-top: 4px;">Edge</div>
-                        <div style="font-weight: 700;" class="txt-green">
-                            +10.3
-                        </div>
-                    </div>
-                    <div class="bet-type-col" style="text-align: right;">
-                        <div class="bet-label">Pick</div>
-                        
-                            <div class="bet-selection txt-green">UNDER</div>
-                        
-                    </div>
-                </div>
-
-                <!-- AI RATING & METRICS -->
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        
-                        <span class="metric-val txt-green">
-                            4.2/5.0
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">PREDICTED SCORE</span>
-                        <span class="metric-val" style="font-size: 1rem;">
-                            Houston Rockets 111, Denver Nuggets 116
-                        </span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">CONFIDENCE</span>
-                        
-                        
-                        
-                        
-                        <span class="metric-val txt-green">
-                            85%
-                        </span>
-                    </div>
-                </div>
-
-                
-
-                <div class="tags-container">
-                    
-                        <span class="tag tag-blue">Model projects Denver Nuggets to win outright, easily covering +1.0....</span>
-                    
-                    
-                        <span class="tag tag-blue">Model projects 227 total points, bet the UNDER</span>
-                    
-                </div>
-
             </div>
         </div>
         
+
     </div>
 </body>
 </html>
