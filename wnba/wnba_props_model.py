@@ -185,7 +185,7 @@ def generate_html(picks, season_stats, last10_stats):
         }
 
         .header-left { display: flex; align-items: center; gap: 12px; }
-        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; background:#fff; }
+        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
         .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
         .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
         

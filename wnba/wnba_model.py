@@ -216,7 +216,7 @@ def generate_html(results, stats_tuple):
             width: 44px;
             height: 44px;
             object-fit: contain;
-            background: #fff; /* WNBA logos often transparent */
+            /* background: #fff; Removed per user request */
             border-radius: 50%;
         }
 
