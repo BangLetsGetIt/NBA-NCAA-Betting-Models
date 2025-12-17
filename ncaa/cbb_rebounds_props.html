@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourtSide Analytics</title>
+    <title>CourtSide CBB Rebounds</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -41,7 +41,6 @@
         .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
         .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
 
-        /* Summary Stats */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -65,7 +64,6 @@
         }
         .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
 
-        /* Prop Card */
         .prop-card {
             background-color: var(--bg-card);
             border-radius: 16px;
@@ -169,170 +167,98 @@
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <div>
             <h1>CourtSide Analytics</h1>
-            <div class="subheader">NBA Assists Model</div>
-            <div class="date-sub">Profitable Version • Season 2025-26</div>
-        </div>
-        <div style="text-align: right;">
-            <div class="metric-title">SEASON RECORD</div>
-            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
-                0-0 (0.0%)
-            </div>
-            <div style="font-size: 0.9rem; color: var(--accent-red);">
-                 +0.0u
-            </div>
+            <div class="subheader">CBB Rebounds Model</div>
+             <div class="date-sub">Automated Props Analysis</div>
         </div>
     </header>
-
     
-
-    <section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 7.5</span></div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" alt="Chicago Bulls Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Coby White</h2>
-                        <div class="matchup-info">Cavaliers @ Bulls</div>
+    <section>
+        <div class="section-title">Top OVER Plays</div>
+        
+    </section>
+    
+    <section>
+        <div class="section-title">Top UNDER Plays</div>
+        
+                <div class="prop-card">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <div class="player-info">
+                                <h2>Rueben Chinyelu</h2>
+                                <div class="matchup-info">St. Francis (PA) Red Flash @ Florida Gators</div>
+                            </div>
+                        </div>
+                         <div class="game-meta">
+                            <div class="metric-val" style="font-size: 0.9em">2025-12-17</div>
+                        </div>
                     </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Wed 12/17 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">3.5 AST</span> 
-                        <span class="bet-odds">-152</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>6.5 AST</strong> (Edge: +1.5)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">9.1</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+4.5%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">48%</span>
+                    <div class="card-body">
+                         <div class="bet-main-row">
+                            <div class="bet-selection">
+                                <span class="txt-red">UNDER</span> 
+                                <span class="line">10.5 REB</span> 
+                                <span class="bet-odds">-125</span>
+                            </div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <span class="metric-lbl">AI SCORE</span>
+                                <span class="metric-val txt-green">10.0</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-lbl">AVG</span>
+                                <span class="metric-val">6.6</span>
+                            </div>
+                             <div class="metric-item">
+                                <span class="metric-lbl">EDGE</span>
+                                <span class="metric-val">+3.9</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="tags-container">
-                    <span class="tag tag-blue">High Confidence</span>
-<span class="tag tag-red">Cold Streak</span>
-
-                </div>
-            </div>
-        </div></section>
-
-    
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" alt="Denver Nuggets Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Desmond Bane</h2>
-                        <div class="matchup-info">Magic @ Nuggets</div>
+                <div class="prop-card">
+                    <div class="card-header">
+                        <div class="header-left">
+                            <div class="player-info">
+                                <h2>Juke Harris</h2>
+                                <div class="matchup-info">Longwood Lancers @ Wake Forest Demon Deacons</div>
+                            </div>
+                        </div>
+                         <div class="game-meta">
+                            <div class="metric-val" style="font-size: 0.9em">2025-12-18</div>
+                        </div>
                     </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Thu 12/18 09:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">5.5 AST</span> 
-                        <span class="bet-odds">-162</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>3.7 AST</strong> (Edge: 0.9)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.7</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-8.2%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
+                    <div class="card-body">
+                         <div class="bet-main-row">
+                            <div class="bet-selection">
+                                <span class="txt-red">UNDER</span> 
+                                <span class="line">5.5 REB</span> 
+                                <span class="bet-odds">110</span>
+                            </div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <span class="metric-lbl">AI SCORE</span>
+                                <span class="metric-val txt-green">9.1</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-lbl">AVG</span>
+                                <span class="metric-val">2.8</span>
+                            </div>
+                             <div class="metric-item">
+                                <span class="metric-lbl">EDGE</span>
+                                <span class="metric-val">+2.7</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="tags-container">
-                    
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" alt="Cleveland Cavaliers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Darius Garland</h2>
-                        <div class="matchup-info">Cavaliers @ Bulls</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Wed 12/17 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">7.5 AST</span> 
-                        <span class="bet-odds">-144</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>5.5 AST</strong> (Edge: 1.0)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.5</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-2.6%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Weak AST Defense</span>
-
-                </div>
-            </div>
-        </div>
-
-    
-
-    
+    </section>
 </div>
-
 </body>
 </html>
