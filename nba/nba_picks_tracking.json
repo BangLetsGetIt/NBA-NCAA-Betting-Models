@@ -3528,11 +3528,11 @@
       "edge": 11.1,
       "pick": "\u2705 BET: New York Knicks -2.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 124,
+      "actual_away_score": 113,
       "closing_line": -2.5,
       "clv_status": "neutral"
     },
@@ -3606,18 +3606,18 @@
       "edge": -12.3,
       "pick": "\u2705 BET: UNDER 234.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 124,
+      "actual_away_score": 113
     }
   ],
   "summary": {
     "total_picks": 190,
-    "wins": 104,
-    "losses": 83,
+    "wins": 105,
+    "losses": 84,
     "pushes": 1,
-    "pending": 2
+    "pending": 0
   }
 }
