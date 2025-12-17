@@ -18,6 +18,18 @@ cd "$NFL_DIR" || exit 1
 # Track start time
 START_TIME=$(date +%s)
 
+# Fetch latest player stats
+echo "📊 Fetching latest NFL player stats..."
+python3 fetch_nfl_player_stats.py
+FETCHER_EXIT=$?
+if [ $FETCHER_EXIT -ne 0 ]; then
+    echo "⚠️  Stats fetching had errors (using cached data)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
 # Run NFL main model
 echo "📊 Running NFL Main Model..."
 python3 nfl_model_IMPROVED.py
@@ -58,6 +70,19 @@ echo "----------------------------------------"
 echo ""
 
 
+# Run NFL Receiving Yards Props Model
+echo "📊 Running NFL Receiving Yards Props Model..."
+python3 nfl_receiving_yards_props_model.py
+REC_YDS_EXIT=$?
+
+if [ $REC_YDS_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Receiving Yards Props Model had errors (exit code: $REC_YDS_EXIT)"
+fi
+
+echo ""
+echo "----------------------------------------"
+echo ""
+
 # Run NFL Passing Yards Props Model
 echo "📊 Running NFL Passing Yards Props Model..."
 python3 nfl_passing_yards_props_model.py
@@ -67,6 +92,18 @@ if [ $PASS_YDS_EXIT -ne 0 ]; then
     echo "⚠️  NFL Passing Yards Props Model had errors (exit code: $PASS_YDS_EXIT)"
 fi
 
+echo ""
+echo "----------------------------------------"
+echo ""
+
+# Run NFL Anytime TD Model
+echo "📊 Running NFL Anytime TD Model..."
+python3 atd_model.py
+ATD_EXIT=$?
+
+if [ $ATD_EXIT -ne 0 ]; then
+    echo "⚠️  NFL Anytime TD Model had errors (exit code: $ATD_EXIT)"
+fi
 echo ""
 echo "=========================================="
 echo "✅ NFL Models Execution Complete"
@@ -87,11 +124,13 @@ echo "📋 Execution Summary:"
 echo "  • NFL Main Model: $([ $MAIN_EXIT -eq 0 ] && echo '✅' || echo '❌')"
 echo "  • Receptions Props: $([ $REC_EXIT -eq 0 ] && echo '✅' || echo '❌')"
 echo "  • Rushing Yards Props: $([ $RUSH_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Receiving Yards Props: $([ $REC_YDS_EXIT -eq 0 ] && echo '✅' || echo '❌')"
 echo "  • Passing Yards Props: $([ $PASS_YDS_EXIT -eq 0 ] && echo '✅' || echo '❌')"
+echo "  • Anytime TD Props: $([ $ATD_EXIT -eq 0 ] && echo '✅' || echo '❌')"
 echo ""
 
 # Exit with error if any model failed
-if [ $MAIN_EXIT -ne 0 ] || [ $REC_EXIT -ne 0 ] || [ $RUSH_EXIT -ne 0 ] || [ $PASS_YDS_EXIT -ne 0 ]; then
+if [ $MAIN_EXIT -ne 0 ] || [ $REC_EXIT -ne 0 ] || [ $RUSH_EXIT -ne 0 ] || [ $REC_YDS_EXIT -ne 0 ] || [ $PASS_YDS_EXIT -ne 0 ] || [ $ATD_EXIT -ne 0 ]; then
     exit 1
 fi
 
