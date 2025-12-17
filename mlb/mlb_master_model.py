@@ -1,662 +1,524 @@
+#!/usr/bin/env python3
+"""MLB Master Model - Sharp Plus Version
+Includes: Moneyline, F5, Strikeout Props, HR Props, and Hits+Runs+RBI Props.
+Features: CourtSide Analytics Styling, Automated Tracking, Kelly Criterion.
+"""
+
 import pandas as pd
 import numpy as np
 from pybaseball import pitching_stats, batting_stats, statcast_batter_exitvelo_barrels
 from scipy.stats import poisson
 from datetime import datetime
+import os
+import json
+import time
+import pytz
 
 # --- CONFIGURATION ---
 SEASON = 2025
-MIN_INN = 50  # Minimum innings for pitchers to be considered
+MIN_INN = 50  # Minimum innings for pitchers
 MIN_PA = 150  # Minimum plate appearances for batters
-BANKROLL = 10000  # Example Bankroll $10,000
+BANKROLL = 10000
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+TRACKING_FILE = os.path.join(SCRIPT_DIR, "mlb_master_model_tracking.json")
+OUTPUT_HTML = os.path.join(SCRIPT_DIR, "mlb_master_model.html")
 
-print(f"--- INITIALIZING MLB ALPHA MODEL ({SEASON} Data) ---")
+# Constants
+MIN_EDGE = 0.05  # 5% edge required to bet
+KELLY_MULTIPLIER = 0.5  # Half-Kelly for safety
+
+class Colors:
+    GREEN = "\033[92m"
+    RED = "\033[91m"
+    YELLOW = "\033[93m"
+    CYAN = "\033[96m"
+    BOLD = "\033[1m"
+    END = "\033[0m"
+
+print(f"{Colors.BOLD}--- INITIALIZING COURT-SIDE ANALYTICS MLB MODEL ({SEASON}) ---{Colors.END}")
 
 # ==========================================
-# 1. DATA INGESTION ENGINE
+# 1. TRACKING SYSTEM
+# ==========================================
+def load_tracking_data():
+    if os.path.exists(TRACKING_FILE):
+        try:
+            with open(TRACKING_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            return {'picks': [], 'summary': {}}
+    return {'picks': [], 'summary': {}}
+
+def save_tracking_data(data):
+    with open(TRACKING_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def track_new_picks(new_picks):
+    tracking_data = load_tracking_data()
+    current_ids = {p['id'] for p in tracking_data['picks']}
+    
+    added_count = 0
+    for pick in new_picks:
+        if pick['id'] not in current_ids:
+            # Add metadata for tracking
+            pick['status'] = 'Pending'
+            pick['result'] = None
+            pick['profit'] = 0
+            pick['created_at'] = datetime.now().isoformat()
+            tracking_data['picks'].append(pick)
+            added_count += 1
+            
+    if added_count > 0:
+        save_tracking_data(tracking_data)
+        print(f"{Colors.GREEN}Successfully tracked {added_count} new picks.{Colors.END}")
+
+def calculate_tracking_stats():
+    """Calculate ROI and Record from tracked picks."""
+    data = load_tracking_data()
+    picks = data.get('picks', [])
+    
+    completed = [p for p in picks if p['status'] in ['Win', 'Loss']]
+    if not completed:
+        return {'wins': 0, 'losses': 0, 'win_rate': 0.0, 'roi': 0.0, 'profit': 0.0}
+        
+    wins = len([p for p in completed if p['status'] == 'Win'])
+    losses = len([p for p in completed if p['status'] == 'Loss'])
+    total = wins + losses
+    
+    # Simple unit tracking (assuming 1 unit per bet for ROI calc if bet_amount missing)
+    net_units = 0
+    for p in completed:
+        odds = p.get('odds_dec', 1.91)
+        if p['status'] == 'Win':
+            net_units += (odds - 1)
+        else:
+            net_units -= 1
+            
+    roi = (net_units / total) * 100 if total > 0 else 0
+    win_rate = (wins / total) * 100 if total > 0 else 0
+    
+    return {
+        'wins': wins,
+        'losses': losses,
+        'win_rate': win_rate,
+        'roi': roi,
+        'profit': net_units
+    }
+
+# ==========================================
+# 2. DATA INGESTION ENGINE
 # ==========================================
 def get_data():
     print("1. Fetching Advanced Stats from FanGraphs & Statcast...")
     
-    # Pitching: We want SIERA (Skill-Interactive ERA) and xFIP
-    pitching = pitching_stats(SEASON, qual=MIN_INN)
-    pitching = pitching[['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%']]
-    
-    # Batting: We want wRC+ (Weighted Runs Created) and ISO (Power)
-    batting = batting_stats(SEASON, qual=MIN_PA)
-    batting = batting[['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%']]
-    
-    # Statcast: For Home Run props (Barrel Rate is king)
-    # Note: This function fetches heavy data, simplified here for speed
+    # Pitching: SIERA, xFIP, K/9
     try:
-        barrels = statcast_batter_exitvelo_barrels(SEASON, MIN_PA)
-        barrels = barrels[['last_name, first_name', 'brl_percent']]
-        # Clean names to match FanGraphs
-        barrels['Name'] = barrels['last_name, first_name'].apply(lambda x: f"{x.split(', ')[1]} {x.split(', ')[0]}")
-        batting = batting.merge(barrels[['Name', 'brl_percent']], on='Name', how='left').fillna(0)
+        pitching = pitching_stats(SEASON, qual=MIN_INN)
+        pitching = pitching[['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%']]
     except:
-        print("   ! Statcast Barrel data unavailable, using ISO proxy.")
-        batting['brl_percent'] = batting['ISO'] * 10 # Rough proxy if API fails
+        print(f"{Colors.YELLOW}Warning: Pitching stats fetch failed (Off-season?). Using Mock Data.{Colors.END}")
+        # Mock Data Structure
+        pitching = pd.DataFrame({
+            'Name': ['Gerrit Cole', 'Tyler Glasnow', 'Zack Wheeler'],
+            'Team': ['NYY', 'LAD', 'PHI'],
+            'SIERA': [3.10, 2.95, 3.20],
+            'xFIP': [3.20, 2.80, 3.15],
+            'K/9': [10.5, 11.5, 9.8],
+            'HR/9': [1.0, 0.9, 0.8]
+        })
+
+    # Batting: wRC+, ISO
+    try:
+        batting = batting_stats(SEASON, qual=MIN_PA)
+        batting = batting[['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%']]
+        
+        # Statcast Barrels
+        try:
+            barrels = statcast_batter_exitvelo_barrels(SEASON, MIN_PA)
+            barrels = barrels[['last_name, first_name', 'brl_percent']]
+            barrels['Name'] = barrels['last_name, first_name'].apply(lambda x: f"{x.split(', ')[1]} {x.split(', ')[0]}")
+            batting = batting.merge(barrels[['Name', 'brl_percent']], on='Name', how='left').fillna(0)
+        except:
+            print("   ! Statcast Barrel data unavailable, using ISO proxy.")
+            batting['brl_percent'] = batting['ISO'] * 10 
+    except:
+        print(f"{Colors.YELLOW}Warning: Batting stats fetch failed. Using Mock Data.{Colors.END}")
+        batting = pd.DataFrame({
+            'Name': ['Aaron Judge', 'Shohei Ohtani', 'Juan Soto'],
+            'Team': ['NYY', 'LAD', 'NYY'],
+            'wRC+': [160, 155, 150],
+            'ISO': [0.300, 0.280, 0.250],
+            'brl_percent': [20.0, 18.0, 15.0],
+            'K%': [0.25, 0.22, 0.18]
+        })
 
     return pitching, batting
 
 # ==========================================
-# 2. PROBABILITY ENGINES
+# 3. PROBABILITY ENGINES
 # ==========================================
 
 def calculate_f5_probability(pitcher_a, pitcher_b, lineup_a_wrc, lineup_b_wrc):
-    """
-    Calculates Win Probability for First 5 Innings.
-    Logic: Pitching is 70% of F5, Hitting is 30%.
-    """
-    # Lower SIERA is better. We invert it for a "Score".
-    score_a = (5.00 - pitcher_a['SIERA']) * 0.7 + (lineup_a_wrc / 100) * 0.3
-    score_b = (5.00 - pitcher_b['SIERA']) * 0.7 + (lineup_b_wrc / 100) * 0.3
+    """Calculates Win Probability for First 5 Innings."""
+    # Lower SIERA is better. Score = (5.00 - SIERA)*0.6 + (wRC+/100)*0.4
+    score_a = (5.00 - pitcher_a['SIERA']) * 0.6 + (lineup_a_wrc / 100) * 0.4
+    score_b = (5.00 - pitcher_b['SIERA']) * 0.6 + (lineup_b_wrc / 100) * 0.4
     
     total_score = score_a + score_b
     win_prob_a = score_a / total_score
     return win_prob_a
 
 def calculate_k_prop_probability(pitcher, opp_lineup_k_rate, line=5.5):
-    """
-    Uses Poisson Distribution to find probability of Over/Under Ks.
-    Input: Pitcher's K/9 and Opponent's tendency to strike out.
-    """
-    # Expected Ks = (Pitcher K/9) * (Opponent K factor) * (Innings Expected / 9)
-    # We assume average starter goes 5.5 innings
+    """Uses Poisson for K Props."""
     avg_innings = 5.5
-    
-    # Adjust pitcher's K rate by opponent's K vulnerability (1.0 is avg, 1.2 is high Ks)
-    opp_k_factor = opp_lineup_k_rate / 0.22 # 22% is roughly league average K%
+    opp_k_factor = opp_lineup_k_rate / 0.22 # 22% is league avg
     expected_ks = (pitcher['K/9'] * (avg_innings / 9)) * opp_k_factor
     
-    # Poisson Probability of getting MORE than the line
-    # poisson.cdf returns probability of getting <= x. So 1 - cdf is > x.
     prob_over = 1 - poisson.cdf(line, expected_ks)
-    return expected_ks, prob_over
+    prob_under = poisson.cdf(line, expected_ks)
+    return expected_ks, prob_over, prob_under
 
 def calculate_hr_probability(batter, pitcher):
-    """
-    Simplified HR Model: Barrel Rate vs Pitcher HR/9
-    """
-    # Base HR probability per AB is roughly 3-4%
+    """Simplified HR Probability utilizing Barrel Rate."""
     base_prob = 0.035
-    
-    # Modifiers
-    batter_mod = batter['brl_percent'] / 6.0  # 6% barrel rate is approx avg
-    pitcher_mod = pitcher['HR/9'] / 1.2      # 1.2 HR/9 is approx avg
-    
+    batter_mod = batter['brl_percent'] / 6.0 
+    pitcher_mod = pitcher['HR/9'] / 1.2
     estimated_prob = base_prob * batter_mod * pitcher_mod
-    
-    # Probability of at least 1 HR in 4 At-Bats (Binomial)
     prob_hr_game = 1 - (1 - estimated_prob) ** 4
     return prob_hr_game
 
-# ==========================================
-# 3. THE KELLY CRITERION (Bankroll Management)
-# ==========================================
+def calculate_h_r_rbi_probability(batter, pitcher, team_wrc):
+    """
+    New Prop: Hits + Runs + RBIs
+    Based on Batter wRC+, Pitcher xFIP, and Team Strength (for R/RBI context).
+    Average H+R+RBI is approx 1.8-2.2 for good hitters.
+    """
+    # 1. Base Expectation based on wRC+ (100 = 1.5, 150 = 2.2 approx)
+    base_exp = 1.5 * (batter['wRC+'] / 100)
+    
+    # 2. Pitcher Modifier (xFIP)
+    # xFIP 3.00 is tough (0.8x), 5.00 is easy (1.2x)
+    pitcher_factor = (pitcher['xFIP'] / 4.00) 
+    
+    # 3. Team Context (Batter needs teammates on base for RBI, or to drive him in for R)
+    team_factor = (team_wrc / 100)
+    
+    expected_val = base_exp * pitcher_factor * team_factor
+    
+    # Standard line is usually 1.5. Calculate prob of hitting >= 2
+    # Prob(X >= 2) = 1 - Prob(X <= 1)
+    prob_over_1_5 = 1 - poisson.cdf(1, expected_val)
+    
+    return expected_val, prob_over_1_5
+
 def kelly_criterion(true_prob, decimal_odds):
-    """
-    Calculates optimal bet size. 
-    f = (bp - q) / b
-    """
     b = decimal_odds - 1
     q = 1 - true_prob
     f = (b * true_prob - q) / b
-    return max(0, f) # Never bet negative money
+    return max(0, f)
 
 # ==========================================
-# 4. HTML GENERATION
+# 4. HTML GENERATION (CourtSide Analytics)
 # ==========================================
-def generate_html(results):
+def generate_html(results, stats):
+    """Generates the modern CourtSide Analytics HTML report."""
+    
+    # Helper for formatting
+    def fmt_odds(odds_str):
+        return odds_str
+
+    # CSS Styles (CourtSide Dark Theme)
+    css = """
+    :root {
+        --bg-main: #121212;
+        --bg-card: #1e1e1e;
+        --bg-card-secondary: #2a2a2a;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --accent-green: #4ade80;
+        --accent-red: #f87171;
+        --accent-blue: #60a5fa;
+        --border-color: #333333;
+    }
+    body {
+        margin: 0; padding: 20px; font-family: 'Inter', sans-serif;
+        background-color: var(--bg-main); color: var(--text-primary);
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+    }
+    h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+    .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+    
+    .summary-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px;
+    }
+    .stat-box {
+        background-color: var(--bg-card); border-radius: 12px; padding: 15px;
+        text-align: center; border: 1px solid var(--border-color);
+    }
+    .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+    .stat-value { font-size: 20px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red { color: var(--accent-red); }
+    
+    .prop-card {
+        background-color: var(--bg-card); border-radius: 16px; overflow: hidden;
+        margin-bottom: 20px; border: 1px solid var(--border-color);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+    .card-header {
+        padding: 15px 20px; background-color: var(--bg-card-secondary);
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .card-body { padding: 20px; }
+    .bet-main-row { margin-bottom: 15px; display: flex; align-items: baseline; gap: 10px; }
+    .bet-type { font-size: 14px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+    .bet-selection { font-size: 22px; font-weight: 800; color: var(--accent-green); }
+    .bet-line { font-size: 20px; color: var(--text-primary); margin-left: 5px; }
+    .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .metric-val { font-size: 16px; font-weight: 700; }
+    
+    .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+    .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+    
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 30px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px; }
     """
-    Generates a mobile-optimized, dark-themed HTML report.
-    Perfect for social media screenshots.
-    """
-    html = f"""
-<!DOCTYPE html>
+
+    # Build HTML
+    html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLB Alpha Model - {results['date']}</title>
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-
-        body {{
-            background: #000000;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            font-weight: 700;
-            padding: 20px;
-            line-height: 1.6;
-        }}
-
-        .container {{
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }}
-
-        .header {{
-            background: #1a1a1a;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 3px solid #0077ff;
-        }}
-
-        .header h1 {{
-            font-size: 28px;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }}
-
-        .header .subtitle {{
-            color: #0077ff;
-            font-size: 14px;
-            font-weight: 700;
-        }}
-
-        .matchup {{
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 3px solid #ff6b35;
-        }}
-
-        .matchup h2 {{
-            font-size: 22px;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 15px;
-        }}
-
-        .teams {{
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-top: 15px;
-        }}
-
-        .team {{
-            flex: 1;
-            text-align: center;
-        }}
-
-        .team-name {{
-            font-size: 20px;
-            font-weight: 900;
-            color: #ffd60a;
-            margin-bottom: 5px;
-        }}
-
-        .pitcher-name {{
-            font-size: 14px;
-            color: #ffffff;
-            font-weight: 700;
-        }}
-
-        .vs {{
-            font-size: 24px;
-            font-weight: 900;
-            color: #ff6b35;
-            margin: 0 15px;
-        }}
-
-        .bet-card {{
-            background: #1a1a1a;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 3px solid #06d6a0;
-        }}
-
-        .bet-card.highlight {{
-            border-color: #ffd60a;
-        }}
-
-        .bet-card h3 {{
-            font-size: 18px;
-            font-weight: 900;
-            color: #ffffff;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }}
-
-        .bet-card.highlight h3 {{
-            color: #ffd60a;
-        }}
-
-        .stat-row {{
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }}
-
-        .stat-row:last-child {{
-            border-bottom: none;
-        }}
-
-        .stat-label {{
-            font-weight: 700;
-            color: #ffffff;
-            font-size: 14px;
-        }}
-
-        .stat-value {{
-            font-weight: 900;
-            color: #ffffff;
-            font-size: 16px;
-        }}
-
-        .stat-value.positive {{
-            color: #0077ff;
-        }}
-
-        .stat-value.highlight {{
-            color: #e63946;
-            font-size: 18px;
-        }}
-
-        .bet-recommendation {{
-            background: #06d6a0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: center;
-            border: 3px solid #06d6a0;
-        }}
-
-        .bet-recommendation.value {{
-            background: #e63946;
-            border-color: #e63946;
-        }}
-
-        .bet-recommendation strong {{
-            font-size: 18px;
-            font-weight: 900;
-            color: #ffffff;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }}
-
-        .bet-recommendation.value strong {{
-            color: #ffffff;
-        }}
-
-        .no-bet {{
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: center;
-            color: #888888;
-            font-weight: 700;
-            border: 2px solid #333333;
-        }}
-
-        .footer {{
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 700;
-            opacity: 0.6;
-        }}
-
-        .emoji {{
-            font-size: 24px;
-            margin-right: 10px;
-        }}
-
-        /* Tablet and smaller */
-        @media (max-width: 768px) {{
-            .container {{
-                max-width: 600px;
-            }}
-
-            .header h1 {{
-                font-size: 26px;
-            }}
-        }}
-
-        /* Mobile */
-        @media (max-width: 600px) {{
-            body {{
-                padding: 10px;
-            }}
-
-            .container {{
-                max-width: 100%;
-            }}
-
-            .header {{
-                padding: 20px;
-            }}
-
-            .header h1 {{
-                font-size: 22px;
-                letter-spacing: 1px;
-            }}
-
-            .header .subtitle {{
-                font-size: 12px;
-            }}
-
-            .matchup h2 {{
-                font-size: 18px;
-            }}
-
-            .teams {{
-                flex-direction: column;
-            }}
-
-            .team-name {{
-                font-size: 18px;
-            }}
-
-            .pitcher-name {{
-                font-size: 13px;
-            }}
-
-            .vs {{
-                margin: 10px 0;
-                font-size: 20px;
-            }}
-
-            .bet-card {{
-                padding: 20px;
-            }}
-
-            .bet-card h3 {{
-                font-size: 16px;
-            }}
-
-            .stat-label {{
-                font-size: 13px;
-            }}
-
-            .stat-value {{
-                font-size: 15px;
-            }}
-
-            .stat-value.highlight {{
-                font-size: 16px;
-            }}
-
-            .bet-recommendation strong {{
-                font-size: 16px;
-            }}
-        }}
-
-        /* Large screens - better for YouTube videos */
-        @media (min-width: 1200px) {{
-            body {{
-                padding: 40px;
-            }}
-
-            .header {{
-                padding: 40px;
-            }}
-
-            .header h1 {{
-                font-size: 36px;
-            }}
-
-            .header .subtitle {{
-                font-size: 16px;
-            }}
-
-            .matchup {{
-                padding: 30px;
-            }}
-
-            .matchup h2 {{
-                font-size: 28px;
-            }}
-
-            .team-name {{
-                font-size: 24px;
-            }}
-
-            .pitcher-name {{
-                font-size: 16px;
-            }}
-
-            .bet-card {{
-                padding: 35px;
-            }}
-
-            .bet-card h3 {{
-                font-size: 22px;
-            }}
-
-            .stat-label {{
-                font-size: 16px;
-            }}
-
-            .stat-value {{
-                font-size: 18px;
-            }}
-
-            .stat-value.highlight {{
-                font-size: 22px;
-            }}
-
-            .bet-recommendation {{
-                padding: 25px;
-            }}
-
-            .bet-recommendation strong {{
-                font-size: 22px;
-            }}
-        }}
-    </style>
+    <title>CourtSide Analytics MLB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>{css}</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚾ MLB Alpha Model</h1>
-            <div class="subtitle">{results['date']}</div>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">MLB Master Model</div>
+            <div class="date-sub">{datetime.now().strftime('%B %d, %Y')} • Alpha V2.0</div>
         </div>
-
-        <div class="matchup">
-            <h2>Today's Featured Game</h2>
-            <div class="teams">
-                <div class="team">
-                    <div class="team-name">{results['team_a']}</div>
-                    <div class="pitcher-name">{results['pitcher_a']}</div>
-                </div>
-                <div class="vs">VS</div>
-                <div class="team">
-                    <div class="team-name">{results['team_b']}</div>
-                    <div class="pitcher-name">{results['pitcher_b']}</div>
-                </div>
-            </div>
+    </header>
+    
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value {'txt-green' if stats['roi'] > 0 else 'txt-red'}">{stats['roi']:.1f}%</div>
         </div>
-
-        <!-- F5 Betting Section -->
-        <div class="bet-card {'highlight' if results['f5_bet'] else ''}">
-            <h3>🎯 First 5 Innings (F5)</h3>
-            <div class="stat-row">
-                <span class="stat-label">Win Probability</span>
-                <span class="stat-value highlight">{results['f5_prob']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Book Odds</span>
-                <span class="stat-value">{results['f5_odds']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Kelly Criterion</span>
-                <span class="stat-value positive">{results['f5_kelly']}</span>
-            </div>
-            {results['f5_recommendation']}
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">{stats['win_rate']:.1f}%</div>
         </div>
-
-        <!-- Strikeout Prop Section -->
-        <div class="bet-card {'highlight' if results['k_bet'] else ''}">
-            <h3>🔥 Strikeout Prop</h3>
-            <div class="stat-row">
-                <span class="stat-label">Player</span>
-                <span class="stat-value">{results['k_player']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Projected Ks</span>
-                <span class="stat-value highlight">{results['k_projected']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Market Line</span>
-                <span class="stat-value">{results['k_line']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Over Probability</span>
-                <span class="stat-value positive">{results['k_prob']}</span>
-            </div>
-            {results['k_recommendation']}
-        </div>
-
-        <!-- Home Run Prop Section -->
-        <div class="bet-card {'highlight' if results['hr_bet'] else ''}">
-            <h3>💣 Home Run Prop</h3>
-            <div class="stat-row">
-                <span class="stat-label">Player</span>
-                <span class="stat-value">{results['hr_player']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">HR Probability</span>
-                <span class="stat-value highlight">{results['hr_prob']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Fair Odds</span>
-                <span class="stat-value positive">{results['hr_fair']}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Book Odds</span>
-                <span class="stat-value">{results['hr_odds']}</span>
-            </div>
-            {results['hr_recommendation']}
-        </div>
-
-        <div class="footer">
-            Model based on SIERA, xFIP, wRC+, Barrel Rate & Advanced Analytics<br>
-            Always bet responsibly. Past performance doesn't guarantee future results.
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">{stats['wins']}-{stats['losses']}</div>
         </div>
     </div>
+    
+    <div class="picks-section">
+"""
+    
+    if not results:
+        html += '<div class="no-bets">No high-value plays found for today.</div>'
+    
+    for res in results:
+        # Determine tags
+        tags_html = ""
+        if res['edge'] > 0.1:
+            tags_html += '<span class="tag tag-green">High Value</span>'
+        if res.get('kel', 0) > 0.05:
+            tags_html += '<span class="tag tag-green">Max Bet</span>'
+            
+        html += f"""
+        <div class="prop-card">
+            <div class="card-header">
+                <span class="bet-type">{res['type']}</span>
+                <span>{res['matchup']}</span>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <span class="bet-selection">{res['selection']}</span>
+                    <span class="bet-line">{res['line']}</span>
+                    <span class="bet-odds">{res['odds_str']}</span>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">MODEL PROB</span>
+                        <span class="metric-val txt-green">{res['prob']:.1%}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EDGE</span>
+                        <span class="metric-val txt-green">+{res['edge']:.1%}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">KELLY BET</span>
+                        <span class="metric-val">{res['wager']}</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    {tags_html}
+                    <span class="tag tag-blue">Model Score: {res['score']:.1f}</span>
+                </div>
+            </div>
+        </div>
+        """
+        
+    html += """
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ & Statcast Data.<br>
+        Always bet responsibly. Past performance doesn't guarantee future results.
+    </footer>
+</div>
 </body>
 </html>
 """
     return html
 
 # ==========================================
-# 5. EXECUTION (Simulated Day)
+# 5. EXECUTION CORE
 # ==========================================
+def main():
+    # 1. Load Data
+    pitchers, batters = get_data()
+    
+    # 2. Tracking Stats
+    stats = calculate_tracking_stats()
+    
+    new_picks = []
+    
+    print("\n--- RUNNING ANALYSIS ---")
+    
+    # --- SIMULATION (Since we are likely off-season or just testing) ---
+    # In production, iterate through today's schedule
+    
+    # GAME 1: NYY vs LAD
+    try:
+        p_nyy = pitchers[pitchers['Name'].str.contains("Cole")].iloc[0]
+        p_lad = pitchers[pitchers['Name'].str.contains("Glasnow")].iloc[0]
+        batter_judge = batters[batters['Name'].str.contains("Judge")].iloc[0]
+        batter_ohtani = batters[batters['Name'].str.contains("Ohtani")].iloc[0]
+        
+        # Mocks
+        odds_nyy_f5 = 2.05 # (+105)
+        nyy_wrc = 115
+        lad_wrc = 118
+        
+        # --- F5 BET ---
+        f5_prob = calculate_f5_probability(p_nyy, p_lad, nyy_wrc, lad_wrc)
+        # Assuming NYY is Selection
+        edge = f5_prob - (1/odds_nyy_f5)
+        if edge > 0.02: # Small threshold for demo
+            kel = kelly_criterion(f5_prob, odds_nyy_f5) * KELLY_MULTIPLIER
+            new_picks.append({
+                'id': f"F5_NYY_LAD_{datetime.now().strftime('%Y%m%d')}",
+                'type': 'First 5 Innings',
+                'matchup': 'NYY @ LAD',
+                'selection': 'NYY ML',
+                'line': 'Moneyline',
+                'odds_str': '+105',
+                'odds_dec': 2.05,
+                'prob': f5_prob,
+                'edge': edge,
+                'wager': f"{kel:.1%} Unit",
+                'kel': kel,
+                'score': f5_prob * 10 
+            })
+            
+        # --- K PROP: Glasnow ---
+        k_line = 7.5
+        exp_k, prob_over, _ = calculate_k_prop_probability(p_lad, 0.21, k_line)
+        k_odds = 1.91 # (-110)
+        edge_k = prob_over - (1/k_odds)
+        if edge_k > MIN_EDGE:
+            kel_k = kelly_criterion(prob_over, k_odds) * KELLY_MULTIPLIER
+            new_picks.append({
+                'id': f"K_Glasnow_{datetime.now().strftime('%Y%m%d')}",
+                'type': 'Player Props - Strikeouts',
+                'matchup': 'NYY @ LAD',
+                'selection': 'Tyler Glasnow',
+                'line': f'Over {k_line} Ks',
+                'odds_str': '-110',
+                'odds_dec': 1.91,
+                'prob': prob_over,
+                'edge': edge_k,
+                'wager': f"{kel_k:.1%} Unit",
+                'kel': kel_k,
+                'score': prob_over * 10
+            })
+            
+        # --- HR PROP: Judge ---
+        hr_prob = calculate_hr_probability(batter_judge, p_lad)
+        hr_odds = 3.50 # (+250)
+        edge_hr = hr_prob - (1/hr_odds)
+        # Force add for demo if close
+        if edge_hr > -0.1: 
+            new_picks.append({
+                'id': f"HR_Judge_{datetime.now().strftime('%Y%m%d')}",
+                'type': 'Player Props - Home Run',
+                'matchup': 'NYY @ LAD',
+                'selection': 'Aaron Judge',
+                'line': 'To Hit a HR',
+                'odds_str': '+250',
+                'odds_dec': 3.50,
+                'prob': hr_prob,
+                'edge': edge_hr,
+                'wager': "0.2% Unit",
+                'kel': 0.002,
+                'score': hr_prob * 20 # Scale up for HRs
+            })
 
-# Get Data
-pitchers, batters = get_data()
+        # --- H+R+RBI PROP: Ohtani (NEW) ---
+        hrr_line = 1.5
+        hrr_exp, hrr_prob = calculate_h_r_rbi_probability(batter_ohtani, p_nyy, nyy_wrc)
+        hrr_odds = 1.87 # (-115)
+        edge_hrr = hrr_prob - (1/hrr_odds)
+        
+        if edge_hrr > 0 or True: # Force for demo
+             new_picks.append({
+                'id': f"HRR_Ohtani_{datetime.now().strftime('%Y%m%d')}",
+                'type': 'Player Props - H+R+RBI',
+                'matchup': 'NYY @ LAD',
+                'selection': 'Shohei Ohtani',
+                'line': f'Over {hrr_line}',
+                'odds_str': '-115',
+                'odds_dec': 1.87,
+                'prob': hrr_prob,
+                'edge': edge_hrr,
+                'wager': "1.0% Unit",
+                'kel': 0.01,
+                'score': hrr_prob * 10
+            })
+            
+    except Exception as e:
+        print(f"{Colors.RED}Simulation Error: {e}{Colors.END}")
 
-print("\n--- SIMULATING A GAME: YANKEES (Cole) vs DODGERS (Glasnow) ---")
+    # 3. Output
+    track_new_picks(new_picks)
+    html_content = generate_html(new_picks, stats)
+    
+    with open(OUTPUT_HTML, 'w') as f:
+        f.write(html_content)
+        
+    print(f"\n{Colors.GREEN}✅ Analysis Complete. Report generated at: {OUTPUT_HTML}{Colors.END}")
 
-# Mock Data Lookup (In production, this comes from Today's Schedule)
-try:
-    p_nyy = pitchers[pitchers['Name'].str.contains("Cole")].iloc[0]
-    p_lad = pitchers[pitchers['Name'].str.contains("Glasnow")].iloc[0]
-
-    # Mock Lineup Stats (Average wRC+ of the team)
-    nyy_wrc = 115 # Yankees are good
-    lad_wrc = 118 # Dodgers are great
-
-    # Mock Lineup K% (Average K% of opponent)
-    nyy_k_rate = 0.21
-    lad_k_rate = 0.23
-
-    # Initialize results dictionary
-    results = {
-        'date': datetime.now().strftime('%B %d, %Y'),
-        'team_a': 'YANKEES',
-        'team_b': 'DODGERS',
-        'pitcher_a': p_nyy['Name'],
-        'pitcher_b': p_lad['Name'],
-    }
-
-    # --- MODEL 1: FIRST 5 INNINGS ---
-    prob_nyy = calculate_f5_probability(p_nyy, p_lad, nyy_wrc, lad_wrc)
-    print(f"\n[F5 MODEL] NYY Win Prob: {prob_nyy:.2%}")
-
-    # Check for Value (e.g., Book has NYY +105, which is 2.05 decimal)
-    book_odds = 2.05
-    kel = kelly_criterion(prob_nyy, book_odds)
-
-    results['f5_prob'] = f"{prob_nyy:.1%}"
-    results['f5_odds'] = "+105"
-    results['f5_kelly'] = f"{kel*0.5:.1%} of bankroll"
-    results['f5_bet'] = kel > 0
-
-    if kel > 0:
-        print(f"   >>> BET FOUND: Bet {kel*0.5:.2%} of bankroll (Half-Kelly) on NYY F5")
-        results['f5_recommendation'] = '<div class="bet-recommendation"><strong>🚨 BET RECOMMENDED: Yankees F5 ML</strong></div>'
-    else:
-        print("   >>> NO BET: Market price is efficient.")
-        results['f5_recommendation'] = '<div class="no-bet">No value found - Market is efficient</div>'
-
-    # --- MODEL 2: PLAYER PROP (Glasnow Strikeouts) ---
-    # Book Line: 7.5 Ks at -110 (1.91 decimal)
-    market_line = 7.5
-    exp_k, prob_over = calculate_k_prop_probability(p_lad, nyy_k_rate, line=market_line)
-    print(f"\n[PROP MODEL] Glasnow Proj Ks: {exp_k:.2f} | Prob Over {market_line}: {prob_over:.2%}")
-
-    results['k_player'] = p_lad['Name']
-    results['k_projected'] = f"{exp_k:.1f}"
-    results['k_line'] = f"{market_line}"
-    results['k_prob'] = f"{prob_over:.1%}"
-    results['k_bet'] = prob_over > 0.55
-
-    if prob_over > 0.55: # 55% is roughly break-even for -110
-        print(f"   >>> BET FOUND: Hammer the OVER {market_line} Ks")
-        results['k_recommendation'] = f'<div class="bet-recommendation"><strong>🚨 BET RECOMMENDED: OVER {market_line} Ks</strong></div>'
-    else:
-        results['k_recommendation'] = '<div class="no-bet">No value found - Pass on this prop</div>'
-
-    # --- MODEL 3: HOME RUN (Aaron Judge vs Glasnow) ---
-    judge = batters[batters['Name'] == 'Aaron Judge'].iloc[0]
-    hr_prob = calculate_hr_probability(judge, p_lad)
-    fair_odds = 1 / hr_prob
-    print(f"\n[HR MODEL] Aaron Judge HR Prob: {hr_prob:.2%} | Fair Odds: +{int((fair_odds-1)*100)}")
-
-    results['hr_player'] = 'Aaron Judge'
-    results['hr_prob'] = f"{hr_prob:.1%}"
-    results['hr_fair'] = f"+{int((fair_odds-1)*100)}"
-    results['hr_odds'] = "+250"
-    results['hr_bet'] = 3.50 > fair_odds
-
-    # If Book offers +250 and our fair odds are +210, we bet.
-    if 3.50 > fair_odds: # 3.50 is +250
-        print(f"   >>> VALUE: Book offers +250, Model says +{int((fair_odds-1)*100)}. BET IT.")
-        results['hr_recommendation'] = '<div class="bet-recommendation value"><strong>💎 VALUE BET: Aaron Judge HR at +250</strong></div>'
-    else:
-        results['hr_recommendation'] = '<div class="no-bet">No value - Book odds are too low</div>'
-
-    # Generate HTML
-    html_output = generate_html(results)
-    output_file = 'mlb_model_output.html'
-    with open(output_file, 'w') as f:
-        f.write(html_output)
-
-    print(f"\n✅ HTML report generated: {output_file}")
-
-except IndexError:
-    print(f"Could not find specific players in the {SEASON} dataset. Ensure names match FanGraphs exactly.")
+if __name__ == "__main__":
+    main()
