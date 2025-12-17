@@ -1,57 +1,436 @@
-<!DOCTYPE html><html><head><style>
-    :root { --bg-main: #121212; --bg-card: #1e1e1e; --accent-green: #4ade80; --text-primary: #ffffff; --text-secondary: #b3b3b3; }
-    body { background: var(--bg-main); color: var(--text-primary); font-family: sans-serif; padding: 20px; }
-    .prop-card { background: var(--bg-card); padding: 15px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #333; }
-    .header { color: var(--accent-green); font-weight: bold; font-size: 1.2em; }
-    .row { display: flex; justify-content: space-between; margin-top: 10px; }
-    .stat-box { display: inline-block; background: #222; padding: 10px; margin-right: 10px; border-radius: 5px; text-align: center; }
-    .txt-green { color: var(--accent-green); }
-    </style></head><body>
-    <h1>🏀 CourtSide Analytics: WNBA</h1>
-    <div style="margin-bottom: 20px;">
-        <span class="stat-box">ROI: <span class="txt-green">0.0%</span></span>
-        <span class="stat-box">Record: 0-0</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics WNBA Picks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1c1c1e;
+            --bg-metric: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --border-color: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .date-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Header Section */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .team-logos-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .team-logo {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            background: #fff; /* WNBA logos often transparent */
+            border-radius: 50%;
+        }
+
+        .matchup-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .matchup-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .game-time-badge {
+            background-color: var(--bg-metric);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Bet Section */
+        .bet-row {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .bet-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .main-pick {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .main-pick.green { color: var(--accent-green); }
+
+        .model-context {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .edge-val {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-box {
+            background-color: var(--bg-metric);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .metric-value.good { color: var(--accent-green); }
+
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        /* Stats */
+        .text-red { color: var(--accent-red); }
+        .text-green { color: var(--accent-green); }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .metrics-row { flex-direction: column; gap: 0.5rem; }
+            .metric-box { padding: 0.8rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>CourtSide Analytics WNBA</h1>
+                <div class="date-sub">Generated: 2025-12-17 02:45 PM ET</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="metric-title">SEASON RECORD</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                    0-0-0 (0.0%)
+                </div>
+                <div style="font-size: 0.9rem; color: var(--accent-red);">
+                     +0.0u
+                </div>
+            </div>
+        </header>
+
+        
+        
+        
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/nyl.png" 
+                             alt="New York Liberty" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/lva.png" 
+                             alt="Las Vegas Aces" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                    </div>
+                    <div class="matchup-info">
+                        <h2>New York Liberty @ Las Vegas Aces</h2>
+                        <div class="matchup-sub">Las Vegas Aces Home Game</div>
+                    </div>
+                </div>
+                <!-- <div class="game-time-badge">7:00 PM ET</div> -->
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Las Vegas Aces -2.5</div>
+                
+                
+                <div class="model-context">
+                    Model: Las Vegas Aces -4.2
+                    <span class="edge-val">Edge: +1.7</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 172.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 199.8
+                    <span class="edge-val">Edge: +27.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">53%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Las Vegas Aces 102 - New York Liberty 97</div>
+                </div>
+            </div>
+
+        </div>
+        
+        
+        
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/sea.png" 
+                             alt="Seattle Storm" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/con.png" 
+                             alt="Connecticut Sun" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                    </div>
+                    <div class="matchup-info">
+                        <h2>Seattle Storm @ Connecticut Sun</h2>
+                        <div class="matchup-sub">Connecticut Sun Home Game</div>
+                    </div>
+                </div>
+                <!-- <div class="game-time-badge">7:00 PM ET</div> -->
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Connecticut Sun -6.5</div>
+                
+                
+                <div class="model-context">
+                    Model: Connecticut Sun -7.0
+                    <span class="edge-val">Edge: +0.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 158.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 193.0
+                    <span class="edge-val">Edge: +34.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">51%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Connecticut Sun 99 - Seattle Storm 92</div>
+                </div>
+            </div>
+
+        </div>
+        
+        
+        
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/chi.png" 
+                             alt="Chicago Sky" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/wnba/500/ind.png" 
+                             alt="Indiana Fever" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'">
+                    </div>
+                    <div class="matchup-info">
+                        <h2>Chicago Sky @ Indiana Fever</h2>
+                        <div class="matchup-sub">Indiana Fever Home Game</div>
+                    </div>
+                </div>
+                <!-- <div class="game-time-badge">7:00 PM ET</div> -->
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Chicago Sky +4.5</div>
+                
+                
+                <div class="model-context">
+                    Model: Indiana Fever -4.4
+                    <span class="edge-val">Edge: +0.1</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 168.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 201.1
+                    <span class="edge-val">Edge: +33.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">50%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Indiana Fever 102 - Chicago Sky 98</div>
+                </div>
+            </div>
+
+        </div>
+        
+        
+        <!-- TRACKING FOOTER -->
+        <div class="prop-card" style="padding: 1.5rem; text-align:center;">
+             <div class="metric-title" style="margin-bottom:1rem; font-size:1rem;">RECENT PERFORMANCE (LAST 10)</div>
+             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <div class="metric-label">Record</div>
+                    <div class="metric-value">0-0-0</div>
+                </div>
+                <div>
+                    <div class="metric-label">Profit</div>
+                    <div class="metric-value text-red">
+                        +0.0u
+                    </div>
+                </div>
+             </div>
+        </div>
+
     </div>
+</body>
+</html>
     
-        <div class="prop-card">
-            <div class="header">New York Liberty @ Las Vegas Aces</div>
-            <div class="row">
-                <span>Spread</span>
-                <span class="txt-green" style="font-weight:bold; font-size:1.1em;">Las Vegas Aces -2.5</span>
-                <span>-110</span>
-            </div>
-            <div class="row" style="font-size: 0.9em; color: #888;">
-                <span>Edge: 16.7%</span>
-                <span>Score: 3.3</span>
-                <span>Bet: 1.0% Unit</span>
-            </div>
-        </div>
-        
-        <div class="prop-card">
-            <div class="header">New York Liberty @ Las Vegas Aces</div>
-            <div class="row">
-                <span>Total Points</span>
-                <span class="txt-green" style="font-weight:bold; font-size:1.1em;">Over 172.5</span>
-                <span>-110</span>
-            </div>
-            <div class="row" style="font-size: 0.9em; color: #888;">
-                <span>Edge: 27.3%</span>
-                <span>Score: 27.3</span>
-                <span>Bet: 1.0% Unit</span>
-            </div>
-        </div>
-        
-        <div class="prop-card">
-            <div class="header">Seattle Storm @ Connecticut Sun</div>
-            <div class="row">
-                <span>Total Points</span>
-                <span class="txt-green" style="font-weight:bold; font-size:1.1em;">Over 158.5</span>
-                <span>-110</span>
-            </div>
-            <div class="row" style="font-size: 0.9em; color: #888;">
-                <span>Edge: 34.5%</span>
-                <span>Score: 34.5</span>
-                <span>Bet: 1.0% Unit</span>
-            </div>
-        </div>
-        </body></html>
