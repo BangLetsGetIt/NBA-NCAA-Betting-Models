@@ -453,7 +453,7 @@ def generate_html(plays):
         </div>
 
         <div class="section">
-            <div class="section-title">THE plays</div>
+
             <ul class="play-list">
                 {list_items}
             </ul>
