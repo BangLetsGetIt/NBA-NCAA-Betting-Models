@@ -28,8 +28,8 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-echo "Running NCAA Basketball model..." | tee -a "$LOG_FILE"
-python3 ncaab_model_FINAL.py 2>&1 | tee -a "$LOG_FILE"
+echo "Running NCAA Basketball model (IMPROVED)..." | tee -a "$LOG_FILE"
+python3 ncaab_model_2ndFINAL.py 2>&1 | tee -a "$LOG_FILE"
 
 if [ $? -eq 0 ]; then
     echo "" | tee -a "$LOG_FILE"

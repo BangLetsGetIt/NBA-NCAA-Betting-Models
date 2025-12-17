@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAAB Model Picks</title>
+    <title>NCAAB Model Picks • CourtSide Analytics</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
         }
 
         header h1 {
@@ -50,7 +50,7 @@
             letter-spacing: -0.02em;
         }
 
-        .date-sub {
+        .header-sub {
             color: var(--text-secondary);
             font-size: 0.9rem;
             font-weight: 500;
@@ -79,6 +79,15 @@
             gap: 1rem;
         }
 
+        .team-logo {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 50%;
+            padding: 2px;
+        }
+
         .matchup-info h2 {
             font-size: 1.1rem;
             font-weight: 700;
@@ -89,7 +98,6 @@
         .matchup-sub {
             font-size: 0.85rem;
             color: var(--text-secondary);
-            text-transform: uppercase;
         }
 
         .game-time-badge {
@@ -167,6 +175,16 @@
         }
         
         .metric-value.good { color: var(--accent-green); }
+        .metric-value.text-red { color: var(--accent-red); }
+
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
 
         /* Tags */
         .tags-row {
@@ -187,11 +205,27 @@
         .tag-blue { background: rgba(10, 132, 255, 0.15); color: #5ac8fa; }
         .tag-green { background: rgba(48, 209, 88, 0.15); color: #32d74b; }
 
-        @media (max-width: 600px) {
+        /* Tracking Section */
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+
+        @media (max-width: 768px) {
             body { padding: 1rem; }
-            .metrics-row { gap: 0.5rem; }
+            .metrics-row { flex-direction: column; gap: 0.5rem; }
             .metric-box { padding: 0.8rem 0.5rem; }
             .main-pick { font-size: 1.5rem; }
+            .header-left { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .card-header { align-items: flex-start; }
         }
     </style>
 </head>
@@ -199,11 +233,17 @@
     <div class="container">
         <header>
             <div>
-                <h1>🏀 NCAAB MODEL</h1>
-                <div class="date-sub">2025-12-17 10:30 AM ET</div>
+                <h1>CourtSide Analytics CBB Picks</h1>
+                <div class="header-sub">Generated: 2025-12-17 11:29 AM ET</div>
             </div>
-            <div>
-                 <span style="font-size: 1.5rem;">🎓</span>
+            <div style="text-align: right;">
+                <div class="metric-title">SEASON RECORD</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                    848-754-2 (52.9%)
+                </div>
+                <div style="font-size: 0.9rem; color: var(--accent-green);">
+                     +17.7u
+                </div>
             </div>
         </header>
 
@@ -211,9 +251,2085 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                     <div class="matchup-info">
-                        <h2>Bethune-Cookman @ Saint Louis</h2>
-                        <div class="matchup-sub">NCAAB</div>
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Northern Iowa Panthers @ UIC Flames</h2>
+                        <div class="matchup-sub">UIC Flames Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 05:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+5.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.6
+                    <span class="edge-val">Edge: +0.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 135.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 132.9
+                    <span class="edge-val">Edge: +2.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">17%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">53%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Northern Iowa Panthers 63.6, UIC Flames 69.3</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+0.6)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Stonehill Skyhawks @ New Hampshire Wildcats</h2>
+                        <div class="matchup-sub">New Hampshire Wildcats Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 06:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-4.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.0
+                    <span class="edge-val">Edge: +4.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 137.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 139.6
+                    <span class="edge-val">Edge: +2.6</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">39%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">57%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Stonehill Skyhawks 69.8, New Hampshire Wildcats 69.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+4.0)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Creighton Bluejays @ Xavier Musketeers</h2>
+                        <div class="matchup-sub">Xavier Musketeers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 06:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Creighton Bluejays +3.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +7.6
+                    <span class="edge-val">Edge: +11.1</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 152.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 146.0
+                    <span class="edge-val">Edge: +6.0</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Creighton Bluejays 69.2, Xavier Musketeers 76.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+11.1 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>St. Francis (PA) Red Flash @ Florida Gators</h2>
+                        <div class="matchup-sub">Florida Gators Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 06:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-45.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.8
+                    <span class="edge-val">Edge: +51.3</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 157.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 145.2
+                    <span class="edge-val">Edge: +11.8</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">St. Francis (PA) Red Flash 69.7, Florida Gators 75.5</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (51.3 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Alabama St Hornets @ Cincinnati Bearcats</h2>
+                        <div class="matchup-sub">Cincinnati Bearcats Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-21.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +1.8
+                    <span class="edge-val">Edge: +23.3</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 145.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 146.5
+                    <span class="edge-val">Edge: +1.0</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Alabama St Hornets 72.4, Cincinnati Bearcats 74.2</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (23.3 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Albany Great Danes @ Stony Brook Seawolves</h2>
+                        <div class="matchup-sub">Stony Brook Seawolves Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Albany Great Danes +11.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +1.5
+                    <span class="edge-val">Edge: +12.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 145.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 145.3
+                    <span class="edge-val">Edge: +0.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Albany Great Danes 71.9, Stony Brook Seawolves 73.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+12.5 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Chattanooga Mocs @ Bellarmine Knights</h2>
+                        <div class="matchup-sub">Bellarmine Knights Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-1.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +1.7
+                    <span class="edge-val">Edge: +3.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 146.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 143.1
+                    <span class="edge-val">Edge: +3.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">31%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">56%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Chattanooga Mocs 70.7, Bellarmine Knights 72.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+3.2)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Binghamton Bearcats @ Pittsburgh Panthers</h2>
+                        <div class="matchup-sub">Pittsburgh Panthers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-25.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +6.9
+                    <span class="edge-val">Edge: +31.9</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 136.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 146.4
+                    <span class="edge-val">Edge: +10.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Binghamton Bearcats 69.8, Pittsburgh Panthers 76.7</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (31.9 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>The Citadel Bulldogs @ Charleston Cougars</h2>
+                        <div class="matchup-sub">Charleston Cougars Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-17.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +1.0
+                    <span class="edge-val">Edge: +18.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 147.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 130.4
+                    <span class="edge-val">Edge: +17.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">The Citadel Bulldogs 64.7, Charleston Cougars 65.7</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (18.5 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Presbyterian Blue Hose @ East Carolina Pirates</h2>
+                        <div class="matchup-sub">East Carolina Pirates Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Presbyterian Blue Hose +3.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +7.1
+                    <span class="edge-val">Edge: +10.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 131.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 138.1
+                    <span class="edge-val">Edge: +7.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Presbyterian Blue Hose 65.5, East Carolina Pirates 72.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+10.6 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Eastern Kentucky Colonels @ Jacksonville St Gamecocks</h2>
+                        <div class="matchup-sub">Jacksonville St Gamecocks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Eastern Kentucky Colonels +2.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +2.8
+                    <span class="edge-val">Edge: +4.8</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 142.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 137.4
+                    <span class="edge-val">Edge: +5.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">47%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">59%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Eastern Kentucky Colonels 67.3, Jacksonville St Gamecocks 70.1</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">MEDIUM confidence (+4.8 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Richmond Spiders @ Elon Phoenix</h2>
+                        <div class="matchup-sub">Elon Phoenix Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+3.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +4.9
+                    <span class="edge-val">Edge: +1.9</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 162.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 140.8
+                    <span class="edge-val">Edge: +21.7</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Richmond Spiders 67.9, Elon Phoenix 72.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+1.9)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Jacksonville Dolphins @ Florida A&M Rattlers</h2>
+                        <div class="matchup-sub">Florida A&M Rattlers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Florida A&M Rattlers +3.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -1.2
+                    <span class="edge-val">Edge: -4.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 141.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 143.3
+                    <span class="edge-val">Edge: +2.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">42%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">58%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Jacksonville Dolphins 72.3, Florida A&M Rattlers 71.0</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">MEDIUM confidence (-4.2 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>UC Santa Barbara Gauchos @ Green Bay Phoenix</h2>
+                        <div class="matchup-sub">Green Bay Phoenix Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+5.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +6.7
+                    <span class="edge-val">Edge: +1.7</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 145.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 140.2
+                    <span class="edge-val">Edge: +4.8</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">39%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">57%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">UC Santa Barbara Gauchos 66.8, Green Bay Phoenix 73.5</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+1.7)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Longwood Lancers @ Wake Forest Demon Deacons</h2>
+                        <div class="matchup-sub">Wake Forest Demon Deacons Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-24.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +7.6
+                    <span class="edge-val">Edge: +31.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 160.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 140.0
+                    <span class="edge-val">Edge: +20.0</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Longwood Lancers 66.2, Wake Forest Demon Deacons 73.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (31.6 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Maryland-Eastern Shore Hawks @ Wagner Seahawks</h2>
+                        <div class="matchup-sub">Wagner Seahawks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-5.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -8.4
+                    <span class="edge-val">Edge: -2.9</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 129.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 142.0
+                    <span class="edge-val">Edge: +12.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Maryland-Eastern Shore Hawks 75.2, Wagner Seahawks 66.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (-2.9)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Vanderbilt Commodores @ Memphis Tigers</h2>
+                        <div class="matchup-sub">Memphis Tigers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Memphis Tigers +9.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.8
+                    <span class="edge-val">Edge: -10.3</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 158.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 138.1
+                    <span class="edge-val">Edge: +20.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Vanderbilt Commodores 69.5, Memphis Tigers 68.7</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (-10.3 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Mercer Bears @ UCF Knights</h2>
+                        <div class="matchup-sub">UCF Knights Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-14.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +3.5
+                    <span class="edge-val">Edge: +18.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 161.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 130.9
+                    <span class="edge-val">Edge: +30.6</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Mercer Bears 63.7, UCF Knights 67.2</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (18.0 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Mercyhurst Lakers @ Syracuse Orange</h2>
+                        <div class="matchup-sub">Syracuse Orange Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-27.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.6
+                    <span class="edge-val">Edge: +32.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 131.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 147.6
+                    <span class="edge-val">Edge: +16.6</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Mercyhurst Lakers 71.0, Syracuse Orange 76.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (32.6 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Quinnipiac Bobcats @ Monmouth Hawks</h2>
+                        <div class="matchup-sub">Monmouth Hawks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Quinnipiac Bobcats +1.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.4
+                    <span class="edge-val">Edge: +6.4</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 146.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 139.2
+                    <span class="edge-val">Edge: +7.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">63%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">62%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Quinnipiac Bobcats 66.9, Monmouth Hawks 72.3</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+6.4 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Texas Southern Tigers @ NC State Wolfpack</h2>
+                        <div class="matchup-sub">NC State Wolfpack Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-36.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.1
+                    <span class="edge-val">Edge: +35.9</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 156.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 143.6
+                    <span class="edge-val">Edge: +12.9</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Texas Southern Tigers 71.8, NC State Wolfpack 71.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (35.9 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Oakland Golden Grizzlies @ Northern Kentucky Norse</h2>
+                        <div class="matchup-sub">Northern Kentucky Norse Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Oakland Golden Grizzlies +3.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +1.6
+                    <span class="edge-val">Edge: +4.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 165.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 140.6
+                    <span class="edge-val">Edge: +24.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Oakland Golden Grizzlies 69.5, Northern Kentucky Norse 71.1</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">MEDIUM confidence (+4.6 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Youngstown St Penguins @ Robert Morris Colonials</h2>
+                        <div class="matchup-sub">Robert Morris Colonials Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Youngstown St Penguins +2.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.5
+                    <span class="edge-val">Edge: +7.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 141.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 133.4
+                    <span class="edge-val">Edge: +8.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">74%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">64%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Youngstown St Penguins 64.0, Robert Morris Colonials 69.5</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+7.5 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Siena Saints @ Vermont Catamounts</h2>
+                        <div class="matchup-sub">Vermont Catamounts Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-2.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.4
+                    <span class="edge-val">Edge: +2.1</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 136.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 143.0
+                    <span class="edge-val">Edge: +7.0</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">58%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">61%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Siena Saints 71.7, Vermont Catamounts 71.3</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+2.1)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Cleveland St Vikings @ UAB Blazers</h2>
+                        <div class="matchup-sub">UAB Blazers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-18.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.5
+                    <span class="edge-val">Edge: +18.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 159.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 144.6
+                    <span class="edge-val">Edge: +14.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Cleveland St Vikings 72.6, UAB Blazers 72.1</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (18.0 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Houston Christian Huskies @ Nicholls St Colonels</h2>
+                        <div class="matchup-sub">Nicholls St Colonels Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Houston Christian Huskies +4.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +2.6
+                    <span class="edge-val">Edge: +6.6</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 138.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 146.6
+                    <span class="edge-val">Edge: +8.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">67%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">63%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Houston Christian Huskies 72.0, Nicholls St Colonels 74.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+6.6 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Kennesaw St Owls @ Middle Tennessee Blue Raiders</h2>
+                        <div class="matchup-sub">Middle Tennessee Blue Raiders Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Kennesaw St Owls +3.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.7
+                    <span class="edge-val">Edge: +9.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 160.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 141.2
+                    <span class="edge-val">Edge: +19.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Kennesaw St Owls 67.8, Middle Tennessee Blue Raiders 73.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+9.2 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Louisiana Tech Bulldogs @ Tulane Green Wave</h2>
+                        <div class="matchup-sub">Tulane Green Wave Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Louisiana Tech Bulldogs +4.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +3.3
+                    <span class="edge-val">Edge: +7.3</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 140.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 146.6
+                    <span class="edge-val">Edge: +6.1</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">72%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">64%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Louisiana Tech Bulldogs 71.7, Tulane Green Wave 75.0</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+7.3 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>South Alabama Jaguars @ UL Monroe Warhawks</h2>
+                        <div class="matchup-sub">UL Monroe Warhawks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">UL Monroe Warhawks +10.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +0.7
+                    <span class="edge-val">Edge: -9.3</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 146.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 138.8
+                    <span class="edge-val">Edge: +7.7</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">92%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">68%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">South Alabama Jaguars 69.0, UL Monroe Warhawks 69.7</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (-9.3 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Wofford Terriers @ Wichita St Shockers</h2>
+                        <div class="matchup-sub">Wichita St Shockers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 07:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Wofford Terriers +12.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +0.7
+                    <span class="edge-val">Edge: +12.7</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 142.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 144.2
+                    <span class="edge-val">Edge: +1.7</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Wofford Terriers 71.7, Wichita St Shockers 72.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+12.7 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Alabama A&M Bulldogs @ Ole Miss Rebels</h2>
+                        <div class="matchup-sub">Ole Miss Rebels Home Game</div>
                     </div>
                 </div>
                 <div class="game-time-badge">12/17 08:00 PM</div>
@@ -222,62 +2338,55 @@
             <!-- SPREAD BET BLOCK -->
             <div class="bet-row">
                 
-                <div class="main-pick green">✅ BET: Bethune-Cookman +26.5</div>
+                <div class="main-pick">-20.0</div>
                 
                 
                 <div class="model-context">
-                    Model: +7.8
-                    <span class="edge-val">Edge: +18.7</span>
+                    Model: +4.3
+                    <span class="edge-val">Edge: +24.3</span>
                 </div>
             </div>
 
             <!-- TOTAL BET BLOCK -->
             <div class="bet-row" style="border-bottom: none;">
                 
-                    <div class="main-pick green">✅ BET: UNDER 158.5</div>
+                    
+                    <div class="main-pick green">OVER 134.5</div>
+                    
                 
                 
                 <div class="model-context">
-                    Model: 138.0
-                    <span class="edge-val">Edge: -20.5</span>
+                    Model: 143.0
+                    <span class="edge-val">Edge: +8.5</span>
                 </div>
             </div>
 
             <!-- METRICS ROW -->
             <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
                 
                 <div class="metric-box">
-                    <div class="metric-title">AI RATING</div>
-                    <div class="metric-value good">4.9</div>
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
                 </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
                 <div class="metric-box">
                     <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">74%</div>
+                    <div class="metric-value good">69%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value" style="font-size: 1rem;">Bethune-Cookman 65.1, Saint Louis 72.9</div>
+                    <div class="metric-value">Alabama A&M Bulldogs 69.4, Ole Miss Rebels 73.7</div>
                 </div>
             </div>
 
             <!-- TAGS -->
             <div class="tags-row">
                 
-                <div class="tag tag-blue">ℹ️ Bethune-Cookman - Limited data: 0-2 (0%) | -2.00u (2 picks)</div>
-                
-                
-                
-                <div class="tag tag-green">ATS: VERY HIGH confidence. Model predicts Bethune-Cookman covers by +18.7 points.</div>
-                
-                
-                
-                <div class="tag tag-green">Total: VERY HIGH confidence (20.5 edge)</div>
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (24.3 > 15.0) - likely model error</div>
                 
             </div>
 
@@ -286,73 +2395,66 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                     <div class="matchup-info">
-                        <h2>Mercer @ UCF</h2>
-                        <div class="matchup-sub">NCAAB</div>
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>South Florida Bulls @ Alabama Crimson Tide</h2>
+                        <div class="matchup-sub">Alabama Crimson Tide Home Game</div>
                     </div>
                 </div>
-                <div class="game-time-badge">12/17 07:00 PM</div>
+                <div class="game-time-badge">12/17 08:00 PM</div>
             </div>
 
             <!-- SPREAD BET BLOCK -->
             <div class="bet-row">
                 
-                <div class="main-pick green">✅ BET: Mercer +14.5</div>
+                <div class="main-pick">-13.5</div>
                 
                 
                 <div class="model-context">
-                    Model: +8.5
-                    <span class="edge-val">Edge: +6.0</span>
+                    Model: +9.5
+                    <span class="edge-val">Edge: +23.0</span>
                 </div>
             </div>
 
             <!-- TOTAL BET BLOCK -->
             <div class="bet-row" style="border-bottom: none;">
                 
-                    <div class="main-pick green">✅ BET: UNDER 161.5</div>
+                <div class="main-pick">O/U 180.0</div>
                 
                 
                 <div class="model-context">
-                    Model: 143.2
-                    <span class="edge-val">Edge: -18.3</span>
+                    Model: 136.3
+                    <span class="edge-val">Edge: +43.7</span>
                 </div>
             </div>
 
             <!-- METRICS ROW -->
             <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
                 
                 <div class="metric-box">
-                    <div class="metric-title">AI RATING</div>
-                    <div class="metric-value good">4.9</div>
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
                 </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
                 <div class="metric-box">
                     <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">74%</div>
+                    <div class="metric-value good">69%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value" style="font-size: 1rem;">Mercer 67.3, UCF 75.9</div>
+                    <div class="metric-value">South Florida Bulls 63.4, Alabama Crimson Tide 72.9</div>
                 </div>
             </div>
 
             <!-- TAGS -->
             <div class="tags-row">
                 
-                <div class="tag tag-blue">ℹ️ Mercer - Limited data: 1-0 (100%) | +0.91u (1 pick)</div>
-                
-                
-                
-                <div class="tag tag-green">ATS: LOW confidence. Model predicts Mercer covers by +6.0 points.</div>
-                
-                
-                
-                <div class="tag tag-green">Total: VERY HIGH confidence (18.3 edge)</div>
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (23.0 > 15.0) - likely model error</div>
                 
             </div>
 
@@ -361,73 +2463,66 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                     <div class="matchup-info">
-                        <h2>Binghamton @ Pittsburgh</h2>
-                        <div class="matchup-sub">NCAAB</div>
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Bethune-Cookman Wildcats @ Saint Louis Billikens</h2>
+                        <div class="matchup-sub">Saint Louis Billikens Home Game</div>
                     </div>
                 </div>
-                <div class="game-time-badge">12/17 07:00 PM</div>
+                <div class="game-time-badge">12/17 08:00 PM</div>
             </div>
 
             <!-- SPREAD BET BLOCK -->
             <div class="bet-row">
                 
-                <div class="main-pick green">✅ BET: Binghamton +25.5</div>
+                <div class="main-pick">-26.5</div>
                 
                 
                 <div class="model-context">
-                    Model: +7.7
-                    <span class="edge-val">Edge: +17.8</span>
+                    Model: +3.1
+                    <span class="edge-val">Edge: +29.6</span>
                 </div>
             </div>
 
             <!-- TOTAL BET BLOCK -->
             <div class="bet-row" style="border-bottom: none;">
                 
-                    <div class="main-pick green">✅ BET: OVER 138.0</div>
+                <div class="main-pick">O/U 158.0</div>
                 
                 
                 <div class="model-context">
-                    Model: 141.4
-                    <span class="edge-val">Edge: +3.4</span>
+                    Model: 132.4
+                    <span class="edge-val">Edge: +25.6</span>
                 </div>
             </div>
 
             <!-- METRICS ROW -->
             <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
                 
                 <div class="metric-box">
-                    <div class="metric-title">AI RATING</div>
-                    <div class="metric-value good">4.9</div>
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
                 </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
                 <div class="metric-box">
                     <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">74%</div>
+                    <div class="metric-value good">69%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value" style="font-size: 1rem;">Binghamton 66.9, Pittsburgh 74.6</div>
+                    <div class="metric-value">Bethune-Cookman Wildcats 64.7, Saint Louis Billikens 67.8</div>
                 </div>
             </div>
 
             <!-- TAGS -->
             <div class="tags-row">
                 
-                <div class="tag tag-blue">ℹ️ Binghamton - Limited data: 1-1 (50%) | -0.09u (2 picks)</div>
-                
-                
-                
-                <div class="tag tag-green">ATS: VERY HIGH confidence. Model predicts Binghamton covers by +17.8 points.</div>
-                
-                
-                
-                <div class="tag tag-green">Total: LOW confidence (3.4 edge)</div>
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (29.6 > 15.0) - likely model error</div>
                 
             </div>
 
@@ -436,9 +2531,775 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                     <div class="matchup-info">
-                        <h2>Air Force @ San Diego State</h2>
-                        <div class="matchup-sub">NCAAB</div>
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>James Madison Dukes @ Old Dominion Monarchs</h2>
+                        <div class="matchup-sub">Old Dominion Monarchs Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 08:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+2.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.5
+                    <span class="edge-val">Edge: -2.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 146.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 155.4
+                    <span class="edge-val">Edge: +8.9</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">74%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">64%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">James Madison Dukes 77.9, Old Dominion Monarchs 77.5</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (-2.5)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Weber State Wildcats @ Utah Valley Wolverines</h2>
+                        <div class="matchup-sub">Utah Valley Wolverines Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 08:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Weber State Wildcats +13.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.8
+                    <span class="edge-val">Edge: +12.7</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 151.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 139.7
+                    <span class="edge-val">Edge: +11.3</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Weber State Wildcats 70.3, Utah Valley Wolverines 69.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+12.7 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Arkansas St Red Wolves @ Texas State Bobcats</h2>
+                        <div class="matchup-sub">Texas State Bobcats Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 08:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">+4.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +3.3
+                    <span class="edge-val">Edge: -0.7</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 153.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 148.6
+                    <span class="edge-val">Edge: +4.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">36%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">57%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Arkansas St Red Wolves 72.7, Texas State Bobcats 76.0</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (-0.7)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Georgetown Hoyas @ Marquette Golden Eagles</h2>
+                        <div class="matchup-sub">Marquette Golden Eagles Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 08:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-5.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +10.5
+                    <span class="edge-val">Edge: +16.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 150.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 141.1
+                    <span class="edge-val">Edge: +9.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Georgetown Hoyas 65.3, Marquette Golden Eagles 75.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (16.0 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Campbell Fighting Camels @ Gonzaga Bulldogs</h2>
+                        <div class="matchup-sub">Gonzaga Bulldogs Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-36.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +2.7
+                    <span class="edge-val">Edge: +39.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 161.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 133.9
+                    <span class="edge-val">Edge: +27.6</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Campbell Fighting Camels 65.6, Gonzaga Bulldogs 68.3</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (39.2 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Portland St Vikings @ Colorado Buffaloes</h2>
+                        <div class="matchup-sub">Colorado Buffaloes Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-16.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +6.0
+                    <span class="edge-val">Edge: +22.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 150.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 137.2
+                    <span class="edge-val">Edge: +12.8</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Portland St Vikings 65.6, Colorado Buffaloes 71.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (22.0 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>North Texas Mean Green @ Santa Clara Broncos</h2>
+                        <div class="matchup-sub">Santa Clara Broncos Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">North Texas Mean Green +11.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.1
+                    <span class="edge-val">Edge: +11.4</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 141.5</div>
+                
+                
+                <div class="model-context">
+                    Model: 160.9
+                    <span class="edge-val">Edge: +19.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">North Texas Mean Green 80.5, Santa Clara Broncos 80.4</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+11.4 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Seattle Redhawks @ UC Davis Aggies</h2>
+                        <div class="matchup-sub">UC Davis Aggies Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Seattle Redhawks -2.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +14.5
+                    <span class="edge-val">Edge: +12.0</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 142.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 149.5
+                    <span class="edge-val">Edge: +7.0</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Seattle Redhawks 67.5, UC Davis Aggies 82.0</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+12.0 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Texas A&M-CC Islanders @ Stephen F. Austin Lumberjacks</h2>
+                        <div class="matchup-sub">Stephen F. Austin Lumberjacks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">Texas A&M-CC Islanders +7.0</div>
+                
+                
+                <div class="model-context">
+                    Model: -0.8
+                    <span class="edge-val">Edge: +6.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 138.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 151.0
+                    <span class="edge-val">Edge: +12.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Texas A&M-CC Islanders 75.9, Stephen F. Austin Lumberjacks 75.1</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+6.2 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>UTSA Roadrunners @ USC Trojans</h2>
+                        <div class="matchup-sub">USC Trojans Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-23.5</div>
+                
+                
+                <div class="model-context">
+                    Model: -1.3
+                    <span class="edge-val">Edge: +22.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 157.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 137.5
+                    <span class="edge-val">Edge: +19.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">UTSA Roadrunners 69.4, USC Trojans 68.1</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (22.2 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Sam Houston St Bearkats @ Oregon St Beavers</h2>
+                        <div class="matchup-sub">Oregon St Beavers Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 09:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-2.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +0.0
+                    <span class="edge-val">Edge: +2.5</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 150.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 143.5
+                    <span class="edge-val">Edge: +6.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value ">54%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value ">60%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Sam Houston St Bearkats 71.8, Oregon St Beavers 71.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">Edge too small (+2.5)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Air Force Falcons @ San Diego St Aztecs</h2>
+                        <div class="matchup-sub">San Diego St Aztecs Home Game</div>
                     </div>
                 </div>
                 <div class="game-time-badge">12/17 10:00 PM</div>
@@ -447,62 +3308,55 @@
             <!-- SPREAD BET BLOCK -->
             <div class="bet-row">
                 
-                <div class="main-pick green">✅ BET: Air Force +25.5</div>
+                <div class="main-pick">-25.5</div>
                 
                 
                 <div class="model-context">
-                    Model: +2.8
-                    <span class="edge-val">Edge: +22.7</span>
+                    Model: -0.5
+                    <span class="edge-val">Edge: +25.0</span>
                 </div>
             </div>
 
             <!-- TOTAL BET BLOCK -->
             <div class="bet-row" style="border-bottom: none;">
                 
-                    <div class="main-pick green">✅ BET: OVER 136.5</div>
+                    
+                    <div class="main-pick green">UNDER 136.5</div>
+                    
                 
                 
                 <div class="model-context">
-                    Model: 143.1
-                    <span class="edge-val">Edge: +6.6</span>
+                    Model: 131.7
+                    <span class="edge-val">Edge: +4.8</span>
                 </div>
             </div>
 
             <!-- METRICS ROW -->
             <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
                 
                 <div class="metric-box">
-                    <div class="metric-title">AI RATING</div>
-                    <div class="metric-value good">4.8</div>
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
                 </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
                 <div class="metric-box">
                     <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">74%</div>
+                    <div class="metric-value good">69%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value" style="font-size: 1rem;">Air Force 70.2, San Diego State 72.9</div>
+                    <div class="metric-value">Air Force Falcons 66.1, San Diego St Aztecs 65.6</div>
                 </div>
             </div>
 
             <!-- TAGS -->
             <div class="tags-row">
                 
-                <div class="tag tag-blue">🚫 Air Force - Poor performer: 1-3 (25%) | -2.09u over 4 picks</div>
-                
-                
-                
-                <div class="tag tag-green">ATS: VERY HIGH confidence. Model predicts Air Force covers by +22.7 points.</div>
-                
-                
-                
-                <div class="tag tag-green">Total: LOW confidence (6.6 edge)</div>
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (25.0 > 15.0) - likely model error</div>
                 
             </div>
 
@@ -511,78 +3365,425 @@
         <div class="prop-card">
             <div class="card-header">
                 <div class="header-left">
-                     <div class="matchup-info">
-                        <h2>Weber State @ Utah Valley</h2>
-                        <div class="matchup-sub">NCAAB</div>
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Eastern Washington Eagles @ Washington St Cougars</h2>
+                        <div class="matchup-sub">Washington St Cougars Home Game</div>
                     </div>
                 </div>
-                <div class="game-time-badge">12/17 08:00 PM</div>
+                <div class="game-time-badge">12/17 10:00 PM</div>
             </div>
 
             <!-- SPREAD BET BLOCK -->
             <div class="bet-row">
                 
-                <div class="main-pick green">✅ BET: Weber State +13.5</div>
+                <div class="main-pick green">Eastern Washington Eagles +7.5</div>
                 
                 
                 <div class="model-context">
-                    Model: +2.4
-                    <span class="edge-val">Edge: +11.1</span>
+                    Model: +2.3
+                    <span class="edge-val">Edge: +9.8</span>
                 </div>
             </div>
 
             <!-- TOTAL BET BLOCK -->
             <div class="bet-row" style="border-bottom: none;">
                 
-                    <div class="main-pick green">✅ BET: UNDER 151.0</div>
+                <div class="main-pick">O/U 155.0</div>
                 
                 
                 <div class="model-context">
-                    Model: 137.4
-                    <span class="edge-val">Edge: -13.6</span>
+                    Model: 132.1
+                    <span class="edge-val">Edge: +22.9</span>
                 </div>
             </div>
 
             <!-- METRICS ROW -->
             <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
                 
                 <div class="metric-box">
-                    <div class="metric-title">AI RATING</div>
-                    <div class="metric-value good">4.7</div>
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
                 </div>
-                <!-- Calculate Max EV/Confidence -->
-                
-                
-                
-                
-                
                 <div class="metric-box">
                     <div class="metric-title">WIN % (EST)</div>
-                    <div class="metric-value good">74%</div>
+                    <div class="metric-value good">69%</div>
                 </div>
                 <div class="metric-box">
                     <div class="metric-title">PREDICTED</div>
-                    <div class="metric-value" style="font-size: 1rem;">Weber State 67.5, Utah Valley 69.9</div>
+                    <div class="metric-value">Eastern Washington Eagles 64.9, Washington St Cougars 67.2</div>
                 </div>
             </div>
 
             <!-- TAGS -->
             <div class="tags-row">
                 
-                <div class="tag tag-blue">ℹ️ Weber State - Limited data: 0-1 (0%) | -1.00u (1 pick)</div>
-                
-                
-                
-                <div class="tag tag-green">ATS: HIGH confidence. Model predicts Weber State covers by +11.1 points.</div>
-                
-                
-                
-                <div class="tag tag-green">Total: HIGH confidence (13.6 edge)</div>
+                <div class="tag tag-green">HIGH confidence (+9.8 edge)</div>
                 
             </div>
 
         </div>
         
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Loyola (Chi) Ramblers @ San Francisco Dons</h2>
+                        <div class="matchup-sub">San Francisco Dons Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 10:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-13.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +5.9
+                    <span class="edge-val">Edge: +18.9</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 143.0</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 133.6
+                    <span class="edge-val">Edge: +9.4</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Loyola (Chi) Ramblers 63.8, San Francisco Dons 69.8</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (18.9 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>UT-Arlington Mavericks @ Stanford Cardinal</h2>
+                        <div class="matchup-sub">Stanford Cardinal Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 10:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick green">UT-Arlington Mavericks +12.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +0.8
+                    <span class="edge-val">Edge: +12.8</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                <div class="main-pick">O/U 142.0</div>
+                
+                
+                <div class="model-context">
+                    Model: 141.2
+                    <span class="edge-val">Edge: +0.8</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">UT-Arlington Mavericks 70.2, Stanford Cardinal 71.0</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">HIGH confidence (+12.8 edge)</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Arizona St Sun Devils @ UCLA Bruins</h2>
+                        <div class="matchup-sub">UCLA Bruins Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 10:30 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-9.0</div>
+                
+                
+                <div class="model-context">
+                    Model: +7.2
+                    <span class="edge-val">Edge: +16.2</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">OVER 146.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 160.0
+                    <span class="edge-val">Edge: +13.5</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Arizona St Sun Devils 76.4, UCLA Bruins 83.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (16.2 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder logo since NCAAB has too many teams to map easily -->
+                    <div style="width: 44px; height: 44px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏀</div>
+                    <div class="matchup-info">
+                        <h2>Portland Pilots @ Oregon Ducks</h2>
+                        <div class="matchup-sub">Oregon Ducks Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">12/17 11:00 PM</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                
+                <div class="main-pick">-19.5</div>
+                
+                
+                <div class="model-context">
+                    Model: +0.3
+                    <span class="edge-val">Edge: +19.8</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                
+                    
+                    <div class="main-pick green">UNDER 154.5</div>
+                    
+                
+                
+                <div class="model-context">
+                    Model: 138.9
+                    <span class="edge-val">Edge: +15.6</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <!-- Confidence based on max edge -->
+                
+                
+                
+                
+                
+                <div class="metric-box">
+                    <div class="metric-title">CONFIDENCE</div>
+                    <div class="metric-value good">99%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value good">69%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">Portland Pilots 69.3, Oregon Ducks 69.6</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                
+                <div class="tag tag-green">⚠️ SKIPPED: Edge too large (19.8 > 15.0) - likely model error</div>
+                
+            </div>
+
+        </div>
+        
+
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">🔥 Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">6-4</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value good">60%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value good">+1.5u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value good">+14.6%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">7-13</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">35%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-6.6u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-33.1%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">24-26</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">48%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-4.2u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-8.3%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

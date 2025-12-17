@@ -3,46 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAAB Bet Tracking Dashboard</title>
+    <title>NCAAB Model Tracking • CourtSide Analytics</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #000000;
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
             color: #ffffff;
-            padding: 1.5rem;
-            min-height: 100vh;
+            padding: 2rem;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
         .card {
-            background: #1a1a1a;
-            border-radius: 1.25rem;
-            border: none;
+            background: #1c1c1e;
+            border: 1px solid #2a2a2a;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
         }
         .stat-card {
-            background: #262626;
-            border: none;
-            border-radius: 1rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 2px solid #f97316;
+            border-radius: 0.75rem;
             padding: 1.5rem;
             text-align: center;
         }
         .stat-value {
             font-size: 2.5rem;
-            font-weight: 700;
-            color: #4ade80;
+            font-weight: 900;
+            color: #f97316;
         }
-        .stat-value.positive { color: #4ade80; }
-        .stat-value.negative { color: #f87171; }
+        .stat-value.positive { color: #10b981; }
+        .stat-value.negative { color: #ef4444; }
         .stat-label {
-            color: #94a3b8;
-            font-size: 0.75rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-top: 0.5rem;
-            font-weight: 500;
         }
         .grid {
             display: grid;
@@ -50,57 +52,37 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #ffffff;
-            text-align: center;
-        }
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #ffffff;
-        }
-        h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        h4 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #94a3b8;
-        }
+        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; color: #f97316; }
+        h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; color: #f97316; }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #262626; }
-        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
-        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
-        tr:hover { background: #262626; }
+        thead { background: #0a0a0a; }
+        th { padding: 0.75rem 1rem; text-align: left; color: #f97316; font-weight: 700; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid #2a2a2a; }
+        tr:hover { background: #0a0a0a; }
         .text-center { text-align: center; }
-        .text-green-400 { color: #4ade80; }
+        .text-green-400 { color: #10b981; }
         .text-blue-400 { color: #60a5fa; }
         .text-pink-400 { color: #f472b6; }
-        .text-red-400 { color: #f87171; }
-        .text-yellow-400 { color: #fbbf24; }
-        .text-gray-400 { color: #94a3b8; }
+        .text-red-400 { color: #ef4444; }
+        .text-yellow-400 { color: #f97316; }
+        .text-gray-400 { color: #9ca3af; }
+        h3 { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
+        h4 { font-size: 1.125rem; font-weight: 600; color: #94a3b8; }
         .font-bold { font-weight: 700; }
         .text-sm { font-size: 0.875rem; }
         .badge {
             display: inline-block;
-            padding: 0.375rem 0.875rem;
-            border-radius: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
-        .badge-win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
-        .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
-        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
-        .badge-error { background: rgba(248, 113, 113, 0.2); color: #f87171; }
-        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
-
+        .badge-pending { background: #78350f; color: #fb923c; }
+        .badge-win { background: #064e3b; color: #10b981; }
+        .badge-loss { background: #450a0a; color: #ef4444; }
+        .badge-push { background: #374151; color: #9ca3af; }
+        .badge-error { background: #450a0a; color: #ef4444; }
+        
         /* Mobile Responsiveness */
         @media (max-width: 1024px) {
             .container { max-width: 100%; }
@@ -108,42 +90,32 @@
             h2 { font-size: 1.5rem; }
             h3 { font-size: 1.25rem; }
         }
-
+        
         @media (max-width: 768px) {
             body { padding: 1rem; }
             .card { padding: 1.25rem; }
-
+            
             h1 { font-size: 1.75rem; }
             h2 { font-size: 1.25rem; }
             h3 { font-size: 1.125rem; }
             h4 { font-size: 1rem; }
-
-            /* Make all inline 5-column grids responsive */
-            div[style*="grid-template-columns: repeat(5, 1fr)"] {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-
+            
             /* Make all inline 4-column grids responsive */
             div[style*="grid-template-columns: repeat(4, 1fr)"] {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
-
+            
             /* Make all inline 2-column grids single column on mobile */
             div[style*="grid-template-columns: repeat(2, 1fr)"] {
                 grid-template-columns: 1fr !important;
             }
-
-            /* Make all inline 3-column grids responsive */
-            div[style*="grid-template-columns: repeat(3, 1fr)"] {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-
+            
             /* Make auto-fit grids smaller on mobile */
             .grid {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 0.75rem;
             }
-
+            
             /* Stat cards */
             .stat-card {
                 padding: 1rem;
@@ -154,8 +126,8 @@
             .stat-label {
                 font-size: 0.6875rem;
             }
-
-            /* Tables - enable horizontal scroll and reduce font */
+            
+            /* Tables - enable horizontal scroll */
             table {
                 font-size: 0.8125rem;
                 display: block;
@@ -172,1155 +144,255 @@
                 padding: 0.625rem 0.5rem;
                 font-size: 0.8125rem;
             }
-            th {
-                font-size: 0.75rem;
-            }
-
-            /* Badges */
-            .badge {
-                padding: 0.3125rem 0.625rem;
-                font-size: 0.6875rem;
-                margin: 0.1875rem;
-            }
-
+            
             /* Reduce spacing */
             div[style*="padding: 2rem"] {
                 padding: 1.25rem !important;
             }
-            div[style*="padding: 1.5rem"] {
-                padding: 1rem !important;
-            }
-            div[style*="gap: 1.5rem"] {
-                gap: 1rem !important;
-            }
             div[style*="margin-bottom: 2rem"] {
                 margin-bottom: 1.25rem !important;
             }
-            div[style*="font-size: 1.75rem"] {
-                font-size: 1.5rem !important;
-            }
         }
-
+        
         @media (max-width: 480px) {
             body { padding: 0.75rem; }
             .card { padding: 1rem; margin-bottom: 1rem; }
-
+            
             h1 { font-size: 1.5rem; }
             h2 { font-size: 1.125rem; }
             h3 { font-size: 1rem; }
-
+            
             .stat-value { font-size: 1.5rem; }
             .stat-label { font-size: 0.625rem; }
             .stat-card { padding: 0.75rem; }
-
+            
             /* Force all multi-column grids to single column on small phones */
             div[style*="grid-template-columns"] {
                 grid-template-columns: 1fr !important;
             }
-
+            
             .grid {
                 grid-template-columns: 1fr;
             }
-
+            
             table { font-size: 0.75rem; }
             th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
-            th { font-size: 0.6875rem; }
-
-            .badge {
-                display: block;
-                margin: 0.25rem 0;
-                text-align: center;
-            }
-
-            div[style*="font-size: 1.75rem"] {
-                font-size: 1.25rem !important;
-            }
-            div[style*="font-size: 1.5rem"] {
-                font-size: 1.125rem !important;
-            }
-            div[style*="font-size: 1.125rem"] {
-                font-size: 1rem !important;
-            }
+            
+            header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .header-title h1 { font-size: 1.5rem; }
+            div[style*="text-align: right"] { text-align: left !important; }
         }
+        
+        /* Header Section */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+        .header-title h1 { margin: 0; font-size: 2rem; color: #f97316; }
+        .header-subtitle { color: #9ca3af; font-size: 0.9rem; margin-top: 0.5rem; }
+        .metric-title { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; font-weight: 600; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h1 class="text-center">Model Performance</h1>
-            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics - NCAAB</p>
+        <div class="container">
 
-            <!-- Overall Performance Card -->
-            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-                    📊 Overall Performance
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
+            <header>
+                <div class="header-title">
+                    <h1>🏀 COLLEGE BASKETBALL TRACKING</h1>
+                    <div class="header-subtitle">Generated: 2025-12-17 11:29 AM ET</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="metric-title">SEASON RECORD</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">
+                        848-754-2 (52.9%)
+                    </div>
+                    <div style="font-size: 1.1rem; color: #10b981; font-weight: 600;">
+                         +17.7u
+                    </div>
+                </div>
+            </header>
+
+            <!-- Overall Stats Cards -->
+            <div class="card">
+                <div class="grid">
                     <div class="stat-card">
                         <div class="stat-value">1699</div>
                         <div class="stat-label">Total Bets</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">848-754-2</div>
-                        <div class="stat-label">Record</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">52.9%</div>
                         <div class="stat-label">Win Rate</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value text-green-400">
+                        <div class="stat-value positive">
                             +17.68u
                         </div>
                         <div class="stat-label">Total Profit</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value text-green-400">
+                        <div class="stat-value positive">
                             +1.1%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+            </div>
+        
+        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
+                <p class="text-gray-400" style="font-size: 1rem; font-weight: 400;">Verified Track Record</p>
+            </div>
+
+            <!-- Last 100 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Last 100 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">52-46-2</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">52.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value positive">
+                            +1.32u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value positive">
+                            +1.3%
                         </div>
                         <div class="stat-label">ROI</div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
                     <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (785 picks)</h4>
-                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">401-382-2</div>
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (51 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">28-21-2</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">51.2%</span></div>
-                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">-19.20u</span></div>
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">54.9%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+8.8%</span></div>
                         </div>
                     </div>
                     <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (819 picks)</h4>
-                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">447-372</div>
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (49 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">24-25</div>
                         <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">54.6%</span></div>
-                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">37.80u</span></div>
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">49.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-6.4%</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Today's/Yesterday's Record -->
-            
-            <div style="background: #262626; border-radius: 1rem; padding: 1.5rem;">
-                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">Recent Records</h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
-                    
-                    
-                    <div style="text-align: center;">
-                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">Dec 16</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #4ade80;">42-40-1</div>
+            <!-- Last 50 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    🚀 Last 50 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value negative">24-26</div>
+                        <div class="stat-label">Record</div>
                     </div>
-                    
+                    <div class="stat-card">
+                        <div class="stat-value negative">48.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value negative">
+                            -4.16u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value negative">
+                            -8.3%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (26 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">13-13</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">50.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-4.5%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (24 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">11-13</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-red-400 font-bold">45.8%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-12.5%</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-        </div>
-        
-        
-        <div class="card">
-            <h2>🎯 Upcoming Bets</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Game Date</th>
-                            <th>Game</th>
-                            <th>Type</th>
-                            <th>Pick</th>
-                            <th>Line</th>
-                            <th>Edge</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 05:00 PM</td>
-                            <td class="font-bold">Northern Iowa Panthers @ UIC Flames</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 132.0</td>
-                            <td>132.0</td>
-                            <td>+12.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 05:00 PM</td>
-                            <td class="font-bold">Northern Iowa Panthers @ UIC Flames</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: UIC Flames +5.5</td>
-                            <td>5.5</td>
-                            <td>-6.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 06:00 PM</td>
-                            <td class="font-bold">Stonehill Skyhawks @ New Hampshire Wildcats</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Stonehill Skyhawks +4.0</td>
-                            <td>-4.0</td>
-                            <td>+8.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 06:00 PM</td>
-                            <td class="font-bold">Stonehill Skyhawks @ New Hampshire Wildcats</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 137.5</td>
-                            <td>137.5</td>
-                            <td>+10.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 06:30 PM</td>
-                            <td class="font-bold">Creighton Bluejays @ Xavier Musketeers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 150.5</td>
-                            <td>150.5</td>
-                            <td>+9.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 06:30 PM</td>
-                            <td class="font-bold">St. Francis (PA) Red Flash @ Florida Gators</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 154.5</td>
-                            <td>154.5</td>
-                            <td>-8.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 06:30 PM</td>
-                            <td class="font-bold">Creighton Bluejays @ Xavier Musketeers</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Creighton Bluejays +2.5</td>
-                            <td>-2.5</td>
-                            <td>+5.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Richmond Spiders @ Elon Phoenix</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Elon Phoenix +5.0</td>
-                            <td>5.0</td>
-                            <td>-6.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">UC Santa Barbara Gauchos @ Green Bay Phoenix</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 149.0</td>
-                            <td>149.0</td>
-                            <td>-8.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Youngstown St Penguins @ Robert Morris Colonials</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Youngstown St Penguins +1.0</td>
-                            <td>-1.0</td>
-                            <td>+6.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Richmond Spiders @ Elon Phoenix</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 158.5</td>
-                            <td>158.5</td>
-                            <td>-16.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Mercer Bears @ UCF Knights</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Mercer Bears +14.0</td>
-                            <td>-14.0</td>
-                            <td>+12.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">The Citadel Bulldogs @ Charleston Cougars</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 145.5</td>
-                            <td>145.5</td>
-                            <td>-7.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Quinnipiac Bobcats @ Monmouth Hawks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 149.5</td>
-                            <td>149.5</td>
-                            <td>-17.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Oakland Golden Grizzlies @ Northern Kentucky Norse</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 167.5</td>
-                            <td>167.5</td>
-                            <td>-8.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Vanderbilt Commodores @ Memphis Tigers</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Memphis Tigers +7.5</td>
-                            <td>7.5</td>
-                            <td>-11.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Alabama St Hornets @ Cincinnati Bearcats</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 144.0</td>
-                            <td>144.0</td>
-                            <td>+16.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Albany Great Danes @ Stony Brook Seawolves</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 144.0</td>
-                            <td>144.0</td>
-                            <td>-14.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Chattanooga Mocs @ Bellarmine Knights</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Chattanooga Mocs -2.0</td>
-                            <td>2.0</td>
-                            <td>+6.9</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">The Citadel Bulldogs @ Charleston Cougars</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: The Citadel Bulldogs +16.5</td>
-                            <td>-16.5</td>
-                            <td>+13.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Eastern Kentucky Colonels @ Jacksonville St Gamecocks</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Eastern Kentucky Colonels +4.0</td>
-                            <td>-4.0</td>
-                            <td>+8.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Eastern Kentucky Colonels @ Jacksonville St Gamecocks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 142.5</td>
-                            <td>142.5</td>
-                            <td>+5.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Jacksonville Dolphins @ Florida A&M Rattlers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 141.5</td>
-                            <td>141.5</td>
-                            <td>-11.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Longwood Lancers @ Wake Forest Demon Deacons</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 158.5</td>
-                            <td>158.5</td>
-                            <td>-15.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Maryland-Eastern Shore Hawks @ Wagner Seahawks</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Maryland-Eastern Shore Hawks +5.0</td>
-                            <td>-5.0</td>
-                            <td>+10.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Maryland-Eastern Shore Hawks @ Wagner Seahawks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 127.5</td>
-                            <td>127.5</td>
-                            <td>+17.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Mercer Bears @ UCF Knights</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 162.5</td>
-                            <td>162.5</td>
-                            <td>-14.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Texas Southern Tigers @ NC State Wolfpack</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 157.5</td>
-                            <td>157.5</td>
-                            <td>-15.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Oakland Golden Grizzlies @ Northern Kentucky Norse</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Oakland Golden Grizzlies +1.5</td>
-                            <td>-1.5</td>
-                            <td>+6.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Siena Saints @ Vermont Catamounts</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 136.0</td>
-                            <td>136.0</td>
-                            <td>+10.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Binghamton @ Pittsburgh</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Binghamton +25.5</td>
-                            <td>-25.5</td>
-                            <td>+17.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Mercer @ UCF</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Mercer +14.5</td>
-                            <td>-14.5</td>
-                            <td>+6.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Mercer @ UCF</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 161.5</td>
-                            <td>161.5</td>
-                            <td>-18.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Chattanooga Mocs @ Bellarmine Knights</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 150.0</td>
-                            <td>150.0</td>
-                            <td>-11.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Presbyterian Blue Hose @ East Carolina Pirates</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Presbyterian Blue Hose +3.5</td>
-                            <td>-3.5</td>
-                            <td>+12.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Presbyterian Blue Hose @ East Carolina Pirates</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 130.5</td>
-                            <td>130.5</td>
-                            <td>+16.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Vanderbilt Commodores @ Memphis Tigers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 159.0</td>
-                            <td>159.0</td>
-                            <td>-17.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Mercyhurst Lakers @ Syracuse Orange</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 130.5</td>
-                            <td>130.5</td>
-                            <td>-6.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Siena Saints @ Vermont Catamounts</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Siena Saints +1.0</td>
-                            <td>-1.0</td>
-                            <td>+7.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Albany Great Danes @ Stony Brook Seawolves</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Albany Great Danes +9.5</td>
-                            <td>-9.5</td>
-                            <td>+10.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Binghamton Bearcats @ Pittsburgh Panthers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 140.0</td>
-                            <td>140.0</td>
-                            <td>+6.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Quinnipiac Bobcats @ Monmouth Hawks</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Quinnipiac Bobcats -1.0</td>
-                            <td>1.0</td>
-                            <td>+9.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">UC Santa Barbara Gauchos @ Green Bay Phoenix</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Green Bay Phoenix +4.5</td>
-                            <td>4.5</td>
-                            <td>-6.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:00 PM</td>
-                            <td class="font-bold">Youngstown St Penguins @ Robert Morris Colonials</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 141.0</td>
-                            <td>141.0</td>
-                            <td>+9.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Cleveland St Vikings @ UAB Blazers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 162.5</td>
-                            <td>162.5</td>
-                            <td>-17.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Kennesaw St Owls @ Middle Tennessee Blue Raiders</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Kennesaw St Owls +4.0</td>
-                            <td>-4.0</td>
-                            <td>+11.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Louisiana Tech Bulldogs @ Tulane Green Wave</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Louisiana Tech Bulldogs +4.5</td>
-                            <td>-4.5</td>
-                            <td>+7.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Wofford Terriers @ Wichita St Shockers</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Wofford Terriers +12.5</td>
-                            <td>-12.5</td>
-                            <td>+11.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Wofford Terriers @ Wichita St Shockers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 141.5</td>
-                            <td>141.5</td>
-                            <td>+5.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Cleveland St Vikings @ UAB Blazers</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Cleveland St Vikings +17.5</td>
-                            <td>-17.5</td>
-                            <td>+11.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Louisiana Tech Bulldogs @ Tulane Green Wave</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 136.0</td>
-                            <td>136.0</td>
-                            <td>-12.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">South Alabama Jaguars @ UL Monroe Warhawks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 147.5</td>
-                            <td>147.5</td>
-                            <td>+9.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Houston Christian Huskies @ Nicholls St Colonels</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Houston Christian Huskies +4.0</td>
-                            <td>-4.0</td>
-                            <td>+8.9</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">South Alabama Jaguars @ UL Monroe Warhawks</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: UL Monroe Warhawks +11.0</td>
-                            <td>11.0</td>
-                            <td>-12.9</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Houston Christian Huskies @ Nicholls St Colonels</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 141.5</td>
-                            <td>141.5</td>
-                            <td>+6.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 07:30 PM</td>
-                            <td class="font-bold">Kennesaw St Owls @ Middle Tennessee Blue Raiders</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 160.5</td>
-                            <td>160.5</td>
-                            <td>-17.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">James Madison Dukes @ Old Dominion Monarchs</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 151.0</td>
-                            <td>151.0</td>
-                            <td>-8.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">James Madison Dukes @ Old Dominion Monarchs</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: James Madison Dukes +1.0</td>
-                            <td>-1.0</td>
-                            <td>+6.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Weber State Wildcats @ Utah Valley Wolverines</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 148.0</td>
-                            <td>148.0</td>
-                            <td>+5.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Bethune-Cookman Wildcats @ Saint Louis Billikens</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 155.5</td>
-                            <td>155.5</td>
-                            <td>-14.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Weber State Wildcats @ Utah Valley Wolverines</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Weber State Wildcats +13.5</td>
-                            <td>-13.5</td>
-                            <td>+13.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Bethune-Cookman @ Saint Louis</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Bethune-Cookman +26.5</td>
-                            <td>-26.5</td>
-                            <td>+18.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Bethune-Cookman @ Saint Louis</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 158.5</td>
-                            <td>158.5</td>
-                            <td>-20.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Weber State @ Utah Valley</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Weber State +13.5</td>
-                            <td>-13.5</td>
-                            <td>+11.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Weber State @ Utah Valley</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 151.0</td>
-                            <td>151.0</td>
-                            <td>-13.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Alabama A&M Bulldogs @ Ole Miss Rebels</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Alabama A&M Bulldogs +20.0</td>
-                            <td>-20.0</td>
-                            <td>+14.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:00 PM</td>
-                            <td class="font-bold">Alabama A&M Bulldogs @ Ole Miss Rebels</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 135.5</td>
-                            <td>135.5</td>
-                            <td>+9.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:30 PM</td>
-                            <td class="font-bold">Arkansas St Red Wolves @ Texas State Bobcats</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 148.5</td>
-                            <td>148.5</td>
-                            <td>-9.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:30 PM</td>
-                            <td class="font-bold">Georgetown Hoyas @ Marquette Golden Eagles</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 148.5</td>
-                            <td>148.5</td>
-                            <td>-11.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 08:30 PM</td>
-                            <td class="font-bold">Georgetown Hoyas @ Marquette Golden Eagles</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Georgetown Hoyas +5.0</td>
-                            <td>-5.0</td>
-                            <td>+11.9</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Portland St Vikings @ Colorado Buffaloes</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 150.5</td>
-                            <td>150.5</td>
-                            <td>-11.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">North Texas Mean Green @ Santa Clara Broncos</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: North Texas Mean Green +10.5</td>
-                            <td>-10.5</td>
-                            <td>+10.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">UTSA Roadrunners @ USC Trojans</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 153.0</td>
-                            <td>153.0</td>
-                            <td>-8.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Texas A&M-CC Islanders @ Stephen F. Austin Lumberjacks</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Texas A&M-CC Islanders +7.0</td>
-                            <td>-7.0</td>
-                            <td>+8.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Campbell Fighting Camels @ Gonzaga Bulldogs</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 161.0</td>
-                            <td>161.0</td>
-                            <td>-14.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Seattle Redhawks @ UC Davis Aggies</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Seattle Redhawks -3.0</td>
-                            <td>3.0</td>
-                            <td>+6.5</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Seattle Redhawks @ UC Davis Aggies</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 142.5</td>
-                            <td>142.5</td>
-                            <td>-12.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">North Texas Mean Green @ Santa Clara Broncos</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 141.5</td>
-                            <td>141.5</td>
-                            <td>+9.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:00 PM</td>
-                            <td class="font-bold">Texas A&M-CC Islanders @ Stephen F. Austin Lumberjacks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 138.5</td>
-                            <td>138.5</td>
-                            <td>+6.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:30 PM</td>
-                            <td class="font-bold">Sam Houston St Bearkats @ Oregon St Beavers</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 150.0</td>
-                            <td>150.0</td>
-                            <td>-14.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 09:30 PM</td>
-                            <td class="font-bold">Sam Houston St Bearkats @ Oregon St Beavers</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Sam Houston St Bearkats +2.0</td>
-                            <td>-2.0</td>
-                            <td>+6.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Eastern Washington Eagles @ Washington St Cougars</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Eastern Washington Eagles +7.5</td>
-                            <td>-7.5</td>
-                            <td>+7.3</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Eastern Washington Eagles @ Washington St Cougars</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 157.5</td>
-                            <td>157.5</td>
-                            <td>-15.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">UT-Arlington Mavericks @ Stanford Cardinal</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: UT-Arlington Mavericks +12.0</td>
-                            <td>-12.0</td>
-                            <td>+8.8</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">UT-Arlington Mavericks @ Stanford Cardinal</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 142.5</td>
-                            <td>142.5</td>
-                            <td>+10.0</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Loyola (Chi) Ramblers @ San Francisco Dons</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Loyola (Chi) Ramblers +13.0</td>
-                            <td>-13.0</td>
-                            <td>+12.2</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Air Force Falcons @ San Diego St Aztecs</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 137.5</td>
-                            <td>137.5</td>
-                            <td>+8.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Loyola (Chi) Ramblers @ San Francisco Dons</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 143.0</td>
-                            <td>143.0</td>
-                            <td>-9.1</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Air Force @ San Diego State</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Air Force +25.5</td>
-                            <td>-25.5</td>
-                            <td>+22.7</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:00 PM</td>
-                            <td class="font-bold">Air Force @ San Diego State</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: OVER 136.5</td>
-                            <td>136.5</td>
-                            <td>+6.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:30 PM</td>
-                            <td class="font-bold">Arizona St Sun Devils @ UCLA Bruins</td>
-                            <td>Spread</td>
-                            <td class="text-yellow-400">✅ BET: Arizona St Sun Devils +9.5</td>
-                            <td>-9.5</td>
-                            <td>+12.9</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 10:30 PM</td>
-                            <td class="font-bold">Arizona St Sun Devils @ UCLA Bruins</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 146.5</td>
-                            <td>146.5</td>
-                            <td>-5.6</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                        <tr>
-                            <td class="text-sm font-bold">12/17 11:00 PM</td>
-                            <td class="font-bold">Portland Pilots @ Oregon Ducks</td>
-                            <td>Total</td>
-                            <td class="text-yellow-400">✅ BET: UNDER 155.5</td>
-                            <td>155.5</td>
-                            <td>-9.4</td>
-                            <td><span class="badge badge-pending">Pending</span></td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
+
+            <!-- Last 20 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    ⚡ Last 20 Picks (Hot Streak)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value negative">7-13</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value negative">35.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value negative">
+                            -6.63u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value negative">
+                            -33.1%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (10 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">4-6</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-red-400 font-bold">40.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-23.6%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (10 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">3-7</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-red-400 font-bold">30.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-42.7%</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        
-        
-        <div class="card">
-            <h2>⚠️ Past Pending Bets (Need Update)</h2>
-            <p style="color: #f59e0b; margin-bottom: 1rem; font-size: 0.875rem;">
-                ⚠️ These picks are from past games but haven't been updated yet. Run the model to update them.
-            </p>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Game Date</th>
-                            <th>Game</th>
-                            <th>Type</th>
-                            <th>Pick</th>
-                            <th>Line</th>
-                            <th>Edge</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                        <tr style="opacity: 0.7;">
-                            <td class="text-sm font-bold">12/10 08:00 PM</td>
-                            <td class="font-bold">Jackson State Tigers @ Houston Cougars</td>
-                            <td>Spread</td>
-                            <td class="text-gray-400">✅ BET: Jackson State Tigers +40.5</td>
-                            <td>-40.5</td>
-                            <td>+27.3</td>
-                            <td><span class="badge badge-error">Needs Update</span></td>
-                        </tr>
-                        
-                        <tr style="opacity: 0.7;">
-                            <td class="text-sm font-bold">12/10 10:00 PM</td>
-                            <td class="font-bold">Fresno State Bulldogs @ CSU Northridge Matadors</td>
-                            <td>Total</td>
-                            <td class="text-gray-400">✅ BET: UNDER 157.5</td>
-                            <td>157.5</td>
-                            <td>-25.5</td>
-                            <td><span class="badge badge-error">Needs Update</span></td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
         
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
-            <p>Last updated: 2025-12-17 10:30 AM</p>
+            <p>Last updated: 2025-12-17 11:29 AM ET</p>
         </div>
     </div>
 </body>
