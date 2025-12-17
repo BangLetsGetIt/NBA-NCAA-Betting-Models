@@ -30,6 +30,9 @@
         .container { max-width: 800px; margin: 0 auto; }
 
         header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
@@ -167,9 +170,20 @@
 
 <div class="container">
     <header>
-        <h1>CourtSide Analytics</h1>
-        <div class="subheader">NBA 3PT Model</div>
-        <div class="date-sub">Profitable Version • Season 2025-26</div>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">NBA 3PT Model</div>
+            <div class="date-sub">Profitable Version • Season 2025-26</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="metric-title">SEASON RECORD</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                0-0 (0.0%)
+            </div>
+            <div style="font-size: 0.9rem; color: var(--accent-red);">
+                 +0.0u
+            </div>
+        </div>
     </header>
 
     
