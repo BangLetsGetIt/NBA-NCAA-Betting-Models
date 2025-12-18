@@ -1442,7 +1442,178 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     last_20 = calculate_recent_performance(completed_picks, 20)
     last_50 = calculate_recent_performance(completed_picks, 50)
     
+    
     daily_tracking_html = ""
+
+    # CSS Styles (defined separately to avoid f-string brace escaping issues)
+    css_styles = """
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 20px; font-weight: 700; }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex; align-items: center;
+        }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .game-meta { text-align: right; }
+        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+
+        .card-body { padding: 20px; }
+        .bet-main-row { margin-bottom: 15px; }
+        .bet-selection { font-size: 22px; font-weight: 800; }
+        .bet-selection .line { color: var(--text-primary); }
+        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+
+        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext strong { color: var(--text-primary); }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .metric-val { font-size: 16px; font-weight: 700; }
+
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats-item { text-align: center; flex: 1; }
+        .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
+
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
+        
+        .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+        .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+        .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+        
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .text-red { color: var(--accent-red); }
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .metric-value.good { color: var(--accent-green); }
+
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-box:last-child { grid-column: span 2; }
+            .card-header { padding: 12px 15px; }
+            .team-logo { width: 38px; height: 38px; }
+            .player-info h2 { font-size: 16px; }
+        }
+    """
+    
+    # Pre-format header stats to avoid f-string syntax errors
+    s_wins = stats.get('wins', 0)
+    s_losses = stats.get('losses', 0)
+    s_wr = round(stats.get('win_rate', 0.0), 1)
+    s_prof = stats.get('total_profit', 0.0)
+    s_prof_str = f"{s_prof:+.1f}u"
+    s_prof_color = 'var(--accent-green)' if s_prof > 0 else 'var(--accent-red)'
 
     # Define Header
     html_header = f"""<!DOCTYPE html>
@@ -1451,24 +1622,29 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourtSide Analytics - NBA 3PT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {{ --bg-main: #121212; --bg-card: #1e1e1e; --text-primary: #ffffff; --accent: #4ade80; }}
-        body {{ font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-primary); padding: 20px; }}
-        .section-title {{ font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent); }}
-        .prop-card {{ background: var(--bg-card); padding: 15px; border-radius: 12px; margin-bottom: 15px; }}
-        .metrics-grid {{ display: grid; gap: 10px; }}
-        .tag {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 5px; }}
-        .tag-green {{ background: rgba(74, 222, 128, 0.2); color: #4ade80; }}
-        .player-stats {{ display: flex; gap: 15px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; }}
-        .player-stats-item {{ text-align: center; }}
-        .player-stats-label {{ font-size: 0.7em; color: #888; text-transform: uppercase; }}
-        .player-stats-value {{ font-weight: bold; }}
+{css_styles}
     </style>
 </head>
 <body>
-    <header style="margin-bottom: 2rem;">
-        <h1 style="margin:0;">CourtSide Analytics</h1>
-        <div style="color:#888;">NBA 3PT Model • {now.strftime('%Y-%m-%d %I:%M %p ET')}</div>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">NBA 3PT Props Model</div>
+            <div class="date-sub">Profitable Version &bull; Season {CURRENT_SEASON}</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="metric-title">SEASON RECORD</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                {s_wins}-{s_losses} ({s_wr}%)
+            </div>
+            <div style="font-size: 0.9rem; color: {s_prof_color};">
+                 {s_prof_str}
+            </div>
+        </div>
     </header>
 """
 
