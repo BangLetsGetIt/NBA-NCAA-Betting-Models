@@ -339,6 +339,8 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
         "pick_type": pick_type.capitalize(),
         "model_line": model_line,
         "market_line": market_line,
+        "opening_line": market_line,  # Store opening line when first logged
+        "closing_line": market_line,   # Initially same as opening, will be updated on subsequent runs
         "edge": round(edge, 1),
         "pick": pick_text,
         "units": 1,
@@ -346,7 +348,8 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
         "result": None,
         "profit_loss": 0,
         "actual_home_score": None,
-        "actual_away_score": None
+        "actual_away_score": None,
+        "clv_status": None  # Will be calculated when closing line is updated
     }
 
     tracking_data['picks'].append(pick_entry)
@@ -356,6 +359,84 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
     save_picks_tracking(tracking_data)
 
     print(f"{Colors.GREEN}📝 LOGGED PICK: {pick_text} (Edge: {edge:+.1f}){Colors.END}")
+
+def calculate_clv_status(opening_line, closing_line, pick_type, pick_text):
+    """
+    Calculate if a pick beat the closing line (positive CLV).
+    
+    Args:
+        opening_line: The line when the pick was first logged
+        closing_line: The line at game time (or latest available)
+        pick_type: 'Spread' or 'Total'
+        pick_text: The pick text (e.g., "New York Knicks -2.5" or "OVER 234.5")
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If lines are the same, no CLV advantage
+        if abs(opening_line - closing_line) < 0.1:
+            return "neutral"
+        
+        if pick_type.lower() == 'spread':
+            # For spreads, determine if we're betting favorite or underdog
+            # Extract the spread value from pick text
+            if 'BET:' in pick_text:
+                # Format: "✅ BET: Team Name -2.5" or "✅ BET: Team Name +5.0"
+                parts = pick_text.split('BET:')
+                if len(parts) > 1:
+                    spread_str = parts[1].strip().split()[-1]  # Get the last part (the spread)
+                    try:
+                        bet_spread = float(spread_str)
+                    except:
+                        # Fallback: use opening_line sign to determine
+                        bet_spread = opening_line
+                else:
+                    bet_spread = opening_line
+            else:
+                bet_spread = opening_line
+            
+            # If betting favorite (negative spread): Better line = smaller absolute value
+            # If betting underdog (positive spread): Better line = larger value
+            if bet_spread < 0:
+                # Betting favorite: -2.5 is better than -3.5 (smaller absolute value)
+                if abs(opening_line) < abs(closing_line):
+                    return "positive"
+                else:
+                    return "negative"
+            else:
+                # Betting underdog: +5.5 is better than +4.5 (larger value)
+                if opening_line > closing_line:
+                    return "positive"
+                else:
+                    return "negative"
+        
+        elif pick_type.lower() == 'total':
+            # For totals, determine if we're betting OVER or UNDER
+            pick_upper = pick_text.upper()
+            
+            if 'OVER' in pick_upper:
+                # Betting OVER: Lower total is better (e.g., OVER 234.5 beats OVER 235.5)
+                if opening_line < closing_line:
+                    return "positive"
+                else:
+                    return "negative"
+            elif 'UNDER' in pick_upper:
+                # Betting UNDER: Higher total is better (e.g., UNDER 235.5 beats UNDER 234.5)
+                if opening_line > closing_line:
+                    return "positive"
+                else:
+                    return "negative"
+            else:
+                # Can't determine, return neutral
+                return "neutral"
+        
+        return "neutral"
+    
+    except Exception as e:
+        # If calculation fails, return neutral (fail gracefully)
+        print(f"{Colors.YELLOW}⚠ Error calculating CLV status: {e}{Colors.END}")
+        return "neutral"
 
 def fetch_completed_scores_nba():
     """Fetch NBA scores for recently completed games from The Odds API"""
@@ -697,6 +778,70 @@ def calculate_ai_rating(game_data, team_performance, historical_edge_performance
     
     return round(ai_rating, 1)
 
+def calculate_stats_for_picks(picks):
+    """Calculate detailed stats for a subset of picks"""
+    wins = sum(1 for p in picks if p.get('status', '').lower() == 'win')
+    losses = sum(1 for p in picks if p.get('status', '').lower() == 'loss')
+    pushes = sum(1 for p in picks if p.get('status', '').lower() == 'push')
+    total = wins + losses + pushes
+    
+    profit = sum(p.get('profit_loss', 0) for p in picks)
+    risked = total * 110  # Approximation
+    
+    win_rate = (wins / total * 100) if total > 0 else 0.0
+    roi = (profit / risked * 100) if risked > 0 else 0.0
+    
+    # Spreads
+    spread_picks = [p for p in picks if p.get('pick_type', '').lower() == 'spread']
+    s_wins = sum(1 for p in spread_picks if p.get('status', '').lower() == 'win')
+    s_losses = sum(1 for p in spread_picks if p.get('status', '').lower() == 'loss')
+    s_pushes = sum(1 for p in spread_picks if p.get('status', '').lower() == 'push')
+    s_total = s_wins + s_losses + s_pushes
+    s_win_rate = (s_wins / s_total * 100) if s_total > 0 else 0.0
+    s_profit = sum(p.get('profit_loss', 0) for p in spread_picks)
+    s_risked = s_total * 110
+    s_roi = (s_profit / s_risked * 100) if s_risked > 0 else 0.0
+    
+    # Totals
+    total_picks_subset = [p for p in picks if p.get('pick_type', '').lower() == 'total']
+    t_wins = sum(1 for p in total_picks_subset if p.get('status', '').lower() == 'win')
+    t_losses = sum(1 for p in total_picks_subset if p.get('status', '').lower() == 'loss')
+    t_pushes = sum(1 for p in total_picks_subset if p.get('status', '').lower() == 'push')
+    t_total = t_wins + t_losses + t_pushes
+    t_win_rate = (t_wins / t_total * 100) if t_total > 0 else 0.0
+    t_profit = sum(p.get('profit_loss', 0) for p in total_picks_subset)
+    t_risked = t_total * 110
+    t_roi = (t_profit / t_risked * 100) if t_risked > 0 else 0.0
+    
+    return {
+        'record': f"{wins}-{losses}{f'-{pushes}' if pushes > 0 else ''}",
+        'win_rate': win_rate,
+        'profit': profit / 100,  # Convert cents to units if needed, but assuming input is already correct scale? Wait, profit_loss in json is likely units*100 or something. 
+                                 # Checking calculate_tracking_stats: stats['total_profit'] / 100 in template. 
+                                 # So profit here is comparable to stats['total_profit']. 
+                                 # The template divides stats.total_profit by 100.
+                                 # But for last_100, the template uses: {{ "%.2f"|format(last_100.profit) }}u
+                                 # So I should return UNITS directly or handle the division.
+                                 # Let's check calculate_tracking_stats again. 
+                                 # stats['total_profit'] = sum(p.get('profit_loss', 0) ...)
+                                 # In template: {{ "%.2f"|format(stats.total_profit/100) }}u
+                                 # In template for last_100: {{ "%.2f"|format(last_100.profit) }}u
+                                 # So last_100.profit should be in UNITS (i.e. already divided by 100).
+        'roi': roi,
+        'spreads': {
+            'count': s_total,
+            'record': f"{s_wins}-{s_losses}{f'-{s_pushes}' if s_pushes > 0 else ''}",
+            'win_rate': s_win_rate,
+            'roi': s_roi
+        },
+        'totals': {
+            'count': t_total,
+            'record': f"{t_wins}-{t_losses}{f'-{t_pushes}' if t_pushes > 0 else ''}",
+            'win_rate': t_win_rate,
+            'roi': t_roi
+        }
+    }
+
 def generate_tracking_html():
     """Generate HTML dashboard for tracking picks"""
     tracking_data = load_picks_tracking()
@@ -831,6 +976,21 @@ def generate_tracking_html():
                 if is_yesterday:
                     yesterday_total_pushes += 1
 
+    # Calculate Last 100/50/20 Stats
+    # Sort picks by date descending
+    sorted_picks = sorted(all_completed, key=lambda x: x.get('game_date', ''), reverse=True)
+    
+    # Adjust profit calculation for helper (convert cents to units)
+    # The helper expects raw profit_loss (cents?) and returns units
+    # Actually, let's look at calculate_stats_for_picks implementation above. 
+    # I wrote: 'profit': profit / 100. 
+    # So if profit_loss is in cents (100 = 1 unit), then dividing by 100 gives units.
+    # Logic seems consistent with template usage.
+    
+    last_100 = calculate_stats_for_picks(sorted_picks[:100])
+    last_50 = calculate_stats_for_picks(sorted_picks[:50])
+    last_20 = calculate_stats_for_picks(sorted_picks[:20])
+
     # Determine which breakdown to display
     if today_total > 0:
         # Show today's breakdown
@@ -932,10 +1092,10 @@ def generate_tracking_html():
     pending_picks.sort(key=lambda x: x['game_date'], reverse=False)
     completed_picks.sort(key=lambda x: x['game_date'], reverse=True)
 
-    # Calculate Last 100, Last 50, and Last 20 picks performance (AFTER sorting)
-    last_100 = calculate_recent_performance(completed_picks, 100)
-    last_50 = calculate_recent_performance(completed_picks, 50)
+    # Calculate Last 10, Last 20, and Last 50 picks performance (AFTER sorting)
+    last_10 = calculate_recent_performance(completed_picks, 10)
     last_20 = calculate_recent_performance(completed_picks, 20)
+    last_50 = calculate_recent_performance(completed_picks, 50)
 
     def format_profit(profit):
         if profit > 0:
@@ -986,7 +1146,7 @@ def generate_tracking_html():
         .stat-value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #4ade80;
+            color: #10b981;
         }
         .stat-label {
             color: #94a3b8;
@@ -1031,11 +1191,11 @@ def generate_tracking_html():
         td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
         tr:hover { background: #262626; }
         .text-center { text-align: center; }
-        .text-green-400 { color: #4ade80; }
-        .text-blue-400 { color: #60a5fa; }
+        .text-green-400 { color: #10b981; }
+        .text-blue-400 { color: #3b82f6; }
         .text-pink-400 { color: #f472b6; }
-        .text-red-400 { color: #f87171; }
-        .text-yellow-400 { color: #fbbf24; }
+        .text-red-400 { color: #ef4444; }
+        .text-yellow-400 { color: #f59e0b; }
         .text-gray-400 { color: #94a3b8; }
         .font-bold { font-weight: 700; }
         .text-sm { font-size: 0.875rem; }
@@ -1047,8 +1207,8 @@ def generate_tracking_html():
             font-weight: 600;
         }
         .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
-        .badge-win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
-        .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        .badge-win { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-loss { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
         .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
 
@@ -1185,7 +1345,7 @@ def generate_tracking_html():
 
             <!-- Overall Performance Card -->
             <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     📊 Overall Performance
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
@@ -1236,10 +1396,10 @@ def generate_tracking_html():
 
             <!-- Today's/Yesterday's Record -->
             <div style="background: #262626; border-radius: 1rem; padding: 1.5rem;">
-                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">{{ display_label }}</h3>
+                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #f59e0b;">{{ display_label }}</h3>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
                     <div style="text-align: center;">
-                        <div style="font-size: 2rem; font-weight: 700; color: #4ade80;">{{ display_wins }}-{{ display_losses }}{% if display_pushes > 0 %}-{{ display_pushes }}{% endif %}</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #10b981;">{{ display_wins }}-{{ display_losses }}{% if display_pushes > 0 %}-{{ display_pushes }}{% endif %}</div>
                         <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.5rem;">Overall</div>
                     </div>
                     <div style="text-align: center;">
@@ -1297,7 +1457,7 @@ def generate_tracking_html():
 
             <!-- Last 100 Picks -->
             <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     📊 Last 100 Picks
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
@@ -1344,7 +1504,7 @@ def generate_tracking_html():
 
             <!-- Last 50 Picks -->
             <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     🚀 Last 50 Picks
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
@@ -1391,7 +1551,7 @@ def generate_tracking_html():
 
             <!-- Last 20 Picks -->
             <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                <h3 style="color: #10b981; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
                     ⚡ Last 20 Picks (Hot Streak)
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
@@ -1691,7 +1851,7 @@ def predicted_score(model_spread, model_total):
 # =========================
 
 def fetch_advanced_stats():
-    """Fetch and cache advanced team stats from stats.nba.com API."""
+    """Fetch and cache advanced team stats from stats.nba.com API with retry logic."""
 
     # Check cache first
     if os.path.exists(STATS_FILE):
@@ -1702,69 +1862,92 @@ def fetch_advanced_stats():
                 return json.load(f)
 
     print(f"{Colors.CYAN}🔄 Fetching new team stats from stats.nba.com...{Colors.END}")
-    try:
-        # Fetch full-season stats
-        season_stats_data = leaguedashteamstats.LeagueDashTeamStats(
-            measure_type_detailed_defense='Advanced',
-            season=CURRENT_SEASON,
-            timeout=30
-        )
-        season_df = season_stats_data.get_data_frames()[0]
-        time.sleep(0.6)
+    
+    # Retry logic with exponential backoff
+    max_retries = 3
+    retry_delays = [2, 5, 10]  # seconds to wait between retries
+    
+    for attempt in range(max_retries):
+        try:
+            # Fetch full-season stats with increased timeout
+            season_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+                measure_type_detailed_defense='Advanced',
+                season=CURRENT_SEASON,
+                timeout=60  # Increased from 30 to 60 seconds
+            )
+            season_df = season_stats_data.get_data_frames()[0]
+            time.sleep(0.6)
 
-        # Fetch last N games stats
-        form_stats_data = leaguedashteamstats.LeagueDashTeamStats(
-            measure_type_detailed_defense='Advanced',
-            season=CURRENT_SEASON,
-            last_n_games=LAST_N_GAMES,
-            timeout=30
-        )
-        form_df = form_stats_data.get_data_frames()[0]
-        time.sleep(0.6)
+            # Fetch last N games stats with increased timeout
+            form_stats_data = leaguedashteamstats.LeagueDashTeamStats(
+                measure_type_detailed_defense='Advanced',
+                season=CURRENT_SEASON,
+                last_n_games=LAST_N_GAMES,
+                timeout=60  # Increased from 30 to 60 seconds
+            )
+            form_df = form_stats_data.get_data_frames()[0]
+            time.sleep(0.6)
 
-        # Blend season and form stats
-        stats_dict = {}
-        for _, row in season_df.iterrows():
-            team_name = row.get('TEAM_NAME', 'Unknown')
-            team_id = row.get('TEAM_ID', None)
+            # Blend season and form stats
+            stats_dict = {}
+            for _, row in season_df.iterrows():
+                team_name = row.get('TEAM_NAME', 'Unknown')
+                team_id = row.get('TEAM_ID', None)
 
-            season_net_rating = row.get('NET_RATING', 0)
-            season_pace = row.get('PACE', 100)
-            season_off_rtg = row.get('OFF_RATING', 110)
-            season_def_rtg = row.get('DEF_RATING', 110)
+                season_net_rating = row.get('NET_RATING', 0)
+                season_pace = row.get('PACE', 100)
+                season_off_rtg = row.get('OFF_RATING', 110)
+                season_def_rtg = row.get('DEF_RATING', 110)
 
-            # Get form stats for this team
-            form_row = form_df[form_df['TEAM_ID'] == team_id] if team_id else pd.DataFrame()
-            if not form_row.empty:
-                form_net_rating = form_row.iloc[0].get('NET_RATING', season_net_rating)
-                form_pace = form_row.iloc[0].get('PACE', season_pace)
-                form_off_rtg = form_row.iloc[0].get('OFF_RATING', season_off_rtg)
-                form_def_rtg = form_row.iloc[0].get('DEF_RATING', season_def_rtg)
+                # Get form stats for this team
+                form_row = form_df[form_df['TEAM_ID'] == team_id] if team_id else pd.DataFrame()
+                if not form_row.empty:
+                    form_net_rating = form_row.iloc[0].get('NET_RATING', season_net_rating)
+                    form_pace = form_row.iloc[0].get('PACE', season_pace)
+                    form_off_rtg = form_row.iloc[0].get('OFF_RATING', season_off_rtg)
+                    form_def_rtg = form_row.iloc[0].get('DEF_RATING', season_def_rtg)
+                else:
+                    form_net_rating, form_pace, form_off_rtg, form_def_rtg = season_net_rating, season_pace, season_off_rtg, season_def_rtg
+
+                # Blend (65% season, 35% form)
+                stats_dict[team_name] = {
+                    "NET_RATING": round(SEASON_WEIGHT * season_net_rating + FORM_WEIGHT * form_net_rating, 1),
+                    "Pace": round(SEASON_WEIGHT * season_pace + FORM_WEIGHT * form_pace, 2),
+                    "OffRtg": round(SEASON_WEIGHT * season_off_rtg + FORM_WEIGHT * form_off_rtg, 1),
+                    "DefRtg": round(SEASON_WEIGHT * season_def_rtg + FORM_WEIGHT * form_def_rtg, 1)
+                }
+
+            # Cache the results
+            with open(STATS_FILE, 'w') as f:
+                json.dump(stats_dict, f, indent=2)
+
+            print(f"{Colors.GREEN}✓ Fetched and cached stats for {len(stats_dict)} teams{Colors.END}")
+            return stats_dict
+
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait_time = retry_delays[attempt]
+                print(f"{Colors.YELLOW}⚠ Attempt {attempt + 1}/{max_retries} failed: {e}{Colors.END}")
+                print(f"{Colors.YELLOW}   Retrying in {wait_time} seconds...{Colors.END}")
+                time.sleep(wait_time)
             else:
-                form_net_rating, form_pace, form_off_rtg, form_def_rtg = season_net_rating, season_pace, season_off_rtg, season_def_rtg
-
-            # Blend (65% season, 35% form)
-            stats_dict[team_name] = {
-                "NET_RATING": round(SEASON_WEIGHT * season_net_rating + FORM_WEIGHT * form_net_rating, 1),
-                "Pace": round(SEASON_WEIGHT * season_pace + FORM_WEIGHT * form_pace, 2),
-                "OffRtg": round(SEASON_WEIGHT * season_off_rtg + FORM_WEIGHT * form_off_rtg, 1),
-                "DefRtg": round(SEASON_WEIGHT * season_def_rtg + FORM_WEIGHT * form_def_rtg, 1)
-            }
-
-        # Cache the results
-        with open(STATS_FILE, 'w') as f:
-            json.dump(stats_dict, f, indent=2)
-
-        print(f"{Colors.GREEN}✓ Fetched and cached stats for {len(stats_dict)} teams{Colors.END}")
-        return stats_dict
-
-    except Exception as e:
-        print(f"{Colors.RED}✗ Error fetching stats: {e}{Colors.END}")
-        traceback.print_exc()
-        return {}
+                print(f"{Colors.RED}✗ Error fetching stats after {max_retries} attempts: {e}{Colors.END}")
+                # Fall back to cached data even if it's older than 6 hours
+                if os.path.exists(STATS_FILE):
+                    print(f"{Colors.YELLOW}⚠ Falling back to cached stats (may be stale){Colors.END}")
+                    try:
+                        with open(STATS_FILE, 'r') as f:
+                            cached_stats = json.load(f)
+                            if cached_stats:
+                                print(f"{Colors.GREEN}✓ Using cached stats for {len(cached_stats)} teams{Colors.END}")
+                                return cached_stats
+                    except Exception as cache_error:
+                        print(f"{Colors.RED}✗ Could not load cached stats: {cache_error}{Colors.END}")
+                traceback.print_exc()
+                return {}
 
 def fetch_home_away_splits():
-    """Fetch and cache home/away split stats."""
+    """Fetch and cache home/away split stats with retry logic."""
 
     # Check cache
     if os.path.exists(SPLITS_CACHE_FILE):
@@ -1776,59 +1959,81 @@ def fetch_home_away_splits():
 
     print(f"{Colors.CYAN}🔄 Fetching home/away splits from stats.nba.com...{Colors.END}")
 
-    try:
-        # Fetch home stats
-        home_stats = leaguedashteamstats.LeagueDashTeamStats(
-            measure_type_detailed_defense='Advanced',
-            season=CURRENT_SEASON,
-            location_nullable='Home',
-            timeout=30
-        )
-        home_df = home_stats.get_data_frames()[0]
-        time.sleep(0.6)
+    # Retry logic with exponential backoff
+    max_retries = 3
+    retry_delays = [2, 5, 10]  # seconds to wait between retries
+    
+    for attempt in range(max_retries):
+        try:
+            # Fetch home stats with increased timeout
+            home_stats = leaguedashteamstats.LeagueDashTeamStats(
+                measure_type_detailed_defense='Advanced',
+                season=CURRENT_SEASON,
+                location_nullable='Home',
+                timeout=60  # Increased from 30 to 60 seconds
+            )
+            home_df = home_stats.get_data_frames()[0]
+            time.sleep(0.6)
 
-        # Fetch road stats
-        road_stats = leaguedashteamstats.LeagueDashTeamStats(
-            measure_type_detailed_defense='Advanced',
-            season=CURRENT_SEASON,
-            location_nullable='Road',
-            timeout=30
-        )
-        road_df = road_stats.get_data_frames()[0]
-        time.sleep(0.6)
+            # Fetch road stats with increased timeout
+            road_stats = leaguedashteamstats.LeagueDashTeamStats(
+                measure_type_detailed_defense='Advanced',
+                season=CURRENT_SEASON,
+                location_nullable='Road',
+                timeout=60  # Increased from 30 to 60 seconds
+            )
+            road_df = road_stats.get_data_frames()[0]
+            time.sleep(0.6)
 
-        splits_dict = {"Home": {}, "Road": {}}
+            splits_dict = {"Home": {}, "Road": {}}
 
-        # Process home stats
-        for _, row in home_df.iterrows():
-            team_name = row.get('TEAM_NAME', 'Unknown')
-            splits_dict["Home"][team_name] = {
-                "NET_RATING": row.get('NET_RATING', 0),
-                "Pace": row.get('PACE', 100),
-                "OffRtg": row.get('OFF_RATING', 110),
-                "DefRtg": row.get('DEF_RATING', 110)
-            }
+            # Process home stats
+            for _, row in home_df.iterrows():
+                team_name = row.get('TEAM_NAME', 'Unknown')
+                splits_dict["Home"][team_name] = {
+                    "NET_RATING": row.get('NET_RATING', 0),
+                    "Pace": row.get('PACE', 100),
+                    "OffRtg": row.get('OFF_RATING', 110),
+                    "DefRtg": row.get('DEF_RATING', 110)
+                }
 
-        # Process road stats
-        for _, row in road_df.iterrows():
-            team_name = row.get('TEAM_NAME', 'Unknown')
-            splits_dict["Road"][team_name] = {
-                "NET_RATING": row.get('NET_RATING', 0),
-                "Pace": row.get('PACE', 100),
-                "OffRtg": row.get('OFF_RATING', 110),
-                "DefRtg": row.get('DEF_RATING', 110)
-            }
+            # Process road stats
+            for _, row in road_df.iterrows():
+                team_name = row.get('TEAM_NAME', 'Unknown')
+                splits_dict["Road"][team_name] = {
+                    "NET_RATING": row.get('NET_RATING', 0),
+                    "Pace": row.get('PACE', 100),
+                    "OffRtg": row.get('OFF_RATING', 110),
+                    "DefRtg": row.get('DEF_RATING', 110)
+                }
 
-        # Cache
-        with open(SPLITS_CACHE_FILE, 'w') as f:
-            json.dump(splits_dict, f, indent=2)
+            # Cache
+            with open(SPLITS_CACHE_FILE, 'w') as f:
+                json.dump(splits_dict, f, indent=2)
 
-        print(f"{Colors.GREEN}✓ Fetched and cached home/away splits{Colors.END}")
-        return splits_dict
+            print(f"{Colors.GREEN}✓ Fetched and cached home/away splits{Colors.END}")
+            return splits_dict
 
-    except Exception as e:
-        print(f"{Colors.YELLOW}⚠ Could not fetch splits: {e}{Colors.END}")
-        return None
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait_time = retry_delays[attempt]
+                print(f"{Colors.YELLOW}⚠ Attempt {attempt + 1}/{max_retries} failed: {e}{Colors.END}")
+                print(f"{Colors.YELLOW}   Retrying in {wait_time} seconds...{Colors.END}")
+                time.sleep(wait_time)
+            else:
+                print(f"{Colors.YELLOW}⚠ Could not fetch splits after {max_retries} attempts: {e}{Colors.END}")
+                # Fall back to cached data even if it's older than 6 hours
+                if os.path.exists(SPLITS_CACHE_FILE):
+                    print(f"{Colors.YELLOW}⚠ Falling back to cached splits (may be stale){Colors.END}")
+                    try:
+                        with open(SPLITS_CACHE_FILE, 'r') as f:
+                            cached_splits = json.load(f)
+                            if cached_splits:
+                                print(f"{Colors.GREEN}✓ Using cached splits{Colors.END}")
+                                return cached_splits
+                    except Exception as cache_error:
+                        print(f"{Colors.YELLOW}⚠ Could not load cached splits: {cache_error}{Colors.END}")
+                return None
 
 # =========================
 # FETCH ODDS
@@ -1853,7 +2058,14 @@ def fetch_odds():
                 dt_naive = dt.replace(tzinfo=None)
 
                 if dt_naive <= cutoff_date:
-                    filtered_games.append(game)
+                    # NEW: Filter out games that have already started
+                    # API returns UTC time string like '2023-10-25T23:00:00Z'
+                    # We compare with current UTC time
+                    game_time_utc = pytz.utc.localize(dt_naive)
+                    current_time_utc = datetime.now(pytz.utc)
+                    
+                    if game_time_utc > current_time_utc:
+                        filtered_games.append(game)
             except:
                 continue
 
@@ -1900,6 +2112,9 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
     # Load historical edge performance for A.I. Rating calculation
     tracking_data = load_picks_tracking()
     historical_edge_performance = get_historical_performance_by_edge(tracking_data)
+    
+    # Track if we need to save updated CLV data
+    clv_updated = False
 
     for game in games:
         try:
@@ -2041,6 +2256,55 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
             ai_rating = calculate_ai_rating(result, team_performance, historical_edge_performance)
             result["ai_rating"] = ai_rating
 
+            # Check for existing picks and update CLV if game hasn't started
+            try:
+                # Check if game has started
+                game_dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+                if game_dt.tzinfo is None:
+                    game_dt = game_dt.replace(tzinfo=pytz.timezone('UTC'))
+                now_utc = datetime.now(pytz.timezone('UTC'))
+                game_has_started = game_dt <= now_utc
+                
+                if not game_has_started:
+                    # Update closing line for existing spread picks
+                    if '✅' in ats_pick and abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
+                        spread_pick_id = f"{home_team}_{away_team}_{commence_time}_spread"
+                        existing_spread_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == spread_pick_id), None)
+                        
+                        if existing_spread_pick:
+                            # Update closing line if it has changed
+                            if existing_spread_pick.get('closing_line') != home_spread:
+                                existing_spread_pick['closing_line'] = home_spread
+                                # Calculate CLV status
+                                existing_spread_pick['clv_status'] = calculate_clv_status(
+                                    existing_spread_pick.get('opening_line', home_spread),
+                                    home_spread,
+                                    'Spread',
+                                    ats_pick
+                                )
+                                clv_updated = True
+                    
+                    # Update closing line for existing total picks
+                    if '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
+                        total_pick_id = f"{home_team}_{away_team}_{commence_time}_total"
+                        existing_total_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == total_pick_id), None)
+                        
+                        if existing_total_pick:
+                            # Update closing line if it has changed
+                            if existing_total_pick.get('closing_line') != market_total:
+                                existing_total_pick['closing_line'] = market_total
+                                # Calculate CLV status
+                                existing_total_pick['clv_status'] = calculate_clv_status(
+                                    existing_total_pick.get('opening_line', market_total),
+                                    market_total,
+                                    'Total',
+                                    total_pick
+                                )
+                                clv_updated = True
+            except Exception as e:
+                # Fail gracefully - don't break the model if CLV update fails
+                print(f"{Colors.YELLOW}⚠ Error updating CLV: {e}{Colors.END}")
+
             results.append(result)
 
             # Log ONLY confident picks with higher thresholds
@@ -2054,6 +2318,11 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
             print(f"{Colors.YELLOW}⚠ Error processing game: {e}{Colors.END}")
             traceback.print_exc()
             continue
+
+    # Save updated CLV data if any picks were updated
+    if clv_updated:
+        save_picks_tracking(tracking_data)
+        print(f"{Colors.GREEN}✓ Updated CLV data for existing picks{Colors.END}")
 
     return results
 
@@ -2123,498 +2392,712 @@ def save_csv(results):
     print(f"{Colors.GREEN}✓ CSV saved: {CSV_FILE}{Colors.END}")
 
 def save_html(results):
-    """Save results to HTML"""
-    timestamp_str = datetime.now().strftime('%Y-%m-%d %I:%M %p %Z')
+    # Load tracking data for display
+    tracking_data = load_picks_tracking()
+    
+    # Get pending picks - ensure pending picks only show upcoming games (not past ones waiting for update)
+    # We can filter out stale pending picks if needed, but usually we want to see everything marked as pending
+    pending_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() == 'pending']
+    
+    # Get recent completed picks
+    completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    
+    # Sort
+    pending_picks.sort(key=lambda x: x.get('game_date', ''))
+    completed_picks.sort(key=lambda x: x.get('game_date', ''), reverse=True)
+    
+    # --- STATISTICS CALCULATION ---
+    
+    def calculate_stats(picks):
+        if not picks:
+            return {
+                'record': '0-0-0', 'win_rate': 0, 'profit': 0, 'roi': 0, 'count': 0,
+                'spreads': {'record': '0-0-0', 'win_rate': 0, 'roi': 0},
+                'totals': {'record': '0-0-0', 'win_rate': 0, 'roi': 0}
+            }
+            
+        wins = sum(1 for p in picks if p.get('status', '').lower() == 'win')
+        losses = sum(1 for p in picks if p.get('status', '').lower() == 'loss')
+        pushes = sum(1 for p in picks if p.get('status', '').lower() == 'push')
+        count = wins + losses + pushes
+        
+        # Profit (cents)
+        profit_cents = sum(p.get('profit_loss', 0) for p in picks)
+        profit_units = profit_cents / 100.0
+        
+        # Win Rate & ROI
+        win_rate = (wins / count * 100) if count > 0 else 0
+        roi = (profit_cents / (count * 100) * 100) if count > 0 else 0
+        
+        # Breakdowns
+        spread_picks = [p for p in picks if 'spread' in p.get('pick_type', '').lower()]
+        total_picks = [p for p in picks if 'total' in p.get('pick_type', '').lower()]
+        
+        # Spread Stats
+        s_wins = sum(1 for p in spread_picks if p.get('status', '').lower() == 'win')
+        s_losses = sum(1 for p in spread_picks if p.get('status', '').lower() == 'loss')
+        s_pushes = sum(1 for p in spread_picks if p.get('status', '').lower() == 'push')
+        s_profit = sum(p.get('profit_loss', 0) for p in spread_picks)
+        s_count = len(spread_picks)
+        s_wr = (s_wins / s_count * 100) if s_count > 0 else 0
+        s_roi = (s_profit / (s_count * 100) * 100) if s_count > 0 else 0
+        
+        # Total Stats
+        t_wins = sum(1 for p in total_picks if p.get('status', '').lower() == 'win')
+        t_losses = sum(1 for p in total_picks if p.get('status', '').lower() == 'loss')
+        t_pushes = sum(1 for p in total_picks if p.get('status', '').lower() == 'push')
+        t_profit = sum(p.get('profit_loss', 0) for p in total_picks)
+        t_count = len(total_picks)
+        t_wr = (t_wins / t_count * 100) if t_count > 0 else 0
+        t_roi = (t_profit / (t_count * 100) * 100) if t_count > 0 else 0
 
-    template_str = '''<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CourtSide Analytics - Today's Picks</title>
-        <style>
-           * { margin: 0; padding: 0; box-sizing: border-box; }
-           body {
-                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-                background: #000000;
-                color: #ffffff;
-                padding: 1.5rem;
-                min-height: 100vh;
+        return {
+            'record': f"{wins}-{losses}" + (f"-{pushes}" if pushes > 0 else ""),
+            'wins': wins, 'losses': losses, 'pushes': pushes,
+            'win_rate': win_rate,
+            'profit': profit_units,
+            'roi': roi,
+            'count': count,
+            'spreads': {
+                'record': f"{s_wins}-{s_losses}" + (f"-{s_pushes}" if s_pushes > 0 else ""),
+                'win_rate': s_wr,
+                'roi': s_roi,
+                'count': s_count
+            },
+            'totals': {
+                'record': f"{t_wins}-{t_losses}" + (f"-{t_pushes}" if t_pushes > 0 else ""),
+                'win_rate': t_wr,
+                'roi': t_roi,
+                'count': t_count
             }
-           .container { max-width: 1200px; margin: 0 auto; }
-           .card {
-                background: #1a1a1a;
-                border-radius: 1.25rem;
-                border: none;
-                padding: 2rem;
-                margin-bottom: 1.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            }
-           .header-card {
-                text-align: center;
-                background: #1a1a1a;
-                border: none;
-            }
-           .game-card {
-                padding: 1.5rem;
-                border-bottom: 1px solid #2a3441;
-            }
-           .game-card:last-child { border-bottom: none; }
-           .matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
-           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem; }
-           .ai-rating {
-                display: inline-block;
-                padding: 0.75rem 1.25rem;
-                border-radius: 0.75rem;
-                font-weight: 700;
-                font-size: 1.125rem;
-                margin-bottom: 1rem;
-                border-left: 4px solid;
-           }
-           .ai-rating-premium {
-                background: rgba(74, 222, 128, 0.2);
-                color: #4ade80;
-                border-color: #4ade80;
-           }
-           .ai-rating-strong {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border-color: #4ade80;
-           }
-           .ai-rating-good {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-           }
-           .ai-rating-standard {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-           }
-           .ai-rating-marginal {
-                background: rgba(251, 191, 36, 0.1);
-                color: #fbbf24;
-                border-color: #fbbf24;
-           }
-           .bet-section {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1.5rem;
-                margin-top: 1rem;
-            }
-           .bet-box {
-                background: #262626;
-                padding: 1.25rem;
-                border-radius: 1rem;
-                border-left: none;
-            }
-           .bet-box-spread {
-                border-left: 4px solid #60a5fa;
-            }
-           .bet-box-total {
-                border-left: 4px solid #f472b6;
-            }
-           .bet-title {
-                font-weight: 600;
-                color: #94a3b8;
-                margin-bottom: 0.5rem;
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.05em;
-            }
-           .bet-title-spread {
-                color: #60a5fa;
-            }
-           .bet-title-total {
-                color: #f472b6;
-            }
-           .odds-line {
-                display: flex;
-                justify-content: space-between;
-                margin: 0.25rem 0;
-                font-size: 0.9375rem;
-                color: #94a3b8;
-            }
-           .odds-line strong {
-                color: #ffffff;
-                font-weight: 600;
-           }
-           .confidence-bar-container {
-                margin: 0.75rem 0;
-           }
-           .confidence-label {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 0.5rem;
-                font-size: 0.875rem;
-                color: #94a3b8;
-           }
-           .confidence-pct {
-                font-weight: 700;
-                color: #4ade80;
-           }
-           .confidence-bar {
-                height: 6px;
-                background: #1a1a1a;
-                border-radius: 999px;
-                overflow: hidden;
-                border: none;
-           }
-           .confidence-fill {
-                height: 100%;
-                background: #4ade80;
-                border-radius: 999px;
-                transition: width 0.3s ease;
-           }
-           .pick {
-                font-weight: 600;
-                padding: 0.875rem 1rem;
-                margin-top: 0.75rem;
-                border-radius: 0.75rem;
-                font-size: 1rem;
-                line-height: 1.5;
-            }
-           .pick small {
-                display: block;
-                font-size: 0.8125rem;
-                font-weight: 400;
-                margin-top: 0.5rem;
-                opacity: 0.85;
-                line-height: 1.4;
-            }
-           .pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
-           .pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
-           .pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
-           .prediction {
-                background: #262626;
-                color: #4ade80;
-                padding: 1rem;
-                border-radius: 1rem;
-                text-align: center;
-                font-weight: 700;
-                font-size: 1.125rem;
-                margin-top: 1rem;
-                border: 1px solid #2a3441;
-            }
-           .badge {
-                display: inline-block;
-                padding: 0.375rem 0.875rem;
-                border-radius: 0.5rem;
-                font-size: 0.8125rem;
-                font-weight: 600;
-                background: rgba(74, 222, 128, 0.2);
-                color: #4ade80;
-                margin: 0.25rem;
-            }
-           .team-indicator {
-                padding: 0.875rem 1rem;
-                margin: 0.75rem 0;
-                border-radius: 0.75rem;
-                font-size: 0.875rem;
-                font-weight: 600;
-                border-left: 3px solid;
-            }
-           .team-indicator-hot {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border-color: #4ade80;
-            }
-           .team-indicator-good {
-                background: rgba(52, 211, 153, 0.15);
-                color: #34d399;
-                border-color: #34d399;
-            }
-           .team-indicator-neutral-plus {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-            }
-           .team-indicator-neutral {
-                background: rgba(148, 163, 184, 0.15);
-                color: #94a3b8;
-                border-color: #94a3b8;
-            }
-           .team-indicator-neutral-minus {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-            }
-           .team-indicator-caution {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-            }
-           .team-indicator-cold {
-                background: rgba(248, 113, 113, 0.15);
-                color: #f87171;
-                border-color: #f87171;
-            }
-           .team-indicator-limited {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-            }
-           /* Mobile Responsiveness */
-           @media (max-width: 1024px) {
-                .container { max-width: 100%; }
-                .card { padding: 1.5rem; }
-           }
+        }
 
-           @media (max-width: 768px) {
-                body { padding: 1rem; }
-                .card { padding: 1.25rem; }
-                .game-card { padding: 1.25rem; }
+    season_stats = calculate_stats(completed_picks)
+    
+    # Calculate Last 10, Last 20, and Last 50 picks performance (standardized tracking)
+    def calculate_recent_performance(picks_list, count):
+        """Calculate performance stats for last N picks (most recent first)"""
+        recent = picks_list[:count] if len(picks_list) >= count else picks_list
+        wins = sum(1 for p in recent if p.get('status', '').lower() == 'win')
+        losses = sum(1 for p in recent if p.get('status', '').lower() == 'loss')
+        pushes = sum(1 for p in recent if p.get('status', '').lower() == 'push')
+        total = wins + losses + pushes
+        
+        # Profit (cents to units)
+        profit_cents = sum(p.get('profit_loss', 0) for p in recent)
+        profit_units = profit_cents / 100.0
+        
+        # Win Rate (excluding pushes) & ROI
+        win_rate = (wins / (wins + losses) * 100) if (wins + losses) > 0 else 0
+        roi = (profit_cents / (total * 100) * 100) if total > 0 else 0
+        
+        return {
+            'record': f"{wins}-{losses}" + (f"-{pushes}" if pushes > 0 else ""),
+            'win_rate': win_rate,
+            'profit': profit_units,
+            'roi': roi
+        }
+    
+    last_10 = calculate_recent_performance(completed_picks, 10)
+    last_20 = calculate_recent_performance(completed_picks, 20)
+    last_50 = calculate_recent_performance(completed_picks, 50)
+    
+    # --- Daily Performance Tracking ---
+    from datetime import datetime, timedelta
+    import pytz
+    
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def get_daily_picks(target_date_str):
+        d_picks = []
+        for p in completed_picks:
+            gd = p.get('game_date', '')
+            if not gd: continue
+            try:
+                dt_utc = datetime.fromisoformat(gd.replace('Z', '+00:00'))
+                dt_et = dt_utc.astimezone(et_tz)
+                if dt_et.strftime('%Y-%m-%d') == target_date_str:
+                    d_picks.append(p)
+            except:
+                continue
+        return d_picks
 
-                .bet-section {
-                    grid-template-columns: 1fr;
-                    gap: 1rem;
-                }
+    today_picks = get_daily_picks(today_str)
+    yesterday_picks = get_daily_picks(yesterday_str)
+    
+    today_stats = calculate_stats(today_picks)
+    yesterday_stats = calculate_stats(yesterday_picks)
+    
+    # Helper for formatting dates in the template
+    def format_date_helper(date_str):
+        try:
+            dt = datetime.fromisoformat(str(date_str).replace('Z', '+00:00'))
+            est_tz = pytz.timezone('US/Eastern')
+            dt_est = dt.astimezone(est_tz)
+            return dt_est.strftime('%m/%d %I:%M %p')
+        except:
+            return date_str
 
-                .matchup { font-size: 1.25rem; }
+    # Create timestamp string for the report
+    et = pytz.timezone('US/Eastern')
+    timestamp_str = datetime.now(et).strftime('%Y-%m-%d %I:%M %p ET')
 
-                .badge {
-                    padding: 0.3125rem 0.625rem;
-                    font-size: 0.6875rem;
-                    margin: 0.1875rem;
-                }
-
-                .pick, .prediction {
-                    font-size: 0.9375rem;
-                    padding: 0.75rem;
-                }
-
-                .pick small {
-                    font-size: 0.75rem;
-                }
-
-                .team-indicator {
-                    padding: 0.75rem 0.875rem;
-                    font-size: 0.8125rem;
-                }
+    # Add CLV status to each result
+    for result in results:
+        result['clv_beat_closing'] = False
+        result['clv_beat_closing_spread'] = False
+        result['clv_beat_closing_total'] = False
+        
+        try:
+            # Check for matching spread pick with positive CLV
+            if '✅' in result.get('ATS Pick', ''):
+                spread_pick_id = f"{result['home_team']}_{result['away_team']}_{result['commence_time']}_spread"
+                spread_pick = next((p for p in tracking_data.get('picks', []) if p.get('pick_id') == spread_pick_id), None)
                 
-                .ai-rating {
-                    padding: 0.625rem 1rem;
-                    font-size: 1rem;
-                }
-
-                .confidence-bar {
-                    height: 5px;
-                }
-
-                .odds-line {
-                    font-size: 0.875rem;
-                }
-
-                .bet-box {
-                    padding: 1rem;
-                }
-
-                /* Inline styles override */
-                h1[style] { font-size: 2rem !important; }
-                p[style*="font-size: 1.5rem"] { font-size: 1.125rem !important; }
-           }
-
-           @media (max-width: 480px) {
-                body { padding: 0.75rem; }
-                .card { padding: 1rem; margin-bottom: 1rem; }
-                .game-card { padding: 1rem; }
-
-                .matchup { font-size: 1.125rem; }
-                .game-time { font-size: 0.8125rem; }
-
-                .bet-section {
-                    gap: 0.75rem;
-                }
-
-                .bet-box {
-                    padding: 0.875rem;
-                }
-
-                .bet-title {
-                    font-size: 0.6875rem;
-                }
-
-                .odds-line {
-                    font-size: 0.8125rem;
-                }
-
-                .confidence-label {
-                    font-size: 0.8125rem;
-                }
-
-                .pick, .prediction {
-                    font-size: 0.875rem;
-                    padding: 0.625rem;
-                }
-
-                .pick small {
-                    font-size: 0.6875rem;
-                }
-
-                .team-indicator {
-                    padding: 0.625rem 0.75rem;
-                    font-size: 0.75rem;
-                }
+                if spread_pick and spread_pick.get('clv_status') == 'positive':
+                    result['clv_beat_closing'] = True
+                    result['clv_beat_closing_spread'] = True
+            
+            # Check for matching total pick with positive CLV
+            if '✅' in result.get('Total Pick', ''):
+                total_pick_id = f"{result['home_team']}_{result['away_team']}_{result['commence_time']}_total"
+                total_pick = next((p for p in tracking_data.get('picks', []) if p.get('pick_id') == total_pick_id), None)
                 
-                .ai-rating {
-                    padding: 0.5rem 0.875rem;
-                    font-size: 0.875rem;
-                }
+                if total_pick and total_pick.get('clv_status') == 'positive':
+                    result['clv_beat_closing'] = True
+                    result['clv_beat_closing_total'] = True
+        except Exception as e:
+            # Fail gracefully - don't break HTML generation if CLV check fails
+            pass
 
-                .badge {
-                    display: block;
-                    margin: 0.25rem auto;
-                    text-align: center;
-                    max-width: 200px;
-                }
+    template_str = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics NBA Picks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1c1c1e;
+            --bg-metric: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --border-color: #333333;
+        }
 
-                /* Inline styles override for small phones */
-                h1[style] { font-size: 1.5rem !important; }
-                p[style*="font-size: 1.5rem"] { font-size: 1rem !important; }
-                p[style*="font-size: 0.875rem"] { font-size: 0.8125rem !important; }
-           }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="card header-card">
-                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
-                <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">Today's Picks</p>
-                <div>
-                    <div class="badge">● REST DAY TRACKING</div>
-                    <div class="badge">● HOME/AWAY SPLITS</div>
-                    <div class="badge">● MOMENTUM (Last {{ last_n }} Games)</div>
-                    <div class="badge">● 5+ SPREAD | 7+ TOTAL EDGES</div>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .date-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Header Section */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .team-logos-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .team-logo {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .away-logo {
+            opacity: 0.85; /* Slightly dimmed to show home team prominence */
+        }
+
+        .home-logo {
+            /* Home team logo is more prominent */
+        }
+
+        .matchup-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .matchup-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .game-time-badge {
+            background-color: var(--bg-metric);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Bet Section */
+        .bet-row {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .bet-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .main-pick {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .main-pick.green { color: var(--accent-green); }
+        .main-pick.red { color: var(--accent-red); }
+
+        .model-context {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .edge-val {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-box {
+            background-color: var(--bg-metric);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .metric-value.good { color: var(--accent-green); }
+
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        /* Tags */
+        .tags-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .tag-red { background: rgba(255, 59, 48, 0.15); color: #ff453a; }
+        .tag-blue { background: rgba(10, 132, 255, 0.15); color: #5ac8fa; }
+        .tag-green { background: rgba(48, 209, 88, 0.15); color: #32d74b; }
+
+        /* Table Styles */
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        thead { background: var(--bg-metric); }
+        th { padding: 0.75rem 1rem; text-align: left; color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.9rem; text-align: left; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: rgba(255, 149, 0, 0.15); color: #ff9f0a; }
+        .badge-win { background: rgba(50, 215, 75, 0.15); color: #32d74b; }
+        .badge-loss { background: rgba(255, 69, 58, 0.15); color: #ff453a; }
+        .badge-push { background: rgba(142, 142, 147, 0.15); color: #8e8e93; }
+
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+        .text-gray { color: var(--text-secondary); }
+        .font-bold { font-weight: 700; }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .metrics-row { flex-direction: column; gap: 0.5rem; }
+            .metric-box { padding: 0.8rem 0.5rem; }
+            .main-pick { font-size: 1.5rem; }
+            .header-left { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .card-header { align-items: flex-start; }
+            
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>CourtSide Analytics NBA Picks</h1>
+                <div class="date-sub">Generated: {{ timestamp }}</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="metric-title">SEASON RECORD</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                    {{ season_stats.record }} ({{ "%.1f"|format(season_stats.win_rate) }}%)
                 </div>
-                <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {{ timestamp }}</p>
+                <div style="font-size: 0.9rem; color: {{ 'var(--accent-green)' if season_stats.profit > 0 else 'var(--accent-red)' }};">
+                     {{ "%+.1f"|format(season_stats.profit) }}u
+                </div>
+            </div>
+        </header>
+
+        {% for r in results %}
+        {% set home_team_key = r.home_team %}
+        {% set away_team_key = r.away_team %}
+        {% set home_abbr = team_abbr_map.get(home_team_key, 'nba')|lower %}
+        {% set away_abbr = team_abbr_map.get(away_team_key, 'nba')|lower %}
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="team-logos-container">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ away_abbr }}.png" 
+                             alt="{{ r.away_team }}" 
+                             class="team-logo away-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ home_abbr }}.png" 
+                             alt="{{ r.home_team }}" 
+                             class="team-logo home-logo"
+                             onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">
+                    </div>
+                    <div class="matchup-info">
+                        <h2>{{ r.Matchup }}</h2>
+                        <div class="matchup-sub">{{ r.home_team }} Home Game</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">{{ r.GameTime }}</div>
             </div>
 
-            <div class="card">
-                {% for game in results %}
-                <div class="game-card">
-                    <div class="matchup">{{ game.Matchup }}</div>
-                    <div class="game-time">🕐 {{ game.GameTime }}</div>
-                    
-                    {% if game.ai_rating %}
-                        {% set ai_rating = game.ai_rating %}
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                {% if '✅' in r['ATS Pick'] %}
+                <div class="main-pick green">{{ r['ATS Pick'].replace('✅ BET: ', '') }}</div>
+                {% else %}
+                <div class="main-pick">{{ r['Market Spread'] }}</div>
+                {% endif %}
+                
+                <div class="model-context">
+                    Model: {{ r['Model Spread'] }}
+                    <span class="edge-val">Edge: {{ "%+.1f"|format(r.spread_edge) }}</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                {% if '✅' in r['Total Pick'] %}
+                    {% if 'OVER' in r['Total Pick'] %}
+                    <div class="main-pick green">OVER {{ r['Market Total'] }}</div>
                     {% else %}
-                        {% set ai_rating = 2.3 %}
+                    <div class="main-pick green">UNDER {{ r['Market Total'] }}</div>
                     {% endif %}
-                    {% if ai_rating >= 4.5 %}
-                        {% set rating_class = 'ai-rating-premium' %}
-                        {% set rating_label = 'PREMIUM PLAY' %}
-                        {% set rating_stars = '⭐⭐⭐' %}
-                    {% elif ai_rating >= 4.0 %}
-                        {% set rating_class = 'ai-rating-strong' %}
-                        {% set rating_label = 'STRONG PLAY' %}
-                        {% set rating_stars = '⭐⭐' %}
-                    {% elif ai_rating >= 3.5 %}
-                        {% set rating_class = 'ai-rating-good' %}
-                        {% set rating_label = 'GOOD PLAY' %}
-                        {% set rating_stars = '⭐' %}
-                    {% elif ai_rating >= 3.0 %}
-                        {% set rating_class = 'ai-rating-standard' %}
-                        {% set rating_label = 'STANDARD PLAY' %}
-                        {% set rating_stars = '' %}
-                    {% else %}
-                        {% set rating_class = 'ai-rating-marginal' %}
-                        {% set rating_label = 'MARGINAL PLAY' %}
-                        {% set rating_stars = '' %}
-                    {% endif %}
-                    
-                    <div class="ai-rating {{ rating_class }}">
-                        🎯 A.I. Rating: {{ "%.1f"|format(ai_rating) }} {{ rating_stars }} ({{ rating_label }})
-                    </div>
+                {% else %}
+                <div class="main-pick">O/U {{ r['Market Total'] }}</div>
+                {% endif %}
+                
+                <div class="model-context">
+                    Model: {{ r['Model Total'] }}
+                    <span class="edge-val">Edge: {{ "%+.1f"|format(r.total_edge|abs) }}</span>
+                </div>
+            </div>
 
-                    {% if game.team_indicator %}
-                    <div class="team-indicator team-indicator-{{ game.team_indicator.label|lower }}">
-                        {{ game.team_indicator.emoji }} <strong>{{ game.team_indicator.label }}</strong>: {{ game.team_indicator.message }}
-                    </div>
-                    {% endif %}
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                <div class="metric-box">
+                    <div class="metric-title">AI SCORE</div>
+                    {% set ai = r.ai_rating if r.ai_rating else 2.5 %}
+                    <div class="metric-value {{ 'good' if ai >= 4.0 else '' }}">{{ "%.1f"|format(ai) }}</div>
+                </div>
+                <!-- Calculate Max EV/Confidence -->
+                {% set conf_spread = (r.spread_edge|abs / 10 * 100)|int %}
+                {% set conf_total = (r.total_edge|abs / 12 * 100)|int %}
+                {% set max_conf = conf_spread if conf_spread > conf_total else conf_total %}
+                {% if max_conf > 99 %}{% set max_conf = 99 %}{% endif %}
+                
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value {{ 'good' if max_conf >= 60 else '' }}">{{ 50 + (max_conf * 0.2)|int }}%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value">{{ r['Predicted Score'] }}</div>
+                </div>
+            </div>
 
-                    <div class="bet-section">
-                        <div class="bet-box bet-box-spread">
-                            <div class="bet-title">📊 SPREAD BET</div>
-                            <div class="odds-line">
-                                <span>Vegas Line:</span>
-                                <strong>{{ game['Market Spread'] }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Prediction:</span>
-                                <strong>{{ game['Model Spread'] }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{{ "%+.1f"|format(game.spread_edge) }} pts</strong>
-                            </div>
-                            {% set spread_confidence = (game.spread_edge|abs / 10.0 * 100)|int %}
-                            {% if spread_confidence > 100 %}{% set spread_confidence = 100 %}{% endif %}
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{{ spread_confidence }}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {{ spread_confidence }}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {{ 'pick-yes' if '✅' in game['ATS Pick'] else 'pick-none' }}">
-                                {{ game['ATS Pick'] }}{% if game['ATS Explanation'] %}<br><small>{{ game['ATS Explanation'] }}</small>{% endif %}
-                            </div>
+            <!-- TAGS -->
+            <div class="tags-row">
+                {% if r.team_indicator %}
+                <div class="tag tag-blue">{{ r.team_indicator.emoji }} {{ r.team_indicator.message }}</div>
+                {% endif %}
+                
+                {% if r.clv_beat_closing %}
+                <div class="tag tag-green">✅ CLV: Beat closing line</div>
+                {% endif %}
+                
+                {% if r['ATS Explanation'] %}
+                <div class="tag tag-green">{{ r['ATS Explanation'][:60] }}...</div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <!-- DAILY PERFORMANCE -->
+        <div class="tracking-section" style="margin-top: 3rem; margin-bottom: 0;">
+            <div class="tracking-header">📅 Daily Performance</div>
+            <div class="metrics-row" style="margin-bottom: 2rem;">
+                <!-- Today -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem; margin-bottom: 0;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">TODAY</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ today_stats.record }}</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;" class="{{ 'good' if today_stats.profit > 0 else ('text-red' if today_stats.profit < 0 else '') }}">
+                            {{ "%+.1f"|format(today_stats.profit) }}u
                         </div>
-
-                        <div class="bet-box bet-box-total">
-                            <div class="bet-title">🎯 OVER/UNDER BET</div>
-                            <div class="odds-line">
-                                <span>Vegas Total:</span>
-                                <strong>{{ game['Market Total']|float|round(1) }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Projects:</span>
-                                <strong>{{ game['Model Total']|float|round(1) }} pts</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{{ "%+.1f"|format(game.total_edge|abs) }} pts</strong>
-                            </div>
-                            {% set total_confidence = (game.total_edge|abs / 12.0 * 100)|int %}
-                            {% if total_confidence > 100 %}{% set total_confidence = 100 %}{% endif %}
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{{ total_confidence }}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {{ total_confidence }}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {{ 'pick-yes' if 'OVER' in game['Total Pick'] and '✅' in game['Total Pick'] else ('pick-no' if 'UNDER' in game['Total Pick'] and '✅' in game['Total Pick'] else 'pick-none') }}">
-                                {{ game['Total Pick'] }}{% if game['Total Explanation'] %}<br><small>{{ game['Total Explanation'] }}</small>{% endif %}
-                            </div>
+                        <div style="font-size: 0.9rem;" class="{{ 'good' if today_stats.roi > 0 else ('text-red' if today_stats.roi < 0 else '') }}">
+                            {{ "%.1f"|format(today_stats.roi) }}% ROI
                         </div>
-                    </div>
-
-                    <div class="prediction">
-                        📈 PREDICTED: {{ game['Predicted Score'] }}
                     </div>
                 </div>
-                {% endfor %}
+
+                <!-- Yesterday -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem; margin-bottom: 0;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">YESTERDAY</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ yesterday_stats.record }}</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;" class="{{ 'good' if yesterday_stats.profit > 0 else ('text-red' if yesterday_stats.profit < 0 else '') }}">
+                            {{ "%+.1f"|format(yesterday_stats.profit) }}u
+                        </div>
+                        <div style="font-size: 0.9rem;" class="{{ 'good' if yesterday_stats.roi > 0 else ('text-red' if yesterday_stats.roi < 0 else '') }}">
+                            {{ "%.1f"|format(yesterday_stats.roi) }}% ROI
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </body>
-    </html>'''
+
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">🔥 Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_10.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_10.win_rate >= 55 else ('text-red' if last_10.win_rate < 50) }}">{{ "%.0f"|format(last_10.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_10.profit > 0 else ('text-red' if last_10.profit < 0) }}">{{ "%+.1f"|format(last_10.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_10.roi > 0 else ('text-red' if last_10.roi < 0) }}">{{ "%+.1f"|format(last_10.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_20.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_20.win_rate >= 55 else ('text-red' if last_20.win_rate < 50) }}">{{ "%.0f"|format(last_20.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_20.profit > 0 else ('text-red' if last_20.profit < 0) }}">{{ "%+.1f"|format(last_20.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_20.roi > 0 else ('text-red' if last_20.roi < 0) }}">{{ "%+.1f"|format(last_20.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_50.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_50.win_rate >= 55 else ('text-red' if last_50.win_rate < 50) }}">{{ "%.0f"|format(last_50.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_50.profit > 0 else ('text-red' if last_50.profit < 0) }}">{{ "%+.1f"|format(last_50.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_50.roi > 0 else ('text-red' if last_50.roi < 0) }}">{{ "%+.1f"|format(last_50.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>"""
+
+    # Define team abbreviation map for logos
+    team_abbr_map = {
+        'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN', 
+        'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE', 
+        'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN', 'Detroit Pistons': 'DET', 
+        'Golden State Warriors': 'GSW', 'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND', 
+        'LA Clippers': 'LAC', 'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 
+        'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL', 
+        'Minnesota Timberwolves': 'MIN', 'New Orleans Pelicans': 'NOP', 'New York Knicks': 'NYK', 
+        'Oklahoma City Thunder': 'OKC', 'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 
+        'Phoenix Suns': 'PHX', 'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC', 
+        'San Antonio Spurs': 'SAS', 'Toronto Raptors': 'TOR', 'Utah Jazz': 'UTA', 'Washington Wizards': 'WAS'
+    }
 
     template = Template(template_str)
     html_output = template.render(
         results=results,
         timestamp=timestamp_str,
-        last_n=LAST_N_GAMES
+        team_abbr_map=team_abbr_map,
+        season_stats=season_stats,
+        today_stats=today_stats,
+        yesterday_stats=yesterday_stats,
+        last_10=last_10,
+        last_20=last_20,
+        last_50=last_50,
+        pending_picks=pending_picks,
+        completed_picks=completed_picks,
+        format_date=format_date_helper
     )
 
     with open(HTML_FILE, 'w', encoding='utf-8') as f:
         f.write(html_output)
 
     print(f"{Colors.GREEN}✓ HTML saved: {HTML_FILE}{Colors.END}")
+
 
 # =========================
 # MAIN EXECUTION
@@ -2636,8 +3119,8 @@ def main():
     print(f"\n{Colors.BOLD}{Colors.CYAN}STEP 2: Fetching Composite Stats (Season + Form){Colors.END}")
     composite_stats = fetch_advanced_stats()
     if not composite_stats:
-        print(f"\n{Colors.RED}⚠️  Could not fetch advanced stats. Exiting.{Colors.END}")
-        return
+        print(f"\n{Colors.YELLOW}⚠️  Could not fetch advanced stats. Continuing with available data...{Colors.END}")
+        # Continue anyway - the model can work with limited data
 
     # STEP 3: Fetch home/away splits
     print(f"\n{Colors.BOLD}{Colors.CYAN}STEP 3: Fetching Home/Away Splits{Colors.END}")

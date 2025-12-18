@@ -1,0 +1,169 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Sun Dec 14 20:52:58 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 7 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 24 games from API[0m
+[92m✓ Found 14 completed games[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[92m✓ Using cached composite stats (less than 6 hours old)[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[92m✓ Using cached home/away splits (less than 6 hours old)[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 10 total games[0m
+[92m✓ Filtered to 9 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 211.5 (Edge: +16.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: UNDER 238.5 (Edge: -12.9)[0m
+[91m❌ Missing stats for Los Angeles Clippers or Memphis Grizzlies[0m
+[91m❌ Missing stats for Los Angeles Clippers or Memphis Grizzlies[0m
+[91m❌ Skipping Memphis Grizzlies @ Los Angeles Clippers - missing model data[0m
+
+[1m[92m✅ Analyzed 8 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mNew Orleans Pelicans @ Chicago Bulls[0m
+  🕐 12/14/25 07:12 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market -1.5 | Model +14.1
+  🎯 Total: Market 211.5 | Model 228.0
+  [92m✅ BET: Chicago Bulls -1.5[0m
+     [96mModel projects Chicago Bulls to win by 14.1, covering -1.5.[0m
+  [92m✅ BET: OVER 211.5[0m
+     [96mModel projects 228 total points, bet the OVER[0m
+  📈 Predicted: New Orleans Pelicans 107, Chicago Bulls 121
+
+[1m[96mGolden State Warriors @ Portland Trail Blazers[0m
+  🕐 12/14/25 09:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  [96mℹ️ LIMITED: Portland Trail Blazers - Limited data: 1-1 (50%) | -0.10u (2 picks)[0m
+  📊 Spread: Market +4.5 | Model -1.4
+  🎯 Total: Market 236.5 | Model 220.6
+  [92m✅ BET: Portland Trail Blazers +4.5[0m
+     [96mModel projects Portland Trail Blazers to lose by only 1.4, covering +4.5.[0m
+  [92m✅ BET: UNDER 236.5[0m
+     [96mModel projects 221 total points, bet the UNDER[0m
+  📈 Predicted: Golden State Warriors 111, Portland Trail Blazers 110
+
+[1m[96mToronto Raptors @ Miami Heat[0m
+  🕐 12/15/25 07:40 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market -5.5 | Model +12.4
+  🎯 Total: Market 237.5 | Model 222.2
+  [92m✅ BET: Miami Heat -5.5[0m
+     [96mModel projects Miami Heat to win by 12.4, covering -5.5.[0m
+  [92m✅ BET: UNDER 237.5[0m
+     [96mModel projects 222 total points, bet the UNDER[0m
+  📈 Predicted: Toronto Raptors 105, Miami Heat 117
+
+[1m[96mLos Angeles Lakers @ Phoenix Suns[0m
+  🕐 12/14/25 08:11 PM EST
+  [92m[1m🎯 A.I. Rating: 4.7 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market -3.5 | Model +6.4
+  🎯 Total: Market 238.5 | Model 225.6
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+2.9)[0m
+  [92m✅ BET: UNDER 238.5[0m
+     [96mModel projects 226 total points, bet the UNDER[0m
+  📈 Predicted: Los Angeles Lakers 110, Phoenix Suns 116
+
+[1m[96mDallas Mavericks @ Utah Jazz[0m
+  🕐 12/15/25 09:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.1 ⭐⭐ (STRONG PLAY)[0m
+  📊 Spread: Market +2.0 | Model +0.4
+  🎯 Total: Market 237.5 | Model 227.4
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+2.4)[0m
+  [92m✅ BET: UNDER 237.5[0m
+     [96mModel projects 227 total points, bet the UNDER[0m
+  📈 Predicted: Dallas Mavericks 114, Utah Jazz 114
+
+[1m[96mDetroit Pistons @ Boston Celtics[0m
+  🕐 12/15/25 07:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.5 ⭐ (GOOD PLAY)[0m
+  [92m🔥 HOT: Boston Celtics - Strong performer: 4-0 (100%) | +4.00u over 4 picks[0m
+  📊 Spread: Market -1.5 | Model +8.9
+  🎯 Total: Market 229.5 | Model 223.1
+  [92m✅ BET: Boston Celtics -1.5[0m
+     [96mModel projects Boston Celtics to win by 8.9, covering -1.5.[0m
+  [92m✅ BET: UNDER 229.5[0m
+     [96mModel projects 223 total points, bet the UNDER[0m
+  📈 Predicted: Detroit Pistons 107, Boston Celtics 116
+
+[1m[96mHouston Rockets @ Denver Nuggets[0m
+  🕐 12/15/25 09:40 PM EST
+  [93m[1m🎯 A.I. Rating: 3.3 ⭐ (STANDARD PLAY)[0m
+  📊 Spread: Market -1.5 | Model +4.9
+  🎯 Total: Market 233.5 | Model 227.2
+  [92m✅ BET: Denver Nuggets -1.5[0m
+     [96mModel projects Denver Nuggets to win by 4.9, covering -1.5.[0m
+  [92m✅ BET: UNDER 233.5[0m
+     [96mModel projects 227 total points, bet the UNDER[0m
+  📈 Predicted: Houston Rockets 111, Denver Nuggets 116
+
+[1m[96mSacramento Kings @ Minnesota Timberwolves[0m
+  🕐 12/14/25 07:11 PM EST
+  [93m[1m🎯 A.I. Rating: 3.0 ⭐ (STANDARD PLAY)[0m
+  [0m➖ NEUTRAL: Minnesota Timberwolves - Average performance: 2-2 (50%) | -0.29u over 4 picks[0m
+  📊 Spread: Market -6.5 | Model +10.8
+  🎯 Total: Market 227.5 | Model 223.1
+  [92m✅ BET: Minnesota Timberwolves -6.5[0m
+     [96mModel projects Minnesota Timberwolves to win by 10.8, covering -6.5.[0m
+  [92m✅ BET: UNDER 227.5[0m
+     [96mModel projects 223 total points, bet the UNDER[0m
+  📈 Predicted: Sacramento Kings 106, Minnesota Timberwolves 117
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 184[0m
+[92mRecord: 99-76-0[0m
+[92mWin Rate: 56.6%[0m
+[92mProfit: +14.56 units[0m
+[92mROI: +7.6%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+✅ Completed: nba_main_model at Sun Dec 14 20:53:00 EST 2025

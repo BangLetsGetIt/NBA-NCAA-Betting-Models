@@ -1,0 +1,36 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Tue Dec 16 18:20:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 2 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 17 games from API[0m
+[92m✓ Found 14 completed games[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+
+[93m⚠️  No new results found[0m
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 3053, in <module>
+    main()
+    ~~~~^^
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 2965, in main
+    generate_tracking_html()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 1552, in generate_tracking_html
+    last_100=last_100,
+             ^^^^^^^^
+NameError: name 'last_100' is not defined. Did you mean: 'last_10'?

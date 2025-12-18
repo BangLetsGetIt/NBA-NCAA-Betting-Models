@@ -178,12 +178,51 @@ def calculate_tracking_stats(data):
     win_rate = (wins / len(completed) * 100) if completed else 0.0
     clv_rate = (clv_wins / clv_total * 100) if clv_total > 0 else 0.0
     
+    # --- Daily Stats ---
+    from datetime import datetime, timedelta
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def calc_daily(target_date):
+        d_picks = []
+        for p in completed:
+            gt = p.get('game_time', '')
+            if not gt: continue
+            try:
+                dt_utc = datetime.fromisoformat(gt.replace('Z', '+00:00'))
+                dt_et = dt_utc.astimezone(et_tz)
+                if dt_et.strftime('%Y-%m-%d') == target_date:
+                    d_picks.append(p)
+            except:
+                continue
+        
+        d_wins = sum(1 for p in d_picks if p.get('status') == 'win')
+        d_losses = sum(1 for p in d_picks if p.get('status') == 'loss')
+        d_profit_cents = 0
+        for p in d_picks:
+            val = p.get('profit_loss')
+            if val is not None: d_profit_cents += val
+            else:
+                odds = p.get('opening_odds') or p.get('odds', -110)
+                if p.get('status') == 'win':
+                    if odds > 0: d_profit_cents += int(odds)
+                    else: d_profit_cents += int((100.0 / abs(odds)) * 100)
+                else: d_profit_cents -= 100
+        
+        d_profit = d_profit_cents / 100.0
+        d_roi = (d_profit / len(d_picks) * 100) if d_picks else 0.0
+        return {'record': f"{d_wins}-{d_losses}", 'profit': d_profit, 'roi': d_roi}
+    
     return {
         'wins': wins, 'losses': len(completed) - wins, 'total': len(completed),
         'win_rate': round(win_rate, 1),
         'profit': round(total_profit_units, 2),
         'roi': round(roi_pct, 1),
-        'clv_rate': round(clv_rate, 1)
+        'clv_rate': round(clv_rate, 1),
+        'today': calc_daily(today_str),
+        'yesterday': calc_daily(yesterday_str)
     }
 
 def calculate_recent_performance(picks_list, count):
@@ -242,7 +281,21 @@ def get_nfl_props_odds():
         # 1. Get Events (Games)
         r = requests.get(url, params=params)
         r.raise_for_status()
-        events = r.json()
+        r.raise_for_status()
+        raw_events = r.json()
+        
+        # Filter past games
+        events = []
+        current_time_utc = datetime.now(pytz.utc)
+        for event in raw_events:
+            try:
+                ct = datetime.fromisoformat(event['commence_time'].replace('Z', '+00:00'))
+                if ct > current_time_utc:
+                    events.append(event)
+            except: 
+                continue
+                
+        print(f"  Found {len(events)} upcoming games (filtered from {len(raw_events)})")
         
         all_props = []
         
@@ -724,6 +777,38 @@ def generate_html_output(plays, stats, tracking_data):
     # Tracking Section
     def get_track_class(val): return 'good' if val > 0 else 'txt-red'
     
+    # --- Daily Performance Tracking HTML ---
+    daily_tracking_html = ""
+    if stats and 'today' in stats:
+        t_stats = stats['today']
+        y_stats = stats.get('yesterday', {'record':'0-0', 'profit':0, 'roi':0})
+        
+        daily_tracking_html = f"""
+        <section style="margin-top: 2rem;">
+            <div class="section-title">📅 Daily Performance</div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <!-- Today -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">TODAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{t_stats['record']}</div>
+                        <div class="{get_track_class(t_stats['profit'])}">{t_stats['profit']:+.1f}u</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{t_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+                <!-- Yesterday -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{y_stats['record']}</div>
+                        <div class="{get_track_class(y_stats['profit'])}">{y_stats['profit']:+.1f}u</div>
+                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{y_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        """
+
     tracking_html = f'''
     <section style="margin-top: 3rem;">
         <div class="section-title">🔥 Recent Form</div>
@@ -759,6 +844,7 @@ def generate_html_output(plays, stats, tracking_data):
     full_html = html_header
     if over_html: full_html += f'<section><div class="section-title">Top OVERS <span class="highlight">Min Edge {MIN_EDGE_OVER}</span></div>{over_html}</section>'
     if under_html: full_html += f'<section><div class="section-title">Top UNDERS <span class="highlight">Min Edge {MIN_EDGE_UNDER}</span></div>{under_html}</section>'
+    full_html += daily_tracking_html
     full_html += tracking_html
     full_html += "</div></body></html>"
     

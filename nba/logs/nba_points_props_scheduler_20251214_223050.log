@@ -1,0 +1,70 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Sun Dec 14 22:30:50 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Game 1/8: Los Angeles Lakers @ Phoenix Suns[0m
+[96m  Game 2/8: Golden State Warriors @ Portland Trail Blazers[0m
+[96m  Game 3/8: Detroit Pistons @ Boston Celtics[0m
+[96m  Game 4/8: Toronto Raptors @ Miami Heat[0m
+[96m  Game 5/8: Dallas Mavericks @ Utah Jazz[0m
+[96m  Game 6/8: Houston Rockets @ Denver Nuggets[0m
+[96m  Game 7/8: Memphis Grizzlies @ Los Angeles Clippers[0m
+[96m  Game 8/8: San Antonio Spurs @ New York Knicks[0m
+[92m✓ Fetched 86 total player props[0m
+
+[96mAnalyzing 86 player props with REAL stats...[0m
+[92m✓ Found 5 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 5 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 132 props (score below 9.5)[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Moses Moody              [0m | [92mOVER 7.5 PTS   [0m | Portland Trail Blazers vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Jimmy Butler             [0m | [92mOVER 15.5 PTS  [0m | Portland Trail Blazers vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Donovan Clingan          [0m | [92mOVER 5.5 PTS   [0m | Portland Trail Blazers vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Norman Powell            [0m | [92mOVER 21.5 PTS  [0m | Miami Heat vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Davion Mitchell          [0m | [92mOVER 7.5 PTS   [0m | Miami Heat vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Stephen Curry            [0m | [91mUNDER 35.5 PTS [0m | Golden State Warriors vs Portland Trail Blazers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Shaedon Sharpe           [0m | [91mUNDER 28.5 PTS [0m | Portland Trail Blazers vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Mark Williams            [0m | [91mUNDER 19.5 PTS [0m | Phoenix Suns vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.8 ⭐⭐
+  [96m 4. Deandre Ayton            [0m | [91mUNDER 19.5 PTS [0m | Phoenix Suns vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.4 ⭐⭐
+  [96m 5. Draymond Green           [0m | [91mUNDER 16.5 PTS [0m | Golden State Warriors vs Portland Trail Blazers | [1mA.I.: 10.00[0m | Rating: 4.3 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Sun Dec 14 22:30:54 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+fatal: cannot lock ref 'HEAD': is at 1cd4d766658893bd6d76aa23c683a31179e1a1a8 but expected 10a006ee5cdf19408947f1ecc1fa0ee55415477e
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 1cd4d766658893bd6d76aa23c683a31179e1a1a8 but expected 10a006ee5cdf19408947f1ecc1fa0ee55415477e)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Sun Dec 14 22:30:55 EST 2025

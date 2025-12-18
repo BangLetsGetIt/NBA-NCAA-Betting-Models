@@ -9,7 +9,7 @@ import requests
 import json
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytz
 from collections import defaultdict
 import statistics
@@ -74,6 +74,47 @@ def save_tracking_data(tracking_data):
     with open(TRACKING_FILE, 'w') as f:
         json.dump(tracking_data, f, indent=2)
 
+def calculate_clv_status_props(opening_odds, latest_odds, bet_type):
+    """
+    Calculate if a props pick beat the closing line (positive CLV).
+    
+    For props, better odds = positive CLV:
+    - Negative odds (e.g., -110): Lower number (less negative) is better
+    - Positive odds (e.g., +150): Higher number is better
+    
+    Args:
+        opening_odds: Odds when pick was first logged
+        latest_odds: Current odds (closing line)
+        bet_type: 'over' or 'under' (not used in calculation but kept for consistency)
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If odds are the same, no CLV advantage
+        if opening_odds == latest_odds:
+            return "neutral"
+        
+        # For negative odds: lower number (less negative) is better
+        # For positive odds: higher number is better
+        if opening_odds < 0 and latest_odds < 0:
+            # Both negative: opening is better if it's less negative (closer to 0)
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds > 0:
+            # Both positive: opening is better if it's higher
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds < 0:
+            # Opening positive, closing negative: opening is better
+            return "positive"
+        else:
+            # Opening negative, closing positive: closing is better
+            return "negative"
+    
+    except Exception as e:
+        # If calculation fails, return neutral (fail gracefully)
+        print(f"{Colors.YELLOW}⚠ Error calculating CLV status: {e}{Colors.END}")
+        return "neutral"
+
 def track_new_picks(over_plays, under_plays):
     """Track new picks in the tracking file"""
     tracking_data = load_tracking_data()
@@ -106,6 +147,12 @@ def track_new_picks(over_plays, under_plays):
             if existing_pick.get('latest_odds') != play.get('odds'):
                 existing_pick['latest_odds'] = play.get('odds')
                 existing_pick['last_updated'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+                # Calculate and store CLV status
+                existing_pick['clv_status'] = calculate_clv_status_props(
+                    existing_pick.get('opening_odds', play.get('odds')),
+                    play.get('odds'),
+                    existing_pick.get('bet_type', bet_type)
+                )
                 updated_count += 1
         else:
             # Add new pick
@@ -124,7 +171,8 @@ def track_new_picks(over_plays, under_plays):
                 'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
                 'status': 'pending',
                 'result': None,
-                'actual_pts': None
+                'actual_pts': None,
+                'clv_status': None  # Will be calculated when odds are updated on subsequent runs
             }
             tracking_data['picks'].append(new_pick)
             new_count += 1
@@ -139,7 +187,7 @@ def track_new_picks(over_plays, under_plays):
         print(f"{Colors.CYAN}No new picks to track{Colors.END}")
 
 def grade_pending_picks():
-    """Grade pending picks by fetching actual stats from NBA API"""
+    """Grade pending picks by matching with batch-fetched NBA stats"""
     tracking_data = load_tracking_data()
     pending_picks = [p for p in tracking_data['picks'] if p.get('status') == 'pending']
     
@@ -148,76 +196,105 @@ def grade_pending_picks():
         return
     
     print(f"\n{Colors.CYAN}{'='*90}{Colors.END}")
-    print(f"{Colors.CYAN}🎯 GRADING PENDING PICKS{Colors.END}")
+    print(f"{Colors.CYAN}🎯 GRADING PENDING PICKS (BATCH MODE){Colors.END}")
     print(f"{Colors.CYAN}{'='*90}{Colors.END}")
     print(f"\n{Colors.YELLOW}📋 Found {len(pending_picks)} pending picks...{Colors.END}\n")
     
     graded_count = 0
     
+    # Group picks by date to minimize API calls
+    picks_by_date = defaultdict(list)
     for pick in pending_picks:
-        # Check if game has passed (add 4 hour buffer for games to complete)
+        game_time_str = pick.get('game_time')
+        if not game_time_str:
+            continue
+            
         try:
-            game_time_str = pick.get('game_time')
-            if not game_time_str:
-                continue
-                
             game_time_utc = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
             current_time = datetime.now(pytz.UTC)
             hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
             
-            if hours_since_game < 4:
-                continue  # Game too recent, wait for stats
-            
-            # Fetch actual points from NBA API
-            player_name = pick.get('player')
-            team_name = pick.get('team')
-            game_date = game_time_utc.strftime('%Y-%m-%d')
-            
-            actual_pts = fetch_player_points_from_nba_api(player_name, team_name, game_date)
-            
-            if actual_pts is None:
-                print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date}{Colors.END}")
-                continue
-            
-            # Grade the pick
-            prop_line = pick.get('prop_line')
-            bet_type = pick.get('bet_type')
-            
-            if bet_type == 'over':
-                is_win = actual_pts > prop_line
-            else:  # under
-                is_win = actual_pts < prop_line
-            
-            # Calculate profit/loss - USE OPENING ODDS (the odds the bet was actually placed at)
-            # opening_odds is the odds when pick was first tracked, odds might be updated later
-            odds = pick.get('opening_odds') or pick.get('odds', -110)
-            if is_win:
-                if odds > 0:
-                    profit_loss = int(odds)  # Store as cents
-                else:
-                    profit_loss = int((100.0 / abs(odds)) * 100)  # Store as cents
-                status = 'win'
-                result = 'WIN'
-                result_color = Colors.GREEN
-            else:
-                profit_loss = -100  # Lost 1 unit (100 cents)
-                status = 'loss'
-                result = 'LOSS'
-                result_color = Colors.RED
-            
-            # Update pick - CRITICAL: Always set profit_loss when grading
-            pick['status'] = status
-            pick['result'] = result
-            pick['actual_pts'] = actual_pts
-            pick['profit_loss'] = profit_loss  # Always set this for accurate ROI
-            pick['updated_at'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
-            
-            print(f"    {result_color}{result}{Colors.END}: {player_name} had {actual_pts} points (line: {prop_line}, bet: {bet_type.upper()}) | Profit: {profit_loss/100.0:.2f} units")
-            graded_count += 1
-            
-        except Exception as e:
-            print(f"{Colors.RED}  Error grading pick {pick.get('player')}: {e}{Colors.END}")
+            # Add 4 hour buffer for completion
+            if hours_since_game >= 4:
+                game_date = game_time_utc.strftime('%Y-%m-%d')
+                picks_by_date[game_date].append(pick)
+        except:
             continue
+            
+    # Process each date
+    for date_str, picks in picks_by_date.items():
+        print(f"\n{Colors.CYAN}Processing {len(picks)} picks for {date_str}...{Colors.END}")
+        
+        # Batch fetch stats for this date
+        daily_stats = fetch_all_player_stats_for_date(date_str)
+        
+        if not daily_stats:
+            print(f"{Colors.YELLOW}  ⚠️  No stats found for {date_str} yet{Colors.END}")
+            continue
+            
+        for pick in picks:
+            try:
+                player_name = pick.get('player')
+                
+                # Try exact match first, then partial match
+                player_key = player_name.lower()
+                actual_pts = daily_stats.get(player_key)
+                
+                if actual_pts is None:
+                    # Try partial match (e.g. "Luka Doncic" vs "Luka Dončić")
+                    found = False
+                    for p_name, pts in daily_stats.items():
+                        # Check strict subset matching
+                        p_parts = p_name.split()
+                        name_parts = player_key.split()
+                        if len(p_parts) >= 2 and len(name_parts) >= 2:
+                            if name_parts[0] == p_parts[0] and name_parts[-1] == p_parts[-1]:
+                                actual_pts = pts
+                                found = True
+                                break
+                    
+                    if not found:
+                        print(f"{Colors.YELLOW}  ⚠️  Could not find stats for {player_name} in batch data{Colors.END}")
+                        continue
+                
+                # Grade the pick
+                prop_line = pick.get('prop_line')
+                bet_type = pick.get('bet_type')
+                
+                if bet_type == 'over':
+                    is_win = actual_pts > prop_line
+                else:  # under
+                    is_win = actual_pts < prop_line
+                
+                # Calculate profit/loss
+                odds = pick.get('opening_odds') or pick.get('odds', -110)
+                if is_win:
+                    if odds > 0:
+                        profit_loss = int(odds)
+                    else:
+                        profit_loss = int((100.0 / abs(odds)) * 100)
+                    status = 'win'
+                    result = 'WIN'
+                    result_color = Colors.GREEN
+                else:
+                    profit_loss = -100
+                    status = 'loss'
+                    result = 'LOSS'
+                    result_color = Colors.RED
+                
+                # Update pick
+                pick['status'] = status
+                pick['result'] = result
+                pick['actual_pts'] = actual_pts
+                pick['profit_loss'] = profit_loss
+                pick['updated_at'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+                
+                print(f"    {result_color}{result}{Colors.END}: {player_name} had {actual_pts} points (line: {prop_line}, bet: {bet_type.upper()}) | Profit: {profit_loss/100.0:.2f} units")
+                graded_count += 1
+                
+            except Exception as e:
+                print(f"{Colors.RED}  Error grading pick {pick.get('player')}: {e}{Colors.END}")
+                continue
     
     if graded_count > 0:
         save_tracking_data(tracking_data)
@@ -360,6 +437,58 @@ def calculate_tracking_stats(tracking_data):
     under_profit_units = under_profit_cents / 100.0
     under_roi = (under_profit_units / under_total * 100) if under_total > 0 else 0.0
     
+    # --- DAILY PERFORMANCE TRACKING ---
+    from datetime import datetime, timedelta
+    import pytz
+    
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def calc_daily_stats(target_date_str):
+        daily_picks = []
+        for p in completed_picks:
+            # game_time is ISO format e.g. 2023-10-25T23:00:00Z
+            # Convert to ET date string
+            gt_str = p.get('game_time', '')
+            if not gt_str: continue
+            try:
+                dt_utc = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                dt_et = dt_utc.astimezone(et_tz)
+                if dt_et.strftime('%Y-%m-%d') == target_date_str:
+                    daily_picks.append(p)
+            except:
+                continue
+                
+        d_wins = sum(1 for p in daily_picks if p.get('status') == 'win')
+        d_losses = sum(1 for p in daily_picks if p.get('status') == 'loss')
+        d_total = d_wins + d_losses
+        d_profit_cents = 0
+        for p in daily_picks:
+            if 'profit_loss' in p:
+                d_profit_cents += p['profit_loss']
+            else:
+                odds = p.get('opening_odds') or p.get('odds', -110)
+                if p.get('status') == 'win':
+                    if odds > 0: d_profit_cents += int(odds)
+                    else: d_profit_cents += int((100.0 / abs(odds)) * 100)
+                else:
+                    d_profit_cents -= 100
+        
+        d_profit = d_profit_cents / 100.0
+        d_roi = (d_profit / d_total * 100) if d_total > 0 else 0.0
+        
+        return {
+            'record': f"{d_wins}-{d_losses}",
+            'profit': d_profit,
+            'roi': d_roi,
+            'count': d_total
+        }
+
+    today_stats = calc_daily_stats(today_str)
+    yesterday_stats = calc_daily_stats(yesterday_str)
+
     return {
         'total': total,
         'wins': wins,
@@ -373,7 +502,9 @@ def calculate_tracking_stats(tracking_data):
         'over_roi': round(over_roi, 2),
         'under_record': f'{under_wins}-{under_losses}',
         'under_win_rate': round(under_win_rate, 2),
-        'under_roi': round(under_roi, 2)
+        'under_roi': round(under_roi, 2),
+        'today': today_stats,
+        'yesterday': yesterday_stats
     }
 
 # =============================================================================
@@ -732,66 +863,51 @@ def calculate_ai_rating_props(play):
     
     return round(ai_rating, 1)
 
-def fetch_player_points_from_nba_api(player_name, team_name, game_date_str):
+def fetch_all_player_stats_for_date(game_date_str):
     """
-    Fetch actual player points from NBA API for a specific game
-    Returns the actual points count or None if not found
+    Fetch all player stats for a specific date in one batch request
+    Returns a dictionary mapping player_name -> points
     """
     try:
-        # Find player ID
-        player_list = players.get_players()
-        player_info = None
+        # 1. Fetch daily player stats using PlayerGameLogs for that specific date
+        # Note: PlayerGameLogs usually takes a season parameter, not a specific date.
+        # Instead, we can use ScoreboardV2 to get game IDs, then BoxScore for each game? 
+        # OR better: use LeagueDashPlayerStats with date_from and date_to set to target date
         
-        # Match player name (handle variations)
-        name_parts = player_name.lower().split()
-        for p in player_list:
-            p_name = p['full_name'].lower()
-            p_parts = p_name.split()
-            if len(name_parts) >= 2 and len(p_parts) >= 2:
-                if name_parts[0] in p_parts[0] and name_parts[-1] in p_parts[-1]:
-                    player_info = p
-                    break
+        target_date = datetime.strptime(game_date_str, '%Y-%m-%d').strftime('%m/%d/%Y')
         
-        if not player_info:
-            print(f"{Colors.YELLOW}    Could not find player {player_name} in NBA API{Colors.END}")
-            return None
+        print(f"{Colors.CYAN}  Fetching batch stats for {target_date}...{Colors.END}")
         
-        player_id = player_info['id']
+        daily_stats = leaguedashplayerstats.LeagueDashPlayerStats(
+            season=CURRENT_SEASON,
+            date_from_nullable=target_date,
+            date_to_nullable=target_date,
+            measure_type_detailed_defense='Base',
+            per_mode_detailed='PerGame',
+            timeout=30
+        )
         
-        # Get player game log
-        game_log = playergamelog.PlayerGameLog(player_id=player_id, season=CURRENT_SEASON, timeout=30)
-        df = game_log.get_data_frames()[0]
+        df = daily_stats.get_data_frames()[0]
         
         if df.empty:
-            return None
-        
-        # Find the game by date
-        # Convert game_date_str to match NBA API date format
-        target_date = datetime.strptime(game_date_str, '%Y-%m-%d').date()
-        
+            return {}
+            
+        # Create mapping of player name -> points
+        stats_map = {}
         for _, row in df.iterrows():
-            game_date_str_nba = row.get('GAME_DATE', '')
-            if not game_date_str_nba:
-                continue
+            name = row.get('PLAYER_NAME', '').lower()
+            pts = row.get('PTS', 0)
+            stats_map[name] = int(pts)
             
-            # Parse NBA date format (usually "DEC 11, 2025" or similar)
-            try:
-                game_date = datetime.strptime(game_date_str_nba, '%b %d, %Y').date()
-            except:
-                try:
-                    game_date = datetime.strptime(game_date_str_nba, '%Y-%m-%d').date()
-                except:
-                    continue
-            
-            if game_date == target_date:
-                points = row.get('PTS', 0)
-                return int(points) if points else 0
-        
-        return None
+        return stats_map
         
     except Exception as e:
-        print(f"{Colors.YELLOW}  Error fetching stats from NBA API for {player_name}: {str(e)}{Colors.END}")
-        return None
+        print(f"{Colors.YELLOW}  Error fetching batch stats for {game_date_str}: {e}{Colors.END}")
+        return {}
+
+def fetch_player_points_from_nba_api(player_name, team_name, game_date_str):
+    """Legacy wrapper - redirected to use batch fetching in grade_pending_picks"""
+    return None # Should not be called directly in new logic
 
 
 def get_player_props():
@@ -811,7 +927,21 @@ def get_player_props():
         print(f"{Colors.CYAN}  Found {len(events)} upcoming games{Colors.END}")
         all_props = []
 
-        for i, event in enumerate(events[:10], 1):
+        # Filter for upcoming games only
+        upcoming_events = []
+        current_time_utc = datetime.now(timezone.utc)
+        
+        for event in events:
+            try:
+                commence_time = datetime.fromisoformat(event['commence_time'].replace('Z', '+00:00'))
+                if commence_time > current_time_utc:
+                    upcoming_events.append(event)
+            except:
+                continue
+                
+        print(f"{Colors.CYAN}  Filtered to {len(upcoming_events)} upcoming games{Colors.END}")
+
+        for i, event in enumerate(upcoming_events[:10], 1):
             event_id = event['id']
             home_team = event['home_team']
             away_team = event['away_team']
@@ -1333,6 +1463,8 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     et = pytz.timezone('US/Eastern')
     now = dt.now(et)
     
+    daily_tracking_html = ""
+    
     # Helper function to format odds for display
     def format_odds(odds_value):
         """Format odds value to American odds format (e.g., -110, +150)"""
@@ -1437,6 +1569,27 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             
             # Generate reasoning tags
             tags = generate_reasoning_tags(play, player_data, opponent_defense)
+            
+            # Check for CLV status if tracking data is available
+            if tracking_data:
+                # Generate pick ID to match with tracking data
+                prop_str = play.get('prop', '')
+                match = re.search(r'(\d+\.?\d*)', prop_str)
+                prop_line = float(match.group(1)) if match else 0
+                bet_type = 'over'  # OVER plays
+                pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
+                
+                # Find matching tracked pick
+                tracked_pick = next((p for p in tracking_data.get('picks', []) 
+                                    if p.get('pick_id') == pick_id), None)
+                
+                # Add CLV tag if positive CLV
+                if tracked_pick and tracked_pick.get('clv_status') == 'positive':
+                    tags.append({
+                        "text": "✅ CLV: Beat closing line",
+                        "color": "green"
+                    })
+            
             tags_html = ""
             for tag in tags:
                 tags_html += f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n'
@@ -1566,6 +1719,27 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             
             # Generate reasoning tags
             tags = generate_reasoning_tags(play, player_data, opponent_defense)
+            
+            # Check for CLV status if tracking data is available
+            if tracking_data:
+                # Generate pick ID to match with tracking data
+                prop_str = play.get('prop', '')
+                match = re.search(r'(\d+\.?\d*)', prop_str)
+                prop_line = float(match.group(1)) if match else 0
+                bet_type = 'under'  # UNDER plays
+                pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
+                
+                # Find matching tracked pick
+                tracked_pick = next((p for p in tracking_data.get('picks', []) 
+                                    if p.get('pick_id') == pick_id), None)
+                
+                # Add CLV tag if positive CLV
+                if tracked_pick and tracked_pick.get('clv_status') == 'positive':
+                    tags.append({
+                        "text": "✅ CLV: Beat closing line",
+                        "color": "green"
+                    })
+            
             tags_html = ""
             for tag in tags:
                 tags_html += f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n'
@@ -1732,7 +1906,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Points Props Model</title>
+    <title>CourtSide Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {{
@@ -1763,7 +1937,8 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }}
-        h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
+        h1 {{ margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }}
+        .subheader {{ font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }}
         .date-sub {{ color: var(--text-secondary); font-size: 14px; margin-top: 5px; }}
 
         /* Summary Stats */
@@ -1914,7 +2089,8 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
 
 <div class="container">
     <header>
-        <h1>NBA Points Props Model</h1>
+        <h1>CourtSide Analytics</h1>
+        <div class="subheader">NBA Points Model</div>
         <div class="date-sub">Profitable Version • Season {CURRENT_SEASON}</div>
     </header>
 
@@ -1923,6 +2099,8 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     {over_html}
 
     {under_html}
+
+    {daily_tracking_html}
 
     {performance_html}
 </div>

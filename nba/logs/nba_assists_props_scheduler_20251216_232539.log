@@ -1,0 +1,88 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Tue Dec 16 23:25:40 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 6 pending picks...[0m
+
+[93m  ⚠ Could not find stats for Ja Morant on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Tyler Herro on 2025-12-16[0m
+[93m  ⚠ Could not find stats for James Harden on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Alperen Sengun on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Kris Dunn on 2025-12-16[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[96m  Fetching season assists stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL assists stats for 499 players[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 2 upcoming games[0m
+[96m  Game 1/2: Cleveland Cavaliers @ Chicago Bulls[0m
+[96m  Game 2/2: Memphis Grizzlies @ Minnesota Timberwolves[0m
+[92m✓ Fetched 22 player assists props (grouped)[0m
+
+[96mAnalyzing 22 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 42 props (score below 9.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Tue Dec 16 23:27:15 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 18e52d1] Update model outputs - 2025-12-16 23:27:15
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 14 insertions(+), 155 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   68f573a..18e52d1  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 16 23:27:16 EST 2025

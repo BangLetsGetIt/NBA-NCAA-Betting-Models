@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics MLB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-main: #121212;
+        --bg-card: #1e1e1e;
+        --bg-card-secondary: #2a2a2a;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --accent-green: #4ade80;
+        --accent-red: #f87171;
+        --accent-blue: #60a5fa;
+        --border-color: #333333;
+    }
+    body {
+        margin: 0; padding: 20px; font-family: 'Inter', sans-serif;
+        background-color: var(--bg-main); color: var(--text-primary);
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+    }
+    h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+    .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+    
+    .summary-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px;
+    }
+    .stat-box {
+        background-color: var(--bg-card); border-radius: 12px; padding: 15px;
+        text-align: center; border: 1px solid var(--border-color);
+    }
+    .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+    .stat-value { font-size: 20px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red { color: var(--accent-red); }
+    
+    .prop-card {
+        background-color: var(--bg-card); border-radius: 16px; overflow: hidden;
+        margin-bottom: 20px; border: 1px solid var(--border-color);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+    .card-header {
+        padding: 15px 20px; background-color: var(--bg-card-secondary);
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .card-body { padding: 20px; }
+    .bet-main-row { margin-bottom: 15px; display: flex; align-items: baseline; gap: 10px; }
+    .bet-type { font-size: 14px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+    .bet-selection { font-size: 22px; font-weight: 800; color: var(--accent-green); }
+    .bet-line { font-size: 20px; color: var(--text-primary); margin-left: 5px; }
+    .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .metric-val { font-size: 16px; font-weight: 700; }
+    
+    .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+    .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+    
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 30px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">MLB Master Model</div>
+            <div class="date-sub">December 17, 2025 • Alpha V2.0</div>
+        </div>
+    </header>
+    
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value txt-red">0.0%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">0.0%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">0-0</div>
+        </div>
+    </div>
+    
+    <div class="picks-section">
+
+        <div class="prop-card">
+            <div class="card-header">
+                <span class="bet-type">First 5 Innings</span>
+                <span>NYY @ LAD</span>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <span class="bet-selection">NYY ML</span>
+                    <span class="bet-line">Moneyline</span>
+                    <span class="bet-odds">+105</span>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">MODEL PROB</span>
+                        <span class="metric-val txt-green">63.0%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EDGE</span>
+                        <span class="metric-val txt-green">+14.2%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">KELLY BET</span>
+                        <span class="metric-val">13.9% Unit</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span>
+                    <span class="tag tag-blue">Model Score: 6.3</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <span class="bet-type">Player Props - Home Run</span>
+                <span>NYY @ LAD</span>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <span class="bet-selection">Aaron Judge</span>
+                    <span class="bet-line">To Hit a HR</span>
+                    <span class="bet-odds">+250</span>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">MODEL PROB</span>
+                        <span class="metric-val txt-green">40.0%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EDGE</span>
+                        <span class="metric-val txt-green">+11.5%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">KELLY BET</span>
+                        <span class="metric-val">0.2% Unit</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    <span class="tag tag-green">High Value</span>
+                    <span class="tag tag-blue">Model Score: 8.0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="prop-card">
+            <div class="card-header">
+                <span class="bet-type">Player Props - H+R+RBI</span>
+                <span>NYY @ LAD</span>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <span class="bet-selection">Shohei Ohtani</span>
+                    <span class="bet-line">Over 1.5</span>
+                    <span class="bet-odds">-115</span>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">MODEL PROB</span>
+                        <span class="metric-val txt-green">54.2%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">EDGE</span>
+                        <span class="metric-val txt-green">+0.8%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">KELLY BET</span>
+                        <span class="metric-val">1.0% Unit</span>
+                    </div>
+                </div>
+                
+                <div class="tags-container">
+                    
+                    <span class="tag tag-blue">Model Score: 5.4</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ & Statcast Data.<br>
+        Always bet responsibly. Past performance doesn't guarantee future results.
+    </footer>
+</div>
+</body>
+</html>

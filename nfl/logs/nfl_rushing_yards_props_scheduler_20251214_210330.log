@@ -1,0 +1,71 @@
+============================================================
+Scheduler run: nfl_rushing_yards_props
+Time: Sun Dec 14 21:03:30 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_rushing_yards_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNFL PASSING YARDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+⚠️ Could not detect nflreadpy columns for player/date; cannot grade.
+Detected player_col=player_display_name, date_col=None
+
+[96mLoading NFL player rushing yards statistics...[0m
+[93m  Cache is old or empty. Running automated stats fetcher...[0m
+[92m✓ Stats fetched successfully[0m
+[92m✓ Loaded 281 players from cache[0m
+
+[96mFetching opponent pass defense factors...[0m
+[93m  Note: NFL defense stats API integration needed.[0m
+
+[96mFetching player rushing yards prop odds...[0m
+[96m  Found 16 upcoming games[0m
+[96m  Game 1/10: Minnesota Vikings @ Dallas Cowboys[0m
+[96m  Game 2/10: Miami Dolphins @ Pittsburgh Steelers[0m
+[96m  Game 3/10: Los Angeles Rams @ Seattle Seahawks[0m
+[96m  Game 4/10: Philadelphia Eagles @ Washington Commanders[0m
+[96m  Game 5/10: Green Bay Packers @ Chicago Bears[0m
+[96m  Game 6/10: Buffalo Bills @ Cleveland Browns[0m
+[96m  Game 7/10: Tampa Bay Buccaneers @ Carolina Panthers[0m
+[96m  Game 8/10: Cincinnati Bengals @ Miami Dolphins[0m
+[96m  Game 9/10: Kansas City Chiefs @ Tennessee Titans[0m
+[96m  Game 10/10: New York Jets @ New Orleans Saints[0m
+[92m✓ Fetched 22 total player props[0m
+
+[96mAnalyzing 22 player props with REAL stats...[0m
+[92m✓ Found 3 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 1 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 36 props (score below 9.5)[0m
+
+[96mAuto-tracking picks with A.I. Score >= 9.7...[0m
+[92m✓ Tracked 4 new picks[0m
+
+[1m[96m================================================================================[0m
+[1m[96mTRACKING SUMMARY[0m
+[1m[96m================================================================================[0m
+Total Picks: 4 | Wins: 0 | Losses: 0 | Pending: 4
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+📊 [96m 1. Jordan Mason             [0m | [92mOVER 26.5 RUSH YDS[0m | Dallas Cowboys vs Minnesota Vikings | [1mA.I.: 10.00[0m | 
+📊 [96m 2. Jaylen Wright            [0m | [92mOVER 18.5 RUSH YDS[0m | Pittsburgh Steelers vs Miami Dolphins | [1mA.I.: 10.00[0m | 
+📊 [96m 3. Aaron Jones              [0m | [92mOVER 31.5 RUSH YDS[0m | Dallas Cowboys vs Minnesota Vikings | [1mA.I.: 9.76[0m | 
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+📊 [96m 1. Malik Davis              [0m | [91mUNDER 48.5 RUSH YDS[0m | Dallas Cowboys vs Minnesota Vikings | [1mA.I.: 10.00[0m | 
+
+[93m📊 = Auto-tracked (A.I. Score >= 9.7)[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nfl/nfl_rushing_yards_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nfl_rushing_yards_props at Sun Dec 14 21:03:44 EST 2025

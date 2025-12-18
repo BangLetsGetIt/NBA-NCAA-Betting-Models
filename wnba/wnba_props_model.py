@@ -58,7 +58,31 @@ def get_stats():
         roi = (profit/(total*1.0)*100) if total > 0 else 0 # 1 unit per bet
         return {'record': f"{wins}-{losses}", 'win_rate': win_rate, 'profit': profit, 'roi': roi}
     
-    return calc(completed), calc(completed, 10), calc(completed, 20)
+    # --- Daily Stats ---
+    from datetime import datetime, timedelta
+    import pytz
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def calc_daily(target_date):
+        d_picks = []
+        for p in completed:
+            gt = p.get('created_at', '') 
+            if not gt: continue
+            try:
+                dt_utc = datetime.fromisoformat(gt)
+                if dt_utc.strftime('%Y-%m-%d') == target_date:
+                     d_picks.append(p)
+            except:
+                continue
+        return calc(d_picks)
+
+    today_stats = calc_daily(today_str)
+    yesterday_stats = calc_daily(yesterday_str)
+
+    return calc(completed), calc(completed, 10), calc(completed, 20), today_stats, yesterday_stats
 
 # ==========================================
 # 2. ANALYSIS
@@ -102,10 +126,10 @@ def analyze_props():
             })
             
     track_props(picks)
-    stats1, stats10, stats20 = get_stats()
-    generate_html(picks, stats1, stats10)
+    stats1, stats10, stats20, today_stats, yesterday_stats = get_stats()
+    generate_html(picks, stats1, stats10, today_stats, yesterday_stats)
 
-def generate_html(picks, season_stats, last10_stats):
+def generate_html(picks, season_stats, last10_stats, today_stats, yesterday_stats):
     timestamp = datetime.now().strftime('%Y-%m-%d %I:%M %p ET')
     
     template_str = """<!DOCTYPE html>
@@ -299,6 +323,23 @@ def generate_html(picks, season_stats, last10_stats):
     </div>
     {% endfor %}
 
+    <!-- DAILY PERFORMANCE -->
+    <div class="prop-card" style="padding:1.5rem; text-align:center;">
+        <div class="metric-lbl" style="font-size:1rem; margin-bottom:1rem;">DAILY PERFORMANCE</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+             <div style="border-right: 1px solid var(--border-color);">
+                <div class="metric-lbl" style="font-size:0.8rem; margin-bottom:5px;">TODAY</div>
+                <div class="metric-val">{{ today.record }}</div>
+                <div class="metric-val {{ 'txt-green' if today.profit > 0 else 'txt-red' }}" style="font-size:1rem;">{{ "%+.1f"|format(today.profit) }}u</div>
+             </div>
+             <div>
+                <div class="metric-lbl" style="font-size:0.8rem; margin-bottom:5px;">YESTERDAY</div>
+                <div class="metric-val">{{ yesterday.record }}</div>
+                <div class="metric-val {{ 'txt-green' if yesterday.profit > 0 else 'txt-red' }}" style="font-size:1rem;">{{ "%+.1f"|format(yesterday.profit) }}u</div>
+             </div>
+        </div>
+    </div>
+
     <!-- TRACKING SECTION -->
     <div class="prop-card" style="padding:1.5rem; text-align:center;">
         <div class="metric-lbl" style="font-size:1rem; margin-bottom:1rem;">RECENT FORM (LAST 10)</div>
@@ -324,7 +365,9 @@ def generate_html(picks, season_stats, last10_stats):
         picks=picks,
         timestamp=timestamp,
         season=season_stats,
-        last10=last10_stats
+        last10=last10_stats,
+        today=today_stats,
+        yesterday=yesterday_stats
     )
     
     with open(OUTPUT_HTML, 'w') as f:

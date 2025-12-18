@@ -1,0 +1,316 @@
+==========================================
+NCAA Model Run: Tue Dec 16 10:30:00 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 83 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-11
+  Newest: 2025-12-17
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 160 completed games[0m
+[96mFound 160 completed games from API[0m
+[93m⚠️  No match found: Jackson State Tigers @ Houston Cougars (2025-12-11)[0m
+[93m⚠️  No match found: Fresno State Bulldogs @ CSU Northridge Matadors (2025-12-11)[0m
+[93m⚠️  No match found: Louisville @ Tennessee (2025-12-17)[0m
+[93m⚠️  No match found: Howard @ Drexel (2025-12-16)[0m
+[93m⚠️  No match found: South Carolina @ Clemson (2025-12-17)[0m
+[93m⚠️  No match found: South Carolina @ Clemson (2025-12-17)[0m
+[93m⚠️  No match found: North Carolina A&T @ UNC Greensboro (2025-12-17)[0m
+[93m⚠️  No match found: Butler @ Connecticut (2025-12-17)[0m
+[93m⚠️  No match found: Butler @ Connecticut (2025-12-17)[0m
+[93m⚠️  No match found: Abilene Christian @ Arizona (2025-12-17)[0m
+[93m⚠️  No match found: Towson @ Kansas (2025-12-17)[0m
+[93m⚠️  No match found: Towson @ Kansas (2025-12-17)[0m
+[93m⚠️  No match found: Howard Bison @ Drexel Dragons (2025-12-16)[0m
+[93m⚠️  No match found: Dartmouth Big Green @ Holy Cross Crusaders (2025-12-16)[0m
+[93m⚠️  No match found: Lipscomb Bisons @ Duke Blue Devils (2025-12-16)[0m
+[93m⚠️  No match found: Lipscomb Bisons @ Duke Blue Devils (2025-12-16)[0m
+[93m⚠️  No match found: Sacred Heart Pioneers @ UMass Lowell River Hawks (2025-12-16)[0m
+[93m⚠️  No match found: South Carolina Upstate Spartans @ South Carolina St Bulldogs (2025-12-16)[0m
+[93m⚠️  No match found: Toledo Rockets @ Michigan St Spartans (2025-12-16)[0m
+[93m⚠️  No match found: Toledo Rockets @ Michigan St Spartans (2025-12-16)[0m
+[93m⚠️  No match found: Chicago St Cougars @ Bowling Green Falcons (2025-12-17)[0m
+[93m⚠️  No match found: Chicago St Cougars @ Bowling Green Falcons (2025-12-17)[0m
+[93m⚠️  No match found: Canisius Golden Griffins @ Rhode Island Rams (2025-12-17)[0m
+[93m⚠️  No match found: Canisius Golden Griffins @ Rhode Island Rams (2025-12-17)[0m
+[93m⚠️  No match found: South Carolina Gamecocks @ Clemson Tigers (2025-12-17)[0m
+[93m⚠️  No match found: Florida St Seminoles @ Dayton Flyers (2025-12-17)[0m
+[93m⚠️  No match found: Florida St Seminoles @ Dayton Flyers (2025-12-17)[0m
+[93m⚠️  No match found: DePaul Blue Demons @ St. John's Red Storm (2025-12-17)[0m
+[93m⚠️  No match found: Rider Broncs @ Delaware Blue Hens (2025-12-17)[0m
+[93m⚠️  No match found: Florida Int'l Golden Panthers @ Miami Hurricanes (2025-12-17)[0m
+[93m⚠️  No match found: Florida Int'l Golden Panthers @ Miami Hurricanes (2025-12-17)[0m
+[93m⚠️  No match found: UT Rio Grande Valley Vaqueros @ Lamar Cardinals (2025-12-17)[0m
+[93m⚠️  No match found: UT Rio Grande Valley Vaqueros @ Lamar Cardinals (2025-12-17)[0m
+[93m⚠️  No match found: Louisville Cardinals @ Tennessee Volunteers (2025-12-17)[0m
+[93m⚠️  No match found: Louisville Cardinals @ Tennessee Volunteers (2025-12-17)[0m
+[93m⚠️  No match found: Miami (OH) RedHawks @ Wright St Raiders (2025-12-17)[0m
+[93m⚠️  No match found: Tarleton State Texans @ Miss Valley St Delta Devils (2025-12-17)[0m
+[93m⚠️  No match found: Tarleton State Texans @ Miss Valley St Delta Devils (2025-12-17)[0m
+[93m⚠️  No match found: UMKC Kangaroos @ Oklahoma Sooners (2025-12-17)[0m
+[93m⚠️  No match found: Marist Red Foxes @ Georgia Tech Yellow Jackets (2025-12-17)[0m
+[93m⚠️  No match found: Marist Red Foxes @ Georgia Tech Yellow Jackets (2025-12-17)[0m
+[93m⚠️  No match found: LIU Sharks @ Mississippi St Bulldogs (2025-12-17)[0m
+[93m⚠️  No match found: LIU Sharks @ Mississippi St Bulldogs (2025-12-17)[0m
+[93m⚠️  No match found: East Tennessee St Buccaneers @ North Carolina Tar Heels (2025-12-17)[0m
+[93m⚠️  No match found: East Tennessee St Buccaneers @ North Carolina Tar Heels (2025-12-17)[0m
+[93m⚠️  No match found: Le Moyne Dolphins @ Texas Longhorns (2025-12-17)[0m
+[93m⚠️  No match found: Le Moyne Dolphins @ Texas Longhorns (2025-12-17)[0m
+[93m⚠️  No match found: Oral Roberts Golden Eagles @ Missouri St Bears (2025-12-17)[0m
+[93m⚠️  No match found: Oral Roberts Golden Eagles @ Missouri St Bears (2025-12-17)[0m
+[93m⚠️  No match found: N Colorado Bears @ Texas Tech Red Raiders (2025-12-17)[0m
+[93m⚠️  No match found: N Colorado Bears @ Texas Tech Red Raiders (2025-12-17)[0m
+[93m⚠️  No match found: Valparaiso Beacons @ Northwestern Wildcats (2025-12-17)[0m
+[93m⚠️  No match found: Butler Bulldogs @ UConn Huskies (2025-12-17)[0m
+[93m⚠️  No match found: Abilene Christian Wildcats @ Arizona Wildcats (2025-12-17)[0m
+[93m⚠️  No match found: Abilene Christian Wildcats @ Arizona Wildcats (2025-12-17)[0m
+[93m⚠️  No match found: Queens University Royals @ Arkansas Razorbacks (2025-12-17)[0m
+[93m⚠️  No match found: Queens University Royals @ Arkansas Razorbacks (2025-12-17)[0m
+[93m⚠️  No match found: Pacific Tigers @ BYU Cougars (2025-12-17)[0m
+[93m⚠️  No match found: Pacific Tigers @ BYU Cougars (2025-12-17)[0m
+[93m⚠️  No match found: Towson Tigers @ Kansas Jayhawks (2025-12-17)[0m
+[93m⚠️  No match found: Southern Jaguars @ Cal Baptist Lancers (2025-12-17)[0m
+[93m⚠️  No match found: Southern Jaguars @ Cal Baptist Lancers (2025-12-17)[0m
+[93m⚠️  No match found: Montana St Bobcats @ Cal Poly Mustangs (2025-12-17)[0m
+[93m⚠️  No match found: Montana St Bobcats @ Cal Poly Mustangs (2025-12-17)[0m
+[93m⚠️  No match found: UC San Diego Tritons @ Loyola Marymount Lions (2025-12-17)[0m
+[93m⚠️  No match found: Howard Bison @ Drexel Dragons (2025-12-16)[0m
+[93m⚠️  No match found: Dartmouth Big Green @ Holy Cross Crusaders (2025-12-16)[0m
+[93m⚠️  No match found: Belmont Bruins @ Evansville Purple Aces (2025-12-17)[0m
+[93m⚠️  No match found: Belmont Bruins @ Evansville Purple Aces (2025-12-17)[0m
+[93m⚠️  No match found: DePaul Blue Demons @ St. John's Red Storm (2025-12-17)[0m
+[93m⚠️  No match found: North Carolina A&T Aggies @ UNC Greensboro Spartans (2025-12-17)[0m
+[93m⚠️  No match found: Valparaiso Beacons @ Northwestern Wildcats (2025-12-17)[0m
+[93m⚠️  No match found: Butler Bulldogs @ UConn Huskies (2025-12-17)[0m
+[93m⚠️  No match found: UC San Diego Tritons @ Loyola Marymount Lions (2025-12-17)[0m
+[93m⚠️  No match found: Rider Broncs @ Delaware Blue Hens (2025-12-17)[0m
+[93m⚠️  No match found: Miami (OH) RedHawks @ Wright St Raiders (2025-12-17)[0m
+[93m⚠️  No match found: North Carolina A&T Aggies @ UNC Greensboro Spartans (2025-12-17)[0m
+[93m⚠️  No match found: UMKC Kangaroos @ Oklahoma Sooners (2025-12-17)[0m
+[93m⚠️  No match found: Towson Tigers @ Kansas Jayhawks (2025-12-17)[0m
+[93m⚠️  No match found: South Carolina Gamecocks @ Clemson Tigers (2025-12-17)[0m
+[93m⚠️  No match found: South Carolina Upstate Spartans @ South Carolina St Bulldogs (2025-12-16)[0m
+[93m⚠️  No match found: Arkansas-Little Rock Trojans @ Morehead St Eagles (2025-12-17)[0m
+[93m⚠️  No match found: Arkansas-Little Rock Trojans @ Morehead St Eagles (2025-12-17)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[96m🔄 Fetching fresh stats from Sports-Reference...[0m
+[92m✓ Stats fetch successful[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 36 games from The Odds API[0m
+[92m✓ 36 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1604[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1605[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: OVER 144.0 (Edge: +5.7)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1605[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1605[0m
+
+[1m[92m✅ Analyzed 7 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Abilene Christian @ Arizona ━━━[0m
+[96m🕐 12/16 09:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+[96mℹ️ LIMITED: Abilene Christian - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -33.5 | Model: +11.7 | Edge: +21.8
+  [92m✅ BET: Abilene Christian +33.5[0m
+  [96mVERY HIGH confidence. Model predicts Abilene Christian covers by +21.8 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.0 | Model: 149.7 | Edge: +5.7
+  [92m✅ BET: OVER 144.0[0m
+  [96mLOW confidence (5.7 edge)[0m
+
+[35m📈 Abilene Christian 69.0, Arizona 80.7[0m
+
+[1m[96m━━━ GAME 2: Towson @ Kansas ━━━[0m
+[96m🕐 12/16 09:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.5 | Model: +3.8 | Edge: +11.7
+  [92m✅ BET: Towson +15.5[0m
+  [96mHIGH confidence. Model predicts Towson covers by +11.7 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 132.5 | Model: 150.6 | Edge: +18.1
+  [92m✅ BET: OVER 132.5[0m
+  [96mVERY HIGH confidence (18.1 edge)[0m
+
+[35m📈 Towson 73.4, Kansas 77.2[0m
+
+[1m[96m━━━ GAME 3: North Carolina A&T @ UNC Greensboro ━━━[0m
+[96m🕐 12/16 07:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+[96mℹ️ LIMITED: North Carolina A&T - Limited data: 0-1 (0%) | -1.00u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.0 | Model: +4.7 | Edge: +2.3
+  [92m✅ BET: North Carolina A&T +7.0[0m
+  [96mLOW confidence. Model predicts North Carolina A&T covers by +2.3 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.0 | Model: 134.4 | Edge: -15.6
+  [92m✅ BET: UNDER 150.0[0m
+  [96mVERY HIGH confidence (15.6 edge)[0m
+
+[35m📈 North Carolina A&T 64.9, UNC Greensboro 69.5[0m
+
+[1m[96m━━━ GAME 4: South Carolina @ Clemson ━━━[0m
+[96m🕐 12/16 07:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+[96mℹ️ LIMITED: South Carolina - Limited data: 1-0 (100%) | +0.91u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +6.0 | Edge: +6.5
+  [92m✅ BET: South Carolina +12.5[0m
+  [96mMEDIUM confidence. Model predicts South Carolina covers by +6.5 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 155.7 | Edge: +15.2
+  [92m✅ BET: OVER 140.5[0m
+  [96mVERY HIGH confidence (15.2 edge)[0m
+
+[35m📈 South Carolina 74.9, Clemson 80.8[0m
+
+[1m[96m━━━ GAME 5: Butler @ Connecticut ━━━[0m
+[96m🕐 12/16 08:30 PM[0m
+[92m[1m🎯 A.I. Rating: 4.2 ⭐⭐ (STRONG PLAY)[0m
+[96mℹ️ LIMITED: Butler - Limited data: 1-0 (100%) | +0.91u (1 pick)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.0 | Model: +3.7 | Edge: +11.3
+  [92m✅ BET: Butler +15.0[0m
+  [96mHIGH confidence. Model predicts Butler covers by +11.3 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 156.9 | Edge: +8.4
+  [92m✅ BET: OVER 148.5[0m
+  [96mMEDIUM confidence (8.4 edge)[0m
+
+[35m📈 Butler 76.6, Connecticut 80.3[0m
+
+[1m[96m━━━ GAME 6: Howard @ Drexel ━━━[0m
+[96m🕐 12/16 11:00 AM[0m
+[93m[1m🎯 A.I. Rating: 3.1 ⭐ (STANDARD PLAY)[0m
+[96mℹ️ LIMITED: Howard - Limited data: 2-0 (100%) | +1.82u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +0.3 | Edge: +5.2
+  [92m✅ BET: Howard +5.5[0m
+  [96mLOW confidence. Model predicts Howard covers by +5.2 points.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 135.5 | Model: 134.5 | Edge: -1.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.0)[0m
+
+[35m📈 Howard 67.1, Drexel 67.4[0m
+
+[1m[96m━━━ GAME 7: Louisville @ Tennessee ━━━[0m
+[96m🕐 12/16 07:00 PM[0m
+[93m[1m🎯 A.I. Rating: 2.7  (MARGINAL PLAY)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +2.0 | Edge: +0.5
+  [91m❌ NO BET[0m
+  [96mEdge (+0.5) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 157.5 | Model: 160.2 | Edge: +2.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.7)[0m
+
+[35m📈 Louisville 80.5, Tennessee 82.4[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1605[0m
+[92mRecord: 806-714-1[0m
+[92mWin Rate: 53.0%[0m
+[92mProfit: +19.46 units[0m
+[92mROI: +1.3%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main e9bc5c5] Update model outputs - 2025-12-16 10:30:05
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 1272 insertions(+), 2598 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   b19776b..e9bc5c5  main -> main
+✅ Successfully pushed to GitHub!

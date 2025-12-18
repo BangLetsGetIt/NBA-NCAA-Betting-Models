@@ -324,6 +324,24 @@ def analyze_game(game):
     league = game.get('league', 'Unknown')
     sport_key = game.get('sport_key', '')
     
+    # Filter out past games (keep games starting within next 7 days)
+    if commence_time:
+        try:
+            from datetime import datetime
+            import pytz
+            dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+            now = datetime.now(pytz.utc)
+            
+            # Check if game already started
+            if dt < now:
+                return None
+                
+            # Check if game is too far in future (> 7 days)
+            if (dt - now).total_seconds() > (7 * 24 * 3600):
+                return None
+        except:
+            pass
+    
     if not home_team or not away_team:
         return None
     
@@ -366,22 +384,28 @@ def analyze_game(game):
             
             if abs(spread_edge) >= SPREAD_THRESHOLD:
                 if spread_edge > 0:
-                    recommendation = f"{home_team} {market_spread:+.2f}"
+                    rec_text = f"{home_team} {market_spread:+.2f}"
                 else:
-                    recommendation = f"{away_team} {-market_spread:+.2f}"
+                    rec_text = f"{away_team} {-market_spread:+.2f}"
                 
+                # Determine recommendation string (LEAN vs BET)
+                if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
+                    recommendation = rec_text
+                else:
+                    recommendation = f"(LEAN) {rec_text}"
+
                 bet_data = {
                     'type': 'SPREAD',
                     'market_line': market_spread,
                     'model_prediction': predicted_spread,
                     'edge': spread_edge,
-                    'recommendation': recommendation if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE else None,
+                    'recommendation': recommendation,
                 }
                 bets.append(bet_data)
                 
                 # Log confident picks
                 if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
-                    log_confident_pick(game, 'SPREAD', spread_edge, predicted_spread, market_spread, recommendation)
+                    log_confident_pick(game, 'SPREAD', spread_edge, predicted_spread, market_spread, rec_text)
     
     # Analyze total (focus on unders)
     if total_market:
@@ -395,7 +419,12 @@ def analyze_game(game):
                 under_edge = abs(total_edge)
                 
                 if under_edge >= TOTAL_THRESHOLD:
-                    recommendation = f"Under {market_total}" if under_edge >= CONFIDENT_TOTAL_EDGE else None
+                    rec_text = f"Under {market_total}"
+                    
+                    if under_edge >= CONFIDENT_TOTAL_EDGE:
+                        recommendation = rec_text
+                    else:
+                        recommendation = f"(LEAN) {rec_text}"
                     
                     bet_data = {
                         'type': 'TOTAL',
@@ -409,9 +438,16 @@ def analyze_game(game):
                     
                     # Log confident picks
                     if under_edge >= CONFIDENT_TOTAL_EDGE:
-                        log_confident_pick(game, 'TOTAL', -under_edge, predicted_total, market_total, recommendation)
+                        log_confident_pick(game, 'TOTAL', -under_edge, predicted_total, market_total, rec_text)
+
             elif total_edge >= TOTAL_THRESHOLD:  # Over value
-                recommendation = f"Over {market_total}" if total_edge >= CONFIDENT_TOTAL_EDGE else None
+                rec_text = f"Over {market_total}"
+                
+                if total_edge >= CONFIDENT_TOTAL_EDGE:
+                    recommendation = rec_text
+                else:
+                    recommendation = f"(LEAN) {rec_text}"
+
                 bet_data = {
                     'type': 'TOTAL',
                     'market_line': market_total,
@@ -424,8 +460,10 @@ def analyze_game(game):
                 
                 # Log confident picks
                 if total_edge >= CONFIDENT_TOTAL_EDGE:
-                    log_confident_pick(game, 'TOTAL', total_edge, predicted_total, market_total, recommendation)
+                    log_confident_pick(game, 'TOTAL', total_edge, predicted_total, market_total, rec_text)
     
+
+
     # Format game time
     game_time_formatted = commence_time[:10] if commence_time else 'TBD'  # Default to date only
     if commence_time:
@@ -460,464 +498,431 @@ def analyze_game(game):
 # ============================================================================
 
 def generate_html(analyses, tracking_data=None):
-    """Generate NBA-style HTML with game cards"""
+    """Generate HTML page with PROPS_HTML_STYLING_GUIDE aesthetic - REVISED COPY"""
     
-    # Filter to games with analysis
-    analyses = [a for a in analyses if a and a.get('bets')]
+    # Show all games - display "No edge" for markets without value
+    # Only filter out None values, keep games even if they don't have bets meeting thresholds
+    analyses = [a for a in analyses if a]
+
+    # Helper for formatting dates in the template
+    def format_date_helper(date_str):
+        try:
+            dt = datetime.fromisoformat(str(date_str).replace('Z', '+00:00'))
+            est_tz = pytz.timezone('US/Eastern')
+            dt_est = dt.astimezone(est_tz)
+            return dt_est.strftime('%m/%d %I:%M %p')
+        except:
+            return date_str
+            
+    # Load tracking data for header stats if not provided
+    if not tracking_data:
+        tracking_data = load_picks_tracking()
     
-    # Helper function to get CLV for a bet
-    def get_bet_clv(analysis, bet):
-        """Get CLV info for a bet from tracking data"""
-        if not tracking_data or not tracking_data.get('picks'):
-            return None
-        
-        home_team = analysis.get('home_team', '')
-        away_team = analysis.get('away_team', '')
-        commence_time = analysis.get('commence_time', '')
-        bet_type = bet.get('type', '')
-        
-        # Find matching pick
-        pick_id = f"{home_team}_{away_team}_{commence_time}_{bet_type.lower()}"
-        pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
-        
-        if not pick:
-            return None
-        
-        opening = pick.get('opening_odds')
-        latest = pick.get('latest_odds')
-        
-        if opening and latest and opening != latest:
-            # Positive CLV: latest < opening (odds got worse = better value)
-            is_positive = latest < opening
-            return {
-                'opening': opening,
-                'latest': latest,
-                'positive': is_positive
-            }
-        
-        return None
+    # Calculate season stats for header
+    season_stats = calculate_tracking_stats(tracking_data)
     
-    # Add CLV info to each bet
-    for analysis in analyses:
-        for bet in analysis.get('bets', []):
-            bet['clv_info'] = get_bet_clv(analysis, bet)
+    # Get completed picks and calculate recent performance
+    completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    # Sort by game_date (most recent first)
+    completed_picks.sort(key=lambda x: x.get('game_date', ''), reverse=True)
     
+    # Calculate Last 10, Last 20, and Last 50 picks performance
+    last_10 = calculate_recent_performance(completed_picks, 10)
+    last_20 = calculate_recent_performance(completed_picks, 20)
+    last_50 = calculate_recent_performance(completed_picks, 50)
+    
+    # CSS/HTML Template matches the new revised aesthetic
     HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Soccer Model - Full Matchup Analysis</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-    background: #0a1628;
-    color: #ffffff;
-    padding: 1.5rem;
-    min-height: 100vh;
-}
-.container { max-width: 1200px; margin: 0 auto; }
-.card {
-    background: #1a2332;
-    border-radius: 1.25rem;
-    border: none;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-.header-card {
-    text-align: center;
-    background: #1a2332;
-    border: none;
-}
-.game-card {
-    padding: 1.5rem;
-    border-bottom: 1px solid #2a3441;
-}
-.game-card:last-child { border-bottom: none; }
-.matchup { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
-.game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem; }
-.ai-rating {
-    display: inline-block;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.75rem;
-    font-weight: 700;
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid;
-}
-.ai-rating-premium {
-    background: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
-    border-color: #4ade80;
-}
-.ai-rating-strong {
-    background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
-    border-color: #4ade80;
-}
-.ai-rating-good {
-    background: rgba(96, 165, 250, 0.15);
-    color: #60a5fa;
-    border-color: #60a5fa;
-}
-.ai-rating-standard {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
-    border-color: #fbbf24;
-}
-.ai-rating-marginal {
-    background: rgba(251, 191, 36, 0.1);
-    color: #fbbf24;
-    border-color: #fbbf24;
-}
-.league-badge {
-    background: rgba(96, 165, 250, 0.2);
-    color: #60a5fa;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: 0.5rem;
-}
-.bet-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-.bet-box {
-    background: #2a3441;
-    padding: 1.25rem;
-    border-radius: 1rem;
-    border-left: none;
-}
-.bet-box-spread {
-    border-left: 4px solid #60a5fa;
-}
-.bet-box-total {
-    border-left: 4px solid #f472b6;
-}
-.bet-title {
-    font-weight: 600;
-    color: #94a3b8;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-}
-.bet-title-spread { color: #60a5fa; }
-.bet-title-total { color: #f472b6; }
-.odds-line {
-    display: flex;
-    justify-content: space-between;
-    margin: 0.25rem 0;
-    font-size: 0.9375rem;
-    color: #94a3b8;
-}
-.odds-line strong {
-    color: #ffffff;
-    font-weight: 600;
-}
-.confidence-bar-container {
-    margin: 0.75rem 0;
-}
-.confidence-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    color: #94a3b8;
-}
-.confidence-pct {
-    font-weight: 700;
-    color: #4ade80;
-}
-.confidence-bar {
-    height: 6px;
-    background: #1a2332;
-    border-radius: 999px;
-    overflow: hidden;
-    border: none;
-}
-.confidence-fill {
-    height: 100%;
-    background: #4ade80;
-    border-radius: 999px;
-    transition: width 0.3s ease;
-}
-.pick {
-    font-weight: 600;
-    padding: 0.875rem 1rem;
-    margin-top: 0.75rem;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-}
-.pick small {
-    display: block;
-    font-size: 0.8125rem;
-    font-weight: 400;
-    margin-top: 0.5rem;
-    opacity: 0.85;
-    line-height: 1.4;
-}
-.pick-yes { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 2px solid #4ade80; }
-.pick-no { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 2px solid #f87171; }
-.pick-none { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 2px solid #475569; }
-.prediction {
-    background: #2a3441;
-    color: #4ade80;
-    padding: 1rem;
-    border-radius: 1rem;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1.125rem;
-    margin-top: 1rem;
-    border: 1px solid #2a3441;
-}
-@media (max-width: 768px) {
-    body { padding: 1rem; }
-    .card { padding: 1.25rem; }
-    .game-card { padding: 1.25rem; }
-    .bet-section { grid-template-columns: 1fr; gap: 1rem; }
-    .matchup { font-size: 1.25rem; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Model - Matchup Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1c1c1e;
+            --bg-metric: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --border-color: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .date-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Header Section */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .matchup-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .matchup-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .game-time-badge {
+            background-color: var(--bg-metric);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Bet Section */
+        .bet-row {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .bet-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .main-pick {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .main-pick.green { color: var(--accent-green); }
+        .main-pick.red { color: var(--accent-red); }
+
+        .model-context {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .edge-val {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-box {
+            background-color: var(--bg-metric);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .metric-value.good { color: var(--accent-green); }
+        
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .text-red { color: var(--accent-red); }
+        
+        /* Tracking Section */
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        /* Stats Table for Tracking */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+            margin-top: 1rem;
+        }
+        .stats-table th, .stats-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .stats-table th {
+            background: #2a2a2a;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .stats-table td {
+            background: #1e1e1e;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .metrics-row { gap: 0.5rem; }
+            .metric-box { padding: 0.8rem 0.5rem; }
+            .main-pick { font-size: 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div class="card header-card">
-<h1>⚽ Soccer Model - Full Matchup Analysis</h1>
-<p style="color: #94a3b8; margin-top: 0.5rem;">Focusing on Unders Value | Generated {{timestamp}}</p>
-</div>
+    <div class="container">
+        <header>
+            <div>
+                <h1>⚽ SOCCER MODEL</h1>
+                <div class="date-sub">{{ timestamp }}</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="metric-title">SEASON RECORD</div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                    {{ season_stats.wins }}-{{ season_stats.losses }}{% if season_stats.pushes > 0 %}-{{ season_stats.pushes }}{% endif %} ({{ "%.1f"|format(season_stats.win_rate) }}%)
+                </div>
+                <div style="font-size: 0.9rem; color: {{ 'var(--accent-green)' if season_stats.total_profit > 0 else 'var(--accent-red)' }};">
+                     {{ "%+.1f"|format(season_stats.total_profit/100) }}u
+                </div>
+            </div>
+        </header>
 
-{% for analysis in analyses %}
-{% set matchup = analysis.away_team + " @ " + analysis.home_team %}
-{% set spread_bet = analysis.bets|selectattr('type', 'equalto', 'SPREAD')|first %}
-{% set total_bet = analysis.bets|selectattr('type', 'equalto', 'TOTAL')|first %}
+        {% if analyses|length == 0 %}
+        <div class="prop-card" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">No upcoming games found matching model criteria.</p>
+        </div>
+        {% endif %}
 
-<div class="card game-card">
-<div class="matchup">{{matchup}}<span class="league-badge">{{analysis.league}}</span></div>
-<div class="game-time">🕐 {{analysis.game_time_formatted}}</div>
+        {% for game in analyses %}
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <span style="font-size: 2rem; margin-right: 0.5rem;">⚽</span>
+                     <div class="matchup-info">
+                        <h2>{{ game.away_team }} @ {{ game.home_team }}</h2>
+                        <div class="matchup-sub">{{ game.league }}</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">{{ game.game_time_formatted }}</div>
+            </div>
 
-{% set ai_rating = analysis.ai_rating if analysis.ai_rating else 2.3 %}
-{% if ai_rating >= 4.5 %}
-    {% set rating_class = 'ai-rating-premium' %}
-    {% set rating_label = 'PREMIUM PLAY' %}
-    {% set rating_stars = '⭐⭐⭐' %}
-{% elif ai_rating >= 4.0 %}
-    {% set rating_class = 'ai-rating-strong' %}
-    {% set rating_label = 'STRONG PLAY' %}
-    {% set rating_stars = '⭐⭐' %}
-{% elif ai_rating >= 3.5 %}
-    {% set rating_class = 'ai-rating-good' %}
-    {% set rating_label = 'GOOD PLAY' %}
-    {% set rating_stars = '⭐' %}
-{% elif ai_rating >= 3.0 %}
-    {% set rating_class = 'ai-rating-standard' %}
-    {% set rating_label = 'STANDARD PLAY' %}
-    {% set rating_stars = '' %}
-{% else %}
-    {% set rating_class = 'ai-rating-marginal' %}
-    {% set rating_label = 'MARGINAL PLAY' %}
-    {% set rating_stars = '' %}
-{% endif %}
-<div class="ai-rating {{rating_class}}">🎯 A.I. Rating: {{"%.1f"|format(ai_rating)}} {{rating_stars}} ({{rating_label}})</div>
+            <div class="card-body">
+                {% set spread_bet = None %}
+                {% set total_bet = None %}
+                {% for bet in game.bets %}
+                    {% if bet.type == 'SPREAD' %}{% set spread_bet = bet %}{% endif %}
+                    {% if bet.type == 'TOTAL' %}{% set total_bet = bet %}{% endif %}
+                {% endfor %}
 
-<div class="bet-section">
-{% if spread_bet %}
-{% set edge = spread_bet.edge %}
-{% set edge_abs = edge|abs %}
-{% set pick_class = 'pick-yes' if edge_abs >= CONFIDENT_SPREAD_EDGE else 'pick-none' %}
-{% set pick_icon = '✅' if edge_abs >= CONFIDENT_SPREAD_EDGE else '⚠️' %}
-{% set explanation = 'SHARP +EV' if edge_abs >= CONFIDENT_SPREAD_EDGE else 'Below sharp threshold' %}
-<div class="bet-box bet-box-spread">
-<div class="bet-title bet-title-spread">📊 SPREAD</div>
-<div class="odds-line">
-<span>Market Line:</span>
-<strong>{{"{:+.2f}".format(spread_bet.market_line)}}</strong>
-</div>
-<div class="odds-line">
-<span>Model Prediction:</span>
-<strong>{{"{:+.2f}".format(spread_bet.model_prediction)}}</strong>
-</div>
-<div class="odds-line">
-<span>Edge:</span>
-<strong>{{"{:+.2f}".format(edge)}} goals</strong>
-</div>
-<div class="confidence-bar-container">
-<div class="confidence-label">
-<span>Confidence</span>
-<span class="confidence-pct">{{(analysis.confidence * 100)|int}}%</span>
-</div>
-<div class="confidence-bar">
-<div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
-</div>
-</div>
-{% if spread_bet.clv_info %}
-{% set clv_color = '#4ade80' if spread_bet.clv_info.positive else '#f87171' %}
-{% set clv_icon = '✅' if spread_bet.clv_info.positive else '⚠️' %}
-<div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
-<span style="color: {{clv_color}}; font-weight: 600;">{{clv_icon}} CLV:</span>
-<strong style="color: {{clv_color}};">Opening: {{spread_bet.clv_info.opening}} → Latest: {{spread_bet.clv_info.latest}}</strong>
-</div>
-{% endif %}
-<div class="pick {{pick_class}}">
-{{pick_icon}} {{spread_bet.recommendation if spread_bet.recommendation else 'NO BET'}}<br>
-<small>{{explanation}}</small>
-</div>
-</div>
-{% else %}
-<div class="bet-box bet-box-spread">
-<div class="bet-title bet-title-spread">📊 SPREAD</div>
-<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
-</div>
-{% endif %}
+                <!-- SPREAD BET BLOCK -->
+                <div class="bet-row">
+                    {% if spread_bet and spread_bet.recommendation %}
+                    <div class="main-pick {{ 'green' if spread_bet.edge|abs >= CONFIDENT_SPREAD_EDGE else '' }}">{{ spread_bet.recommendation }}</div>
+                    {% else %}
+                    <div class="main-pick">SPREAD {{ spread_bet.market_line if spread_bet else '--' }}</div>
+                    {% endif %}
+                    
+                    <div class="model-context">
+                        Model: {% if spread_bet %}{{ "%.2f"|format(spread_bet.model_prediction) }}{% else %}--{% endif %}
+                        <span class="edge-val">Edge: {% if spread_bet %}{{ "%+.2f"|format(spread_bet.edge) }}{% else %}--{% endif %}</span>
+                    </div>
+                </div>
 
-{% if total_bet %}
-{% set edge = total_bet.edge %}
-{% set is_under = total_bet.direction == 'UNDER' %}
-{% set edge_abs = edge|abs %}
-{% set pick_class = 'pick-yes' if edge_abs >= CONFIDENT_TOTAL_EDGE else 'pick-none' %}
-{% set pick_icon = '✅' if edge_abs >= CONFIDENT_TOTAL_EDGE else '⚠️' %}
-{% if edge_abs >= CONFIDENT_TOTAL_EDGE and is_under %}
-{% set explanation = 'SHARP +EV UNDER' %}
-{% elif edge_abs >= TOTAL_THRESHOLD %}
-{% set explanation = 'Below threshold' %}
-{% else %}
-{% set explanation = 'Insufficient edge' %}
-{% endif %}
-<div class="bet-box bet-box-total">
-<div class="bet-title bet-title-total">🎯 TOTAL</div>
-<div class="odds-line">
-<span>Market Total:</span>
-<strong>{{"{:.2f}".format(total_bet.market_line)}}</strong>
-</div>
-<div class="odds-line">
-<span>Model Projects:</span>
-<strong>{{"{:.2f}".format(total_bet.model_prediction)}} goals</strong>
-</div>
-<div class="odds-line">
-<span>Edge:</span>
-<strong>{{"{:.2f}".format(edge_abs)}} goals {% if is_under %}(UNDER){% else %}(OVER){% endif %}</strong>
-</div>
-<div class="confidence-bar-container">
-<div class="confidence-label">
-<span>Confidence</span>
-<span class="confidence-pct">{{(analysis.confidence * 100)|int}}%</span>
-</div>
-<div class="confidence-bar">
-<div class="confidence-fill" style="width: {{(analysis.confidence * 100)|int}}%"></div>
-</div>
-</div>
-{% if total_bet.clv_info %}
-{% set clv_color = '#4ade80' if total_bet.clv_info.positive else '#f87171' %}
-{% set clv_icon = '✅' if total_bet.clv_info.positive else '⚠️' %}
-<div class="odds-line" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #1a2332;">
-<span style="color: {{clv_color}}; font-weight: 600;">{{clv_icon}} CLV:</span>
-<strong style="color: {{clv_color}};">Opening: {{total_bet.clv_info.opening}} → Latest: {{total_bet.clv_info.latest}}</strong>
-</div>
-{% endif %}
-<div class="pick {{pick_class}}">
-{{pick_icon}} {{total_bet.recommendation if total_bet.recommendation else 'NO BET'}}<br>
-<small>{{explanation}}</small>
-</div>
-</div>
-{% else %}
-<div class="bet-box bet-box-total">
-<div class="bet-title bet-title-total">🎯 TOTAL</div>
-<div class="pick pick-none">❌ NO BET<br><small>Insufficient edge</small></div>
-</div>
-{% endif %}
-</div>
+                <!-- TOTAL BET BLOCK -->
+                <div class="bet-row" style="border-bottom: none;">
+                    {% if total_bet and total_bet.recommendation %}
+                        <div class="main-pick {{ 'green' if total_bet.edge|abs >= CONFIDENT_TOTAL_EDGE else '' }}">{{ total_bet.recommendation }}</div>
+                    {% else %}
+                        <div class="main-pick">TOTAL {{ total_bet.market_line if total_bet else '--' }}</div>
+                    {% endif %}
+                    
+                    <div class="model-context">
+                        Model: {% if total_bet %}{{ "%.2f"|format(total_bet.model_prediction) }}{% else %}--{% endif %}
+                        <span class="edge-val">Edge: {% if total_bet %}{{ "%+.2f"|format(total_bet.edge|abs) }}{% else %}--{% endif %}</span>
+                    </div>
+                </div>
 
-<div class="prediction">
-Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_score}} {{analysis.away_team}}
-</div>
-</div>
-{% endfor %}
+                <!-- METRICS ROW -->
+                <div class="metrics-row">
+                    <div class="metric-box">
+                        <div class="metric-title">PREDICTED SCORE</div>
+                        <div class="metric-value">{{ "%.1f"|format(game.away_score) }} - {{ "%.1f"|format(game.home_score) }}</div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-title">CONFIDENCE</div>
+                        {% set conf_score = game.confidence * 100 %}
+                        <div class="metric-value {{ 'good' if conf_score >= 80 else '' }}">{{ "%.0f"|format(conf_score) }}%</div>
+                    </div>
+                </div>
 
-{% if tracking_summary and tracking_summary.total > 0 %}
-<div class="card">
-<h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center;">📊 Model Performance Tracking</h2>
+            </div>
+        </div>
+        {% endfor %}
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Picks</div>
-<div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{{tracking_summary.total}}</div>
-</div>
-<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Win Rate</div>
-{% set completed = tracking_summary.wins + tracking_summary.losses %}
-{% if completed > 0 %}
-{% if tracking_summary.win_rate >= 55 %}
-{% set win_rate_color = '#4ade80' %}
-{% elif tracking_summary.win_rate >= 52 %}
-{% set win_rate_color = '#fbbf24' %}
-{% else %}
-{% set win_rate_color = '#f87171' %}
-{% endif %}
-{% else %}
-{% set win_rate_color = '#94a3b8' %}
-{% endif %}
-<div style="font-size: 2rem; font-weight: 700; color: {{win_rate_color}};">{{tracking_summary.win_rate_str}}%{% if completed == 0 %} (N/A){% endif %}</div>
-</div>
-<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Record</div>
-<div style="font-size: 2rem; font-weight: 700; color: #ffffff;">{{tracking_summary.wins}}-{{tracking_summary.losses}}{% if tracking_summary.pushes > 0 %}-{{tracking_summary.pushes}}{% endif %}</div>
-<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">({{tracking_summary.wins + tracking_summary.losses + tracking_summary.pushes}} completed)</div>
-</div>
-<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">P/L (Units)</div>
-{% set completed = tracking_summary.wins + tracking_summary.losses %}
-{% if completed > 0 %}
-{% set roi_color = '#4ade80' if tracking_summary.roi >= 0 else '#f87171' %}
-{% else %}
-{% set roi_color = '#94a3b8' %}
-{% endif %}
-<div style="font-size: 2rem; font-weight: 700; color: {{roi_color}};">{{tracking_summary.roi_str}}u</div>
-<div style="font-size: 0.75rem; color: {{roi_color}}; margin-top: 0.25rem;">{{tracking_summary.roi_pct_str}}% ROI{% if completed == 0 %} (Pending){% endif %}</div>
-</div>
-<div style="background: #2a3441; padding: 1.25rem; border-radius: 0.75rem; text-align: center;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Pending</div>
-<div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">{{tracking_summary.pending}}</div>
-</div>
-</div>
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">🔥 Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_10.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_10.win_rate >= 55 else ('text-red' if last_10.win_rate < 50) }}">{{ "%.0f"|format(last_10.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_10.profit > 0 else ('text-red' if last_10.profit < 0) }}">{{ "%+.1f"|format(last_10.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_10.roi > 0 else ('text-red' if last_10.roi < 0) }}">{{ "%+.1f"|format(last_10.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #2a3441;">
-<div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Closing Line Value</div>
-<div style="font-size: 1.5rem; font-weight: 700; color: {% if tracking_summary.clv_rate >= 50 %}#4ade80{% else %}#f87171{% endif %};">{{tracking_summary.clv_rate_str}}%</div>
-<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{tracking_summary.clv_count}} positive CLV</div>
-</div>
-<div style="background: #2a3441; padding: 1rem; border-radius: 0.75rem;">
-<div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Sharp Thresholds</div>
-<div style="font-size: 1rem; font-weight: 600; color: #ffffff;">Spread: {{CONFIDENT_SPREAD_EDGE}}+ goals</div>
-<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Total: {{CONFIDENT_TOTAL_EDGE}}+ goals</div>
-</div>
-</div>
-</div>
-{% endif %}
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_20.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_20.win_rate >= 55 else ('text-red' if last_20.win_rate < 50) }}">{{ "%.0f"|format(last_20.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_20.profit > 0 else ('text-red' if last_20.profit < 0) }}">{{ "%+.1f"|format(last_20.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_20.roi > 0 else ('text-red' if last_20.roi < 0) }}">{{ "%+.1f"|format(last_20.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
 
-</div>
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_50.record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_50.win_rate >= 55 else ('text-red' if last_50.win_rate < 50) }}">{{ "%.0f"|format(last_50.win_rate) }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_50.profit > 0 else ('text-red' if last_50.profit < 0) }}">{{ "%+.1f"|format(last_50.profit) }}u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_50.roi > 0 else ('text-red' if last_50.roi < 0) }}">{{ "%+.1f"|format(last_50.roi) }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-</html>
-"""
-    
-    # Calculate tracking summary
-    tracking_summary = None
-    if tracking_data and tracking_data.get('picks'):
-        summary = calculate_tracking_summary(tracking_data['picks'])
-        # Format numeric values as strings for template
-        tracking_summary = {
-            **summary,
-            'win_rate_str': f"{summary['win_rate']:.1f}",
-            'roi_str': f"{summary['roi']:+.2f}",
-            'roi_pct_str': f"{summary['roi_pct']:+.1f}",
-            'clv_rate_str': f"{summary['clv_rate']:.1f}"
-        }
+</html>"""
     
     template = Template(HTML_TEMPLATE)
     html = template.render(
@@ -926,7 +931,10 @@ Predicted: {{analysis.home_team}} {{analysis.home_score}} - {{analysis.away_scor
         CONFIDENT_SPREAD_EDGE=CONFIDENT_SPREAD_EDGE,
         CONFIDENT_TOTAL_EDGE=CONFIDENT_TOTAL_EDGE,
         TOTAL_THRESHOLD=TOTAL_THRESHOLD,
-        tracking_summary=tracking_summary,
+        last_10=last_10,
+        last_20=last_20,
+        last_50=last_50,
+        season_stats=season_stats # Pass season stats to template
     )
     
     with open(OUTPUT_HTML, 'w', encoding='utf-8') as f:
@@ -1300,6 +1308,617 @@ def update_pick_results():
     return updated_count
 
 # ============================================================================
+# TRACKING DASHBOARD FUNCTIONS
+# ============================================================================
+
+UNIT_SIZE = 100  # Standard bet size for ROI calculations
+
+def load_picks_tracking():
+    """Load tracking data from JSON file (compatible with dashboard)"""
+    return load_tracking()
+
+def calculate_tracking_stats(tracking_data):
+    """Calculate detailed tracking statistics for dashboard"""
+    picks = tracking_data.get('picks', [])
+    
+    total_picks = len(picks)
+    wins = sum(1 for p in picks if p.get('status', '').lower() == 'win')
+    losses = sum(1 for p in picks if p.get('status', '').lower() == 'loss')
+    pushes = sum(1 for p in picks if p.get('status', '').lower() == 'push')
+    pending = sum(1 for p in picks if p.get('status', '').lower() == 'pending')
+    
+    # Calculate profit (profit_loss is in cents)
+    total_profit_cents = sum(p.get('profit_loss', 0) for p in picks if p.get('profit_loss') is not None)
+    total_profit_units = total_profit_cents / 100.0
+    
+    # Calculate win rate (excluding pushes and pending)
+    decided_picks = wins + losses
+    win_rate = (wins / decided_picks * 100) if decided_picks > 0 else 0.0
+    
+    # Calculate ROI
+    total_risked = (wins + losses) * UNIT_SIZE
+    roi = (total_profit_cents / total_risked * 100) if total_risked > 0 else 0.0
+    
+    # Breakdown by type
+    spread_picks = [p for p in picks if p.get('pick_type', '').upper() == 'SPREAD']
+    total_picks_list = [p for p in picks if p.get('pick_type', '').upper() == 'TOTAL']
+    
+    spread_wins = sum(1 for p in spread_picks if p.get('status', '').lower() == 'win')
+    spread_losses = sum(1 for p in spread_picks if p.get('status', '').lower() == 'loss')
+    spread_pushes = sum(1 for p in spread_picks if p.get('status', '').lower() == 'push')
+    
+    total_wins = sum(1 for p in total_picks_list if p.get('status', '').lower() == 'win')
+    total_losses = sum(1 for p in total_picks_list if p.get('status', '').lower() == 'loss')
+    total_pushes = sum(1 for p in total_picks_list if p.get('status', '').lower() == 'push')
+    
+    return {
+        "total_picks": total_picks,
+        "wins": wins,
+        "losses": losses,
+        "pushes": pushes,
+        "pending": pending,
+        "win_rate": win_rate,
+        "total_profit": total_profit_units * 100,  # Return in cents for consistency
+        "roi": roi,
+        "spread_wins": spread_wins,
+        "spread_losses": spread_losses,
+        "spread_pushes": spread_pushes,
+        "total_wins": total_wins,
+        "total_losses": total_losses,
+        "total_pushes": total_pushes,
+    }
+
+def calculate_recent_performance(picks_list, count):
+    """Calculate performance stats for last N picks (most recent first)"""
+    # Filter to only completed picks
+    completed = [p for p in picks_list if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    
+    # Take first N picks (most recent first since list is sorted reverse=True)
+    recent = completed[:count] if len(completed) >= count else completed
+    
+    wins = sum(1 for p in recent if p.get('status', '').lower() == 'win')
+    losses = sum(1 for p in recent if p.get('status', '').lower() == 'loss')
+    pushes = sum(1 for p in recent if p.get('status', '').lower() == 'push')
+    total = wins + losses + pushes
+    
+    # Calculate profit (profit_loss is in cents, convert to units)
+    profit_cents = sum(p.get('profit_loss', 0) for p in recent if p.get('profit_loss') is not None)
+    profit_units = profit_cents / 100.0
+    
+    win_rate = (wins / total * 100) if total > 0 else 0
+    roi = (profit_cents / (total * UNIT_SIZE) * 100) if total > 0 else 0
+    
+    # Breakdown by type (soccer uses uppercase SPREAD/TOTAL)
+    spread_picks = [p for p in recent if p.get('pick_type', '').upper() == 'SPREAD']
+    total_picks = [p for p in recent if p.get('pick_type', '').upper() == 'TOTAL']
+    
+    spread_wins = sum(1 for p in spread_picks if p.get('status', '').lower() == 'win')
+    spread_losses = sum(1 for p in spread_picks if p.get('status', '').lower() == 'loss')
+    spread_pushes = sum(1 for p in spread_picks if p.get('status', '').lower() == 'push')
+    spread_total = spread_wins + spread_losses + spread_pushes
+    spread_profit_cents = sum(p.get('profit_loss', 0) for p in spread_picks if p.get('profit_loss') is not None)
+    spread_profit_units = spread_profit_cents / 100.0
+    spread_wr = (spread_wins / spread_total * 100) if spread_total > 0 else 0
+    spread_roi = (spread_profit_cents / (spread_total * UNIT_SIZE) * 100) if spread_total > 0 else 0
+    
+    total_wins = sum(1 for p in total_picks if p.get('status', '').lower() == 'win')
+    total_losses = sum(1 for p in total_picks if p.get('status', '').lower() == 'loss')
+    total_pushes = sum(1 for p in total_picks if p.get('status', '').lower() == 'push')
+    total_total = total_wins + total_losses + total_pushes
+    total_profit_cents = sum(p.get('profit_loss', 0) for p in total_picks if p.get('profit_loss') is not None)
+    total_profit_units = total_profit_cents / 100.0
+    total_wr = (total_wins / total_total * 100) if total_total > 0 else 0
+    total_roi = (total_profit_cents / (total_total * UNIT_SIZE) * 100) if total_total > 0 else 0
+    
+    return {
+        'record': f"{wins}-{losses}" + (f"-{pushes}" if pushes > 0 else ""),
+        'win_rate': win_rate,
+        'profit': profit_units,
+        'roi': roi,
+        'count': len(recent),
+        'spreads': {
+            'record': f"{spread_wins}-{spread_losses}" + (f"-{spread_pushes}" if spread_pushes > 0 else ""),
+            'win_rate': spread_wr,
+            'profit': spread_profit_units,
+            'roi': spread_roi,
+            'count': len(spread_picks)
+        },
+        'totals': {
+            'record': f"{total_wins}-{total_losses}" + (f"-{total_pushes}" if total_pushes > 0 else ""),
+            'win_rate': total_wr,
+            'profit': total_profit_units,
+            'roi': total_roi,
+            'count': len(total_picks)
+        }
+    }
+
+def generate_tracking_html():
+    """Generate HTML dashboard for tracking picks with last 100/50/20 breakdown"""
+    tracking_data = load_picks_tracking()
+    stats = calculate_tracking_stats(tracking_data)
+    
+    # Get current time in Eastern timezone
+    est_tz = pytz.timezone('America/New_York')
+    current_time = datetime.now(est_tz)
+    
+    # Separate pending and completed picks
+    pending_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() == 'pending']
+    completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss', 'push']]
+    
+    # Sort by game_time (soccer uses game_time instead of game_date)
+    pending_picks.sort(key=lambda x: x.get('game_time', ''))
+    completed_picks.sort(key=lambda x: x.get('game_time', ''), reverse=True)
+    
+    # Calculate Last 100, Last 50, and Last 20 picks performance
+    last_100 = calculate_recent_performance(completed_picks, 100)
+    last_50 = calculate_recent_performance(completed_picks, 50)
+    last_20 = calculate_recent_performance(completed_picks, 20)
+    
+    def format_game_date(date_str):
+        """Format game_time to display date"""
+        try:
+            dt = datetime.fromisoformat(str(date_str).replace('Z', '+00:00'))
+            dt_est = dt.astimezone(est_tz)
+            return dt_est.strftime('%m/%d %I:%M %p')
+        except:
+            return str(date_str) if date_str else 'N/A'
+    
+    timestamp = datetime.now(est_tz).strftime('%Y-%m-%d %I:%M %p')
+    
+    template_str = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Model - Performance Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: #1a1a1a;
+            border-radius: 1.25rem;
+            border: none;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .stat-card {
+            background: #262626;
+            border: none;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #262626; }
+        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
+        tr:hover { background: #262626; }
+        .text-center { text-align: center; }
+        .text-green-400 { color: #10b981; }
+        .text-blue-400 { color: #3b82f6; }
+        .text-pink-400 { color: #f472b6; }
+        .text-red-400 { color: #ef4444; }
+        .text-yellow-400 { color: #f59e0b; }
+        .text-gray-400 { color: #94a3b8; }
+        .text-orange-400 { color: #fb923c; }
+        .font-bold { font-weight: 700; }
+        .text-sm { font-size: 0.875rem; }
+        .badge {
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .badge-win { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-loss { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container { max-width: 100%; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card { padding: 1.25rem; }
+
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.125rem; }
+            h4 { font-size: 1rem; }
+
+            div[style*="grid-template-columns: repeat(5, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            div[style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            .stat-label {
+                font-size: 0.6875rem;
+            }
+
+            table {
+                font-size: 0.8125rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+            th, td {
+                padding: 0.625rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; }
+
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.125rem; }
+            h3 { font-size: 1rem; }
+
+            .stat-value { font-size: 1.5rem; }
+            .stat-label { font-size: 0.625rem; }
+            .stat-card { padding: 0.75rem; }
+
+            div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center">⚽ Soccer Model Performance</h1>
+            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
+
+            <!-- Overall Performance Card -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Overall Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.total_picks }}</div>
+                        <div class="stat-label">Total Bets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.wins }}-{{ stats.losses }}{% if stats.pushes > 0 %}-{{ stats.pushes }}{% endif %}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format(stats.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if stats.total_profit > 0 %}text-green-400{% elif stats.total_profit < 0 %}text-red-400{% endif %}">
+                            {% if stats.total_profit > 0 %}+{% endif %}{{ "%.2f"|format(stats.total_profit/100) }}u
+                        </div>
+                        <div class="stat-label">Total Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if stats.roi > 0 %}text-green-400{% elif stats.roi < 0 %}text-red-400{% endif %}">
+                            {% if stats.roi > 0 %}+{% endif %}{{ "%.1f"|format(stats.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ stats.spread_wins + stats.spread_losses + stats.spread_pushes }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ stats.spread_wins }}-{{ stats.spread_losses }}{% if stats.spread_pushes > 0 %}-{{ stats.spread_pushes }}{% endif %}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">{% if stats.spread_wins + stats.spread_losses > 0 %}{{ "%.1f"|format(stats.spread_wins / (stats.spread_wins + stats.spread_losses) * 100) }}%{% else %}0.0%{% endif %}</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="{% if (stats.spread_wins * 91 - stats.spread_losses * 100) > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.2f"|format((stats.spread_wins * 91 - stats.spread_losses * 100) / 100) }}u</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ stats.total_wins + stats.total_losses + stats.total_pushes }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ stats.total_wins }}-{{ stats.total_losses }}{% if stats.total_pushes > 0 %}-{{ stats.total_pushes }}{% endif %}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">{% if stats.total_wins + stats.total_losses > 0 %}{{ "%.1f"|format(stats.total_wins / (stats.total_wins + stats.total_losses) * 100) }}%{% else %}0.0%{% endif %}</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="{% if (stats.total_wins * 91 - stats.total_losses * 100) > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.2f"|format((stats.total_wins * 91 - stats.total_losses * 100) / 100) }}u</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if pending_picks %}
+        <div class="card">
+            <h2>🎯 Today's Projections</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game Date</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Pick</th>
+                            <th>Line</th>
+                            <th>Edge</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pick in pending_picks %}
+                        <tr>
+                            <td class="text-sm font-bold">{{ format_game_date(pick.game_time) }}</td>
+                            <td class="font-bold">{{ pick.matchup }}</td>
+                            <td>{{ pick.pick_type }}</td>
+                            <td class="text-yellow-400">{{ pick.pick }}</td>
+                            <td>{{ pick.market_line }}</td>
+                            <td>{{ "%+.2f"|format(pick.edge) }}</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
+                <p class="subtitle">Verified Track Record</p>
+            </div>
+
+            <!-- Last 100 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Last 100 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ last_100.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format(last_100.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_100.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_100.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_100.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_100.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_100.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_100.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">{{ last_100.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">{{ "%.1f"|format(last_100.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_100.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_100.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_100.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">{{ last_100.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">{{ "%.1f"|format(last_100.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_100.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_100.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_100.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 50 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    🚀 Last 50 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %}">{{ last_50.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %}">{{ "%.1f"|format(last_50.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_50.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_50.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_50.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_50.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_50.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="{% if last_50.spreads.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.1f"|format(last_50.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_50.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_50.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_50.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_50.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="{% if last_50.totals.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.1f"|format(last_50.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_50.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_50.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_50.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 20 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    ⚡ Last 20 Picks (Hot Streak)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %}">{{ last_20.record }}</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %}">{{ "%.1f"|format(last_20.win_rate) }}%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.profit > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_20.profit > 0 %}+{% endif %}{{ "%.2f"|format(last_20.profit) }}u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value {% if last_20.roi > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if last_20.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.roi) }}%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads ({{ last_20.spreads.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.spreads.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="{% if last_20.spreads.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.1f"|format(last_20.spreads.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_20.spreads.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_20.spreads.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.spreads.roi) }}%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals ({{ last_20.totals.count }} picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ last_20.totals.record }}</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="{% if last_20.totals.win_rate >= 50 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ "%.1f"|format(last_20.totals.win_rate) }}%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="{% if last_20.totals.roi > 0 %}text-green-400{% else %}text-red-400{% endif %} font-bold">{% if last_20.totals.roi > 0 %}+{% endif %}{{ "%.1f"|format(last_20.totals.roi) }}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
+            <p>Last updated: {{ timestamp }}</p>
+        </div>
+    </div>
+</body>
+</html>'''
+    
+    template = Template(template_str)
+    html_output = template.render(
+        stats=stats,
+        pending_picks=pending_picks,
+        last_100=last_100,
+        last_50=last_50,
+        last_20=last_20,
+        timestamp=timestamp,
+        format_game_date=format_game_date,
+    )
+    
+    tracking_html_file = SCRIPT_DIR / "soccer_tracking_dashboard.html"
+    with open(tracking_html_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
+    
+    print(f"\n✅ Tracking dashboard saved: {tracking_html_file}")
+
+# ============================================================================
 # MAIN
 # ============================================================================
 
@@ -1326,6 +1945,12 @@ def main():
     tracking_data = load_tracking()
     historical_edge_performance = get_historical_performance_by_edge(tracking_data)
     
+    # Debug counters
+    games_past = 0
+    games_too_future = 0
+    games_no_markets = 0
+    games_no_edges = 0
+    
     for game in games:
         analysis = analyze_game(game)
         if analysis:
@@ -1333,12 +1958,54 @@ def main():
             ai_rating = calculate_ai_rating(analysis, historical_edge_performance)
             analysis['ai_rating'] = ai_rating
             
+            # Track games without bets for debugging
+            if not analysis.get('bets'):
+                games_no_edges += 1
+            
             analyses.append(analysis)
+        else:
+            # Track why games were filtered (rough estimate)
+            # Note: analyze_game returns None for various reasons, so this is approximate
+            if game.get('commence_time'):
+                try:
+                    from datetime import datetime as dt_class
+                    import pytz
+                    dt = dt_class.fromisoformat(game.get('commence_time', '').replace('Z', '+00:00'))
+                    now = dt_class.now(pytz.utc)
+                    if dt < now:
+                        games_past += 1
+                    elif (dt - now).total_seconds() > (7 * 24 * 3600):
+                        games_too_future += 1
+                    else:
+                        games_no_markets += 1
+                except:
+                    games_no_markets += 1
+            else:
+                games_no_markets += 1
     
-    # Count recommendations
+    # Debug output
+    if games_past > 0 or games_too_future > 0 or games_no_markets > 0:
+        print(f"\n🔍 Filtering Breakdown:")
+        if games_past > 0:
+            print(f"   Games already started: {games_past}")
+        if games_too_future > 0:
+            print(f"   Games > 7 days away: {games_too_future}")
+        if games_no_markets > 0:
+            print(f"   Games without markets: {games_no_markets}")
+        if games_no_edges > 0:
+            print(f"   Games without edges meeting thresholds: {games_no_edges}")
+    
+    # Count recommendations and add debug output
+    games_with_bets = sum(1 for a in analyses if a.get('bets'))
+    total_bets = sum(len(a.get('bets', [])) for a in analyses)
     sharp_bets = sum(1 for a in analyses for b in a.get('bets', []) if b.get('recommendation'))
-    print(f"\n✅ Analyzed {len(analyses)} games")
-    print(f"🔥 {sharp_bets} sharp +EV recommendations")
+    
+    print(f"\n📊 Analysis Summary:")
+    print(f"   Games fetched: {len(games)}")
+    print(f"   Games analyzed: {len(analyses)}")
+    print(f"   Games with bets: {games_with_bets}")
+    print(f"   Total bets found: {total_bets}")
+    print(f"   Sharp +EV recommendations: {sharp_bets}")
     
     # Generate HTML
     tracking_data = load_tracking()

@@ -96,7 +96,33 @@ def get_stats():
     last_20 = calc_metrics(completed[:20])
     last_50 = calc_metrics(completed[:50])
     
-    return season, last_10, last_20, last_50
+    # --- Daily Stats ---
+    from datetime import datetime, timedelta
+    import pytz
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def calc_daily(target_date):
+        d_picks = []
+        for p in completed:
+            gt = p.get('created_at', '') # WNBA model uses created_at
+            if not gt: continue
+            try:
+                dt_utc = datetime.fromisoformat(gt) # created_at is likely ISO
+                # Assuming created_at is local or UTC, handle conversion if needed
+                # For this model, let's assume it's roughly comparable
+                if dt_utc.strftime('%Y-%m-%d') == target_date:
+                     d_picks.append(p)
+            except:
+                continue
+        return calc_metrics(d_picks)
+
+    today_stats = calc_daily(today_str)
+    yesterday_stats = calc_daily(yesterday_str)
+    
+    return season, last_10, last_20, last_50, today_stats, yesterday_stats
 
 # ==========================================
 # 2. MODEL ENGINE
@@ -113,7 +139,7 @@ def predict_game(home, away):
 # 3. HTML GENERATION
 # ==========================================
 def generate_html(results, stats_tuple):
-    season_stats, last_10, last_20, last_50 = stats_tuple
+    season_stats, last_10, last_20, last_50, today_stats, yesterday_stats = stats_tuple
     timestamp = datetime.now().strftime('%Y-%m-%d %I:%M %p ET')
     
     # Map WNBA team names to abbreviations for Logos
@@ -417,6 +443,27 @@ def generate_html(results, stats_tuple):
         </div>
         {% endfor %}
         
+        <!-- DAILY PERFORMANCE -->
+        <div class="prop-card" style="padding: 1.5rem; text-align:center;">
+             <div class="metric-title" style="margin-bottom:1rem; font-size:1rem;">DAILY PERFORMANCE</div>
+             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="border-right: 1px solid var(--border-color);">
+                    <div class="metric-label" style="font-size:0.8rem; margin-bottom:5px;">TODAY</div>
+                    <div class="metric-value">{{ today_stats.record }}</div>
+                    <div class="metric-value {{ 'good' if today_stats.profit > 0 else 'text-red' }}" style="font-size:1rem;">
+                         {{ "%+.1f"|format(today_stats.profit) }}u
+                    </div>
+                </div>
+                <div>
+                    <div class="metric-label" style="font-size:0.8rem; margin-bottom:5px;">YESTERDAY</div>
+                    <div class="metric-value">{{ yesterday_stats.record }}</div>
+                    <div class="metric-value {{ 'good' if yesterday_stats.profit > 0 else 'text-red' }}" style="font-size:1rem;">
+                         {{ "%+.1f"|format(yesterday_stats.profit) }}u
+                    </div>
+                </div>
+             </div>
+        </div>
+
         <!-- TRACKING FOOTER -->
         <div class="prop-card" style="padding: 1.5rem; text-align:center;">
              <div class="metric-title" style="margin-bottom:1rem; font-size:1rem;">RECENT PERFORMANCE (LAST 10)</div>
@@ -445,7 +492,9 @@ def generate_html(results, stats_tuple):
         timestamp=timestamp,
         team_abbr_map=team_abbr_map,
         season_stats=season_stats,
-        last_10=last_10
+        last_10=last_10,
+        today_stats=today_stats,
+        yesterday_stats=yesterday_stats
     )
     
     with open(OUTPUT_HTML, 'w') as f:

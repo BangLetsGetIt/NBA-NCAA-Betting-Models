@@ -1,0 +1,223 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Tue Dec 16 03:15:00 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 8.0+ pts (sharp +EV)
+Total Threshold: 4.0+ pts (display)
+Total Logging: 12.0+ pts (sharp +EV)
+============================================================
+
+📡 Fetching current NFL odds...
+✅ Found 16 games
+
+🔍 Analyzing games...
+
+Los Angeles Rams @ Seattle Seahawks
+  🕐 2025-12-19T01:15:00Z
+  📊 Ratings: Seattle Seahawks (54.3) vs Los Angeles Rams (55.6)
+  📈 Predicted: Seattle Seahawks 22.9, Los Angeles Rams 21.6
+  ⚠️  No bets (insufficient edge)
+
+Philadelphia Eagles @ Washington Commanders
+  🕐 2025-12-20T22:00:00Z
+  📊 Ratings: Washington Commanders (63.5) vs Philadelphia Eagles (69.8)
+  📈 Predicted: Washington Commanders 23.4, Philadelphia Eagles 26.9
+  SPREAD (⭐ LOGGED):
+    Market: Washington Commanders +6.5
+    Model:  -3.5
+    Edge:   -10.0
+    ✅ SHARP BET: Philadelphia Eagles -6.5
+  TOTAL (👁️ Display Only):
+    Market: 44.5
+    Model:  50.3
+    Edge:   +5.8
+    ⚠️  Below logging threshold: OVER 44.5
+
+Green Bay Packers @ Chicago Bears
+  🕐 2025-12-21T01:20:00Z
+  📊 Ratings: Chicago Bears (49.2) vs Green Bay Packers (64.5)
+  📈 Predicted: Chicago Bears 16.4, Green Bay Packers 28.9
+  SPREAD (⭐ LOGGED):
+    Market: Chicago Bears +1.5
+    Model:  -12.5
+    Edge:   -14.0
+    ✅ SHARP BET: Green Bay Packers -1.5
+
+Buffalo Bills @ Cleveland Browns
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: Cleveland Browns (45.1) vs Buffalo Bills (72.5)
+  📈 Predicted: Cleveland Browns 10.9, Buffalo Bills 35.5
+  SPREAD (⭐ LOGGED):
+    Market: Cleveland Browns +10.0
+    Model:  -24.6
+    Edge:   -34.6
+    ✅ SHARP BET: Buffalo Bills -10.0
+
+Tampa Bay Buccaneers @ Carolina Panthers
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: Carolina Panthers (36.2) vs Tampa Bay Buccaneers (59.4)
+  📈 Predicted: Carolina Panthers 10.2, Tampa Bay Buccaneers 30.6
+  SPREAD (⭐ LOGGED):
+    Market: Carolina Panthers +3.0
+    Model:  -20.4
+    Edge:   -23.4
+    ✅ SHARP BET: Tampa Bay Buccaneers -3.0
+  TOTAL (👁️ Display Only):
+    Market: 45.5
+    Model:  40.9
+    Edge:   -4.6
+    ⚠️  Below logging threshold: UNDER 45.5
+
+Cincinnati Bengals @ Miami Dolphins
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: Miami Dolphins (58.3) vs Cincinnati Bengals (56.9)
+  📈 Predicted: Miami Dolphins 24.9, Cincinnati Bengals 20.8
+  TOTAL (👁️ Display Only):
+    Market: 50.5
+    Model:  45.8
+    Edge:   -4.7
+    ⚠️  Below logging threshold: UNDER 50.5
+
+Los Angeles Chargers @ Dallas Cowboys
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: Dallas Cowboys (62.1) vs Los Angeles Chargers (64.0)
+  📈 Predicted: Dallas Cowboys 24.7, Los Angeles Chargers 23.8
+  ⚠️  No bets (insufficient edge)
+
+Kansas City Chiefs @ Tennessee Titans
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: Tennessee Titans (31.0) vs Kansas City Chiefs (68.5)
+  📈 Predicted: Tennessee Titans 3.6, Kansas City Chiefs 38.3
+  SPREAD (⭐ LOGGED):
+    Market: Tennessee Titans +3.5
+    Model:  -34.8
+    Edge:   -38.3
+    ✅ SHARP BET: Kansas City Chiefs -3.5
+  TOTAL (👁️ Display Only):
+    Market: 37.5
+    Model:  41.9
+    Edge:   +4.4
+    ⚠️  Below logging threshold: OVER 37.5
+
+Minnesota Vikings @ New York Giants
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: New York Giants (41.9) vs Minnesota Vikings (68.9)
+  📈 Predicted: New York Giants 10.2, Minnesota Vikings 34.5
+  SPREAD (⭐ LOGGED):
+    Market: New York Giants +3.0
+    Model:  -24.3
+    Edge:   -27.3
+    ✅ SHARP BET: Minnesota Vikings -3.0
+
+New York Jets @ New Orleans Saints
+  🕐 2025-12-21T18:00:00Z
+  📊 Ratings: New Orleans Saints (47.8) vs New York Jets (48.7)
+  📈 Predicted: New Orleans Saints 21.4, New York Jets 19.7
+  SPREAD (👁️ Display Only):
+    Market: New Orleans Saints -4.5
+    Model:  1.8
+    Edge:   +6.3
+    ⚠️  Below logging threshold: New Orleans Saints -4.5
+
+Atlanta Falcons @ Arizona Cardinals
+  🕐 2025-12-21T21:05:00Z
+  📊 Ratings: Arizona Cardinals (59.1) vs Atlanta Falcons (61.7)
+  📈 Predicted: Arizona Cardinals 23.7, Atlanta Falcons 23.6
+  ⚠️  No bets (insufficient edge)
+
+Jacksonville Jaguars @ Denver Broncos
+  🕐 2025-12-21T21:05:00Z
+  📊 Ratings: Denver Broncos (60.2) vs Jacksonville Jaguars (52.4)
+  📈 Predicted: Denver Broncos 27.9, Jacksonville Jaguars 17.2
+  SPREAD (⭐ LOGGED):
+    Market: Denver Broncos -3.0
+    Model:  10.6
+    Edge:   +13.6
+    ✅ SHARP BET: Denver Broncos -3.0
+
+Pittsburgh Steelers @ Detroit Lions
+  🕐 2025-12-21T21:25:00Z
+  📊 Ratings: Detroit Lions (75.3) vs Pittsburgh Steelers (64.8)
+  📈 Predicted: Detroit Lions 32.6, Pittsburgh Steelers 19.4
+  SPREAD (⭐ LOGGED):
+    Market: Detroit Lions -7.0
+    Model:  13.2
+    Edge:   +20.2
+    ✅ SHARP BET: Detroit Lions -7.0
+
+Las Vegas Raiders @ Houston Texans
+  🕐 2025-12-21T21:25:00Z
+  📊 Ratings: Houston Texans (66.7) vs Las Vegas Raiders (38.6)
+  📈 Predicted: Houston Texans 37.1, Las Vegas Raiders 6.2
+  SPREAD (⭐ LOGGED):
+    Market: Houston Texans -14.5
+    Model:  30.9
+    Edge:   +45.4
+    ✅ SHARP BET: Houston Texans -14.5
+  TOTAL (👁️ Display Only):
+    Market: 37.5
+    Model:  43.3
+    Edge:   +5.8
+    ⚠️  Below logging threshold: OVER 37.5
+
+New England Patriots @ Baltimore Ravens
+  🕐 2025-12-22T01:20:00Z
+  📊 Ratings: Baltimore Ravens (71.2) vs New England Patriots (42.3)
+  📈 Predicted: Baltimore Ravens 38.5, New England Patriots 6.8
+  SPREAD (⭐ LOGGED):
+    Market: Baltimore Ravens -3.0
+    Model:  31.7
+    Edge:   +34.7
+    ✅ SHARP BET: Baltimore Ravens -3.0
+
+San Francisco 49ers @ Indianapolis Colts
+  🕐 2025-12-23T01:15:00Z
+  📊 Ratings: Indianapolis Colts (51.8) vs San Francisco 49ers (67.3)
+  📈 Predicted: Indianapolis Colts 17.0, San Francisco 49ers 29.8
+  SPREAD (⭐ LOGGED):
+    Market: Indianapolis Colts +5.5
+    Model:  -12.8
+    Edge:   -18.3
+    ✅ SHARP BET: San Francisco 49ers -5.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 16
+Bets Logged:    11 (high-confidence +EV only)
+Total Tracked:  422
+Completed:      0
+Pending:        422
+============================================================
+✅ Completed: nfl_main_model at Tue Dec 16 03:15:00 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 93ab072] Update model outputs - 2025-12-16 03:15:00
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 155 insertions(+), 1 deletion(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   128ee9e..93ab072  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 16 03:15:01 EST 2025

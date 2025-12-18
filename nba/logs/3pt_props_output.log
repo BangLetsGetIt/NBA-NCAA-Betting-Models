@@ -219,3 +219,181 @@ After doing this, you may fix the identity used for this commit with:
 To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
    3d3f11b..b9fba05  main -> main
 ✅ Successfully pushed to GitHub!
+==========================================
+NBA 3PT Props Model Run: Sun Dec 14 05:00:05 EST 2025
+==========================================
+Running NBA 3PT Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3-POINT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mChecking 5 pending picks...[0m
+[96m  Checking Anthony Edwards (Minnesota Timberwolves) from 2025-12-12...[0m
+[93m    Could not fetch stats, skipping...[0m
+[96m  Checking Jalen Williams (Oklahoma City Thunder) from 2025-12-13...[0m
+    [91mLOSS[0m: Jalen Williams made 2 3-pointers (line: 1.5, bet: UNDER)
+
+[92m✓ Updated 1 picks[0m
+
+[96mFetching REAL NBA player 3PT statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3PT defense stats...[0m
+[92m✓ Using cached defense stats[0m
+
+[96mFetching player prop odds...[0m
+[96m  Found 9 upcoming games[0m
+[96m  Game 1/9: Washington Wizards @ Indiana Pacers - 18 props[0m
+[96m  Game 2/9: Charlotte Hornets @ Cleveland Cavaliers - 18 props[0m
+[96m  Game 3/9: Philadelphia 76ers @ Atlanta Hawks - 20 props[0m
+[96m  Game 4/9: Milwaukee Bucks @ Brooklyn Nets - 20 props[0m
+[96m  Game 5/9: New Orleans Pelicans @ Chicago Bulls - 18 props[0m
+[96m  Game 6/9: Sacramento Kings @ Minnesota Timberwolves - 18 props[0m
+[96m  Game 7/9: Los Angeles Lakers @ Phoenix Suns - 18 props[0m
+[96m  Game 8/9: Golden State Warriors @ Portland Trail Blazers - 20 props[0m
+[96m  Game 9/9: San Antonio Spurs @ New York Knicks - 22 props[0m
+[92m✓ Fetched 172 total player props[0m
+[93m  API requests remaining: 18426[0m
+
+[96mAnalyzing 172 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 2 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 8 props (no player stats found)[0m
+[93m  Skipped 322 props (score below 9.5)[0m
+
+[96mAuto-tracking picks with A.I. Score >= 9.7...[0m
+[93m  No new picks to track (all already tracked)[0m
+
+[1m[96m================================================================================[0m
+[1m[96mTRACKING SUMMARY[0m
+[1m[96m================================================================================[0m
+Total Picks: 55 | Wins: 21 | Losses: 30 | Pending: 2
+Win Rate: 41.2% | ROI: -10.89u (-19.8%)
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+   [96m 1. De'Aaron Fox             [0m | [92mOVER 1.5 3PT   [0m | New York Knicks vs San Antonio Spurs | [1mA.I.: 9.50[0m | Rating: 2.6 
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+📊 [96m 1. Darius Garland           [0m | [91mUNDER 2.5 3PT  [0m | Cleveland Cavaliers vs Charlotte Hornets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+📊 [96m 2. Keegan Murray            [0m | [91mUNDER 2.5 3PT  [0m | Sacramento Kings vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[93m📊 = Auto-tracked (A.I. Score >= 9.7)[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 43f1e1c] Update model outputs - 2025-12-14 05:00:12
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 15 insertions(+), 13 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   8dbe0c8..43f1e1c  main -> main
+✅ Successfully pushed to GitHub!
+==========================================
+NBA 3PT Props Model Run: Wed Dec 17 05:00:00 EST 2025
+==========================================
+Running NBA 3PT Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 6 pending picks...[0m
+
+[93m  ⚠ Could not find stats for Max Christie on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Cam Spencer on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Jamal Murray on 2025-12-16[0m
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-17[0m
+[93m  ⚠ Could not find stats for Jamal Murray on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Kris Dunn on 2025-12-16[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[92m✓ Using cached player 3-pointers stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Using cached 3-pointers factors[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Game 1/10: Cleveland Cavaliers @ Chicago Bulls[0m
+[96m  Game 2/10: Memphis Grizzlies @ Minnesota Timberwolves[0m
+[96m  Game 3/10: Atlanta Hawks @ Charlotte Hornets[0m
+[96m  Game 4/10: Miami Heat @ Brooklyn Nets[0m
+[96m  Game 5/10: Houston Rockets @ New Orleans Pelicans[0m
+[96m  Game 6/10: Los Angeles Clippers @ Oklahoma City Thunder[0m
+[96m  Game 7/10: Toronto Raptors @ Milwaukee Bucks[0m
+[96m  Game 8/10: Detroit Pistons @ Dallas Mavericks[0m
+[96m  Game 9/10: Orlando Magic @ Denver Nuggets[0m
+[96m  Game 10/10: Golden State Warriors @ Phoenix Suns[0m
+[92m✓ Fetched 33 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 33 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 62 props (score below 9.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+No changes to commit

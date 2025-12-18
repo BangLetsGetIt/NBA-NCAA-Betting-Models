@@ -1371,484 +1371,304 @@ def save_csv(results):
         print(f"{Colors.RED}Error saving CSV: {e}{Colors.END}")
 
 def save_html(results):
-    """Generate beautiful HTML output"""
+    """Generate HTML output with PROPS_HTML_STYLING_GUIDE aesthetic - REVISED COPY"""
     et = pytz.timezone('US/Eastern')
     timestamp_str = datetime.now(et).strftime('%Y-%m-%d %I:%M %p ET')
-
-    # Results are already sorted by edge in main(), don't re-sort
-
-    template_str = '''<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NCAAB Model Picks</title>
-        <style>
-           * { margin: 0; padding: 0; box-sizing: border-box; }
-           body {
-                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-                background: #000000;
-                color: #ffffff;
-                padding: 2rem;
-                min-height: 100vh;
-            }
-           .container { max-width: 1200px; margin: 0 auto; }
-           .card {
-                background: #1a1a1a;
-                border-radius: 1.25rem;
-                border: none;
-                padding: 2rem;
-                margin-bottom: 1.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            }
-           .header-card {
-                text-align: center;
-                background: #1a1a1a;
-                border: none;
-            }
-           .game-card {
-                padding: 1.5rem;
-                border-bottom: 1px solid #2a3441;
-            }
-           .game-card:last-child { border-bottom: none; }
-           .matchup { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
-           .game-time { color: #94a3b8; font-size: 0.875rem; margin-bottom: 0.5rem; }
-           .ai-rating {
-                display: inline-block;
-                padding: 0.75rem 1.25rem;
-                border-radius: 0.75rem;
-                font-weight: 700;
-                font-size: 1.125rem;
-                margin-bottom: 1rem;
-                border-left: 4px solid;
-           }
-           .ai-rating-premium {
-                background: rgba(74, 222, 128, 0.2);
-                color: #4ade80;
-                border-color: #4ade80;
-           }
-           .ai-rating-strong {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border-color: #4ade80;
-           }
-           .ai-rating-good {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-           }
-           .ai-rating-standard {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-           }
-           .ai-rating-marginal {
-                background: rgba(251, 191, 36, 0.1);
-                color: #fbbf24;
-                border-color: #fbbf24;
-           }
-           .bet-section {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1.5rem;
-                margin-top: 1rem;
-            }
-           .bet-box {
-                background: #262626;
-                padding: 1rem;
-                border-radius: 1rem;
-                border-left: 4px solid transparent;
-            }
-           .bet-box-spread {
-                border-left-color: #60a5fa;
-            }
-           .bet-box-total {
-                border-left-color: #f472b6;
-            }
-           .bet-title {
-                font-weight: 700;
-                color: #94a3b8;
-                margin-bottom: 0.5rem;
-                text-transform: uppercase;
-                font-size: 0.875rem;
-                letter-spacing: 0.05em;
-            }
-           .odds-line {
-                display: flex;
-                justify-content: space-between;
-                margin: 0.25rem 0;
-                font-size: 0.95rem;
-                color: #94a3b8;
-            }
-           .odds-line strong {
-                color: #ffffff;
-           }
-           .confidence-bar-container {
-                margin: 0.75rem 0;
-           }
-           .confidence-label {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 0.5rem;
-                font-size: 0.875rem;
-                color: #94a3b8;
-           }
-           .confidence-pct {
-                font-weight: 700;
-                color: #4ade80;
-           }
-           .confidence-bar {
-                height: 8px;
-                background: #1a1a1a;
-                border-radius: 999px;
-                overflow: hidden;
-                border: none;
-           }
-           .confidence-fill {
-                height: 100%;
-                background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
-                border-radius: 999px;
-                transition: width 0.3s ease;
-           }
-           .pick {
-                font-weight: 700;
-                padding: 0.75rem;
-                margin-top: 0.5rem;
-                border-radius: 0.5rem;
-                font-size: 1.1rem;
-                line-height: 1.6;
-            }
-           .pick-yes {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border: 1px solid #4ade80;
-            }
-           .pick-no {
-                background: rgba(248, 113, 113, 0.15);
-                color: #f87171;
-                border: 1px solid #f87171;
-            }
-           .pick-none {
-                background: #1a1a1a;
-                color: #94a3b8;
-                border: 1px solid #2a3441;
-            }
-           .prediction {
-                margin-top: 1rem;
-                padding: 0.75rem;
-                background: #262626;
-                border-radius: 0.5rem;
-                color: #a78bfa;
-                font-weight: 600;
-                text-align: center;
-                font-size: 1.25rem;
-            }
-           .badge {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                border-radius: 9999px;
-                font-size: 0.875rem;
-                font-weight: 700;
-                background-color: rgba(96, 165, 250, 0.2);
-                color: #60a5fa;
-                margin: 0.25rem;
-            }
-           .team-indicator {
-                padding: 0.75rem 1rem;
-                margin: 0.75rem 0;
-                border-radius: 0.75rem;
-                font-size: 0.95rem;
-                font-weight: 600;
-                border-left: 4px solid;
-            }
-           .team-indicator-hot {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border-color: #4ade80;
-            }
-           .team-indicator-good {
-                background: rgba(74, 222, 128, 0.15);
-                color: #4ade80;
-                border-color: #4ade80;
-            }
-           .team-indicator-neutral-plus {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-            }
-           .team-indicator-neutral {
-                background: rgba(148, 163, 184, 0.15);
-                color: #94a3b8;
-                border-color: #94a3b8;
-            }
-           .team-indicator-neutral-minus {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-            }
-           .team-indicator-caution {
-                background: rgba(251, 191, 36, 0.15);
-                color: #fbbf24;
-                border-color: #fbbf24;
-            }
-           .team-indicator-cold {
-                background: rgba(248, 113, 113, 0.15);
-                color: #f87171;
-                border-color: #f87171;
-            }
-           .team-indicator-limited {
-                background: rgba(96, 165, 250, 0.15);
-                color: #60a5fa;
-                border-color: #60a5fa;
-            }
-           /* Mobile Responsiveness */
-           @media (max-width: 1024px) {
-                .container { max-width: 100%; }
-                .card { padding: 1.5rem; }
-           }
-
-           @media (max-width: 768px) {
-                body { padding: 1rem; }
-                .card { padding: 1.25rem; }
-                .game-card { padding: 1.25rem; }
-
-                .bet-section {
-                    grid-template-columns: 1fr;
-                    gap: 1rem;
-                }
-
-                .matchup { font-size: 1.25rem; }
-
-                .badge {
-                    padding: 0.375rem 0.75rem;
-                    font-size: 0.75rem;
-                    margin: 0.1875rem;
-                }
-
-                .pick, .prediction {
-                    font-size: 0.9375rem;
-                    padding: 0.625rem;
-                }
-
-                .team-indicator {
-                    padding: 0.625rem 0.875rem;
-                    font-size: 0.8125rem;
-                }
-                
-                .ai-rating {
-                    padding: 0.625rem 1rem;
-                    font-size: 1rem;
-                }
-
-                .confidence-bar {
-                    height: 6px;
-                }
-
-                .odds-line {
-                    font-size: 0.875rem;
-                }
-
-                .bet-box {
-                    padding: 0.875rem;
-                }
-
-                /* Inline styles override */
-                h1[style] { font-size: 2rem !important; }
-                p[style*="font-size: 1.5rem"] { font-size: 1.125rem !important; }
-           }
-
-           @media (max-width: 480px) {
-                body { padding: 0.75rem; }
-                .card { padding: 1rem; margin-bottom: 1rem; }
-                .game-card { padding: 1rem; }
-
-                .matchup { font-size: 1.125rem; font-weight: 700; }
-                .game-time { font-size: 0.8125rem; }
-
-                .bet-section {
-                    gap: 0.75rem;
-                }
-
-                .bet-box {
-                    padding: 0.75rem;
-                }
-
-                .bet-title {
-                    font-size: 0.75rem;
-                }
-
-                .odds-line {
-                    font-size: 0.8125rem;
-                }
-
-                .confidence-label {
-                    font-size: 0.8125rem;
-                }
-
-                .pick {
-                    font-size: 0.9375rem;
-                    padding: 0.625rem;
-                    line-height: 1.4;
-                }
-
-                .prediction {
-                    font-size: 1rem;
-                    padding: 0.625rem;
-                }
-
-                .team-indicator {
-                    padding: 0.625rem 0.75rem;
-                    font-size: 0.75rem;
-                }
-                
-                .ai-rating {
-                    padding: 0.5rem 0.875rem;
-                    font-size: 0.875rem;
-                }
-
-                .badge {
-                    display: block;
-                    margin: 0.25rem auto;
-                    text-align: center;
-                    max-width: 220px;
-                }
-
-                /* Inline styles override for small phones */
-                h1[style] { font-size: 1.5rem !important; }
-                p[style*="font-size: 1.5rem"] { font-size: 1rem !important; }
-                p[style*="font-size: 0.875rem"] { font-size: 0.8125rem !important; }
-           }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="card header-card">
-                <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CourtSide Analytics</h1>
-                <p style="font-size: 1.5rem; opacity: 0.95; font-weight: 600;">NCAAB Picks</p>
-                <div>
-                    <div class="badge">● EFFICIENCY RATINGS</div>
-                    <div class="badge">● PACE ADJUSTMENTS</div>
-                    <div class="badge">● HOME COURT EDGE</div>
-                    <div class="badge">● CONFERENCE STRENGTH</div>
-                </div>
-                <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {{ timestamp }}</p>
-            </div>
-            
-            <div class="card">
-                {% for game in results %}
-                <div class="game-card">
-                    <div class="matchup">{{ game.Matchup }}</div>
-                    <div class="game-time">🕐 {{ game.GameTime }}</div>
-                    
-                    {% if game.ai_rating %}
-                        {% set ai_rating = game.ai_rating %}
-                    {% else %}
-                        {% set ai_rating = 2.3 %}
-                    {% endif %}
-                    {% if ai_rating >= 4.5 %}
-                        {% set rating_class = 'ai-rating-premium' %}
-                        {% set rating_label = 'PREMIUM PLAY' %}
-                        {% set rating_stars = '⭐⭐⭐' %}
-                    {% elif ai_rating >= 4.0 %}
-                        {% set rating_class = 'ai-rating-strong' %}
-                        {% set rating_label = 'STRONG PLAY' %}
-                        {% set rating_stars = '⭐⭐' %}
-                    {% elif ai_rating >= 3.5 %}
-                        {% set rating_class = 'ai-rating-good' %}
-                        {% set rating_label = 'GOOD PLAY' %}
-                        {% set rating_stars = '⭐' %}
-                    {% elif ai_rating >= 3.0 %}
-                        {% set rating_class = 'ai-rating-standard' %}
-                        {% set rating_label = 'STANDARD PLAY' %}
-                        {% set rating_stars = '' %}
-                    {% else %}
-                        {% set rating_class = 'ai-rating-marginal' %}
-                        {% set rating_label = 'MARGINAL PLAY' %}
-                        {% set rating_stars = '' %}
-                    {% endif %}
-                    
-                    <div class="ai-rating {{ rating_class }}">
-                        🎯 A.I. Rating: {{ "%.1f"|format(ai_rating) }} {{ rating_stars }} ({{ rating_label }})
-                    </div>
-
-                    {% if game.team_indicator %}
-                    <div class="team-indicator team-indicator-{{ game.team_indicator.label|lower }}">
-                        {{ game.team_indicator.emoji }} <strong>{{ game.team_indicator.label }}</strong>: {{ game.team_indicator.message }}
-                    </div>
-                    {% endif %}
-
-                    <div class="bet-section">
-                        <div class="bet-box bet-box-spread">
-                            <div class="bet-title">📊 SPREAD BET</div>
-                            <div class="odds-line">
-                                <span>Vegas Line:</span>
-                                <strong>{{ game['Market Spread'] }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Prediction:</span>
-                                <strong>{{ game['Model Spread'] }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{{ "%+.1f"|format(game.spread_edge) }} pts</strong>
-                            </div>
-                            {% set spread_confidence = (game.spread_edge|abs / 10.0 * 100)|int %}
-                            {% if spread_confidence > 100 %}{% set spread_confidence = 100 %}{% endif %}
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{{ spread_confidence }}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {{ spread_confidence }}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {{ 'pick-yes' if '✅' in game['ATS Pick'] else 'pick-none' }}">
-                                {{ game['ATS Pick'] }}{% if game['ATS Explanation'] %}<br><small style="opacity: 0.8;">{{ game['ATS Explanation'] }}</small>{% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="bet-box bet-box-total">
-                            <div class="bet-title">🎯 OVER/UNDER BET</div>
-                            <div class="odds-line">
-                                <span>Vegas Total:</span>
-                                <strong>{{ game['Market Total']|float|round(1) }}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Projects:</span>
-                                <strong>{{ game['Model Total']|float|round(1) }} pts</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{{ (game.total_edge)|abs|round(1) }} pts</strong>
-                            </div>
-                            {% set total_confidence = (game.total_edge|abs / 12.0 * 100)|int %}
-                            {% if total_confidence > 100 %}{% set total_confidence = 100 %}{% endif %}
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{{ total_confidence }}%</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {{ total_confidence }}%"></div>
-                                </div>
-                            </div>
-                            <div class="pick {{ 'pick-yes' if 'OVER' in game['Total Pick'] and '✅' in game['Total Pick'] else ('pick-no' if 'UNDER' in game['Total Pick'] and '✅' in game['Total Pick'] else 'pick-none') }}">
-                                {{ game['Total Pick'] }}{% if game['Total Explanation'] %}<br><small style="opacity: 0.8;">{{ game['Total Explanation'] }}</small>{% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="prediction">
-                        📈 PREDICTED: {{ game['Predicted Score'] }}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </body>
-    </html>'''
     
+    # CSS/HTML Template matches the new revised aesthetic
+    template_str = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCAAB Model Picks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1c1c1e;
+            --bg-metric: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --border-color: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .date-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Header Section */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .matchup-info h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .matchup-sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .game-time-badge {
+            background-color: var(--bg-metric);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Bet Section */
+        .bet-row {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .bet-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .main-pick {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .main-pick.green { color: var(--accent-green); }
+        .main-pick.red { color: var(--accent-red); }
+
+        .model-context {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .edge-val {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* Metrics Row */
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .metric-box {
+            background-color: var(--bg-metric);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .metric-value.good { color: var(--accent-green); }
+
+        /* Tags */
+        .tags-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .tag-red { background: rgba(255, 59, 48, 0.15); color: #ff453a; }
+        .tag-blue { background: rgba(10, 132, 255, 0.15); color: #5ac8fa; }
+        .tag-green { background: rgba(48, 209, 88, 0.15); color: #32d74b; }
+
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .metrics-row { gap: 0.5rem; }
+            .metric-box { padding: 0.8rem 0.5rem; }
+            .main-pick { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🏀 NCAAB MODEL</h1>
+                <div class="date-sub">{{ timestamp }}</div>
+            </div>
+            <div>
+                 <span style="font-size: 1.5rem;">🎓</span>
+            </div>
+        </header>
+
+        {% for game in results %}
+        <div class="prop-card">
+            <div class="card-header">
+                <div class="header-left">
+                     <div class="matchup-info">
+                        <h2>{{ game.Matchup }}</h2>
+                        <div class="matchup-sub">NCAAB</div>
+                    </div>
+                </div>
+                <div class="game-time-badge">{{ game.GameTime }}</div>
+            </div>
+
+            <!-- SPREAD BET BLOCK -->
+            <div class="bet-row">
+                {% if '✅' in game['ATS Pick'] %}
+                <div class="main-pick green">{{ game['ATS Pick'] }}</div>
+                {% else %}
+                <div class="main-pick">{{ game['Market Spread'] }}</div>
+                {% endif %}
+                
+                <div class="model-context">
+                    Model: {{ game['Model Spread'] }}
+                    <span class="edge-val">Edge: {{ "%+.1f"|format(game.spread_edge) }}</span>
+                </div>
+            </div>
+
+            <!-- TOTAL BET BLOCK -->
+            <div class="bet-row" style="border-bottom: none;">
+                {% if '✅' in game['Total Pick'] %}
+                    <div class="main-pick green">{{ game['Total Pick'] }}</div>
+                {% else %}
+                <div class="main-pick">O/U {{ game['Market Total'] }}</div>
+                {% endif %}
+                
+                <div class="model-context">
+                    Model: {{ game['Model Total'] }}
+                    <span class="edge-val">Edge: {{ "%+.1f"|format(game.total_edge) }}</span>
+                </div>
+            </div>
+
+            <!-- METRICS ROW -->
+            <div class="metrics-row">
+                {% set ai_rating = game.ai_rating if game.ai_rating else 2.3 %}
+                <div class="metric-box">
+                    <div class="metric-title">AI RATING</div>
+                    <div class="metric-value {{ 'good' if ai_rating >= 4.0 else '' }}">{{ "%.1f"|format(ai_rating) }}</div>
+                </div>
+                <!-- Calculate Max EV/Confidence -->
+                {% set spread_confidence = (game.spread_edge|abs / 10.0 * 100)|int %}
+                {% set total_confidence = (game.total_edge|abs / 12.0 * 100)|int %}
+                {% set max_conf = spread_confidence if spread_confidence > total_confidence else total_confidence %}
+                {% if max_conf > 99 %}{% set max_conf = 99 %}{% endif %}
+                
+                <div class="metric-box">
+                    <div class="metric-title">WIN % (EST)</div>
+                    <div class="metric-value {{ 'good' if max_conf >= 55 else '' }}">{{ 50 + (max_conf * 0.25)|int }}%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">PREDICTED</div>
+                    <div class="metric-value" style="font-size: 1rem;">{{ game['Predicted Score'] }}</div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="tags-row">
+                {% if game.team_indicator %}
+                <div class="tag tag-blue">{{ game.team_indicator.emoji }} {{ game.team_indicator.message }}</div>
+                {% endif %}
+                
+                {% if game['ATS Explanation'] %}
+                <div class="tag tag-green">ATS: {{ game['ATS Explanation'] }}</div>
+                {% endif %}
+                
+                {% if game['Total Explanation'] %}
+                <div class="tag tag-green">Total: {{ game['Total Explanation'] }}</div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>"""
+
     template = Template(template_str)
     html_output = template.render(
         results=results, 
@@ -1861,6 +1681,7 @@ def save_html(results):
         print(f"{Colors.GREEN}✓ HTML saved: {HTML_FILE}{Colors.END}")
     except IOError as e:
         print(f"{Colors.RED}Error saving HTML: {e}{Colors.END}")
+
 
 
 # Custom filter for date formatting (MOVED TO GLOBAL SCOPE)

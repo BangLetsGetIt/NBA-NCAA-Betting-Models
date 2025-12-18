@@ -1,0 +1,156 @@
+==========================================
+NCAA Model Run: Mon Dec 15 10:30:04 EST 2025
+==========================================
+Running NCAA Basketball model...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 4 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-11
+  Newest: 2025-12-17
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 133 completed games[0m
+[96mFound 133 completed games from API[0m
+[93m⚠️  No match found: Jackson State Tigers @ Houston Cougars (2025-12-11)[0m
+[93m⚠️  No match found: Fresno State Bulldogs @ CSU Northridge Matadors (2025-12-11)[0m
+[93m⚠️  No match found: Incarnate Word @ TCU (2025-12-16)[0m
+[93m⚠️  No match found: Louisville @ Tennessee (2025-12-17)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[96m🔄 Fetching fresh stats from Sports-Reference...[0m
+[92m✓ Stats fetch successful[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 8 games from The Odds API[0m
+[92m✓ 8 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1524[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 138.0 (Edge: -5.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1524[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 1524[0m
+
+[1m[92m✅ Analyzed 3 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Incarnate Word @ TCU ━━━[0m
+[96m🕐 12/15 08:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+[92m🔥 HOT: Incarnate Word - Strong performer: 3-0 (100%) | +2.73u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: -18.0 | Model: -0.5 | Edge: +18.5
+  [92m✅ BET: Incarnate Word +18.0[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Incarnate Word by +0.5 (Market: +18.0)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 143.0 | Model: 143.9 | Edge: +0.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.9)[0m
+
+[35m📈 Incarnate Word 72.2, TCU 71.7[0m
+
+[1m[96m━━━ GAME 2: North Alabama @ Alabama A&M ━━━[0m
+[96m🕐 12/15 08:00 PM[0m
+[93m[1m🎯 A.I. Rating: 3.1 ⭐ (STANDARD PLAY)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.0 | Model: -3.1 | Edge: +0.1
+  [91m❌ NO BET[0m
+  [96mEdge (+0.1) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 138.0 | Model: 132.5 | Edge: -5.5
+  [92m✅ BET: UNDER 138.0[0m
+  [96mLOW confidence (5.5 edge)[0m
+
+[35m📈 North Alabama 67.8, Alabama A&M 64.7[0m
+
+[1m[96m━━━ GAME 3: Louisville @ Tennessee ━━━[0m
+[96m🕐 12/16 07:00 PM[0m
+[93m[1m🎯 A.I. Rating: 2.9  (MARGINAL PLAY)[0m
+[96mℹ️ LIMITED: Tennessee - Limited data: 1-1 (50%) | -0.09u (2 picks)[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +2.0 | Edge: +3.5
+  [92m✅ BET: Tennessee +1.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Tennessee by +2.0 (Market: +1.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 157.5 | Model: 160.2 | Edge: +2.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.7)[0m
+
+[35m📈 Louisville 80.5, Tennessee 82.4[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 1524[0m
+[92mRecord: 804-714-1[0m
+[92mWin Rate: 53.0%[0m
+[92mProfit: +17.64 units[0m
+[92mROI: +1.2%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main c595ddd] Update model outputs - 2025-12-15 10:30:07
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 78 insertions(+), 58 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ab403e6..c595ddd  main -> main
+✅ Successfully pushed to GitHub!

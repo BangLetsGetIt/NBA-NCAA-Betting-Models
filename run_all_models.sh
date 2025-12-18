@@ -103,7 +103,7 @@ else
 fi
 
 # Run NCAAB Model
-if run_model "NCAAB Model" "ncaa/ncaab_model_FINAL.py"; then
+if run_model "NCAAB Model" "ncaa/ncaab_model_2ndFINAL.py"; then
     ((SUCCESS_COUNT++))
 else
     ((FAIL_COUNT++))

@@ -1,0 +1,78 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Mon Dec 15 15:00:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 2 pending picks...[0m
+
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[92m✓ Using cached player 3-pointers stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Using cached 3-pointers factors[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[92m✓ Fetched 0 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 9.5)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Mon Dec 15 15:00:06 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main c053546] Update model outputs - 2025-12-15 15:00:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 646 insertions(+), 571 deletions(-)
+ create mode 100644 nba/nba_points_props_preview.html
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   c595ddd..c053546  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Dec 15 15:00:08 EST 2025

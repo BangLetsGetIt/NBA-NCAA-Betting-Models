@@ -1,0 +1,69 @@
+==========================================
+NBA Rebounds Props Model Run: Mon Dec 15 17:03:08 EST 2025
+==========================================
+Running NBA Rebounds Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 6 pending picks...[0m
+
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[96m  Game 1/6: Detroit Pistons @ Boston Celtics[0m
+[96m  Game 2/6: Toronto Raptors @ Miami Heat[0m
+[96m  Game 3/6: Dallas Mavericks @ Utah Jazz[0m
+[96m  Game 4/6: Houston Rockets @ Denver Nuggets[0m
+[96m  Game 5/6: Memphis Grizzlies @ Los Angeles Clippers[0m
+[96m  Game 6/6: San Antonio Spurs @ New York Knicks[0m
+[92m✓ Fetched 73 player rebounds props (grouped)[0m
+
+[96mAnalyzing 73 player props with REAL stats...[0m
+[92m✓ Found 3 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 2 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 137 props (score below 9.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 2 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Steven Adams             [0m | [92mOVER 7.5 REB   [0m | Denver Nuggets            vs Houston Rockets           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Mitchell Robinson        [0m | [92mOVER 6.5 REB   [0m | New York Knicks           vs San Antonio Spurs         | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Kel'el Ware              [0m | [92mOVER 7.5 REB   [0m | Miami Heat                vs Toronto Raptors           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Kyle Filipowski          [0m | [91mUNDER 8.5 REB  [0m | Utah Jazz                 vs Dallas Mavericks          | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Ace Bailey               [0m | [91mUNDER 4.5 REB  [0m | Utah Jazz                 vs Dallas Mavericks          | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/nba/nba_rebounds_props_model.py", line 1824, in <module>
+    main()
+    ~~~~^^
+  File "/Users/rico/sports-models/nba/nba_rebounds_props_model.py", line 1815, in main
+    html_content = generate_html_output(over_plays, under_plays, stats, tracking_data, reb_factors, player_stats)
+  File "/Users/rico/sports-models/nba/nba_rebounds_props_model.py", line 1335, in generate_html_output
+    line_match = re.search(r'(\d+\.?\d*)\s*REB', prop_str)
+                 ^^
+NameError: name 're' is not defined. Did you forget to import 're'?

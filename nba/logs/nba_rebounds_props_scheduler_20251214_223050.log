@@ -1,0 +1,79 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Sun Dec 14 22:30:50 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Game 1/8: Los Angeles Lakers @ Phoenix Suns[0m
+[96m  Game 2/8: Golden State Warriors @ Portland Trail Blazers[0m
+[96m  Game 3/8: Detroit Pistons @ Boston Celtics[0m
+[96m  Game 4/8: Toronto Raptors @ Miami Heat[0m
+[96m  Game 5/8: Dallas Mavericks @ Utah Jazz[0m
+[96m  Game 6/8: Houston Rockets @ Denver Nuggets[0m
+[96m  Game 7/8: Memphis Grizzlies @ Los Angeles Clippers[0m
+[96m  Game 8/8: San Antonio Spurs @ New York Knicks[0m
+[92m✓ Fetched 38 player rebounds props (grouped)[0m
+
+[96mAnalyzing 38 player props with REAL stats...[0m
+[92m✓ Found 3 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 68 props (score below 9.5 or failed checks)[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Quinten Post             [0m | [92mOVER 1.5 REB   [0m | Portland Trail Blazers    vs Golden State Warriors     | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Mitchell Robinson        [0m | [92mOVER 6.5 REB   [0m | New York Knicks           vs San Antonio Spurs         | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Mark Williams            [0m | [92mOVER 5.5 REB   [0m | Phoenix Suns              vs Los Angeles Lakers        | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Donovan Clingan          [0m | [91mUNDER 12.5 REB [0m | Portland Trail Blazers    vs Golden State Warriors     | [1mA.I.: 10.00[0m | Rating: 4.0 ⭐⭐
+  [96m 2. Draymond Green           [0m | [91mUNDER 8.5 REB  [0m | Golden State Warriors     vs Portland Trail Blazers    | [1mA.I.: 10.00[0m | Rating: 3.9 ⭐
+  [96m 3. Deandre Ayton            [0m | [91mUNDER 12.5 REB [0m | Phoenix Suns              vs Los Angeles Lakers        | [1mA.I.: 10.00[0m | Rating: 2.8 
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Sun Dec 14 22:30:54 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 1cd4d76] Update model outputs - 2025-12-14 22:30:54
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 153 insertions(+), 163 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   10a006e..1cd4d76  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Dec 14 22:30:55 EST 2025

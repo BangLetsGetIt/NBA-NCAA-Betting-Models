@@ -1,0 +1,213 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Tue Dec 16 23:25:38 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 16 pending picks...[0m
+
+[96m  Checking Kel'el Ware (Miami Heat) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Kel'el Ware on 2025-12-16 - will retry later[0m
+[96m  Checking Steven Adams (Denver Nuggets) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Steven Adams on 2025-12-16 - will retry later[0m
+[96m  Checking Ace Bailey (Utah Jazz) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Ace Bailey on 2025-12-16 - will retry later[0m
+[96m  Checking Steven Adams (Denver Nuggets) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Steven Adams on 2025-12-16 - will retry later[0m
+[96m  Checking Kyle Filipowski (Utah Jazz) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Kyle Filipowski on 2025-12-16 - will retry later[0m
+[96m  Checking Daniel Gafford (Dallas Mavericks) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Daniel Gafford on 2025-12-16 - will retry later[0m
+[96m  Checking Steven Adams (Denver Nuggets) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Steven Adams on 2025-12-16 - will retry later[0m
+[96m  Checking Cedric Coward (Los Angeles Clippers) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Cedric Coward on 2025-12-16 - will retry later[0m
+[96m  Checking Santi Aldama (Los Angeles Clippers) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Santi Aldama on 2025-12-16 - will retry later[0m
+[96m  Checking Bruce Brown (Denver Nuggets) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Bruce Brown on 2025-12-16 - will retry later[0m
+[96m  Checking Ivica Zubac (Los Angeles Clippers) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Ivica Zubac on 2025-12-16 - will retry later[0m
+[96m  Checking Kawhi Leonard (Los Angeles Clippers) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Kawhi Leonard on 2025-12-16 - will retry later[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[96m  Fetching season rebounding stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL rebounding stats for 499 players[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Fetched rebounding factors for 30 teams[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 2 upcoming games[0m
+[96m  Game 1/2: Cleveland Cavaliers @ Chicago Bulls[0m
+[96m  Game 2/2: Memphis Grizzlies @ Minnesota Timberwolves[0m
+[92m✓ Fetched 29 player rebounds props (grouped)[0m
+
+[96mAnalyzing 29 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 56 props (score below 9.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Tue Dec 16 23:27:15 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   nba/nba_3pt_props_model.py
+	modified:   nba/nba_assists_props_model.py
+	modified:   nba/nba_model_IMPROVED.py
+	modified:   nba/nba_points_props_model.py
+	modified:   nba/nba_rebounds_props_model.py
+	modified:   ncaa/logs/launchd_output.log
+	modified:   ncaa/ncaab_model_2ndFINAL.py
+	modified:   ncaa/ncaab_model_FINAL.py
+	modified:   nfl/nfl_model_IMPROVED.py
+	modified:   nfl/nfl_passing_yards_props_model.py
+	deleted:    nfl/nfl_passing_yards_props_tracking.json
+	modified:   nfl/nfl_receptions_props_model.py
+	deleted:    nfl/nfl_receptions_props_tracking.json
+	modified:   nfl/nfl_rushing_yards_props_model.py
+	deleted:    nfl/nfl_rushing_yards_props_tracking.json
+	modified:   run_nfl_models.sh
+	modified:   soccer/soccer_model_IMPROVED.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	PROPS_HTML_STYLING_GUIDE.md
+	PROPS_TRACKING_IMPLEMENTATION.md
+	PickPerformance.md
+	Prop_Model_Design.md
+	context.md
+	nba/NBA_MODEL_STANDARD.md
+	nba/POINTS_PROPS_MODEL_STANDARD.md
+	nba/logs/nba_3pt_props_20251214_050005.log
+	nba/logs/nba_3pt_props_20251215_172409.log
+	nba/logs/nba_3pt_props_scheduler_20251214_205258.log
+	nba/logs/nba_3pt_props_scheduler_20251214_223050.log
+	nba/logs/nba_3pt_props_scheduler_20251215_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251215_100000.log
+	nba/logs/nba_3pt_props_scheduler_20251215_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251215_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251216_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251216_100002.log
+	nba/logs/nba_3pt_props_scheduler_20251216_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251216_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251216_232537.log
+	nba/logs/nba_assists_props_20251214_070004.log
+	nba/logs/nba_assists_props_20251215_172121.log
+	nba/logs/nba_assists_props_scheduler_20251214_205258.log
+	nba/logs/nba_assists_props_scheduler_20251214_223050.log
+	nba/logs/nba_assists_props_scheduler_20251215_024005.log
+	nba/logs/nba_assists_props_scheduler_20251215_100500.log
+	nba/logs/nba_assists_props_scheduler_20251215_150505.log
+	nba/logs/nba_assists_props_scheduler_20251215_180504.log
+	nba/logs/nba_assists_props_scheduler_20251216_024005.log
+	nba/logs/nba_assists_props_scheduler_20251216_100504.log
+	nba/logs/nba_assists_props_scheduler_20251216_150504.log
+	nba/logs/nba_assists_props_scheduler_20251216_180504.log
+	nba/logs/nba_assists_props_scheduler_20251216_232539.log
+	nba/logs/nba_main_model_scheduler_20251214_205258.log
+	nba/logs/nba_main_model_scheduler_20251214_223050.log
+	nba/logs/nba_main_model_scheduler_20251215_031004.log
+	nba/logs/nba_main_model_scheduler_20251215_102005.log
+	nba/logs/nba_main_model_scheduler_20251215_152004.log
+	nba/logs/nba_main_model_scheduler_20251215_182003.log
+	nba/logs/nba_main_model_scheduler_20251216_031005.log
+	nba/logs/nba_main_model_scheduler_20251216_102004.log
+	nba/logs/nba_main_model_scheduler_20251216_152004.log
+	nba/logs/nba_main_model_scheduler_20251216_182005.log
+	nba/logs/nba_main_model_scheduler_20251216_232538.log
+	nba/logs/nba_model_20251214_100000.log
+	nba/logs/nba_points_props_scheduler_20251214_205258.log
+	nba/logs/nba_points_props_scheduler_20251214_223050.log
+	nba/logs/nba_points_props_scheduler_20251215_023504.log
+	nba/logs/nba_points_props_scheduler_20251215_100000.log
+	nba/logs/nba_points_props_scheduler_20251215_150005.log
+	nba/logs/nba_points_props_scheduler_20251215_180005.log
+	nba/logs/nba_points_props_scheduler_20251216_023504.log
+	nba/logs/nba_points_props_scheduler_20251216_100002.log
+	nba/logs/nba_points_props_scheduler_20251216_150005.log
+	nba/logs/nba_points_props_scheduler_20251216_180005.log
+	nba/logs/nba_points_props_scheduler_20251216_232537.log
+	nba/logs/nba_rebounds_props_20251214_060005.log
+	nba/logs/nba_rebounds_props_20251215_161414.log
+	nba/logs/nba_rebounds_props_20251215_170308.log
+	nba/logs/nba_rebounds_props_20251215_170534.log
+	nba/logs/nba_rebounds_props_scheduler_20251214_205258.log
+	nba/logs/nba_rebounds_props_scheduler_20251214_223050.log
+	nba/logs/nba_rebounds_props_scheduler_20251215_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251215_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20251215_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20251215_181004.log
+	nba/logs/nba_rebounds_props_scheduler_20251216_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251216_101003.log
+	nba/logs/nba_rebounds_props_scheduler_20251216_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20251216_181004.log
+	nba/logs/nba_rebounds_props_scheduler_20251216_232537.log
+	nba/run_points_props.sh
+	ncaa/logs/ncaab_model_20251214_035051.log
+	ncaa/logs/ncaab_model_20251214_103005.log
+	ncaa/logs/ncaab_model_20251215_103004.log
+	ncaa/logs/ncaab_model_20251216_103000.log
+	nfl/logs/
+	nfl/props_grader.py
+	run_nba_models.sh
+	scheduler/
+	soccer/FIX_SOCCER_MODEL_PLAN.md
+	soccer/logs/soccer_model_20251214_161710.log
+	soccer/logs/soccer_model_20251216_144408.log
+	update_props_style.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 18e52d13f723e3c4bd4625ba7dc9ece5336cc904 but expected 68f573a3d982d8d4388d61cd0af960b1487bf121)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Tue Dec 16 23:27:16 EST 2025

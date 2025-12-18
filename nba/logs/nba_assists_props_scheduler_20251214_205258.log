@@ -1,0 +1,76 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Sun Dec 14 20:52:58 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96mChecking 17 pending picks...[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Using cached assists factors[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 10 upcoming games[0m
+[96m  Game 1/10: Sacramento Kings @ Minnesota Timberwolves[0m
+[96m  Game 2/10: New Orleans Pelicans @ Chicago Bulls[0m
+[96m  Game 3/10: Los Angeles Lakers @ Phoenix Suns[0m
+[96m  Game 4/10: Golden State Warriors @ Portland Trail Blazers[0m
+[96m  Game 5/10: Detroit Pistons @ Boston Celtics[0m
+[96m  Game 6/10: Toronto Raptors @ Miami Heat[0m
+[96m  Game 7/10: Dallas Mavericks @ Utah Jazz[0m
+[96m  Game 8/10: Houston Rockets @ Denver Nuggets[0m
+[96m  Game 9/10: Memphis Grizzlies @ Los Angeles Clippers[0m
+[96m  Game 10/10: San Antonio Spurs @ New York Knicks[0m
+[92m✓ Fetched 66 total player props[0m
+
+[96mAnalyzing 66 player props with REAL stats...[0m
+[92m✓ Found 5 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 4 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 4 props (no player stats found)[0m
+[93m  Skipped 106 props (score below 9.5)[0m
+
+[96mAuto-tracking picks with A.I. Score >= 9.7...[0m
+[92m✓ Tracked 6 new picks[0m
+
+[1m[96m================================================================================[0m
+[1m[96mTRACKING SUMMARY[0m
+[1m[96m================================================================================[0m
+Total Picks: 37 | Wins: 8 | Losses: 6 | Pending: 23
+Win Rate: 57.1% | ROI: +1.28u (+3.5%)
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+📊 [96m 1. Josh Giddey              [0m | [92mOVER 5.5 AST   [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+📊 [96m 2. Devin Booker             [0m | [92mOVER 3.5 AST   [0m | Phoenix Suns vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+📊 [96m 3. LeBron James             [0m | [92mOVER 5.5 AST   [0m | Los Angeles Lakers vs Phoenix Suns | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+📊 [96m 4. Trey Murphy III          [0m | [92mOVER 1.5 AST   [0m | New Orleans Pelicans vs Chicago Bulls | [1mA.I.: 9.87[0m | Rating: 4.9 ⭐⭐
+📊 [96m 5. De'Aaron Fox             [0m | [92mOVER 4.5 AST   [0m | New York Knicks vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.2 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+📊 [96m 1. Marcus Smart             [0m | [91mUNDER 4.5 AST  [0m | Phoenix Suns vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+📊 [96m 2. Collin Gillespie         [0m | [91mUNDER 6.5 AST  [0m | Phoenix Suns vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.8 ⭐⭐
+📊 [96m 3. Jordan Poole             [0m | [91mUNDER 4.5 AST  [0m | New Orleans Pelicans vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.7 ⭐⭐
+📊 [96m 4. Donte DiVincenzo         [0m | [91mUNDER 5.5 AST  [0m | Minnesota Timberwolves vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 3.1 ⭐
+
+[93m📊 = Auto-tracked (A.I. Score >= 9.7)[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Sun Dec 14 20:53:02 EST 2025

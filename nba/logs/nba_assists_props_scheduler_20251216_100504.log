@@ -1,0 +1,90 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Tue Dec 16 10:05:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 6 pending picks...[0m
+
+[93m  ⚠ Could not find stats for Ja Morant on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Tyler Herro on 2025-12-16[0m
+[93m  ⚠ Could not find stats for James Harden on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Alperen Sengun on 2025-12-16[0m
+[93m  ⚠ Could not find stats for Kris Dunn on 2025-12-16[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[96m  Fetching season assists stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL assists stats for 499 players[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 3 upcoming games[0m
+[96m  Game 1/3: San Antonio Spurs @ New York Knicks[0m
+[96m  Game 2/3: Cleveland Cavaliers @ Chicago Bulls[0m
+[96m  Game 3/3: Memphis Grizzlies @ Minnesota Timberwolves[0m
+[92m✓ Fetched 21 player assists props (grouped)[0m
+
+[96mAnalyzing 21 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 39 props (score below 9.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 1 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. De'Aaron Fox             [0m | [92mOVER 4.5 AST   [0m | San Antonio Spurs         vs New York Knicks           | [1mA.I.: 10.00[0m | Rating: 4.2 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Tue Dec 16 10:05:09 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main a079290] Update model outputs - 2025-12-16 10:05:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   efc6200..a079290  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 16 10:05:10 EST 2025

@@ -16,7 +16,7 @@ import re
 import statistics
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytz
 import requests
@@ -49,14 +49,14 @@ TEAM_REBOUNDING_CACHE = os.path.join(SCRIPT_DIR, "nba_team_rebounding_cache.json
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_rebounds_props_tracking.json")
 
 # Model Parameters - STRICT FOR PROFITABILITY
-MIN_AI_SCORE = 9.5  # Only show high-confidence plays
+MIN_AI_SCORE = 7.5  # Adjusted to allow more high-value plays
 TOP_PLAYS_COUNT = 5  # Quality over quantity
 RECENT_GAMES_WINDOW = 10
 CURRENT_SEASON = "2025-26"
 
-# Edge requirements (rebounds are fairly stable, but still keep strict)
-MIN_EDGE_OVER_LINE = 2.0
-MIN_EDGE_UNDER_LINE = 1.5
+# Edge requirements
+MIN_EDGE_OVER_LINE = 1.5
+MIN_EDGE_UNDER_LINE = 1.0
 MIN_RECENT_FORM_EDGE = 1.2
 
 
@@ -244,10 +244,11 @@ def grade_pending_picks():
             team_name = pick.get('team')
             game_date = game_time_utc.strftime('%Y-%m-%d')
             
+            print(f"{Colors.CYAN}  Checking {player_name} ({team_name}) on {game_date}...{Colors.END}")
             actual_reb = fetch_player_rebounds_from_nba_api(player_name, team_name, game_date)
             
             if actual_reb is None:
-                print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date}{Colors.END}")
+                print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date} - will retry later{Colors.END}")
                 continue
             
             # Grade the pick
@@ -424,6 +425,56 @@ def calculate_tracking_stats(tracking_data):
     under_profit_units = under_profit_cents / 100.0
     under_roi = (under_profit_units / under_total * 100) if under_total > 0 else 0.0
     
+    # --- DAILY PERFORMANCE TRACKING ---
+    from datetime import datetime, timedelta
+    import pytz
+    
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    def calc_daily_stats(target_date_str):
+        daily_picks = []
+        for p in completed_picks:
+            gt_str = p.get('game_time', '')
+            if not gt_str: continue
+            try:
+                dt_utc = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                dt_et = dt_utc.astimezone(et_tz)
+                if dt_et.strftime('%Y-%m-%d') == target_date_str:
+                    daily_picks.append(p)
+            except:
+                continue
+                
+        d_wins = sum(1 for p in daily_picks if p.get('status') == 'win')
+        d_losses = sum(1 for p in daily_picks if p.get('status') == 'loss')
+        d_total = d_wins + d_losses
+        d_profit_cents = 0
+        for p in daily_picks:
+            if 'profit_loss' in p:
+                d_profit_cents += p['profit_loss']
+            else:
+                odds = p.get('opening_odds') or p.get('odds', -110)
+                if p.get('status') == 'win':
+                    if odds > 0: d_profit_cents += int(odds)
+                    else: d_profit_cents += int((100.0 / abs(odds)) * 100)
+                else:
+                    d_profit_cents -= 100
+        
+        d_profit = d_profit_cents / 100.0
+        d_roi = (d_profit / d_total * 100) if d_total > 0 else 0.0
+        
+        return {
+            'record': f"{d_wins}-{d_losses}",
+            'profit': d_profit,
+            'roi': d_roi,
+            'count': d_total
+        }
+
+    today_stats = calc_daily_stats(today_str)
+    yesterday_stats = calc_daily_stats(yesterday_str)
+
     return {
         'total': total,
         'wins': wins,
@@ -437,7 +488,37 @@ def calculate_tracking_stats(tracking_data):
         'over_roi': round(over_roi, 2),
         'under_record': f'{under_wins}-{under_losses}',
         'under_win_rate': round(under_win_rate, 2),
-        'under_roi': round(under_roi, 2)
+        'under_roi': round(under_roi, 2),
+        'today': today_stats,
+        'yesterday': yesterday_stats
+    }
+
+def calculate_recent_performance(picks_list, count):
+    """Calculate performance stats for last N picks (most recent first)"""
+    # Filter to only completed picks (props don't have pushes)
+    completed = [p for p in picks_list if p.get('status', '').lower() in ['win', 'loss']]
+    
+    # Take first N picks (most recent first since list should be sorted reverse=True)
+    recent = completed[:count] if len(completed) >= count else completed
+    
+    wins = sum(1 for p in recent if p.get('status', '').lower() == 'win')
+    losses = sum(1 for p in recent if p.get('status', '').lower() == 'loss')
+    total = wins + losses
+    
+    # Calculate profit (profit_loss is in cents, convert to units)
+    profit_cents = sum(p.get('profit_loss', 0) for p in recent if p.get('profit_loss') is not None)
+    profit_units = profit_cents / 100.0
+    
+    win_rate = (wins / total * 100) if total > 0 else 0
+    # ROI calculation: profit_cents / (total * 100) * 100 (assuming 100 cents = 1 unit bet)
+    roi = (profit_cents / (total * 100) * 100) if total > 0 else 0
+    
+    return {
+        'record': f"{wins}-{losses}",
+        'win_rate': win_rate,
+        'profit': profit_units,
+        'roi': roi,
+        'count': len(recent)
     }
 
 # =============================================================================
@@ -845,7 +926,21 @@ def get_player_props():
 
         all_props = []
 
-        for i, event in enumerate(events[:10], 1):
+        # Filter for upcoming games only
+        upcoming_events = []
+        current_time_utc = datetime.now(timezone.utc)
+        
+        for event in events:
+            try:
+                commence_time = datetime.fromisoformat(event['commence_time'].replace('Z', '+00:00'))
+                if commence_time > current_time_utc:
+                    upcoming_events.append(event)
+            except:
+                continue
+                
+        print(f"{Colors.CYAN}  Filtered to {len(upcoming_events)} upcoming games{Colors.END}")
+
+        for i, event in enumerate(upcoming_events[:10], 1):
             event_id = event["id"]
             home_team = event["home_team"]
             away_team = event["away_team"]
@@ -1334,6 +1429,8 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     et = pytz.timezone('US/Eastern')
     now = dt.now(et)
     
+    daily_tracking_html = ""
+    
     # Helper function to format odds for display
     def format_odds(odds_value):
         if odds_value is None:
@@ -1363,6 +1460,18 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     
     player_stats_lookup = player_stats or {}
     defense_lookup = reb_factors or {}
+    
+    # Get completed picks and calculate recent performance
+    completed_picks = []
+    if tracking_data:
+        completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss']]
+        # Sort by date (most recent first) - assuming picks have a date field
+        completed_picks.sort(key=lambda x: x.get('game_time', ''), reverse=True)
+    
+    # Calculate Last 10, Last 20, and Last 50 picks performance (always calculate, even if empty)
+    last_10 = calculate_recent_performance(completed_picks, 10)
+    last_20 = calculate_recent_performance(completed_picks, 20)
+    last_50 = calculate_recent_performance(completed_picks, 50)
 
     # Generate OVER plays cards
     over_html = ""
@@ -1569,23 +1678,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         losses = stats.get('losses', 0)
         roi_color_class = "txt-green" if roi_pct > 0 else "txt-red"
         roi_sign = '+' if roi_pct > 0 else ''
-        summary_html = f'''
-    <section>
-        <div class="summary-grid">
-            <div class="stat-box">
-                <div class="stat-label">Season ROI</div>
-                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Win Rate</div>
-                <div class="stat-value">{win_rate:.1f}%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Record</div>
-                <div class="stat-value">{wins}-{losses}</div>
-            </div>
-        </div>
-    </section>'''
+
     
     # Model performance section
     performance_html = ""
@@ -1619,28 +1712,130 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             </div>
             <div class="stat-box">
                 <div class="stat-label">ROI</div>
-                <div class="stat-value {roi_color_class}">{roi_sign}{roi_pct:.1f}%</div>
+                <div class="stat-value {roi_color_class}">{roi_sign}{round(roi_pct, 1)}%</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">OVER: {over_record}</div>
-                <div class="stat-value {over_roi_color_class}">{over_roi_sign}{over_roi:.1f}% ROI</div>
+                <div class="stat-value {over_roi_color_class}">{over_roi_sign}{round(over_roi, 1)}% ROI</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">UNDER: {under_record}</div>
-                <div class="stat-value {under_roi_color_class}">{under_roi_sign}{under_roi:.1f}% ROI</div>
+                <div class="stat-value {under_roi_color_class}">{under_roi_sign}{round(under_roi, 1)}% ROI</div>
             </div>
         </div>
     </section>'''
     
-    html = f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Rebounds Props Model</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {{
+    # Tracking section HTML - Always show, even if no completed picks yet
+    tracking_html = ""
+    if tracking_data:
+        # Format win rate classes (handle case where there are no completed picks)
+        last_10_wr_class = 'good' if last_10['win_rate'] >= 55 else ('text-red' if last_10['win_rate'] < 50 else '')
+        last_10_profit_class = 'good' if last_10['profit'] > 0 else ('text-red' if last_10['profit'] < 0 else '')
+        last_10_roi_class = 'good' if last_10['roi'] > 0 else ('text-red' if last_10['roi'] < 0 else '')
+        
+        last_20_wr_class = 'good' if last_20['win_rate'] >= 55 else ('text-red' if last_20['win_rate'] < 50 else '')
+        last_20_profit_class = 'good' if last_20['profit'] > 0 else ('text-red' if last_20['profit'] < 0 else '')
+        last_20_roi_class = 'good' if last_20['roi'] > 0 else ('text-red' if last_20['roi'] < 0 else '')
+        
+        last_50_wr_class = 'good' if last_50['win_rate'] >= 55 else ('text-red' if last_50['win_rate'] < 50 else '')
+        last_50_profit_class = 'good' if last_50['profit'] > 0 else ('text-red' if last_50['profit'] < 0 else '')
+        last_50_roi_class = 'good' if last_50['roi'] > 0 else ('text-red' if last_50['roi'] < 0 else '')
+        
+        # Pre-format stats to avoid f-string syntax errors
+        l10_wr = round(last_10['win_rate'])
+        l10_prof = f"{last_10['profit']:+.1f}u"
+        l10_roi = f"{last_10['roi']:+.1f}%"
+        
+        l20_wr = round(last_20['win_rate'])
+        l20_prof = f"{last_20['profit']:+.1f}u"
+        l20_roi = f"{last_20['roi']:+.1f}%"
+        
+        l50_wr = round(last_50['win_rate'])
+        l50_prof = f"{last_50['profit']:+.1f}u"
+        l50_roi = f"{last_50['roi']:+.1f}%"
+
+        tracking_html = f'''
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{last_10['record']}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {last_10_wr_class}">{l10_wr}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {last_10_profit_class}">{l10_prof}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {last_10_roi_class}">{l10_roi}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{last_20['record']}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {last_20_wr_class}">{l20_wr}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {last_20_profit_class}">{l20_prof}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {last_20_roi_class}">{l20_roi}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{last_50['record']}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {last_50_wr_class}">{l50_wr}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {last_50_profit_class}">{l50_prof}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {last_50_roi_class}">{l50_roi}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        '''
+    
+    
+    # CSS Styles (defined separately to avoid f-string brace escaping issues)
+    css_styles = """
+        :root {
             --bg-main: #121212;
             --bg-card: #1e1e1e;
             --bg-card-secondary: #2a2a2a;
@@ -1650,120 +1845,194 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             --accent-red: #f87171;
             --accent-blue: #60a5fa;
             --border-color: #333333;
-        }}
+        }
 
-        body {{
+        body {
             margin: 0;
             padding: 20px;
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-main);
             color: var(--text-primary);
             -webkit-font-smoothing: antialiased;
-        }}
+        }
 
-        .container {{ max-width: 800px; margin: 0 auto; }}
+        .container { max-width: 800px; margin: 0 auto; }
 
-        header {{
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
-        }}
-        h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
-        .date-sub {{ color: var(--text-secondary); font-size: 14px; margin-top: 5px; }}
+        }
+        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
 
-        .summary-grid {{
+        .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-bottom: 30px;
-        }}
-        .stat-box {{
+        }
+        .stat-box {
             background-color: var(--bg-card);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
             border: 1px solid var(--border-color);
-        }}
-        .stat-label {{ font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }}
-        .stat-value {{ font-size: 20px; font-weight: 700; }}
+        }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 20px; font-weight: 700; }
 
-        .section-title {{
+        .section-title {
             font-size: 18px;
             margin-bottom: 15px;
             display: flex; align-items: center;
-        }}
-        .section-title span.highlight {{ color: var(--accent-green); margin-left: 8px; font-size: 14px; }}
+        }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
 
-        .prop-card {{
+        .prop-card {
             background-color: var(--bg-card);
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        }}
+        }
 
-        .card-header {{
+        .card-header {
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: var(--bg-card-secondary);
             border-bottom: 1px solid var(--border-color);
-        }}
+        }
 
-        .header-left {{ display: flex; align-items: center; gap: 12px; }}
-        .team-logo {{ width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }}
-        .player-info h2 {{ margin: 0; font-size: 18px; line-height: 1.2; }}
-        .matchup-info {{ color: var(--text-secondary); font-size: 13px; margin-top: 2px; }}
-        .game-meta {{ text-align: right; }}
-        .game-date-time {{ font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }}
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .game-meta { text-align: right; }
+        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
 
-        .card-body {{ padding: 20px; }}
-        .bet-main-row {{ margin-bottom: 15px; }}
-        .bet-selection {{ font-size: 22px; font-weight: 800; }}
-        .bet-selection .line {{ color: var(--text-primary); }}
-        .bet-odds {{ font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }}
+        .card-body { padding: 20px; }
+        .bet-main-row { margin-bottom: 15px; }
+        .bet-selection { font-size: 22px; font-weight: 800; }
+        .bet-selection .line { color: var(--text-primary); }
+        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
-        .model-subtext {{ color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }}
-        .model-subtext strong {{ color: var(--text-primary); }}
+        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext strong { color: var(--text-primary); }
 
-        .metrics-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }}
-        .metric-item {{ background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }}
-        .metric-lbl {{ display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }}
-        .metric-val {{ font-size: 16px; font-weight: 700; }}
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+        .metric-val { font-size: 16px; font-weight: 700; }
 
-        .player-stats {{ background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }}
-        .player-stats-label {{ font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }}
-        .player-stats-value {{ font-size: 16px; font-weight: 700; }}
-        .player-stats-item {{ text-align: center; flex: 1; }}
-        .player-stats-divider {{ width: 1px; height: 30px; background-color: var(--border-color); }}
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats-item { text-align: center; flex: 1; }
+        .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
 
-        .tags-container {{ display: flex; flex-wrap: wrap; gap: 8px; }}
-        .tag {{ font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }}
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
 
-        .txt-green {{ color: var(--accent-green); }}
-        .txt-red {{ color: var(--accent-red); }}
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
         
-        .tag-green {{ background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }}
-        .tag-red {{ background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }}
-        .tag-blue {{ background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }}
+        .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+        .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+        .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+        
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .text-red { color: var(--accent-red); }
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .metric-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .metric-value.good { color: var(--accent-green); }
 
-        @media (max-width: 600px) {{
-            .summary-grid {{ grid-template-columns: repeat(2, 1fr); }}
-            .stat-box:last-child {{ grid-column: span 2; }}
-            .card-header {{ padding: 12px 15px; }}
-            .team-logo {{ width: 38px; height: 38px; }}
-            .player-info h2 {{ font-size: 16px; }}
-        }}
+        @media (max-width: 600px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-box:last-child { grid-column: span 2; }
+            .card-header { padding: 12px 15px; }
+            .team-logo { width: 38px; height: 38px; }
+            .player-info h2 { font-size: 16px; }
+        }
+"""
+    
+    # Pre-format header stats to avoid f-string syntax errors
+    s_wins = stats.get('wins', 0)
+    s_losses = stats.get('losses', 0)
+    s_wr = round(stats.get('win_rate', 0.0), 1)
+    s_prof = stats.get('total_profit', 0.0)
+    s_prof_str = f"{s_prof:+.1f}u"
+    s_prof_color = 'var(--accent-green)' if s_prof > 0 else 'var(--accent-red)'
+    
+    html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+{css_styles}
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>NBA Rebounds Props Model</h1>
-        <div class="date-sub">Profitable Version • Season {CURRENT_SEASON}</div>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">NBA Rebounds Model</div>
+            <div class="date-sub">Profitable Version &bull; Season {CURRENT_SEASON}</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="metric-title">SEASON RECORD</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                {s_wins}-{s_losses} ({s_wr}%)
+            </div>
+            <div style="font-size: 0.9rem; color: {s_prof_color};">
+                 {s_prof_str}
+            </div>
+        </div>
     </header>
 
     {summary_html}
@@ -1771,6 +2040,10 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     {over_html}
 
     {under_html}
+
+    {daily_tracking_html}
+
+    {tracking_html}
 
     {performance_html}
 </div>
