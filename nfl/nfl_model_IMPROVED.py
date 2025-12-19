@@ -726,12 +726,13 @@ def generate_picks_html(analyses, stats, tracker):
             </div>
 
             <div class="card-body">
-                {% set spread_bet = None %}
-                {% set total_bet = None %}
+                {% set ns = namespace(spread_bet=None, total_bet=None) %}
                 {% for bet in game.bets %}
-                    {% if bet.type == 'SPREAD' %}{% set spread_bet = bet %}{% endif %}
-                    {% if bet.type == 'TOTAL' %}{% set total_bet = bet %}{% endif %}
+                    {% if bet.type == 'SPREAD' %}{% set ns.spread_bet = bet %}{% endif %}
+                    {% if bet.type == 'TOTAL' %}{% set ns.total_bet = bet %}{% endif %}
                 {% endfor %}
+                {% set spread_bet = ns.spread_bet %}
+                {% set total_bet = ns.total_bet %}
 
                 <!-- SPREAD BET BLOCK -->
                 <div class="bet-row">
