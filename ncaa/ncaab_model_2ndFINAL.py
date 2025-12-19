@@ -1345,6 +1345,40 @@ def save_html(results):
         </div>
         {% endfor %}
 
+        <!-- DAILY PERFORMANCE -->
+        <div class="tracking-section" style="margin-top: 3rem; margin-bottom: 0;">
+            <div class="tracking-header">📅 Daily Performance</div>
+            <div class="metrics-row" style="margin-bottom: 2rem;">
+                <!-- Today -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem; margin-bottom: 0;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">TODAY</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ stats.today.record }}</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;" class="{{ 'text-green' if stats.today.profit > 0 else ('text-red' if stats.today.profit < 0 else '') }}">
+                            {{ "%+.1f"|format(stats.today.profit / 100) }}u
+                        </div>
+                        <div style="font-size: 0.9rem;" class="{{ 'text-green' if stats.today.roi > 0 else ('text-red' if stats.today.roi < 0 else '') }}">
+                            {{ "%.1f"|format(stats.today.roi) }}% ROI
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yesterday -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem; margin-bottom: 0;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">YESTERDAY</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ stats.yesterday.record }}</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;" class="{{ 'text-green' if stats.yesterday.profit > 0 else ('text-red' if stats.yesterday.profit < 0 else '') }}">
+                            {{ "%+.1f"|format(stats.yesterday.profit / 100) }}u
+                        </div>
+                        <div style="font-size: 0.9rem;" class="{{ 'text-green' if stats.yesterday.roi > 0 else ('text-red' if stats.yesterday.roi < 0 else '') }}">
+                            {{ "%.1f"|format(stats.yesterday.roi) }}% ROI
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- PERFORMANCE STATS (Last 10/20/50) -->
         <div class="tracking-section">
             <div class="tracking-header">🔥 Recent Form</div>
