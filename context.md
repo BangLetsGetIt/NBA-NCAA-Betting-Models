@@ -1,417 +1,142 @@
-# NBA Points Props - CourtSide Analytics
-## Project Context Documentation
+# Sports Models Context for AI Agents
 
-### Project Overview
-**Project Name:** CourtSide Analytics - NBA Points Props Model  
-**URL:** https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/nba/nba_points_props.html  
-**Purpose:** AI-powered NBA player points proposition betting predictions with real-time data integration
+> **Last Updated**: 2025-12-19 03:15 AM ET  
+> **System Status**: ✅ ALL MODELS OPERATIONAL
 
 ---
 
-## Design Analysis
+## 🚀 Quick Start for New Agents
 
-### Visual Design System
-
-#### Color Palette
-- **Primary Background:** Dark theme (likely #1a1a1a or similar)
-- **Accent Colors:**
-  - Green: Success indicators, positive EV, checkmarks (✅)
-  - Orange/Amber: Star ratings, highlights
-  - White/Light Gray: Primary text
-  - Muted Gray: Secondary information
-  - Team Colors: Dynamic based on NBA team branding
-
-#### Typography
-- **Primary Font:** Modern sans-serif (likely system font stack)
-- **Hierarchy:**
-  - H1: "CourtSide Analytics" - Brand header
-  - H2: Section headers ("TOP OVER PLAYS", "TOP UNDER PLAYS")
-  - Body: Player names in bold, statistics in regular weight
-  - Small: Metadata, timestamps
-
-#### Layout Structure
-```
-┌─────────────────────────────────────────┐
-│  Header: CourtSide Analytics            │
-│  Subheader: NBA Points Props Model      │
-│  Key Features Badges (3 columns)        │
-│  Generated Timestamp                     │
-├─────────────────────────────────────────┤
-│  ## TOP OVER PLAYS                      │
-│  ┌───────────────────────────────────┐  │
-│  │ Player Card                       │  │
-│  │ - Prop Line                       │  │
-│  │ - Player Name + Team Logo         │  │
-│  │ - Matchup Info                    │  │
-│  │ - Star Rating                     │  │
-│  │ - Stats Grid                      │  │
-│  │ - A.I. Score                      │  │
-│  │ - Action Items (EV, CLV, etc.)   │  │
-│  └───────────────────────────────────┘  │
-│  [Multiple cards...]                     │
-├─────────────────────────────────────────┤
-│  ## TOP UNDER PLAYS                     │
-│  [Similar card structure]               │
-├─────────────────────────────────────────┤
-│  ## 📊 NBA Points Model Tracking        │
-│  [Performance metrics grid]             │
-└─────────────────────────────────────────┘
-```
-
-### Component Architecture
-
-#### 1. Header Section
-- Brand identity: "CourtSide Analytics"
-- Model title with key features
-- Three badge system:
-  - "REAL NBA STATS API"
-  - "A.I. SCORE ≥ 9.5"
-  - "STRICT EDGE REQUIREMENTS"
-- Timestamp: Dynamic generation time
-
-#### 2. Player Prop Cards
-**Card Components:**
-- **Prop Line Header:** Large, prominent (e.g., "OVER 29.5 PTS")
-- **Player Identity Block:**
-  - Player name (bold)
-  - Team logo image (inline)
-  - Matchup text
-  - Game time (ET timezone)
-- **Rating System:** Star emojis (⭐⭐⭐) with numeric rating
-- **Statistics Grid:**
-  - Season Average
-  - Recent Average
-  - CLV (Closing Line Value) - when applicable
-  - A.I. Score (always displayed)
-- **Action Tags:**
-  - ✅ Checkmark indicators
-  - Prop recommendation with EV percentage
-  - "SHARP" designation
-  - "📊 TRACKED" status
-
-#### 3. Tracking Dashboard
-**Metrics Grid Layout:**
-- 4x2 grid of key performance indicators
-- Metrics include:
-  - Total Picks
-  - Win Rate
-  - Record (W-L)
-  - P/L in Units
-  - ROI percentage
-  - Pending picks
-  - Closing Line Value average
-  - Average A.I. Score
-  - Edge Requirements
-
-#### 4. Footer
-- Attribution: "Powered by REAL NBA Stats API"
-- Methodology notes
-- Filter criteria explanation
+**Read this file first.** For deep dives, see:
+- `CODEBASE_OVERVIEW.md` - Full architecture, model inventory, code patterns
+- `PROPS_HTML_STYLING_GUIDE.md` - HTML/CSS styling standards
+- `AGENT_AUDIT_INSTRUCTIONS.md` - Audit procedures (if doing diagnostics)
 
 ---
 
-## Technical Implementation
+## What This Codebase Does
 
-### Data Structure
+AI-powered sports betting models that:
+1. **Fetch** live odds from The Odds API
+2. **Analyze** games/props using edge + AI scoring algorithms
+3. **Generate** +EV picks (positive expected value)
+4. **Track** all picks with full results history
+5. **Display** picks via GitHub Pages HTML output
 
-```javascript
-// Player Prop Object
-{
-  propType: "OVER" | "UNDER",
-  line: number,
-  player: {
-    name: string,
-    teamId: string,
-    teamLogo: string,
-    teamName: string
-  },
-  matchup: {
-    awayTeam: string,
-    homeTeam: string,
-    gameTime: DateTime,
-    location: string
-  },
-  rating: number, // 0-5
-  statistics: {
-    seasonAvg: number,
-    recentAvg: number,
-    aiScore: number
-  },
-  clv?: {
-    opening: string,
-    latest: string
-  },
-  expectedValue: number, // percentage
-  tags: string[], // ["SHARP", "TRACKED"]
-  tracked: boolean
-}
+---
+
+## Directory Structure
+
 ```
-
-### Dynamic Elements
-
-1. **Real-time Data Updates:**
-   - NBA Stats API integration
-   - Odds API for line movements
-   - Generated timestamp updates
-
-2. **Interactive Features:**
-   - Clickable player cards
-   - Sortable/filterable prop lists
-   - Team logo images loaded dynamically
-
-3. **Conditional Rendering:**
-   - CLV display (only when line movement exists)
-   - Star rating visualization
-   - Status badges
-
-### API Integration
-
-**Expected Endpoints:**
-- NBA Stats API: Player statistics, game schedules
-- Odds API: Betting lines, line movements
-- Custom Backend: A.I. scoring, EV calculations
-
-**Data Flow:**
-```
-NBA Stats API → Data Processing → A.I. Model → 
-Edge Calculation → HTML Generation → Page Render
+sports-models/
+├── nba/                    # NBA main model + 4 prop models
+├── nfl/                    # NFL main model + 5 prop models
+├── ncaa/                   # NCAAB/CBB main model + 3 prop models
+├── wnba/                   # WNBA main + props model
+├── soccer/                 # Soccer model
+├── auto_grader.py          # Central automation/grading script
+├── run_nba_models.sh       # alias: nbamodels
+├── run_nfl_models.sh       # alias: nflmodels
+├── run_cbb_models.sh       # alias: cbbmodels
+└── CODEBASE_OVERVIEW.md    # Full documentation
 ```
 
 ---
 
-## Design Principles
+## Current Model Status (Dec 2025)
 
-### 1. Information Hierarchy
-- **Primary:** Prop line and player name (immediate action item)
-- **Secondary:** Statistics and A.I. score (decision support)
-- **Tertiary:** Metadata and tracking info (confidence building)
-
-### 2. Visual Clarity
-- Dark theme reduces eye strain for extended analysis
-- High contrast for key data points
-- Color coding for quick pattern recognition
-- Emoji usage for universal comprehension
-
-### 3. Data Density
-- Maximizes information per screen
-- Grid layout for easy scanning
-- Consistent card sizing
-- Clear section separation
-
-### 4. Trust Building
-- Transparent methodology display
-- Performance tracking dashboard
-- Real API attribution
-- Timestamp for data freshness
-
-### 5. Action-Oriented
-- Clear prop recommendations
-- EV percentages for quick decision-making
-- Status indicators (SHARP, TRACKED)
-- Win rate prominently displayed
+| Sport | Main Model | Props Models | Status |
+|-------|------------|--------------|--------|
+| NBA | ✅ Working | ✅ Points, Rebounds, Assists, 3PT | Fully operational |
+| NFL | ✅ Working | ✅ Passing, Rushing, Receiving, Receptions, ATD | Fully operational |
+| NCAAB | ✅ Working | ✅ Points, Rebounds, Assists | Fully operational |
+| WNBA | ✅ Working | ✅ Props | Seasonal (offseason) |
+| Soccer | ✅ Working | N/A | Fully operational |
 
 ---
 
-## User Experience Flow
+## Common Commands
 
-### Primary Use Case
-1. **Entry:** User navigates to page seeking betting opportunities
-2. **Scanning:** Quick review of TOP OVER/UNDER sections
-3. **Evaluation:** Deep dive into specific player props of interest
-4. **Verification:** Check performance metrics in tracking dashboard
-5. **Action:** Make informed betting decisions
+```bash
+# Run all NBA models
+nbamodels
 
-### Secondary Use Cases
-- **Performance Monitoring:** Track historical success rates
-- **Line Shopping:** Compare opening vs. current lines (CLV)
-- **Research:** Analyze player averages and trends
-- **Model Validation:** Review A.I. scores and edge requirements
+# Run all NFL models  
+nflmodels
 
----
+# Run NCAAB/CBB models
+cbbmodels
 
-## Responsive Design Considerations
+# Run individual model
+cd nfl && python3 nfl_receiving_yards_props_model.py
 
-### Desktop (Primary Target)
-- Multi-column card layout
-- Wide tracking dashboard grid
-- Full statistics display
-
-### Tablet
-- 2-column card layout
-- Compressed stats grid
-- Maintained readability
-
-### Mobile
-- Single column card stack
-- Scrollable stats sections
-- Simplified tracking metrics
+# Push changes to GitHub Pages
+git add . && git commit -m "Update" && git push origin main
+```
 
 ---
 
-## Performance Optimization
+## Key Concepts
 
-### Loading Strategy
-1. Critical path: Header, key features, timestamp
-2. Above-fold: First 3-5 player prop cards
-3. Below-fold: Remaining props, tracking dashboard
-4. Lazy load: Team logo images
+### Edge Calculation
+```
+OVER:  edge = projected_value - prop_line
+UNDER: edge = prop_line - projected_value
+```
+Positive edge = +EV opportunity.
 
-### Caching Strategy
-- Static assets: Team logos (CDN cached)
-- Dynamic data: 5-15 minute cache for prop data
-- Real-time elements: Timestamp, tracking metrics
+### AI Score (0-10)
+Composite of edge magnitude + player consistency. Higher = more confident pick.
 
----
-
-## Brand Identity
-
-### Voice & Tone
-- **Professional:** Data-driven, analytical
-- **Confident:** "SHARP" designations, high win rates
-- **Transparent:** Clear methodology, tracked performance
-- **Urgent:** Real-time updates, game time displays
-
-### Key Messaging
-- AI-powered analysis
-- Real NBA data (not simulated)
-- Strict quality filters (≥9.5 A.I. Score)
-- Proven track record (100% win rate shown)
+### Tracking
+Each model has a `*_tracking.json` file storing all picks with:
+- `status`: pending → win/loss/push
+- `profit_loss`: Result in cents (91 = $0.91 profit on $1 bet)
+- `actual_val`: Real stat value for grading
 
 ---
 
-## Accessibility Considerations
+## Recent Major Fixes (Dec 2024)
 
-### Current Implementation
-- Semantic HTML structure (H1, H2 headers)
-- Descriptive text labels
-- Emoji for visual enhancement (but text-based)
-- Logical tab order for keyboard navigation
-
-### Recommended Enhancements
-- ARIA labels for interactive elements
-- Alt text for team logos
-- Color contrast ratios (WCAG AA compliant)
-- Screen reader friendly data tables
+1. ✅ NFL main model now displays Model/Edge values (Jinja2 scoping fix)
+2. ✅ NFL prop models show Season/Recent avg (regenerated HTML)
+3. ✅ NCAAB has Daily Performance section (Today/Yesterday)
+4. ✅ Soccer grading integrated into auto_grader.py
+5. ✅ All tracking schemas standardized with profit_loss field
 
 ---
 
-## Future Enhancement Opportunities
+## When Making Changes
 
-### Features
-- Filter by team, player, time
-- Sort by A.I. score, EV, rating
-- Historical prop performance
-- Customizable alerts
-- Comparison tools
-
-### Data
-- Additional prop types (rebounds, assists)
-- Injury reports integration
-- Weather conditions (if relevant)
-- Head-to-head matchup history
-
-### Interactivity
-- Live odds updates
-- Clickable team logos → team page
-- Player detail modals
-- Exportable picks list
+1. **Don't break tracking** - JSON schema must stay compatible
+2. **Match styling** - Follow PROPS_HTML_STYLING_GUIDE.md
+3. **Test first** - Run model and check HTML before pushing
+4. **Commit HTML** - Model runs generate .html files that must be committed
+5. **Check GitHub Pages** - Verify live site updated (~30 sec delay)
 
 ---
 
-## Technical Stack (Inferred)
+## GitHub Pages URLs
 
-### Frontend
-- HTML5
-- CSS3 (possibly Tailwind or custom framework)
-- JavaScript (vanilla or lightweight framework)
-- Markdown rendering for content
-
-### Backend
-- Python (typical for NBA API integration)
-- Data processing pipeline
-- Machine learning model (TensorFlow/PyTorch likely)
-
-### Data Sources
-- NBA Stats API (official)
-- Odds API (third-party)
-- Custom scraping infrastructure
-
-### Hosting
-- GitHub Pages (static site hosting)
-- Likely automated build/deploy pipeline
+- **Dashboard**: https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/dashboard.html
+- **NBA Main**: https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/nba/nba_model_output.html
+- **NFL Main**: https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/nfl/nfl_model_output.html
+- **NCAAB Main**: https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/ncaa/ncaab_model_output.html
 
 ---
 
-## Maintenance Considerations
+## Environment
 
-### Daily Operations
-- Data refresh (multiple times per day)
-- A.I. model retraining
-- Line movement tracking
-- Performance metric updates
+```bash
+# Required in .env
+ODDS_API_KEY=your_key
 
-### Quality Assurance
-- Data validation checks
-- A.I. score threshold enforcement
-- Edge requirement verification
-- Historical accuracy tracking
+# Python dependencies
+pip install requests python-dotenv pytz jinja2 pandas numpy
+```
 
 ---
 
-## Competitive Analysis Context
+## Questions?
 
-### Similar Products
-- Sports betting analytics platforms
-- Props betting tools
-- AI-powered sports prediction sites
-
-### Differentiators
-- High A.I. score threshold (≥9.5)
-- Strict edge requirements (2.0+/1.5+)
-- Transparent performance tracking
-- Free GitHub Pages deployment
-
----
-
-## Success Metrics
-
-### Primary KPIs
-- Win rate percentage
-- Return on Investment (ROI)
-- Average A.I. score
-- Closing Line Value (CLV)
-
-### User Engagement
-- Daily active users
-- Average time on page
-- Prop card interactions
-- Return visitor rate
-
----
-
-## Notes for Developers
-
-### Code Organization
-- Modular card components
-- Reusable statistics display
-- Centralized data fetching
-- Template-based rendering
-
-### Testing Requirements
-- Data pipeline validation
-- A.I. model accuracy
-- UI responsiveness
-- Cross-browser compatibility
-- API rate limiting handling
-
-### Documentation Needs
-- API integration guide
-- Model methodology explanation
-- Edge calculation formulas
-- Deployment procedures
-
----
-
-*Last Updated: December 14, 2025*  
-*Document Version: 1.0*  
-*Page Analysis Date: December 14, 2025*
+If anything is unclear, ask the user. They know this codebase well and can provide context on design decisions.
