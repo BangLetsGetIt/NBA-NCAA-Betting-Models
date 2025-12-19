@@ -1,19 +1,7 @@
 #!/usr/bin/env python3
 """
-American Betting League Dashboard Generator
-
-IMPORTANT: Always run this script from your "American Betting League" folder!
-
-Usage:
-    cd "/Users/rico/American Betting League"
-    python3 abl_recap.py
-
-The script will look for:
-    - images/     (your screenshots for "Top Performers")
-    - history/    (historical CSV data - created automatically)
-    - dashboard.html (generated output)
-
-All in the same folder as this script.
+American Betting League Dashboard Generator - AUTOMATED EDITION
+Matches CourtSide Analytics Premium Aesthetic (Blue/Green/Dark)
 """
 
 import pandas as pd
@@ -21,333 +9,449 @@ import jinja2
 import ssl
 import os
 from datetime import datetime
-import shutil
 import plotly.express as px
 import plotly.io as pio
 
 # --- Configuration ---
 BASE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1n_fAOu2dbT9DavwD7Kq12QJ8an7X4LBdP6o3-2_A2pA/export?format=csv'
-# Add a cache-busting timestamp to the URL to always get fresh data
 SHEET_URL = f"{BASE_SHEET_URL}&_={int(datetime.now().timestamp())}"
-IMAGES_FOLDER = 'images'
 HISTORY_FOLDER = 'history'
 OUTPUT_FILE = 'dashboard.html'
-UNIT_GLOW_THRESHOLD = 5
-HUGE_GAIN_THRESHOLD = 5
-TOP_RISERS_COUNT = 5
-TREND_DAYS = 5  # last N days for sparkline
 
-# --- HTML Template (No changes needed) ---
-HTML_TEMPLATE = """ 
+# --- CSS & HTML Template ---
+HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>American Betting League Standings</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body { background: #000; color: #fff; }
-.streak-w { color: #22c55e; font-weight: 600; }
-.streak-l { color: #ef4444; font-weight: 600; }
-.unit-positive { color: #22c55e; }
-.unit-negative { color: #ef4444; }
-.rank-top-3 { font-weight: 900; color: #f59e0b; }
-.dynamic-glow { animation: glow 1.5s ease-in-out infinite alternate; border-color: #f59e0b; }
-@keyframes glow { 0% { box-shadow: 0 0 15px rgba(250,204,21,0.3); } 50% { box-shadow:0 0 25px rgba(250,204,21,0.6); } 100% { box-shadow:0 0 15px rgba(250,204,21,0.3); } }
-.box { background: #111; border:1px solid #333; border-radius:0.5rem; padding:1rem; }
-.box:hover { background: #222; }
-img.screenshot { border-radius: 0.5rem; box-shadow: 0 0 10px rgba(255,255,255,0.1); transition: transform 0.3s ease; }
-img.screenshot:hover { transform: scale(1.02); }
-.sparkline { height: 40px; width: 100%; }
-table th, table td { border-color: #333; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABL Midseason Update</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-green-dim: rgba(74, 222, 128, 0.1);
+            --accent-red: #f87171;
+            --accent-blue: #3b82f6; /* Modern Blue */
+            --accent-blue-dim: rgba(59, 130, 246, 0.1);
+            --border-color: #333333;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Header --- */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+            margin-top: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: var(--bg-card-secondary);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        /* --- Sections --- */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 24px;
+            background: var(--accent-blue);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 50px; }
+        
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- Performer Lists --- */
+        .performer-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .performer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .performer-item:last-child { border-bottom: none; }
+
+        .p-rank {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            width: 30px;
+            font-weight: 600;
+        }
+        
+        .p-info { flex-grow: 1; }
+        .p-name { font-weight: 700; font-size: 1.1rem; color: #fff; display: block; }
+        .p-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+
+        .p-stat { text-align: right; }
+        .p-val { font-size: 1.2rem; font-weight: 800; display: block; }
+        .p-lbl { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* --- Badges --- */
+        .badge-top { background: var(--accent-green-dim); color: var(--accent-green); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-steady { background: var(--accent-blue-dim); color: var(--accent-blue); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+
+        /* --- Chart --- */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* --- Table --- */
+        .standings-container {
+            overflow-x: auto;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: var(--bg-card-secondary);
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
+        tr:hover { background-color: rgba(255,255,255,0.02); }
+
+        .rank-cell { font-weight: 800; color: var(--text-secondary); width: 50px; }
+        .bettor-name { font-weight: 600; color: #fff; }
+        
+        .val-pos { color: var(--accent-green); font-weight: 700; }
+        .val-neg { color: var(--accent-red); font-weight: 700; }
+        .val-neutral { color: var(--text-secondary); }
+
+        .streak-w { color: var(--accent-green); font-weight: 700; }
+        .streak-l { color: var(--accent-red); font-weight: 700; }
+
+    </style>
 </head>
-<body class="font-sans p-4 md:p-8">
-<div class="max-w-7xl mx-auto">
-<header class="mb-8">
-<h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2">American Betting League</h1>
-<p class="text-xl text-gray-400">Official Standings & Multi-Day Report</p>
-<p class="text-sm text-gray-500 mt-2">Last Updated: {{ last_updated }}</p>
-</header>
+<body>
+    <div class="container">
+        
+        <header>
+            <h1>American Betting League</h1>
+            <div class="subtitle">Midseason Report</div>
+            <div class="date-badge">📅 {{ date_str }}</div>
+        </header>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- TOP & STEADY PERFORMERS -->
+        <div class="grid-2">
+            <!-- TOP PERFORMERS (UNITS) -->
+            <div>
+                <div class="section-title">
+                    <span>Top Performers (Units)</span>
+                </div>
+                <div class="card">
+                    <ul class="performer-list">
+                        {% for p in top_performers %}
+                        <li class="performer-item">
+                            <div class="p-rank">#{{ p.RANK }}</div>
+                            <div class="p-info">
+                                <span class="p-name">{{ p.BETTOR }} <span class="badge-top">Top Earner</span></span>
+                                <div class="p-sub">Record: {{ p.W }}-{{ p.L }}-{{ p.P }}</div>
+                            </div>
+                            <div class="p-stat">
+                                <span class="p-val val-pos">+{{ "%.2f"|format(p.UNIT) }}u</span>
+                                <span class="p-lbl">Profit</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
-<div class="lg:col-span-2">
-<div class="box shadow-2xl overflow-hidden">
-<div class="overflow-x-auto">
-<table class="min-w-full divide-y divide-gray-800">
-<thead class="bg-gray-900">
-<tr>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rank</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Bettor</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Unit</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Record (W-L-P)</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Win %</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Streak</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Units Yesterday</th>
-<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Trend (Last {{ TREND_DAYS }} Days)</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-gray-800">
-{% for row in data %}
-<tr class="hover:bg-gray-800 transition-colors duration-150">
-<td class="px-4 py-4 text-sm {{ 'rank-top-3' if row['RANK'] <= 3 else '' }}">{{ row['RANK'] }}</td>
-<td class="px-4 py-4 text-sm font-medium text-white">{{ row['BETTOR'] }}</td>
-<td class="px-4 py-4 text-sm {{ 'unit-positive' if row['UNIT'] > 0 else 'unit-negative' }}">{{ "%.2f"|format(row['UNIT']) }}</td>
-<td class="px-4 py-4 text-sm text-gray-300">{{ row['W'] }}-{{ row['L'] }}-{{ row['P'] }}</td>
-<td class="px-4 py-4 text-sm text-gray-300">{{ row['%'] }}</td>
-<td class="px-4 py-4 text-sm {{ 'streak-w' if 'W' in row['STRK'] else ('streak-l' if 'L' in row['STRK'] else '') }}">{{ row['STRK'] }}</td>
-<td class="px-4 py-4 text-sm {{ 'unit-positive' if row['LDAY UNITS'] > 0 else ('unit-negative' if row['LDAY UNITS'] < 0 else '') }}">{{ "%.2f"|format(row['LDAY UNITS']) }}</td>
-<td class="px-4 py-4 text-sm">{{ row['sparkline']|safe }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-</div>
-</div>
+            <!-- CONSISTENT BETTORS (WIN %) -->
+            <div>
+                 <div class="section-title" style="border-color: var(--accent-blue);">
+                    <span>Consistent Bettors (Win %)</span>
+                </div>
+                <div class="card">
+                    <ul class="performer-list">
+                        {% for p in steady_bettors %}
+                        <li class="performer-item">
+                            <div class="p-rank">#{{ p.RANK }}</div>
+                            <div class="p-info">
+                                <span class="p-name">{{ p.BETTOR }} <span class="badge-steady">Steady</span></span>
+                                <div class="p-sub">Total Bets: {{ p.total_bets }}</div>
+                            </div>
+                            <div class="p-stat">
+                                <span class="p-val" style="color: var(--accent-blue);">{{ p['%'] }}</span>
+                                <span class="p-lbl">Win Rate</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<div class="lg:col-span-1 space-y-6">
+        <!-- BAR GRAPH -->
+        <div class="section-title">
+            <span>League Leaders (Top 10 Units)</span>
+        </div>
+        <div class="card" style="margin-bottom: 50px;">
+            {{ bar_chart|safe }}
+        </div>
 
-<div class="box shadow-2xl {{ 'dynamic-glow' if bettor_of_day['LDAY UNITS'] >= UNIT_GLOW_THRESHOLD else '' }}">
-<h2 class="text-2xl font-bold text-yellow-400 mb-4">🏆 Bettor of The Day</h2>
-<p class="text-2xl font-semibold text-white">{{ bettor_of_day['BETTOR'] }}</p>
-<p class="text-sm text-gray-400 mb-2">Rank #{{ bettor_of_day['RANK'] }}</p>
-<p class="text-gray-300 mt-2">Units Yesterday: <span class="{{ 'unit-positive' if bettor_of_day['LDAY UNITS'] > 0 else 'unit-negative' }}">{{ "%.2f"|format(bettor_of_day['LDAY UNITS']) }}</span></p>
-<p class="text-yellow-400 font-semibold text-md mt-1">Total Units: {{ "%.2f"|format(bettor_of_day['UNIT']) }}</p>
-</div>
+        <!-- FULL STANDINGS -->
+        <div class="section-title">
+            <span>Official Standings</span>
+        </div>
+        <div class="standings-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Bettor</th>
+                        <th>Total Units</th>
+                        <th>Record</th>
+                        <th>Win %</th>
+                        <th>Yesterday</th>
+                        <th>Streak</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td class="rank-cell">{{ row.RANK }}</td>
+                        <td class="bettor-name">{{ row.BETTOR }}</td>
+                        <td class="{{ 'val-pos' if row.UNIT > 0 else 'val-neutral' if row.UNIT == 0 else 'val-neg' }}">
+                            {{ "%.2f"|format(row.UNIT) }}
+                        </td>
+                        <td style="color: var(--text-secondary);">
+                            {{ row.W }}-{{ row.L }}-{{ row.P }}
+                        </td>
+                        <td>{{ row['%'] }}</td>
+                        <td>
+                            {% if row['LDAY UNITS'] != 0 %}
+                            <span class="{{ 'val-pos' if row['LDAY UNITS'] > 0 else 'val-neg' }}">
+                                {{ "%.2f"|format(row['LDAY UNITS']) }}u
+                            </span>
+                            {% else %}
+                            <span class="val-neutral">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if 'W' in row.STRK %}
+                            <span class="streak-w">{{ row.STRK }}</span>
+                            {% elif 'L' in row.STRK %}
+                            <span class="streak-l">{{ row.STRK }}</span>
+                            {% else %}
+                            <span style="color: grey;">{{ row.STRK }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-<div class="box border-green-600 shadow-2xl">
-<h2 class="text-2xl font-bold text-green-400 mb-4">📈 Biggest Risers</h2>
-<p class="text-xs text-gray-400 mb-3">Top performers from yesterday</p>
-{% if movers %}
-<ul class="space-y-3">
-{% for m in movers %}
-<li class="text-sm text-gray-200">
-<div class="flex justify-between items-center mb-1">
-<span class="font-semibold text-white">{{ loop.index }}. {{ m['BETTOR'] }}</span>
-{% if m.huge_gain %}<span class="text-yellow-400 font-bold ml-1">🏅</span>{% endif %}
-</div>
-<div class="text-green-400 font-bold">+{{ "%.2f"|format(m['unit_change']) }} units yesterday</div>
-<div class="sparkline mt-2">{{ m['sparkline']|safe }}</div>
-</li>
-{% endfor %}
-</ul>
-{% else %}
-<p class="text-gray-400">No positive unit gains yesterday.</p>
-{% endif %}
-</div>
-
-<div class="box">
-<h2 class="text-2xl font-bold text-white mb-4">Top Performers</h2>
-{% if images %}
-<div class="grid grid-cols-1 gap-4">
-{% for img in images %}
-<img src="{{ img }}" alt="Screenshot" class="screenshot w-full h-auto" loading="lazy">
-{% endfor %}
-</div>
-{% else %}
-<p class="text-gray-400">No screenshots uploaded yet.</p>
-{% endif %}
-</div>
-
-</div>
-</div>
-</div>
+    </div>
 </body>
 </html>
 """
 
-# --- Main Script ---
+def clean_dataframe(df):
+    """Cleans numeric columns from strings with symbols to pure floats."""
+    cols_to_clean = ['UNIT', 'RANK', 'LDAY UNITS', 'W', 'L', 'P']
+    for col in cols_to_clean:
+        if col in df.columns:
+            df[col] = df[col].astype(str).replace(r'[^\d.-]', '', regex=True)
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+    return df
+
+def generate_bar_chart(df, top_n=10):
+    """Generates a Plotly Bar Chart for the Top N bettors by Units."""
+    # Filter only positive units for the chart to look nice, or just take top N regardless
+    top_df = df.sort_values('UNIT', ascending=False).head(top_n).copy()
+    
+    # Color logic: Green for > 0, Red for < 0
+    top_df['Color'] = top_df['UNIT'].apply(lambda x: '#4ade80' if x >= 0 else '#f87171')
+
+    fig = px.bar(
+        top_df, 
+        x='BETTOR', 
+        y='UNIT',
+        text_auto='.2f',
+        title=None
+    )
+    
+    fig.update_traces(
+        marker_color=top_df['Color'],
+        textfont_size=12,
+        textfont_color='white',
+        textposition='outside',
+        cliponaxis=False 
+    )
+
+    fig.update_layout(
+        paper_bgcolor='#1e1e1e',
+        plot_bgcolor='#1e1e1e',
+        font={'family': 'Inter', 'color': '#b3b3b3'},
+        xaxis=dict(
+            showgrid=False, 
+            linecolor='#333',
+            tickangle=0,
+            title=None,
+            tickfont=dict(size=11, color='#fff')
+        ),
+        yaxis=dict(
+            showgrid=True, 
+            gridcolor='#2a2a2a', 
+            zerolinecolor='#333',
+            title='Total Units'
+        ),
+        margin=dict(l=20, r=20, t=20, b=40),
+        height=400,
+        showlegend=False
+    )
+    
+    return pio.to_html(fig, include_plotlyjs='cdn', full_html=False)
+
+def helper_parse_percent(val):
+    """Converts '52%' string to 52.0 float."""
+    try:
+        if isinstance(val, str):
+            return float(val.replace('%', ''))
+        return float(val)
+    except:
+        return 0.0
+
 def create_dashboard():
-    # Show current working directory to help with image folder location
     print("=" * 60)
-    print("AMERICAN BETTING LEAGUE DASHBOARD")
-    print("=" * 60)
-    print(f"Running from: {os.path.abspath('.')}")
-    print(f"Images folder: {os.path.abspath(IMAGES_FOLDER)}")
-    print(f"History folder: {os.path.abspath(HISTORY_FOLDER)}")
+    print("ABL AUTOMATED DASHBOARD GENERATOR")
     print("=" * 60)
     
     ssl._create_default_https_context = ssl._create_unverified_context
     os.makedirs(HISTORY_FOLDER, exist_ok=True)
-    os.makedirs(IMAGES_FOLDER, exist_ok=True)
 
+    # 1. Fetch Data (Directly from Sheet for Automation)
+    print("Fetching latest data from Google Sheets...")
     try:
-        # Load today's data
-        data = pd.read_csv(SHEET_URL)
+        df_current = pd.read_csv(SHEET_URL)
+        df_current = clean_dataframe(df_current)
+        
+        # Save history
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        df_current.to_csv(os.path.join(HISTORY_FOLDER, f"{today_str}.csv"), index=False)
+        
     except Exception as e:
-        print(f"FATAL ERROR: Could not download or read Google Sheet. {e}")
+        print(f"Error fetching data: {e}")
         return
 
-    # --- START OF THE FIX ---
-    # This force-cleans the data from the sheet.
-    # It removes anything that isn't a number, a minus sign, or a decimal point.
-    # This fixes issues with "+5.2", "5 units", "1,000", etc.
+    # 2. Logic: Top Performers (Units)
+    top_performers = df_current[df_current['UNIT'] > 0].sort_values('UNIT', ascending=False).head(5)
     
-    # First, make sure all columns exist
-    for col in ['UNIT', 'RANK', 'LDAY UNITS', 'BETTOR']:
-        if col not in data.columns:
-            print(f"FATAL ERROR: Column '{col}' not found in your Google Sheet. Please check spelling.")
-            return
-            
-    # Convert all columns to string type first to make .replace() work
-    data['UNIT'] = data['UNIT'].astype(str)
-    data['RANK'] = data['RANK'].astype(str)
-    data['LDAY UNITS'] = data['LDAY UNITS'].astype(str)
-
-    # Use regex to strip out bad characters. Keep numbers, '.', and '-'
-    # r'[^\d.-]' means "match anything that is NOT a digit, a dot, or a minus sign"
-    data['UNIT'] = data['UNIT'].replace(r'[^\d.-]', '', regex=True)
-    data['RANK'] = data['RANK'].replace(r'[^\d.-]', '', regex=True)
-    data['LDAY UNITS'] = data['LDAY UNITS'].replace(r'[^\d.-]', '', regex=True)
-
-    # Now, convert to numeric. 'coerce' turns any leftover blanks (from empty cells) into 0.
-    data['UNIT'] = pd.to_numeric(data['UNIT'], errors='coerce').fillna(0)
-    data['RANK'] = pd.to_numeric(data['RANK'], errors='coerce').fillna(0)
-    data['LDAY UNITS'] = pd.to_numeric(data['LDAY UNITS'], errors='coerce').fillna(0)
+    # 3. Logic: Consistent/Steady (Win %)
+    df_current['total_bets'] = df_current['W'] + df_current['L']
+    qualified_df = df_current[df_current['total_bets'] >= 15].copy()
     
-    # --- END OF THE FIX ---
+    if qualified_df.empty:
+        qualified_df = df_current.head(10).copy()
 
-    # --- DEBUGGING LINES ---
-    print("--- DEBUG: Data *After* Force-Cleaning ---")
-    print(data[['BETTOR', 'LDAY UNITS']].head())
-    print("-----------------------------------------")
-    # --- END DEBUG ---
-       
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    today_file = os.path.join(HISTORY_FOLDER, f"{today_str}.csv")
-    data.to_csv(today_file, index=False)
+    qualified_df['win_pct_val'] = qualified_df['%'].apply(helper_parse_percent)
+    steady_bettors = qualified_df.sort_values('win_pct_val', ascending=False).head(5)
 
-    # Last N days for trends
-    history_files = sorted([os.path.join(HISTORY_FOLDER,f) for f in os.listdir(HISTORY_FOLDER)
-                            if f.endswith('.csv')])[-TREND_DAYS:]
-    trends = {}
-    if history_files:
-        for f in history_files:
-            try:
-                df = pd.read_csv(f)
-                for _, row in df.iterrows():
-                    trends.setdefault(row['BETTOR'], []).append(row['UNIT'])
-            except Exception as e:
-                print(f"Warning: Could not read history file {f}. {e}")
+    # 4. Bar Graph
+    bar_html = generate_bar_chart(df_current, top_n=10)
 
-    # Build sparklines
-    spark_dict = {}
-    for bettor, units_list in trends.items():
-        if len(units_list) > 1: # Need at least 2 points for a line
-            fig = px.line(y=units_list, height=40)
-            fig.update_traces(line_color="#22c55e", mode="lines") # Removed markers for cleaner look
-            fig.update_layout(margin=dict(l=0,r=0,t=0,b=0), xaxis=dict(visible=False),
-                              yaxis=dict(visible=False), paper_bgcolor='rgba(0,0,0,0)',
-                              plot_bgcolor='rgba(0,0,0,0)')
-            spark_html = pio.to_html(fig, include_plotlyjs=False, full_html=False)
-            spark_dict[bettor] = spark_html
-    data['sparkline'] = data['BETTOR'].map(spark_dict).fillna("")
-
-
-    # Bettor of the Day
-    # Handle case where all LDAY UNITS are 0
-    if data['LDAY UNITS'].max() > 0:
-        bettor_of_day = data.loc[data['LDAY UNITS'].idxmax()].to_dict()
-    else:
-        bettor_of_day = {'BETTOR': 'N/A', 'LDAY UNITS': 0, 'UNIT': 0, 'RANK': 0}
-
-
-    # Biggest Risers - Show top performers from YESTERDAY (LDAY UNITS)
-    movers = []
-    
-    print(f"\n🚀 Top {TOP_RISERS_COUNT} Biggest Gainers from Yesterday:")
-    print("=" * 60)
-    
-    # Sort by LDAY UNITS (yesterday's performance), highest first
-    # Filter out only positive gains
-    top_yesterday = data[data['LDAY UNITS'] > 0].sort_values(
-        'LDAY UNITS', ascending=False
-    ).head(TOP_RISERS_COUNT + 1)  # Get extra in case Bettor of Day is in top 5
-    
-    # Build the movers list
-    count = 0
-    for _, row in top_yesterday.iterrows():
-        # Skip Bettor of the Day to avoid duplication (optional - comment out if you want to include them)
-        # if row['BETTOR'] == bettor_of_day['BETTOR']:
-        #     continue
-            
-        if count >= TOP_RISERS_COUNT:
-            break
-            
-        print(f"  {row['BETTOR']}: +{row['LDAY UNITS']:.2f} units yesterday")
-        
-        spark_html = ""
-        units_list = trends.get(row['BETTOR'], [])
-        if len(units_list) > 1:
-            fig = px.line(y=units_list, height=40)
-            fig.update_traces(line_color="#22c55e", mode="lines")
-            fig.update_layout(margin=dict(l=0,r=0,t=0,b=0), xaxis=dict(visible=False),
-                              yaxis=dict(visible=False), paper_bgcolor='rgba(0,0,0,0)',
-                              plot_bgcolor='rgba(0,0,0,0)')
-            spark_html = pio.to_html(fig, include_plotlyjs=False, full_html=False)
-        
-        movers.append({
-            'BETTOR': row['BETTOR'],
-            'rank_change': 0,  # Not relevant for yesterday's performance
-            'unit_change': float(row['LDAY UNITS']),
-            'sparkline': spark_html,
-            'huge_gain': row['LDAY UNITS'] >= HUGE_GAIN_THRESHOLD
-        })
-        count += 1
-    
-    if not movers:
-        print("  No positive unit gains detected yesterday.")
-
-
-    # Screenshots - sorted by upload order (oldest first)
-    image_files = [f for f in os.listdir(IMAGES_FOLDER)
-                   if os.path.isfile(os.path.join(IMAGES_FOLDER, f)) 
-                   and f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-    
-    # Sort by modification time (oldest first = upload order)
-    image_files.sort(key=lambda f: os.path.getmtime(os.path.join(IMAGES_FOLDER, f)))
-    
-    # Create full paths
-    images = [os.path.join(IMAGES_FOLDER, f) for f in image_files]
-    
-    # Debug output for images
-    print(f"\n📸 Images for 'Top Performers' section:")
-    print("=" * 60)
-    print(f"Looking in: {os.path.abspath(IMAGES_FOLDER)}")
-    if images:
-        print(f"✅ Found {len(images)} image(s) (in upload order):")
-        for i, img in enumerate(images, 1):
-            print(f"  {i}. {img}")
-    else:
-        print(f"❌ No images found in '{IMAGES_FOLDER}' folder")
-        if os.path.exists(IMAGES_FOLDER):
-            all_files = os.listdir(IMAGES_FOLDER)
-            if all_files:
-                print(f"   Files in folder: {all_files}")
-                print("   ⚠️  Make sure files have .png, .jpg, or .jpeg extensions")
-            else:
-                print("   Folder is empty - add your screenshots here")
-        else:
-            print("   ⚠️  Folder doesn't exist - it will be created")
-
-    # Render HTML
+    # 5. Render HTML
+    print("Rendering Dashboard...")
     env = jinja2.Environment(loader=jinja2.BaseLoader())
     html = env.from_string(HTML_TEMPLATE).render(
-        data=data.to_dict('records'),
-        bettor_of_day=bettor_of_day,
-        movers=movers,
-        images=images,
-        last_updated=datetime.now().strftime("%B %d, %Y at %I:%M %p"),
-        UNIT_GLOW_THRESHOLD=UNIT_GLOW_THRESHOLD,
-        TREND_DAYS=TREND_DAYS
+        data=df_current.to_dict('records'),
+        top_performers=top_performers.to_dict('records'),
+        steady_bettors=steady_bettors.to_dict('records'),
+        bar_chart=bar_html,
+        date_str=datetime.now().strftime("%B %d, %Y")
     )
 
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"🎉 Dashboard updated! Open this *exact* file: {os.path.abspath(OUTPUT_FILE)}")
+    
+    print(f"SUCCESS! Automated Dashboard generated: {os.path.abspath(OUTPUT_FILE)}")
 
 if __name__ == "__main__":
     create_dashboard()

@@ -224,6 +224,7 @@ def grade_pending_picks():
     print(f"\n{Colors.YELLOW}📋 Found {len(pending_picks)} pending picks...{Colors.END}\n")
     
     graded_count = 0
+    completed_teams_cache = {}
     
     for pick in pending_picks:
         # Check if game has passed (add 4 hour buffer for games to complete)
@@ -236,17 +237,42 @@ def grade_pending_picks():
             current_time = datetime.now(pytz.UTC)
             hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
             
-            if hours_since_game < 4:
-                continue  # Game too recent, wait for stats
+            # Determine game status early to skip buffer if final
+            et_tz = pytz.timezone('US/Eastern')
+            game_date = game_time_utc.astimezone(et_tz).strftime('%Y-%m-%d')
+            
+            if game_date not in completed_teams_cache:
+                completed_teams_cache[game_date] = fetch_completed_teams_for_date(game_date)
+            
+            # Check if team's game is completed
+            is_game_final = False
+            team_name = pick.get('team')
+            if team_name in completed_teams_cache[game_date]:
+                is_game_final = True
+            
+            if hours_since_game < 4 and not is_game_final:
+                continue  # Game too recent and not final, wait
             
             # Fetch actual 3-pointers made from NBA API
             player_name = pick.get('player')
-            team_name = pick.get('team')
-            game_date = game_time_utc.strftime('%Y-%m-%d')
+            # game_date already calculated
             
             actual_3pm = fetch_player_3pt_from_nba_api(player_name, team_name, game_date)
             
             if actual_3pm is None:
+                # Check DNP (Did Not Play)
+                if game_date not in completed_teams_cache:
+                    completed_teams_cache[game_date] = fetch_completed_teams_for_date(game_date)
+                
+                if team_name in completed_teams_cache[game_date]:
+                    print(f"{Colors.YELLOW}  ⚠️  Player {player_name} has no stats but game is final -> Marking as DNP/Void{Colors.END}")
+                    pick['status'] = 'void'
+                    pick['result'] = 'DNP'
+                    pick['profit_loss'] = 0
+                    # pick['actual_3pm'] = 0
+                    graded_count += 1
+                    continue
+
                 print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date}{Colors.END}")
                 continue
             
@@ -294,6 +320,8 @@ def grade_pending_picks():
         print(f"\n{Colors.GREEN}✓ Graded {graded_count} picks{Colors.END}")
     else:
         print(f"\n{Colors.YELLOW}No picks ready for grading yet{Colors.END}")
+
+    return graded_count
 
 def backfill_profit_loss():
     """Backfill profit_loss for graded picks that are missing it - CRITICAL for accurate ROI"""
@@ -722,6 +750,28 @@ def get_opponent_3pt_factors():
             with open(TEAM_3PT_CACHE, "r") as f:
                 return json.load(f)
         return {}
+
+
+def fetch_completed_teams_for_date(date_str):
+    """
+    Returns a set of team names that have played on this date.
+    Used to determine if a game is final for DNP logic.
+    """
+    try:
+        print(f"  Fetching team stats to verify completed games for {date_str}...")
+        stats = leaguedashteamstats.LeagueDashTeamStats(
+            date_from_nullable=date_str,
+            date_to_nullable=date_str
+        ).get_data_frames()[0]
+        
+        if stats.empty:
+            return set()
+            
+        # Return set of TEAM_NAME
+        return set(stats['TEAM_NAME'].unique())
+    except Exception as e:
+        print(f"  Error fetching completed teams: {e}")
+        return set()
 
 
 # =============================================================================
@@ -1443,7 +1493,40 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     last_50 = calculate_recent_performance(completed_picks, 50)
     
     
+
     daily_tracking_html = ""
+    if stats and 'today' in stats:
+        t_stats = stats.get('today', {'record':'0-0', 'profit':0, 'roi':0})
+        y_stats = stats.get('yesterday', {'record':'0-0', 'profit':0, 'roi':0})
+        
+        t_profit_class = "txt-green" if t_stats['profit'] > 0 else ("txt-red" if t_stats['profit'] < 0 else "")
+        y_profit_class = "txt-green" if y_stats['profit'] > 0 else ("txt-red" if y_stats['profit'] < 0 else "")
+
+        daily_tracking_html = f"""
+        <section style="margin-top: 2rem;">
+            <div class="section-title">📅 Daily Performance</div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <!-- Today -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">TODAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{t_stats['record']}</div>
+                        <div class="{t_profit_class}">{t_stats['profit']:+.1f}u</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{t_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+                <!-- Yesterday -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{y_stats['record']}</div>
+                        <div class="{y_profit_class}">{y_stats['profit']:+.1f}u</div>
+                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{y_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        """
 
     # CSS Styles (defined separately to avoid f-string brace escaping issues)
     css_styles = """

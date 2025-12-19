@@ -312,8 +312,7 @@ def grade_props_tracking_file(
             continue
 
         hours_ago = (now_et - game_dt_et).total_seconds() / 3600.0
-        if hours_ago < hours_after_game_to_grade:
-            continue
+        # Check happens later after game completion detection
 
         target_date = game_dt_et.strftime("%Y-%m-%d")
         player_name = str(pick.get("player", ""))
@@ -346,6 +345,23 @@ def grade_props_tracking_file(
             if not getattr(sched_team, "empty", False):
                 sched_day = sched_team
 
+        # Check if game appears completed (has scores)
+        game_finished = False
+        try:
+            row = sched_day.iloc[0]
+            if _safe_float(row.get("home_score")) is not None and _safe_float(row.get("away_score")) is not None:
+                # If scores exist, treat as potentially final.
+                # nflreadpy usually updates after game.
+                game_finished = True
+        except Exception:
+            pass
+
+        # If game is finished, we can grade immediately (bypass 4 hour buffer)
+        effective_buffer = 0.5 if game_finished else hours_after_game_to_grade
+        
+        if hours_ago < effective_buffer:
+            continue
+
         week_val = _safe_float(sched_day.iloc[0].get("week"))
         if week_val is None:
             continue
@@ -372,13 +388,16 @@ def grade_props_tracking_file(
                 break
 
         if match_idx is None:
-            # If too old, void it
-            if hours_ago >= hours_after_game_to_void:
-                pick["status"] = "push"
+            # If game is finished and player not found -> DNP -> Void Immediately
+            # Or if too old (fallback)
+            if game_finished or hours_ago >= hours_after_game_to_void:
+                pick["status"] = "push" # void
                 pick["result"] = "VOID"
                 pick[spec.actual_field] = None
                 pick["updated_at"] = now_et.isoformat()
                 updated += 1
+                if verbose:
+                    print(f"⚠ {player_name} not found in finished game -> VOID")
             continue
 
         row = df_week.iloc[match_idx]
@@ -391,12 +410,14 @@ def grade_props_tracking_file(
             actual = _find_stat_value(row, spec.stat_candidates)
 
         if actual is None:
-            if hours_ago >= hours_after_game_to_void:
+            if game_finished or hours_ago >= hours_after_game_to_void:
                 pick["status"] = "push"
                 pick["result"] = "VOID"
                 pick[spec.actual_field] = None
                 pick["updated_at"] = now_et.isoformat()
                 updated += 1
+                if verbose:
+                    print(f"⚠ {player_name} stats missing in finished game -> VOID")
             continue
 
         # Determine W/L/PUSH

@@ -596,12 +596,17 @@ def update_pick_results():
     save_picks_tracking(tracking_data)
 
     if updated_count > 0:
-        wins = tracking_data['summary']['wins']
-        losses = tracking_data['summary']['losses']
-        pushes = tracking_data['summary']['pushes']
-        print(f"\n{Colors.GREEN}✅ Updated {updated_count} picks! Record: {wins}-{losses}-{pushes}{Colors.END}")
+        # Recalculate summary
+        tracking_data['summary'] = calculate_summary_stats(tracking_data['picks'])
+        save_picks_tracking(tracking_data)
+        print(f"{Colors.GREEN}✅ Updated {updated_count} picks{Colors.END}")
+        
+        # Regenerate HTML
+        generate_tracking_html()
     else:
-        print(f"\n{Colors.YELLOW}⚠️  No new results found{Colors.END}")
+        print(f"{Colors.YELLOW}No picks were updated (games may not be complete yet){Colors.END}")
+
+    return updated_count
 
 def calculate_tracking_stats(tracking_data):
     """Calculate tracking statistics"""

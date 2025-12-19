@@ -507,18 +507,26 @@ def generate_reasoning_tags(play):
     recent = play.get('recent_avg', 0)
     season = play.get('season_avg', 0)
     
-    if recent > season + 20:
-        tags.append({"text": f"Avg {recent:.1f} L5 Games (Hot)", "color": "green"})
-    elif recent < season - 20:
-        tags.append({"text": f"Avg {recent:.1f} L5 Games (Cold)", "color": "red"})
+    try:
+        r_val = float(recent)
+        s_val = float(season)
+        if r_val > s_val + 20:
+            tags.append({"text": f"Avg {r_val:.1f} L5 Games (Hot)", "color": "green"})
+        elif r_val < s_val - 20:
+            tags.append({"text": f"Avg {r_val:.1f} L5 Games (Cold)", "color": "red"})
+    except:
+        pass
         
-    edge = play.get('edge', 0)
-    if abs(edge) >= 15:
-        txt = f"Strong Edge {edge:+.1f}"
-        tags.append({"text": txt, "color": "green" if edge > 0 else "red"})
-    elif abs(edge) >= 5:
-        txt = f"Edge {edge:+.1f}"
-        tags.append({"text": txt, "color": "green" if edge > 0 else "blue"})
+    try:
+        edge = float(play.get('edge', 0))
+        if abs(edge) >= 15:
+            txt = f"Strong Edge {edge:+.1f}"
+            tags.append({"text": txt, "color": "green" if edge > 0 else "red"})
+        elif abs(edge) >= 5:
+            txt = f"Edge {edge:+.1f}"
+            tags.append({"text": txt, "color": "green" if edge > 0 else "blue"})
+    except:
+        pass
         
     return tags
 
@@ -652,7 +660,7 @@ def generate_html_output(plays, stats, tracking_data):
         for play in play_list:
             # Use player team first, verify it's not UNK
             team_key = play.get('team', 'UNK')
-            if team_key == 'UNK': team_key = play['home_team']
+            if team_key == 'UNK': team_key = play.get('home_team', 'NFL')
             
             team_abbr = get_team_abbreviation(team_key)
             logo_url = f"https://a.espncdn.com/i/teamlogos/nfl/500/{team_abbr}.png"
@@ -677,6 +685,18 @@ def generate_html_output(plays, stats, tracking_data):
             tags = generate_reasoning_tags(play)
             tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>' for tag in tags])
             
+            # Safe parsing
+            play_type = play.get('type', 'PROPS')
+            play_line = play.get('line', 0)
+            play_odds = play.get('odds', 0)
+            model_proj = play.get('model_proj', 'N/A')
+            edge_val = play.get('edge', 0.0)
+            ai_sc = play.get('ai_score', 0)
+            s_avg = play.get('season_avg', 'N/A')
+            r_avg = play.get('recent_avg', 'N/A')
+            commence = play.get('commence_time', play.get('game_time', ''))
+            matchup = play.get('matchup', f"{play.get('away_team','')} @ {play.get('home_team','')}")
+            
             c_html += f'''
         <div class="prop-card">
             <div class="card-header">
@@ -684,36 +704,36 @@ def generate_html_output(plays, stats, tracking_data):
                     <img src="{logo_url}" alt="Logo" class="team-logo">
                     <div class="player-info">
                         <h2>{play['player']}</h2>
-                        <div class="matchup-info">{play['matchup']}</div>
+                        <div class="matchup-info">{matchup}</div>
                     </div>
                 </div>
                 <div class="game-meta">
-                    <div class="game-date-time">{format_game_datetime(play['commence_time'])}</div>
+                    <div class="game-date-time">{format_game_datetime(commence)}</div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="bet-main-row">
                     <div class="bet-selection">
-                        <span class="{type_class}">{play['type']}</span> 
-                        <span class="line">{play['line']} YDS</span> 
-                        <span class="bet-odds">{(str(play['odds']))}</span>
+                        <span class="{type_class}">{play_type}</span> 
+                        <span class="line">{play_line} YDS</span> 
+                        <span class="bet-odds">{play_odds}</span>
                     </div>
                 </div>
                 <div class="model-subtext">
-                    Model Predicts: <strong>{play['model_proj']} YDS</strong> (Edge: {play['edge']:+.1f})
+                    Model Predicts: <strong>{model_proj} YDS</strong> (Edge: {edge_val:+.1f})
                 </div>
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">{play['ai_score']}</span>
+                        <span class="metric-val txt-green">{ai_sc}</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">SEASON AVG</span>
-                        <span class="metric-val">{play['season_avg']}</span>
+                        <span class="metric-val">{s_avg}</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">RECENT AVG</span>
-                        <span class="metric-val">{play['recent_avg']}</span>
+                        <span class="metric-val">{r_avg}</span>
                     </div>
                 </div>
                 {p_stats_html}

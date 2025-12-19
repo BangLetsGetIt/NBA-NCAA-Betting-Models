@@ -456,7 +456,8 @@ def format_date(iso_str):
     except: return iso_str
 
 def generate_html_output(plays, stats, tracking_data):
-    plays.sort(key=lambda x: x['ev'], reverse=True)
+    # Sort securely
+    plays.sort(key=lambda x: x.get('edge', 0), reverse=True)
     
     # Tracking Stats
     completed = [p for p in tracking_data['picks'] if p.get('status') in ['win', 'loss']]
@@ -527,47 +528,59 @@ def generate_html_output(plays, stats, tracking_data):
         roi_str = f"{p_stats['player_roi']:+.1f}%" if p_stats else "N/A"
         rec_str = p_stats['season_record'] if p_stats else "0-0"
         
+        edge_val = play.get('edge', 0.0)
+        
         sharp_tag = ""
-        if play['edge'] > SHARP_EDGE_THRESHOLD:
+        if edge_val > SHARP_EDGE_THRESHOLD:
             sharp_tag = "<span style='background:#064e3b; color:#34d399; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:8px;'>SHARP</span>"
             
+        play_pos = play.get('pos', 'RB/WR') # Default pos
+        play_matchup = play.get('matchup', '')
+        play_time = play.get('commence_time', '')
+        play_odds = play.get('best_odds', play.get('odds', '-110'))
+        play_book = play.get('best_book', play.get('bookmaker', 'Sportsbook'))
+        
+        model_prob = play.get('model_prob', 0.0)
+        implied_prob = play.get('implied_prob', 0.0)
+        kelly_pct = play.get('kelly_pct', 0.0)
+        
         html += f"""
         <div class="prop-card">
             <div class="card-header">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="{get_team_logo(play['team'])}" class="team-logo">
+                    <img src="{get_team_logo(play.get('team', 'NFL'))}" class="team-logo">
                     <div>
-                        <div style="font-size:18px; font-weight:700;">{play['player']} <span style="font-size:12px; color:var(--text-secondary);">({play['pos']})</span>{sharp_tag}</div>
-                        <div style="font-size:13px; color:var(--text-secondary);">{play['matchup']}</div>
+                        <div style="font-size:18px; font-weight:700;">{play['player']} <span style="font-size:12px; color:var(--text-secondary);">({play_pos})</span>{sharp_tag}</div>
+                        <div style="font-size:13px; color:var(--text-secondary);">{play_matchup}</div>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:12px; font-weight:500; background:#333; padding:4px 8px; border-radius:4px;">{format_date(play['commence_time'])}</div>
+                    <div style="font-size:12px; font-weight:500; background:#333; padding:4px 8px; border-radius:4px;">{format_date(play_time)}</div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="bet-main">
                     <span class="txt-gold">ANYTIME TD</span>
-                    <span class="odds-badge">{play['best_odds']}</span>
-                    <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">@ {play['best_book']}</span>
+                    <span class="odds-badge">{play_odds}</span>
+                    <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">@ {play_book}</span>
                 </div>
                 
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <div class="metric-lbl">Model Prob</div>
-                        <div class="metric-val">{(play['model_prob']*100):.1f}%</div>
+                        <div class="metric-val">{(model_prob*100):.1f}%</div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-lbl">Implied</div>
-                        <div class="metric-val">{(play['implied_prob']*100):.1f}%</div>
+                        <div class="metric-val">{(implied_prob*100):.1f}%</div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-lbl">Edge</div>
-                        <div class="metric-val txt-green">+{play['edge']:.1%}</div>
+                        <div class="metric-val txt-green">+{edge_val:.1%}</div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-lbl">Kelly</div>
-                        <div class="metric-val txt-gold">{(play['kelly_pct']*100):.1f}%</div>
+                        <div class="metric-val txt-gold">{(kelly_pct*100):.1f}%</div>
                     </div>
                 </div>
                 

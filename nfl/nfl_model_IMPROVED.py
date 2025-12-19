@@ -38,8 +38,8 @@ TRACKING_HTML_FILE = SCRIPT_DIR / "nfl_tracking_dashboard.html"
 # ============================================================================
 
 # Display thresholds (minimum to show in HTML)
-SPREAD_THRESHOLD = 3.0      # Minimum edge to display
-TOTAL_THRESHOLD = 4.0       # Minimum edge to display
+SPREAD_THRESHOLD = 0.1      # Minimum edge to display
+TOTAL_THRESHOLD = 0.1       # Minimum edge to display
 
 # STRICT thresholds for LOGGING picks (only high-confidence bets tracked)
 CONFIDENT_SPREAD_EDGE = 8.0   # Need 8+ point edge to log (sharp +EV focus)
@@ -735,29 +735,29 @@ def generate_picks_html(analyses, stats, tracker):
 
                 <!-- SPREAD BET BLOCK -->
                 <div class="bet-row">
-                    {% if spread_bet and spread_bet.edge|abs >= 3.0 %}
-                    <div class="main-pick green">{{ spread_bet.recommendation.replace('✅ BET: ', '') }}</div>
+                    {% if spread_bet %}
+                    <div class="main-pick {{ 'green' if spread_bet.edge|abs >= 3.0 else '' }}">{{ spread_bet.recommendation.replace('✅ BET: ', '') }}</div>
                     {% else %}
                     <div class="main-pick">{{ game.market_spread if game.market_spread else '--' }}</div>
                     {% endif %}
                     
                     <div class="model-context">
                         Model: {% if spread_bet %}{{ "%.1f"|format(spread_bet.model_prediction) }}{% else %}--{% endif %}
-                        <span class="edge-val">Edge: {% if spread_bet %}{{ "%+.1f"|format(spread_bet.edge) }}{% else %}--{% endif %}</span>
+                        <span class="edge-val" style="color: {{ 'var(--accent-green)' if spread_bet and spread_bet.edge|abs >= 3.0 else 'var(--text-secondary)' }};">Edge: {% if spread_bet %}{{ "%+.1f"|format(spread_bet.edge) }}{% else %}--{% endif %}</span>
                     </div>
                 </div>
 
                 <!-- TOTAL BET BLOCK -->
                 <div class="bet-row" style="border-bottom: none;">
-                    {% if total_bet and total_bet.edge|abs >= 4.0 %}
-                        <div class="main-pick green">{{ total_bet.recommendation.replace('✅ BET: ', '') }}</div>
+                    {% if total_bet %}
+                        <div class="main-pick {{ 'green' if total_bet.edge|abs >= 4.0 else '' }}">{{ total_bet.recommendation.replace('✅ BET: ', '') }}</div>
                     {% else %}
                         <div class="main-pick">O/U {{ game.market_total if game.market_total else '--' }}</div>
                     {% endif %}
                     
                     <div class="model-context">
                         Model: {% if total_bet %}{{ "%.1f"|format(total_bet.model_prediction) }}{% else %}--{% endif %}
-                        <span class="edge-val">Edge: {% if total_bet %}{{ "%+.1f"|format(total_bet.edge|abs) }}{% else %}--{% endif %}</span>
+                        <span class="edge-val" style="color: {{ 'var(--accent-green)' if total_bet and total_bet.edge|abs >= 4.0 else 'var(--text-secondary)' }};">Edge: {% if total_bet %}{{ "%+.1f"|format(total_bet.edge|abs) }}{% else %}--{% endif %}</span>
                     </div>
                 </div>
 

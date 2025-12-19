@@ -109,8 +109,7 @@ else
     ((FAIL_COUNT++))
 fi
 
-    ((FAIL_COUNT++))
-fi
+
 
 # Calculate total time
 END_TIME=$(date +%s)

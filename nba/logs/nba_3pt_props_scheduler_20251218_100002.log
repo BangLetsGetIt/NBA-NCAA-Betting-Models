@@ -1,0 +1,98 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Thu Dec 18 10:00:03 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 6 pending picks...[0m
+
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[96m  Fetching season 3-pointers stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL 3-pointers stats for 500 players[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Fetched 3-pointers factors for 30 teams[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Atlanta Hawks @ Charlotte Hornets[0m
+[96m  Game 2/10: New York Knicks @ Indiana Pacers[0m
+[96m  Game 3/10: Miami Heat @ Brooklyn Nets[0m
+[96m  Game 4/10: Houston Rockets @ New Orleans Pelicans[0m
+[96m  Game 5/10: Los Angeles Clippers @ Oklahoma City Thunder[0m
+[96m  Game 6/10: Toronto Raptors @ Milwaukee Bucks[0m
+[96m  Game 7/10: Washington Wizards @ San Antonio Spurs[0m
+[96m  Game 8/10: Detroit Pistons @ Dallas Mavericks[0m
+[96m  Game 9/10: Orlando Magic @ Denver Nuggets[0m
+[96m  Game 10/10: Golden State Warriors @ Phoenix Suns[0m
+[92m✓ Fetched 80 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 80 player props with REAL stats...[0m
+[92m✓ Found 4 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 1 top UNDER plays (A.I. Score >= 7.5)[0m
+[93m  Skipped 3 props (no player stats found)[0m
+[93m  Skipped 149 props (score below 7.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. C.J. McCollum            [0m | [92mOVER 2.5 3PT   [0m | San Antonio Spurs         vs Washington Wizards        | [1mA.I.: 10.00[0m | Rating: 4.1 ⭐⭐
+  [96m 2. Harrison Barnes          [0m | [92mOVER 1.5 3PT   [0m | San Antonio Spurs         vs Washington Wizards        | [1mA.I.: 7.64[0m | Rating: 3.8 ⭐
+  [96m 3. Bennedict Mathurin       [0m | [92mOVER 1.5 3PT   [0m | Indiana Pacers            vs New York Knicks           | [1mA.I.: 10.00[0m | Rating: 3.1 ⭐
+  [96m 4. Jamal Murray             [0m | [92mOVER 2.5 3PT   [0m | Denver Nuggets            vs Orlando Magic             | [1mA.I.: 8.75[0m | Rating: 2.9 
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Jay Huff                 [0m | [91mUNDER 2.5 3PT  [0m | Indiana Pacers            vs New York Knicks           | [1mA.I.: 7.60[0m | Rating: 3.6 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Thu Dec 18 10:00:14 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main c6d7ec4] Update model outputs - 2025-12-18 10:00:14
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 14 insertions(+), 13 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   a3bf009..c6d7ec4  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Thu Dec 18 10:00:15 EST 2025

@@ -337,8 +337,24 @@ def update_pick_results():
         tracking_data['summary'] = calculate_summary_stats(tracking_data['picks'])
         save_picks_tracking(tracking_data)
         print(f"{Colors.GREEN}✅ Updated {updated_count} picks{Colors.END}")
+
+        # Regenerate HTML if the function exists
+        # Assuming generate_html exists or we can invoke the main display logic
+        # For NCAAB model, it usually runs main() to generate output.
+        # Let's check if we can invoke save_csv or display_terminal?
+        # Actually ncaab_model_2ndFINAL generates 'ncaab_tracking_dashboard.html' externally?
+        # No, wait, let's just return the count and handle HTML generation if needed.
+        # But wait, looking at the file outline, there is NO generate_tracking_html function!
+        # The outline showed 'generate_tracking_html' only in NBA model.
+        # NCAAB model has 'save_csv' and 'display_terminal'.
+        # Ah, the user asked for this feature, but maybe the dashboard doesn't exist yet?
+        # "TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, 'ncaab_tracking_dashboard.html')" is defined in line 46.
+        # But is there code to populate it?
+        # Let's searching for where TRACKING_HTML_FILE is used.
     else:
         print(f"{Colors.YELLOW}No picks were updated (games may not be complete yet){Colors.END}")
+
+    return updated_count
 
 def evaluate_spread_pick(pick, home_score, away_score):
     """Evaluate if a spread pick won, lost, or pushed"""
@@ -463,7 +479,56 @@ def calculate_tracking_stats(tracking_data):
     # Calculate ROI
     total_risked = (wins + losses) * UNIT_SIZE
     roi = (total_profit / total_risked * 100) if total_risked > 0 else 0.0
+
+    # --- DAILY PERFORMANCE TRACKING ---
+    et_tz = pytz.timezone('US/Eastern')
+    now_et = datetime.now(et_tz)
+    today_str = now_et.strftime('%Y-%m-%d')
+    yesterday_str = (now_et - timedelta(days=1)).strftime('%Y-%m-%d')
     
+    def calc_daily_stats(target_date_str):
+        daily_picks = []
+        for p in picks:
+            # Parse date from pick
+            # Format in tracking file is typically strict ISO or similar
+            # Example: "2024-12-19T00:30:00Z"
+            if 'game_date' not in p: continue
+            
+            try:
+                g_time = p['game_date']
+                if 'Z' in g_time:
+                    dt_utc = datetime.fromisoformat(g_time.replace('Z', '+00:00'))
+                    dt_et = dt_utc.astimezone(et_tz)
+                else:
+                    # Handle non-Z format if any
+                    dt_et = datetime.fromisoformat(g_time)
+                
+                if dt_et.strftime('%Y-%m-%d') == target_date_str:
+                    daily_picks.append(p)
+            except:
+                continue
+                
+        d_wins = sum(1 for p in daily_picks if p.get('status') == 'win')
+        d_losses = sum(1 for p in daily_picks if p.get('status') == 'loss')
+        d_pushes = sum(1 for p in daily_picks if p.get('status') == 'push')
+        d_total = d_wins + d_losses  # Exclude pushes from denominator for Win Rate typically? Or include?
+        # NBA model includes wins+losses for total.
+        
+        d_profit = sum(p.get('profit', 0) for p in daily_picks if p.get('profit') is not None)
+        
+        d_risked = (d_wins + d_losses) * UNIT_SIZE
+        d_roi = (d_profit / d_risked * 100) if d_risked > 0 else 0.0
+        
+        return {
+            'record': f"{d_wins}-{d_losses}-{d_pushes}",
+            'profit': d_profit, # in dollars since UNIT_SIZE=100
+            'roi': d_roi,
+            'count': len(daily_picks)
+        }
+
+    today_stats = calc_daily_stats(today_str)
+    yesterday_stats = calc_daily_stats(yesterday_str)
+
     return {
         "total_picks": total_picks,
         "wins": wins,
@@ -472,8 +537,11 @@ def calculate_tracking_stats(tracking_data):
         "pending": pending,
         "win_rate": win_rate,
         "total_profit": total_profit,
-        "roi": roi
+        "roi": roi,
+        "today": today_stats,
+        "yesterday": yesterday_stats
     }
+
 
 # =========================
 # DATA FETCHING FUNCTIONS
@@ -2108,6 +2176,36 @@ def generate_tracking_html():
                             {{ "%+.1f"|format(stats.roi) }}%
                         </div>
                         <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Performance -->
+            <div style="background: #1c1c1e; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+                    <span style="font-size: 1.5rem;">📅</span>
+                    <h2 style="margin: 0; font-size: 1.5rem; color: #f3f4f6;">Daily Performance</h2>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <!-- TODAY -->
+                    <div style="background: #121212; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 1px solid #333;">
+                        <div style="color: #9ca3af; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Today</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">{{ stats.today.record }}</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: {{ '#10b981' if stats.today.profit > 0 else ('#ef4444' if stats.today.profit < 0 else '#e5e7eb') }}; margin-bottom: 0.25rem;">
+                            {{ "%+.1f"|format(stats.today.profit) }}u
+                        </div>
+                        <div style="font-size: 0.875rem; color: #9ca3af;">{{ "%.1f"|format(stats.today.roi) }}% ROI</div>
+                    </div>
+                    
+                    <!-- YESTERDAY -->
+                    <div style="background: #121212; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 1px solid #333;">
+                        <div style="color: #9ca3af; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Yesterday</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">{{ stats.yesterday.record }}</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: {{ '#10b981' if stats.yesterday.profit > 0 else ('#ef4444' if stats.yesterday.profit < 0 else '#e5e7eb') }}; margin-bottom: 0.25rem;">
+                            {{ "%+.1f"|format(stats.yesterday.profit) }}u
+                        </div>
+                        <div style="font-size: 0.875rem; color: #9ca3af;">{{ "%.1f"|format(stats.yesterday.roi) }}% ROI</div>
                     </div>
                 </div>
             </div>

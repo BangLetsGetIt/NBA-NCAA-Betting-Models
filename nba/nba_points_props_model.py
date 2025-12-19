@@ -214,9 +214,11 @@ def grade_pending_picks():
             current_time = datetime.now(pytz.UTC)
             hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
             
-            # Add 4 hour buffer for completion
-            if hours_since_game >= 4:
-                game_date = game_time_utc.strftime('%Y-%m-%d')
+            # Check if game likely started (1 hour buffer to catch early finals)
+            if hours_since_game >= 1:
+                # Convert to Eastern Time for correct NBA Game Date
+                et_tz = pytz.timezone('US/Eastern')
+                game_date = game_time_utc.astimezone(et_tz).strftime('%Y-%m-%d')
                 picks_by_date[game_date].append(pick)
         except:
             continue
@@ -227,6 +229,7 @@ def grade_pending_picks():
         
         # Batch fetch stats for this date
         daily_stats = fetch_all_player_stats_for_date(date_str)
+        completed_teams = fetch_completed_teams_for_date(date_str)
         
         if not daily_stats:
             print(f"{Colors.YELLOW}  ⚠️  No stats found for {date_str} yet{Colors.END}")
@@ -235,6 +238,34 @@ def grade_pending_picks():
         for pick in picks:
             try:
                 player_name = pick.get('player')
+                
+                # Check safeguards for recent games (< 4 hours)
+                # Recalculate hours to be sure or trust broad filtering
+                # BETTER: Check status using completed_teams
+                is_game_final = pick.get('team') in completed_teams
+                
+                # If game is NOT final and < 4 hours, DO NOT GRADE (Live stats are dangerous)
+                # We need game status confirmation
+                # Note: We rely on completed_teams (leaguedashteamstats) to tell us if Final.
+                # If it's in there, it's Final (usually).
+                
+                if not is_game_final:
+                    # Logic: If not final, verify time buffer
+                    # We can't easily recalc hours here without time object, but we filtered by >= 1
+                    # If we really want to be safe: assuming anything < 4 hours MUST be confirmed final.
+                    # Parse game time again? Valid for safety.
+                    
+                    try:
+                        g_t_str = pick.get('game_time')
+                        if g_t_str:
+                            g_t_utc = datetime.fromisoformat(g_t_str.replace('Z', '+00:00'))
+                            now_u = datetime.now(pytz.UTC)
+                            h_since = (now_u - g_t_utc).total_seconds() / 3600
+                            if h_since < 4:
+                                # Too recent and NOT confirmed final -> Skip
+                                continue
+                    except:
+                        pass
                 
                 # Try exact match first, then partial match
                 player_key = player_name.lower()
@@ -254,6 +285,16 @@ def grade_pending_picks():
                                 break
                     
                     if not found:
+                        # Check if game is actually COMPLETED but player didn't play (DNP)
+                        if pick.get('team') in completed_teams:
+                             print(f"{Colors.YELLOW}  ⚠️  Player {player_name} has no stats but game is final -> Marking as DNP/Void{Colors.END}")
+                             pick['status'] = 'void'
+                             pick['result'] = 'DNP'  # 'VOID'
+                             pick['profit_loss'] = 0
+                             # pick['actual_pts'] = 0 # Or None? Kept as None usually
+                             graded_count += 1
+                             continue
+                        
                         print(f"{Colors.YELLOW}  ⚠️  Could not find stats for {player_name} in batch data{Colors.END}")
                         continue
                 
@@ -301,6 +342,8 @@ def grade_pending_picks():
         print(f"\n{Colors.GREEN}✓ Graded {graded_count} picks{Colors.END}")
     else:
         print(f"\n{Colors.YELLOW}No picks ready for grading yet{Colors.END}")
+
+    return graded_count
 
 def backfill_profit_loss():
     """Backfill profit_loss for graded picks that are missing it - CRITICAL for accurate ROI"""
@@ -862,6 +905,27 @@ def calculate_ai_rating_props(play):
     ai_rating = max(2.3, min(4.9, ai_rating))
     
     return round(ai_rating, 1)
+
+def fetch_completed_teams_for_date(date_str):
+    """
+    Returns a set of team names that have played on this date.
+    Used to determine if a game is final for DNP logic.
+    """
+    try:
+        print(f"  Fetching team stats to verify completed games for {date_str}...")
+        stats = leaguedashteamstats.LeagueDashTeamStats(
+            date_from_nullable=date_str,
+            date_to_nullable=date_str
+        ).get_data_frames()[0]
+        
+        if stats.empty:
+            return set()
+            
+        # Return set of TEAM_NAME
+        return set(stats['TEAM_NAME'].unique())
+    except Exception as e:
+        print(f"  Error fetching completed teams: {e}")
+        return set()
 
 def fetch_all_player_stats_for_date(game_date_str):
     """
@@ -1665,7 +1729,40 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         </div>
     </header>
 """
+
     daily_tracking_html = ""
+    if stats and 'today' in stats:
+        t_stats = stats.get('today', {'record':'0-0', 'profit':0, 'roi':0})
+        y_stats = stats.get('yesterday', {'record':'0-0', 'profit':0, 'roi':0})
+        
+        t_profit_class = "txt-green" if t_stats['profit'] > 0 else ("txt-red" if t_stats['profit'] < 0 else "")
+        y_profit_class = "txt-green" if y_stats['profit'] > 0 else ("txt-red" if y_stats['profit'] < 0 else "")
+
+        daily_tracking_html = f"""
+        <section style="margin-top: 2rem;">
+            <div class="section-title">📅 Daily Performance</div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <!-- Today -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">TODAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{t_stats['record']}</div>
+                        <div class="{t_profit_class}">{t_stats['profit']:+.1f}u</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{t_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+                <!-- Yesterday -->
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">{y_stats['record']}</div>
+                        <div class="{y_profit_class}">{y_stats['profit']:+.1f}u</div>
+                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">{y_stats['roi']:.1f}% ROI</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        """
     
     # Helper function to format odds for display
     def format_odds(odds_value):
