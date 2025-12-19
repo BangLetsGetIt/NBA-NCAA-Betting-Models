@@ -75,7 +75,7 @@ def track_new_picks(recommendations, odds_data):
         commence_time = rec.get('commence_time', '')
         game_date = commence_time[:10] if commence_time else datetime.now().strftime('%Y-%m-%d')
         
-        pick_id = f"{rec['player']}_{rec['line']}_{rec['type']}_{game_date}"
+        pick_id = f"{rec['player']}_{rec['type']}_{game_date}"
         
         if pick_id not in existing_ids:
             new_pick = {

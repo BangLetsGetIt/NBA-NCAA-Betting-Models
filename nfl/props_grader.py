@@ -439,6 +439,19 @@ def grade_props_tracking_file(
 
         pick[spec.actual_field] = float(actual)
         pick["updated_at"] = now_et.isoformat()
+        
+        # Calculate profit/loss
+        odds = pick.get('opening_odds') or pick.get('odds', -110)
+        if pick['status'] == 'win':
+            if odds > 0:
+                pick['profit_loss'] = int(odds)  # e.g. +150 pays $150
+            else:
+                pick['profit_loss'] = int((100.0 / abs(odds)) * 100)  # e.g. -110 pays ~$91
+        elif pick['status'] == 'loss':
+            pick['profit_loss'] = -100
+        else:  # push
+            pick['profit_loss'] = 0
+        
         updated += 1
 
         if verbose:
