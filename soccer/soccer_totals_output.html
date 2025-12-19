@@ -168,6 +168,28 @@
         
         .metric-value.good { color: var(--accent-green); }
         
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .text-red { color: var(--accent-red); }
+        
+        /* Tracking Section */
+        .tracking-section { margin-top: 3rem; }
+        .tracking-header { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.5rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
         /* Stats Table for Tracking */
         .stats-table {
             width: 100%;
@@ -203,7 +225,7 @@
         <header>
             <div>
                 <h1>⚽ SOCCER MODEL</h1>
-                <div class="date-sub">December 16, 2025 at 02:44 PM ET</div>
+                <div class="date-sub">December 19, 2025 at 02:40 AM ET</div>
             </div>
             <div style="text-align: right;">
                 <div class="metric-title">SEASON RECORD</div>
@@ -224,35 +246,81 @@
 
         
 
-        
-        <div class="prop-card">
-             <div class="card-header">
-                <h2>📊 TRACKING SUMMARY</h2>
-             </div>
-             <div class="card-body">
-                 <table class="stats-table">
-                     <thead>
-                         <tr>
-                             <th>Total</th>
-                             <th>Wins</th>
-                             <th>Losses</th>
-                             <th>Win %</th>
-                             <th>ROI</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         <tr>
-                             <td>167</td>
-                             <td>29</td>
-                             <td>32</td>
-                             <td class="">47.5%</td>
-                             <td class="txt-red">-5.61u</td>
-                         </tr>
-                     </tbody>
-                 </table>
-             </div>
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">🔥 Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">5-5</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value ">50%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-0.5u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-4.5%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">11-8-1</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value good">55%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value good">+2.0u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value good">+10.1%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">23-25-2</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">46%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-4.1u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-8.1%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
     </div>
 </body>
 </html>
