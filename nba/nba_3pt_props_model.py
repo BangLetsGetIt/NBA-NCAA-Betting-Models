@@ -106,8 +106,8 @@ def track_new_picks(over_plays, under_plays):
         match = re.search(r'(\d+\.?\d*)', prop_str)
         prop_line = float(match.group(1)) if match else 0
         
-        # Generate unique pick ID
-        pick_id = f"{play['player']}_{bet_type}_{play.get('game_time', '')}"
+        # Generate unique pick ID (matches format in tracking data)
+        pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
         
         # Check if pick already exists
         existing_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)

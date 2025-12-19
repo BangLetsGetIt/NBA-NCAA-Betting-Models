@@ -15,16 +15,16 @@ Usage:
 import os
 import sys
 import time
+import json
 import argparse
 import subprocess
-from datetime import datetime
-import pytz
 from datetime import datetime, timedelta
+import pytz
 
 # Add subdirectories to path to allow importing models
 sys.path.append(os.path.join(os.path.dirname(__file__), 'nba'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'nfl'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'nfl'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'soccer'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'wnba'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ncaa'))
 
@@ -535,6 +535,53 @@ def run_ncaab_grading(force=False):
         
     return any_updates
 
+def run_soccer_grading(force=False):
+    """
+    Grades Soccer pending picks using update_pick_results.
+    """
+    log("Starting Soccer Grading...", "info")
+    
+    mod_name = 'soccer_model_IMPROVED'
+    filename = 'soccer_model_IMPROVED.py'
+    
+    any_updates = False
+    
+    try:
+        log(f"Checking {mod_name}...", "info")
+        
+        try:
+            mod = __import__(mod_name)
+        except ImportError:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(mod_name, os.path.join("soccer", filename))
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules[mod_name] = mod
+            spec.loader.exec_module(mod)
+        
+        # Call update_pick_results (Soccer's grading function)
+        if hasattr(mod, 'update_pick_results'):
+            graded = mod.update_pick_results()
+            if graded and graded > 0:
+                log(f"Graded {graded} soccer picks", "success")
+                any_updates = True
+        else:
+            log(f"{mod_name} has no update_pick_results function", "warning")
+        
+        # Regenerate HTML if force or updated
+        if any_updates or force:
+            if hasattr(mod, 'generate_html') and hasattr(mod, 'load_tracking'):
+                tracking_data = mod.load_tracking()
+                mod.generate_html([], tracking_data)
+                log(f"Regenerated HTML for {mod_name}", "success")
+                any_updates = True
+    
+    except Exception as e:
+        log(f"Error processing Soccer: {e}", "error")
+        import traceback
+        traceback.print_exc()
+    
+    return any_updates
+
 def main():
     parser = argparse.ArgumentParser(description='Auto-Grader for Sports Models')
     parser.add_argument('--loop', action='store_true', help='Run in a loop every 15 minutes')
@@ -550,8 +597,9 @@ def main():
             updates_nfl = run_nfl_grading(force=args.force)
             updates_wnba = run_wnba_grading(force=args.force)
             updates_ncaab = run_ncaab_grading(force=args.force)
+            updates_soccer = run_soccer_grading(force=args.force)
             
-            if updates_nba or updates_nfl or updates_wnba or updates_ncaab:
+            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
                 trigger_git_push()
             else:
                 log("No updates found.", "info")
@@ -566,8 +614,9 @@ def main():
         updates_nfl = run_nfl_grading(force=args.force)
         updates_wnba = run_wnba_grading(force=args.force)
         updates_ncaab = run_ncaab_grading(force=args.force)
+        updates_soccer = run_soccer_grading(force=args.force)
         
-        if updates_nba or updates_nfl or updates_wnba or updates_ncaab:
+        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
             trigger_git_push()
         else:
             log("No updates found.", "info")
