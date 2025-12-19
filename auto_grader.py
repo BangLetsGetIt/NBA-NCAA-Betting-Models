@@ -123,7 +123,7 @@ def retrieve_active_plays(tracking_data, stat_type="PTS"):
             
     return active_plays
 
-def retrieve_active_plays_nfl(tracking_data):
+def retrieve_active_plays_nfl(tracking_data, stats_cache=None):
     """
     Reconstruct active NFL plays for HTML display from tracking data.
     Populates missing fields like projection using edge logic.
@@ -142,6 +142,7 @@ def retrieve_active_plays_nfl(tracking_data):
         # Check if pending or recent
         status = p.get('status', 'pending').lower()
         game_time_str = p.get('game_time')
+        is_relevant = False
         
         if game_time_str:
             try:
@@ -173,6 +174,23 @@ def retrieve_active_plays_nfl(tracking_data):
                 elif b_type == 'UNDER':
                     proj = round(line - edge, 1)
             
+            # Try to lookup stats if missing
+            season_avg = p.get('season_avg', 'N/A')
+            recent_avg = p.get('recent_avg', 'N/A')
+            
+            if stats_cache and (season_avg == 'N/A' or recent_avg == 'N/A'):
+                try:
+                    p_name = p.get('player')
+                    if p_name and p_name in stats_cache:
+                        p_stats = stats_cache[p_name]
+                        # Handling various key names (season_avg, avg_yards, etc)
+                        if season_avg == 'N/A':
+                             season_avg = p_stats.get('season_avg', p_stats.get('avg_yards', 'N/A'))
+                        if recent_avg == 'N/A':
+                             recent_avg = p_stats.get('recent_avg', p_stats.get('last5_avg', 'N/A'))
+                except:
+                    pass
+
             play = {
                 'player': p.get('player'),
                 'team': p.get('team'),
@@ -185,8 +203,8 @@ def retrieve_active_plays_nfl(tracking_data):
                 'model_proj': proj,
                 'edge': edge,
                 'ai_score': p.get('ai_score', 0),
-                'season_avg': p.get('season_avg', 'N/A'), 
-                'recent_avg': p.get('recent_avg', 'N/A')
+                'season_avg': season_avg, 
+                'recent_avg': recent_avg
             }
             active_picks.append(play)
             
@@ -357,8 +375,17 @@ def run_nfl_grading(force=False):
                  if hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
                     try:
                         t_data = mod.load_tracking_data()
+                        # Load Stats Cache if available
+                        stats_cache = {}
+                        if hasattr(mod, 'PLAYER_STATS_CACHE') and os.path.exists(mod.PLAYER_STATS_CACHE):
+                            try:
+                                with open(mod.PLAYER_STATS_CACHE, 'r') as f:
+                                    stats_cache = json.load(f)
+                            except:
+                                pass
+                        
                         # Restore Active Plays from tracking
-                        active_plays = retrieve_active_plays_nfl(t_data)
+                        active_plays = retrieve_active_plays_nfl(t_data, stats_cache)
                         
                         ts = mod.calculate_tracking_stats(t_data)
                         mod.generate_html_output(active_plays, ts, t_data)
