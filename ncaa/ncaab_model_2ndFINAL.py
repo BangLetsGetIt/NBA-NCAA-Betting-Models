@@ -55,8 +55,10 @@ TOTAL_THRESHOLD = 6.0   # Tightened from 4.0 - only show higher confidence plays
 # Edge 12+ is hitting 53.6-55.1% with +34.63u profit
 CONFIDENT_SPREAD_EDGE = 12.0  # Raised from 5.5 - only log 12+ edge spreads  
 CONFIDENT_TOTAL_EDGE = 12.0   # Raised from 5.0 - only log 12+ edge totals
-MAX_SPREAD_EDGE = 15.0  # Cap maximum edge to filter out likely model errors
-MAX_TOTAL_EDGE = 18.0   # Cap maximum edge for totals
+# MAX EDGE CAPS RAISED: Analysis showed 15+ edge is 54.3% with +27.19u
+# Only 40+ edge drops to 50% (-0.63u) so cap there
+MAX_SPREAD_EDGE = 40.0  # Raised from 15.0 - high edge picks are profitable!
+MAX_TOTAL_EDGE = 40.0   # Raised from 18.0 - high edge picks are profitable!
 UNIT_SIZE = 100  # Standard bet size in dollars
 
 # Date filtering
