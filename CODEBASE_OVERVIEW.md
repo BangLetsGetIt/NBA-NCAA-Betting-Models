@@ -273,6 +273,36 @@ HOME_COURT_ADVANTAGE = 3.0  # Points added for home team
 
 ---
 
+## NCAAB Model Parameters (ncaab_model_2ndFINAL.py)
+
+> **Updated Dec 20, 2024**: Raised thresholds after finding edge 5-12 losing -25.63u
+
+```python
+# Display Thresholds
+SPREAD_THRESHOLD = 6.0      # Show 6+ edge spreads only
+TOTAL_THRESHOLD = 6.0       # Show 6+ edge totals only
+
+# Logging Thresholds (TIGHTENED - was 5.5/5.0)
+CONFIDENT_SPREAD_EDGE = 12.0  # Only log 12+ edge spreads
+CONFIDENT_TOTAL_EDGE = 12.0   # Only log 12+ edge totals
+
+# Edge Caps (filter extreme model errors)
+MAX_SPREAD_EDGE = 15.0
+MAX_TOTAL_EDGE = 18.0
+
+HOME_COURT_ADVANTAGE = 3.2
+```
+
+### NCAAB Performance by Edge (Dec 2024 Analysis)
+| Edge Range | Win% | Profit | Action |
+|------------|------|--------|--------|
+| 5-8 | 48.9% | -13.74u | ❌ Filtered out |
+| 8-12 | 50.6% | -11.89u | ❌ Filtered out |
+| **12-20** | **53.6%** | **+15.08u** | ✅ Keep |
+| **20+** | **55.1%** | **+19.55u** | ✅ Keep |
+
+---
+
 ## HTML Styling Reference
 
 ### Color Scheme
