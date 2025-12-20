@@ -521,6 +521,11 @@ def generate_html(analyses, tracking_data=None):
     # Calculate season stats for header
     season_stats = calculate_tracking_stats(tracking_data)
     
+    # Add team stats to each analysis (Dec 20, 2024)
+    for analysis in analyses:
+        analysis['home_team_stats'] = calculate_team_stats(analysis.get('home_team'), tracking_data)
+        analysis['away_team_stats'] = calculate_team_stats(analysis.get('away_team'), tracking_data)
+    
     # Get completed picks and calculate recent performance
     completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() in ['win', 'loss', 'push']]
     # Sort by game_date (most recent first)
@@ -840,6 +845,26 @@ def generate_html(analyses, tracking_data=None):
                         <div class="metric-value {{ 'good' if conf_score >= 80 else '' }}">{{ "%.0f"|format(conf_score) }}%</div>
                     </div>
                 </div>
+
+                <!-- TEAM BET HISTORY (Dec 20, 2024) -->
+                {% if game.home_team_stats or game.away_team_stats %}
+                <div class="metrics-row" style="margin-top: 0.75rem;">
+                    <div class="metric-box">
+                        <div class="metric-title">{{ game.home_team[:12] }} RECORD</div>
+                        <div class="metric-value">{{ game.home_team_stats.record if game.home_team_stats else '--' }}</div>
+                        {% if game.home_team_stats %}
+                        <div style="font-size: 0.75rem; color: {{ 'var(--accent-green)' if game.home_team_stats.roi > 0 else 'var(--accent-red)' }};">{{ "%+.0f"|format(game.home_team_stats.roi) }}% ROI</div>
+                        {% endif %}
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-title">{{ game.away_team[:12] }} RECORD</div>
+                        <div class="metric-value">{{ game.away_team_stats.record if game.away_team_stats else '--' }}</div>
+                        {% if game.away_team_stats %}
+                        <div style="font-size: 0.75rem; color: {{ 'var(--accent-green)' if game.away_team_stats.roi > 0 else 'var(--accent-red)' }};">{{ "%+.0f"|format(game.away_team_stats.roi) }}% ROI</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
 
             </div>
         </div>
@@ -1366,6 +1391,38 @@ def calculate_tracking_stats(tracking_data):
         "total_wins": total_wins,
         "total_losses": total_losses,
         "total_pushes": total_pushes,
+    }
+
+def calculate_team_stats(team_name, tracking_data):
+    """Calculate bet history for a specific team (Dec 20, 2024)"""
+    if not tracking_data:
+        return None
+    
+    picks = tracking_data.get('picks', [])
+    team_picks = [p for p in picks if 
+                  p.get('home_team') == team_name or p.get('away_team') == team_name]
+    
+    completed = [p for p in team_picks if p.get('status', '').lower() in ['win', 'loss']]
+    if not completed:
+        return None
+    
+    wins = sum(1 for p in completed if p.get('status', '').lower() == 'win')
+    losses = len(completed) - wins
+    
+    # Calculate profit
+    profit_cents = 0
+    for p in completed:
+        if p.get('profit_loss') is not None:
+            profit_cents += p['profit_loss']
+        else:
+            profit_cents += 91 if p.get('status', '').lower() == 'win' else -100
+    
+    roi = (profit_cents / 100) / len(completed) * 100 if completed else 0
+    
+    return {
+        'record': f"{wins}-{losses}",
+        'profit': profit_cents / 100,
+        'roi': roi
     }
 
 def calculate_recent_performance(picks_list, count):

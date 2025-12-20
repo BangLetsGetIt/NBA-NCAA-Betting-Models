@@ -339,6 +339,19 @@ MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 66.7%)
 | Below 10 | 29.4% | ❌ Filtered |
 | **10+** | **66.7%** | ✅ Keep |
 
+### Soccer Model (`soccer/soccer_model_IMPROVED.py`)
+- **Team bet history** added to matchup cards (Dec 20, 2024)
+- Mobile optimized (viewport + @media queries)
+- Season record: 30-33-3 (47.6%)
+
+### NFL ATD Model (`nfl/atd_model.py`)
+```python
+MIN_EDGE_THRESHOLD = 0.05  # Lowered from 8% to 5%
+SHARP_EDGE_THRESHOLD = 0.08  # Lowered from 10%
+```
+- Player database expanded: 10 → 45 players
+- Added First TD market support
+
 ## HTML Styling Reference
 
 ### Color Scheme
