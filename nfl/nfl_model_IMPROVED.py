@@ -130,6 +130,135 @@ class BettingTracker:
         }
 
 # ============================================================================
+# AUTO-GRADING FUNCTIONS (Dec 20, 2024)
+# ============================================================================
+
+def fetch_completed_nfl_scores():
+    """Fetch completed NFL game scores from The Odds API"""
+    print("\n🏈 Fetching completed NFL scores...")
+    api_key = os.getenv('ODDS_API_KEY')
+    if not api_key:
+        print("⚠️ ODDS_API_KEY not set")
+        return []
+    
+    url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/scores/"
+    params = {
+        'apiKey': api_key,
+        'daysFrom': 3  # Check last 3 days
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        all_games = response.json()
+        
+        # Filter to only completed games
+        completed = [g for g in all_games if g.get('completed', False)]
+        print(f"   Found {len(completed)} completed games")
+        return completed
+    except Exception as e:
+        print(f"⚠️ Error fetching scores: {e}")
+        return []
+
+def grade_pending_picks():
+    """Grade pending picks using completed game scores"""
+    # Load tracking data (list format)
+    if not PICKS_TRACKING_FILE.exists():
+        return
+    
+    with open(PICKS_TRACKING_FILE, 'r') as f:
+        picks = json.load(f)
+    
+    if not picks:
+        return
+    
+    pending = [p for p in picks if p.get('status') == 'pending']
+    if not pending:
+        print("   No pending picks to grade")
+        return
+    
+    print(f"   Checking {len(pending)} pending picks...")
+    
+    # Fetch completed scores
+    completed_games = fetch_completed_nfl_scores()
+    if not completed_games:
+        return
+    
+    # Build lookup by teams
+    game_scores = {}
+    for game in completed_games:
+        home = game.get('home_team', '')
+        away = game.get('away_team', '')
+        scores = game.get('scores', [])
+        if scores and len(scores) >= 2:
+            home_score = next((s['score'] for s in scores if s['name'] == home), None)
+            away_score = next((s['score'] for s in scores if s['name'] == away), None)
+            if home_score is not None and away_score is not None:
+                game_scores[(home, away)] = (int(home_score), int(away_score))
+    
+    updated = 0
+    for pick in pending:
+        # Find matching game
+        game_id = pick.get('game_id', '')
+        bet_type = pick.get('bet_type', '')
+        team = pick.get('team', '')
+        line = pick.get('line', 0)
+        
+        # Try to match by checking all completed games
+        for (home, away), (home_score, away_score) in game_scores.items():
+            # Check if this pick matches this game
+            if team in [home, away, 'Over', 'Under']:
+                # Grade spread bets
+                if bet_type == 'spread':
+                    actual_spread = home_score - away_score  # Positive = home won
+                    covered = False
+                    
+                    if team == home:
+                        # Home team with spread (line is usually negative if favored)
+                        covered = (actual_spread + line) > 0
+                    elif team == away:
+                        # Away team with spread
+                        covered = (away_score - home_score + line) > 0
+                    
+                    pick['status'] = 'complete'
+                    pick['result'] = 'won' if covered else 'lost'
+                    pick['profit'] = 91 if covered else -100
+                    pick['actual_home_score'] = home_score
+                    pick['actual_away_score'] = away_score
+                    updated += 1
+                    status = "✅ WIN" if covered else "❌ LOSS"
+                    print(f"   {status}: {pick.get('recommendation', team)}")
+                    break
+                
+                # Grade total bets
+                elif bet_type == 'total':
+                    actual_total = home_score + away_score
+                    hit = False
+                    
+                    if team == 'Over':
+                        hit = actual_total > line
+                    elif team == 'Under':
+                        hit = actual_total < line
+                    
+                    pick['status'] = 'complete'
+                    pick['result'] = 'won' if hit else 'lost'
+                    pick['profit'] = 91 if hit else -100
+                    pick['actual_home_score'] = home_score
+                    pick['actual_away_score'] = away_score
+                    updated += 1
+                    status = "✅ WIN" if hit else "❌ LOSS"
+                    print(f"   {status}: {pick.get('recommendation', team)}")
+                    break
+    
+    # Save updated picks
+    if updated > 0:
+        with open(PICKS_TRACKING_FILE, 'w') as f:
+            json.dump(picks, f, indent=2)
+        print(f"\n   ✅ Graded {updated} picks!")
+    else:
+        print("   No picks matched completed games")
+
+# ============================================================================
 # TEAM RATINGS - MARKET-BASED POWER RATINGS
 # ============================================================================
 
@@ -1603,6 +1732,10 @@ def main():
     
     # Initialize tracker
     tracker = BettingTracker()
+    
+    # STEP 1: Grade pending picks first (Dec 20, 2024)
+    print("\n📊 STEP 1: Grading Pending Picks")
+    grade_pending_picks()
     
     # Fetch current odds
     print("\n📡 Fetching current NFL odds...")
