@@ -329,6 +329,16 @@ PAUSE_UNDERS = True  # UNDERs paused - 42.6% with -8.47u loss
 | **OVERs** | **64.4%** | **+12.45u** | ✅ Active |
 | UNDERs | 42.6% | -8.47u | ⏸️ Paused |
 
+### Assists Props (`nba_assists_props_model.py`)
+```python
+MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 66.7%)
+```
+
+| AI Score | Win% | Action |
+|----------|------|--------|
+| Below 10 | 29.4% | ❌ Filtered |
+| **10+** | **66.7%** | ✅ Keep |
+
 ## HTML Styling Reference
 
 ### Color Scheme
