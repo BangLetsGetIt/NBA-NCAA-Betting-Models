@@ -49,7 +49,7 @@ TEAM_REBOUNDING_CACHE = os.path.join(SCRIPT_DIR, "nba_team_rebounding_cache.json
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_rebounds_props_tracking.json")
 
 # Model Parameters - STRICT FOR PROFITABILITY
-MIN_AI_SCORE = 7.5  # Adjusted to allow more high-value plays
+MIN_AI_SCORE = 10.0  # Raised to 10+ after analysis (60.9% hit rate vs 37-50% below 10)
 TOP_PLAYS_COUNT = 5  # Quality over quantity
 RECENT_GAMES_WINDOW = 10
 CURRENT_SEASON = "2025-26"
@@ -97,6 +97,11 @@ def track_new_picks(over_plays, under_plays):
     updated_count = 0
     
     for play in over_plays + under_plays:
+        # FILTER: Only track picks with AI Score >= MIN_AI_SCORE
+        ai_score = play.get('ai_score', 0)
+        if ai_score < MIN_AI_SCORE:
+            continue  # Skip low AI score picks
+        
         # Extract prop line from prop string (e.g., "OVER 10.5 REB" -> 10.5)
         prop_str = play.get('prop', '')
         bet_type = 'over' if 'OVER' in prop_str else 'under'
