@@ -797,12 +797,9 @@ def generate_html(analyses, tracking_data=None):
             </div>
 
             <div class="card-body">
-                {% set spread_bet = None %}
-                {% set total_bet = None %}
-                {% for bet in game.bets %}
-                    {% if bet.type == 'SPREAD' %}{% set spread_bet = bet %}{% endif %}
-                    {% if bet.type == 'TOTAL' %}{% set total_bet = bet %}{% endif %}
-                {% endfor %}
+                {# Fix: Use selectattr to find SPREAD/TOTAL bets directly #}
+                {% set spread_bet = game.bets|selectattr('type', 'equalto', 'SPREAD')|first %}
+                {% set total_bet = game.bets|selectattr('type', 'equalto', 'TOTAL')|first %}
 
                 <!-- SPREAD BET BLOCK -->
                 <div class="bet-row">
