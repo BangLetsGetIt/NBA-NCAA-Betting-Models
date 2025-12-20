@@ -35,8 +35,8 @@ HTML_TEMPLATE = """
             --bg-card-secondary: #2a2a2a;
             --text-primary: #ffffff;
             --text-secondary: #b3b3b3;
-            --accent-green: #4ade80;
-            --accent-green-dim: rgba(74, 222, 128, 0.1);
+            --accent-green: #228B22;
+            --accent-green-dim: rgba(34, 139, 34, 0.15);
             --accent-red: #f87171;
             --accent-blue: #3b82f6; /* Modern Blue */
             --accent-blue-dim: rgba(59, 130, 246, 0.1);
@@ -242,23 +242,23 @@ HTML_TEMPLATE = """
                 </div>
             </div>
 
-            <!-- CONSISTENT BETTORS (WIN %) -->
+            <!-- TOP BETTOR FROM PREVIOUS DAY -->
             <div>
-                 <div class="section-title" style="border-color: var(--accent-blue);">
-                    <span>Consistent Bettors (Win %)</span>
+                 <div class="section-title" style="border-color: var(--accent-green);">
+                    <span>Top Bettor From Yesterday</span>
                 </div>
                 <div class="card">
                     <ul class="performer-list">
-                        {% for p in steady_bettors %}
+                        {% for p in yesterday_top %}
                         <li class="performer-item">
                             <div class="p-rank">#{{ p.RANK }}</div>
                             <div class="p-info">
-                                <span class="p-name">{{ p.BETTOR }} <span class="badge-steady">Steady</span></span>
-                                <div class="p-sub">Total Bets: {{ p.total_bets }}</div>
+                                <span class="p-name">{{ p.BETTOR }} <span class="badge-top">Hot 🔥</span></span>
+                                <div class="p-sub">Record: {{ p.W }}-{{ p.L }}-{{ p.P }}</div>
                             </div>
                             <div class="p-stat">
-                                <span class="p-val" style="color: var(--accent-blue);">{{ p['%'] }}</span>
-                                <span class="p-lbl">Win Rate</span>
+                                <span class="p-val val-pos">{{ "%+.2f"|format(p['LDAY UNITS']) }}u</span>
+                                <span class="p-lbl">Yesterday</span>
                             </div>
                         </li>
                         {% endfor %}
@@ -348,7 +348,7 @@ def generate_bar_chart(df, top_n=10):
     top_df = df.sort_values('UNIT', ascending=False).head(top_n).copy()
     
     # Color logic: Green for > 0, Red for < 0
-    top_df['Color'] = top_df['UNIT'].apply(lambda x: '#4ade80' if x >= 0 else '#f87171')
+    top_df['Color'] = top_df['UNIT'].apply(lambda x: '#228B22' if x >= 0 else '#f87171')
 
     fig = px.bar(
         top_df, 
@@ -431,8 +431,8 @@ def create_dashboard():
     if qualified_df.empty:
         qualified_df = df_current.head(10).copy()
 
-    qualified_df['win_pct_val'] = qualified_df['%'].apply(helper_parse_percent)
-    steady_bettors = qualified_df.sort_values('win_pct_val', ascending=False).head(5)
+    # Get top performers from yesterday (LDAY UNITS)
+    yesterday_top = df_current[df_current['LDAY UNITS'] > 0].sort_values('LDAY UNITS', ascending=False).head(5)
 
     # 4. Bar Graph
     bar_html = generate_bar_chart(df_current, top_n=10)
@@ -443,7 +443,7 @@ def create_dashboard():
     html = env.from_string(HTML_TEMPLATE).render(
         data=df_current.to_dict('records'),
         top_performers=top_performers.to_dict('records'),
-        steady_bettors=steady_bettors.to_dict('records'),
+        yesterday_top=yesterday_top.to_dict('records'),
         bar_chart=bar_html,
         date_str=datetime.now().strftime("%B %d, %Y")
     )
