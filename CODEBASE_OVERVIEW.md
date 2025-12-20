@@ -1,6 +1,6 @@
 # CourtSide Analytics - Sports Betting Models Codebase
 
-> **Last Updated**: 2025-12-19  
+> **Last Updated**: 2025-12-20  
 > **Status**: ✅ All Models Operational  
 > **GitHub Pages**: https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/
 
@@ -235,6 +235,41 @@ alias wnbamodels="cd /Users/rico/sports-models && ./run_wnba_models.sh"
 9. **Fixed NFL main model** - Jinja2 scoping bug preventing bets from displaying
 10. **Added Daily Performance** section to NCAAB model
 11. **Regenerated NFL prop HTMLs** - season/recent avg now display correctly
+
+### NBA Model Optimization (Dec 20, 2024) ✅
+12. **Fixed 98% UNDER bias** - Model projected totals ~18pts below market
+    - Added `TOTAL_CALIBRATION = 12.0` to balance OVER/UNDER betting
+13. **Tightened edge thresholds** to filter weak plays:
+    - `SPREAD_THRESHOLD`: 3.0 → 5.0
+    - `TOTAL_THRESHOLD`: 4.0 → 6.0
+    - `CONFIDENT_TOTAL_EDGE`: 12.0 → 15.0
+14. **Analysis showed Edge 5-8 range was 10-17 (37%)** losing -8.59u - now filtered out
+
+---
+
+## NBA Model Parameters (nba_model_IMPROVED.py)
+
+> **Important**: These parameters control pick selection and should be tuned based on performance.
+
+```python
+# Display Thresholds (minimum edge to show a potential bet)
+SPREAD_THRESHOLD = 5.0      # Show spread picks with 5+ edge
+TOTAL_THRESHOLD = 6.0       # Show total picks with 6+ edge
+
+# Logging Thresholds (minimum edge to actually track/bet)
+CONFIDENT_SPREAD_EDGE = 8.0  # Track spread picks with 8+ edge
+CONFIDENT_TOTAL_EDGE = 15.0  # Track total picks with 15+ edge
+
+# Calibration (fixes systematic model bias)
+TOTAL_CALIBRATION = 12.0    # Add to model total - fixes UNDER bias
+HOME_COURT_ADVANTAGE = 3.0  # Points added for home team
+```
+
+### When to Adjust Parameters
+- If **win rate drops below 52%**, consider raising thresholds
+- If **one bet type underperforms** (spreads vs totals), adjust that type's threshold
+- If **OVER/UNDER imbalance** reappears, adjust `TOTAL_CALIBRATION`
+- Run analysis: `python3 -c "..."` scripts in model file to check edge range performance
 
 ---
 
