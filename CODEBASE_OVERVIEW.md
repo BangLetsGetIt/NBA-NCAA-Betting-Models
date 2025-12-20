@@ -353,6 +353,20 @@ SHARP_EDGE_THRESHOLD = 0.08  # Lowered from 10%
 - Player database expanded: 10 → 45 players
 - Added First TD market support
 
+### NFL Spread/Total Model (`nfl/nfl_model_IMPROVED.py`)
+- **Auto-grading added** (Dec 20, 2024)
+- Thresholds: 8+ pt spread edge, 12+ pt total edge for logging
+- Status: 0-0 (tracking file needs cleanup)
+
+### NFL Props Models (Dec 20, 2024)
+| Model | Record | Profit | Status |
+|-------|--------|--------|--------|
+| Passing Yards | 2-0 | +1.76u | ✅ Working |
+| Rushing Yards | 1-0 | +0.90u | ✅ Working |
+| Receiving Yards | 2-2 | -0.27u | ✅ Working |
+| Receptions | 0-0 | +0.00u | ✅ Working |
+| **TOTAL** | **5-2 (71.4%)** | **+2.39u** | ✅ |
+
 ## HTML Styling Reference
 
 ### Color Scheme
