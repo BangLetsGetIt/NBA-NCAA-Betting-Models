@@ -49,7 +49,7 @@ TEAM_ASSISTS_CACHE = os.path.join(SCRIPT_DIR, "nba_team_assists_cache.json")
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_assists_props_tracking.json")
 
 # Model Parameters - STRICT FOR PROFITABILITY
-MIN_AI_SCORE = 7.5  # Adjusted to allow more high-value plays
+MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 66.7% vs 29.4% below 10)
 TOP_PLAYS_COUNT = 5
 RECENT_GAMES_WINDOW = 10
 CURRENT_SEASON = "2025-26"
@@ -97,6 +97,11 @@ def track_new_picks(over_plays, under_plays):
     updated_count = 0
     
     for play in over_plays + under_plays:
+        # FILTER: Only track picks with AI Score >= MIN_AI_SCORE
+        ai_score = play.get('ai_score', 0)
+        if ai_score < MIN_AI_SCORE:
+            continue  # Skip low AI score picks (below 10 = 29.4% hit rate)
+        
         # Extract prop line from prop string (e.g., "OVER 8.5 AST" -> 8.5)
         prop_str = play.get('prop', '')
         bet_type = 'over' if 'OVER' in prop_str else 'under'
