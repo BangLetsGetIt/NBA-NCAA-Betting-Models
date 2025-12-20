@@ -340,7 +340,8 @@ MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 66.7%)
 | **10+** | **66.7%** | ✅ Keep |
 
 ### Soccer Model (`soccer/soccer_model_IMPROVED.py`)
-- **Team bet history** added to matchup cards (Dec 20, 2024)
+- **Jinja scoping fix** (Dec 20, 2024): Fixed `selectattr|first` for picks display
+- **Team bet history** added to matchup cards
 - Mobile optimized (viewport + @media queries)
 - Season record: 30-33-3 (47.6%)
 
