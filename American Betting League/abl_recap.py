@@ -75,7 +75,7 @@ HTML_TEMPLATE = """
         }
 
         .subtitle {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: var(--accent-blue);
             margin-top: 10px;
             font-weight: 600;
@@ -86,9 +86,9 @@ HTML_TEMPLATE = """
         .date-badge {
             display: inline-block;
             background: var(--bg-card-secondary);
-            padding: 6px 14px;
+            padding: 8px 18px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
             margin-top: 20px;
             font-weight: 500;
@@ -212,7 +212,7 @@ HTML_TEMPLATE = """
         
         <header>
             <h1>American Betting League</h1>
-            <div class="subtitle">Midseason Report</div>
+            <div class="subtitle">Daily Recap</div>
             <div class="date-badge">📅 {{ date_str }}</div>
         </header>
 
