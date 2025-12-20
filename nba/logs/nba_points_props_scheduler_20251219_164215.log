@@ -1,0 +1,84 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Fri Dec 19 16:42:21 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 22 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 500 players[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Fetched defense factors for 30 teams[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 5 upcoming games[0m
+[96m  Filtered to 5 upcoming games[0m
+[96m  Game 1/5: Miami Heat @ Boston Celtics[0m
+[96m  Game 2/5: Philadelphia 76ers @ New York Knicks[0m
+[96m  Game 3/5: San Antonio Spurs @ Atlanta Hawks[0m
+[96m  Game 4/5: Chicago Bulls @ Cleveland Cavaliers[0m
+[96m  Game 5/5: Oklahoma City Thunder @ Minnesota Timberwolves[0m
+[92m✓ Fetched 136 total player props[0m
+
+[96mAnalyzing 136 player props with REAL stats...[0m
+[92m✓ Found 5 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 4 props (no player stats found)[0m
+[93m  Skipped 214 props (score below 9.5)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+[93m✓ Updated odds for 7 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Andrew Wiggins           [0m | [92mOVER 13.5 PTS  [0m | Boston Celtics vs Miami Heat | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Karl-Anthony Towns       [0m | [92mOVER 20.5 PTS  [0m | New York Knicks vs Philadelphia 76ers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jalen Brunson            [0m | [92mOVER 26.5 PTS  [0m | New York Knicks vs Philadelphia 76ers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Harrison Barnes          [0m | [92mOVER 10.5 PTS  [0m | San Antonio Spurs vs Atlanta Hawks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. De'Aaron Fox             [0m | [92mOVER 20.5 PTS  [0m | San Antonio Spurs vs Atlanta Hawks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Andre Drummond           [0m | [91mUNDER 8.5 PTS  [0m | Philadelphia 76ers vs New York Knicks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Darius Garland           [0m | [91mUNDER 22.5 PTS [0m | Cleveland Cavaliers vs Chicago Bulls | [1mA.I.: 9.63[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jarrett Allen            [0m | [91mUNDER 15.5 PTS [0m | Cleveland Cavaliers vs Chicago Bulls | [1mA.I.: 9.61[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Fri Dec 19 16:48:07 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+No changes to commit
+✅ Auto-push succeeded at Fri Dec 19 16:48:07 EST 2025

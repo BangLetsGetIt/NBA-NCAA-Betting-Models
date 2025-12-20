@@ -1,0 +1,94 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Fri Dec 19 10:05:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 9 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2025-12-19...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player assists stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 5 upcoming games[0m
+[96m  Filtered to 5 upcoming games[0m
+[96m  Game 1/5: Miami Heat @ Boston Celtics[0m
+[96m  Game 2/5: Philadelphia 76ers @ New York Knicks[0m
+[96m  Game 3/5: San Antonio Spurs @ Atlanta Hawks[0m
+[96m  Game 4/5: Chicago Bulls @ Cleveland Cavaliers[0m
+[96m  Game 5/5: Oklahoma City Thunder @ Minnesota Timberwolves[0m
+[92m✓ Fetched 31 player assists props (grouped)[0m
+
+[96mAnalyzing 31 player props with REAL stats...[0m
+[92m✓ Found 3 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 7.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 54 props (score below 7.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Trae Young               [0m | [92mOVER 7.5 AST   [0m | Atlanta Hawks             vs San Antonio Spurs         | [1mA.I.: 9.30[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Tre Jones                [0m | [92mOVER 4.5 AST   [0m | Cleveland Cavaliers       vs Chicago Bulls             | [1mA.I.: 9.17[0m | Rating: 4.4 ⭐⭐
+  [96m 3. Jalen Johnson            [0m | [92mOVER 7.5 AST   [0m | Atlanta Hawks             vs San Antonio Spurs         | [1mA.I.: 8.80[0m | Rating: 4.1 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Tyler Herro              [0m | [91mUNDER 3.5 AST  [0m | Miami Heat                vs Boston Celtics            | [1mA.I.: 10.00[0m | Rating: 4.6 ⭐⭐
+  [96m 2. Joel Embiid              [0m | [91mUNDER 3.5 AST  [0m | Philadelphia 76ers        vs New York Knicks           | [1mA.I.: 8.26[0m | Rating: 3.7 ⭐
+  [96m 3. Darius Garland           [0m | [91mUNDER 7.5 AST  [0m | Cleveland Cavaliers       vs Chicago Bulls             | [1mA.I.: 7.52[0m | Rating: 3.0 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Fri Dec 19 10:05:09 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 1c0403c] Update model outputs - 2025-12-19 10:05:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 12 insertions(+), 57 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   855aa87..1c0403c  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Dec 19 10:05:10 EST 2025

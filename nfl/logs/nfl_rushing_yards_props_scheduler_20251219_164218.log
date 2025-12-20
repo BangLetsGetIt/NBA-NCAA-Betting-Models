@@ -1,0 +1,97 @@
+============================================================
+Scheduler run: nfl_rushing_yards_props
+Time: Fri Dec 19 16:42:21 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_rushing_yards_props_model.py
+============================================================
+[1m🏈 NFL Rushing Props Model - Sharp +EV[0m
+
+[96m--- Grading Pending Picks ---[0m
+Graded 0 picks.
+  Found 31 upcoming games (filtered from 31)
+[96mFound 31 upcoming games. Fetching rushing props...[0m
+
+Analyzing 76 players...
+
+Found 12 sharp plays:
+  ⭐ Saquon Barkley UNDER 78.5 (Proj: 70.2) | Edge: 8.3 | AI: 10.0
+  ⭐ D'Andre Swift OVER 54.5 (Proj: 75.7) | Edge: 21.2 | AI: 10.0
+  ⭐ Josh Jacobs OVER 61.5 (Proj: 70.1) | Edge: 8.6 | AI: 10.0
+  ⭐ James Cook OVER 86.5 (Proj: 99.8) | Edge: 13.3 | AI: 10.0
+  ⭐ Quinshon Judkins UNDER 65.5 (Proj: 54.0) | Edge: 11.5 | AI: 10.0
+  ⭐ De'Von Achane OVER 82.5 (Proj: 103.5) | Edge: 21.0 | AI: 10.0
+  ⭐ Javonte Williams OVER 72.5 (Proj: 79.4) | Edge: 6.9 | AI: 10.0
+  ⭐ Breece Hall UNDER 61.5 (Proj: 54.0) | Edge: 7.5 | AI: 10.0
+  ⭐ Jahmyr Gibbs OVER 72.5 (Proj: 80.3) | Edge: 7.8 | AI: 10.0
+  ⭐ Derrick Henry OVER 77.5 (Proj: 82.7) | Edge: 5.2 | AI: 8.4
+  ⭐ Jonathan Taylor OVER 96.5 (Proj: 107.0) | Edge: 10.5 | AI: 10.0
+  ⭐ Christian McCaffrey OVER 59.5 (Proj: 65.5) | Edge: 6.0 | AI: 8.6
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_rushing_yards_props.html
+✅ Completed: nfl_rushing_yards_props at Fri Dec 19 16:48:15 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   American Betting League/update_log.txt
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   ncaa/logs/launchd_output.log
+	modified:   nfl/nfl_receiving_yards_props_tracking.json.backup_grader
+	modified:   wnba/wnba_model_output.html
+	modified:   wnba/wnba_props_output.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	nba/logs/nba_3pt_props_20251219_050002.log
+	nba/logs/nba_3pt_props_scheduler_20251219_025005.log
+	nba/logs/nba_3pt_props_scheduler_20251219_100002.log
+	nba/logs/nba_3pt_props_scheduler_20251219_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251219_164215.log
+	nba/logs/nba_assists_props_20251219_070003.log
+	nba/logs/nba_assists_props_scheduler_20251219_024004.log
+	nba/logs/nba_assists_props_scheduler_20251219_100505.log
+	nba/logs/nba_assists_props_scheduler_20251219_150505.log
+	nba/logs/nba_assists_props_scheduler_20251219_164215.log
+	nba/logs/nba_main_model_scheduler_20251219_031005.log
+	nba/logs/nba_main_model_scheduler_20251219_102000.log
+	nba/logs/nba_main_model_scheduler_20251219_152005.log
+	nba/logs/nba_main_model_scheduler_20251219_164215.log
+	nba/logs/nba_model_20251219_100002.log
+	nba/logs/nba_points_props_scheduler_20251219_100002.log
+	nba/logs/nba_points_props_scheduler_20251219_150005.log
+	nba/logs/nba_points_props_scheduler_20251219_164215.log
+	nba/logs/nba_rebounds_props_20251219_060003.log
+	nba/logs/nba_rebounds_props_scheduler_20251219_024500.log
+	nba/logs/nba_rebounds_props_scheduler_20251219_101005.log
+	nba/logs/nba_rebounds_props_scheduler_20251219_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20251219_164221.log
+	ncaa/logs/ncaab_model_20251219_103000.log
+	nfl/logs/nfl_main_model_scheduler_20251219_031504.log
+	nfl/logs/nfl_main_model_scheduler_20251219_093001.log
+	nfl/logs/nfl_main_model_scheduler_20251219_164222.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251219_025505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251219_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251219_164221.log
+	nfl/logs/nfl_receptions_props_scheduler_20251219_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251219_095503.log
+	nfl/logs/nfl_receptions_props_scheduler_20251219_164221.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251219_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251219_095000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251219_164218.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   c8f4a9b..c4c0f6f  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Dec 19 16:48:16 EST 2025
