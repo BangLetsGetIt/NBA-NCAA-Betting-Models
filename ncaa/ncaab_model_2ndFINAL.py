@@ -47,14 +47,16 @@ TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "ncaab_tracking_dashboard.html")
 
 # --- Model Parameters (Tuned for College Basketball) ---
 HOME_COURT_ADVANTAGE = 3.2  # Reduced from 3.5 - spreads losing may indicate overvaluing home teams
-SPREAD_THRESHOLD = 4.0  # Increased from 2.5 - more selective to improve spread win rate
-TOTAL_THRESHOLD = 4.0   # Keep as-is (totals performing well at 60% WR)
+SPREAD_THRESHOLD = 6.0  # Tightened from 4.0 - only show higher confidence plays
+TOTAL_THRESHOLD = 6.0   # Tightened from 4.0 - only show higher confidence plays
 
-# Tracking Parameters
-CONFIDENT_SPREAD_EDGE = 5.5  # Increased from 4.0 - only log higher-confidence spread bets
-CONFIDENT_TOTAL_EDGE = 5.0   # Keep as-is (totals performing well)
-MAX_SPREAD_EDGE = 15.0  # NEW - cap maximum edge to filter out likely model errors
-MAX_TOTAL_EDGE = 18.0   # NEW - cap maximum edge for totals (totals working well, but still cap extremes)
+# Tracking Parameters - TIGHTENED (Dec 20, 2024)
+# Analysis showed edge 5-12 losing -25.63u (48.9-50.6% hit rate)
+# Edge 12+ is hitting 53.6-55.1% with +34.63u profit
+CONFIDENT_SPREAD_EDGE = 12.0  # Raised from 5.5 - only log 12+ edge spreads  
+CONFIDENT_TOTAL_EDGE = 12.0   # Raised from 5.0 - only log 12+ edge totals
+MAX_SPREAD_EDGE = 15.0  # Cap maximum edge to filter out likely model errors
+MAX_TOTAL_EDGE = 18.0   # Cap maximum edge for totals
 UNIT_SIZE = 100  # Standard bet size in dollars
 
 # Date filtering
