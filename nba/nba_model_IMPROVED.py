@@ -56,12 +56,16 @@ CURRENT_SEASON = '2024-25'
 
 # --- IMPROVED Model Parameters ---
 HOME_COURT_ADVANTAGE = 3.0  # Reduced from 3.5 - modern NBA HCA trending lower
-SPREAD_THRESHOLD = 3.0      # Increased from 2.0 - minimum to show
-TOTAL_THRESHOLD = 4.0       # Increased from 3.0 - minimum to show
+SPREAD_THRESHOLD = 5.0      # Tightened from 3.0 - only show higher confidence plays
+TOTAL_THRESHOLD = 6.0       # Tightened from 4.0 - only show higher confidence plays
 
 # Stricter thresholds for LOGGING picks (these are the bets we actually track)
-CONFIDENT_SPREAD_EDGE = 8.0  # Increased from 5.0 - need 8+ points edge
-CONFIDENT_TOTAL_EDGE = 12.0  # Increased from 7.0 - need 12+ points edge
+CONFIDENT_SPREAD_EDGE = 8.0  # Keep at 8 - spreads performing well
+CONFIDENT_TOTAL_EDGE = 15.0  # Increased from 12.0 - totals underperforming
+
+# CALIBRATION: Model projects ~18 points lower than market (98% UNDER bias)
+# Adding calibration to balance OVER/UNDER betting
+TOTAL_CALIBRATION = 12.0    # Add to model total to reduce UNDER bias
 UNIT_SIZE = 100
 
 # Date filtering
@@ -1827,6 +1831,10 @@ def calculate_model_total(home_team, away_team, stats, splits_data=None):
         pace_factor = avg_pace / 100.0  # NBA average pace ~100
 
         total = (home_expected + away_expected) * pace_factor
+
+        # Apply calibration to reduce UNDER bias
+        # Model historically projects ~18 points below market
+        total += TOTAL_CALIBRATION
 
         # Sanity check with wider bounds
         if total < 180 or total > 260:
