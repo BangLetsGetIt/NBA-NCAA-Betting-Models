@@ -26,9 +26,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "atd_model_output.html")
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "atd_model_tracking.json")
 
-# Model Parameters - SHARP +EV
-MIN_EDGE_THRESHOLD = 0.08  # 8% minimum edge
-SHARP_EDGE_THRESHOLD = 0.10  # 10%+ edge for "SHARP BET"
+# Model Parameters - SHARP +EV (Relaxed Dec 20, 2024)
+MIN_EDGE_THRESHOLD = 0.05  # 5% minimum edge (was 8%)
+SHARP_EDGE_THRESHOLD = 0.08  # 8%+ edge for "SHARP BET" (was 10%)
 KELLY_FRACTION = 0.25  # Conservative Kelly (1/4 Kelly)
 MIN_CONFIDENCE = 0.65  # Confidence required
 CURRENT_SEASON = "2024" # Adjust as needed
@@ -286,13 +286,13 @@ def calculate_expected_value(prob, odds):
 # =============================================================================
 
 def fetch_atd_odds():
-    print(f"\n💰 Fetching ATTD odds from sportsbooks...")
+    """Fetch both Anytime TD and First TD odds from sportsbooks"""
+    print(f"\n💰 Fetching TD odds from sportsbooks (ATTD + First TD)...")
     if not API_KEY: return []
     
     url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events"
     try:
-        r = requests.get(url, params={'apiKey': API_KEY, 'regions': 'us', 'markets': 'player_anytime_td'})
-        r.raise_for_status()
+        r = requests.get(url, params={'apiKey': API_KEY, 'regions': 'us', 'markets': 'player_anytime_td,player_first_td'})
         r.raise_for_status()
         raw_events = r.json()
         
@@ -314,60 +314,110 @@ def fetch_atd_odds():
         
     all_offers = []
     
-    # Process just first few events for now to save API calls in testing
-    # In prod, remove slice
+    # TD market types to fetch
+    td_markets = ['player_anytime_td', 'player_first_td']
+    
     for event in events:
          game_id = event['id']
          commence_time = event['commence_time']
          home = event['home_team']
          away = event['away_team']
          
-         # Fetch specific odds
+         # Fetch specific odds for both market types
          o_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/{game_id}/odds"
          try:
-             orsp = requests.get(o_url, params={'apiKey': API_KEY, 'regions': 'us', 'markets': 'player_anytime_td', 'oddsFormat': 'american'})
+             orsp = requests.get(o_url, params={
+                 'apiKey': API_KEY, 
+                 'regions': 'us', 
+                 'markets': ','.join(td_markets), 
+                 'oddsFormat': 'american'
+             })
              if orsp.status_code != 200: continue
              odata = orsp.json()
              
              for book in odata.get('bookmakers', []):
                  bk_name = book['title']
                  for m in book.get('markets', []):
-                     if m['key'] == 'player_anytime_td':
+                     market_key = m['key']
+                     if market_key in td_markets:
+                         market_type = 'ATTD' if market_key == 'player_anytime_td' else 'First TD'
                          for out in m['outcomes']:
-                             if out['name'] == 'Over': continue # Ignore generic lines if structured weirdly
+                             if out['name'] == 'Over': continue
                              name = out['description'] if 'description' in out else out['name']
                              
                              all_offers.append({
                                  'player': name,
                                  'bookmaker': bk_name,
                                  'odds': out['price'],
-                                 'team': 'UNK', # Would need mapping
+                                 'market_type': market_type,
+                                 'team': 'UNK',
                                  'home_team': home,
                                  'away_team': away,
                                  'commence_time': commence_time
                              })
          except: continue
          
+    attd_count = sum(1 for o in all_offers if o.get('market_type') == 'ATTD')
+    first_td_count = sum(1 for o in all_offers if o.get('market_type') == 'First TD')
+    print(f"  Fetched {attd_count} ATTD offers, {first_td_count} First TD offers")
     return all_offers
 
 def load_player_data_manual():
-    # Placeholder: In a real advanced model, this would scrape usage or read a larger DB
-    # We will use the manual list from original model plus some updates
-    # IMPORTANT: To make this robust, we'd want to pull from fetch_nfl_player_stats.py
-    # For now, keeping the curated list but formatting it for evaluation
-    
+    """
+    Expanded player database for TD props (Dec 20, 2024)
+    Includes 45+ players with TD scoring potential
+    """
     players = [
-         {"name": "Christian McCaffrey", "pos": "RB", "team": "SF", "tds": 14, "games": 8, "rz_share": 0.45},
-         {"name": "Derrick Henry", "pos": "RB", "team": "BAL", "tds": 13, "games": 10, "rz_share": 0.42},
-         {"name": "Saquon Barkley", "pos": "RB", "team": "PHI", "tds": 11, "games": 10, "rz_share": 0.38},
-         {"name": "Bijan Robinson", "pos": "RB", "team": "ATL", "tds": 11, "games": 10, "rz_share": 0.36},
-         {"name": "Jahmyr Gibbs", "pos": "RB", "team": "DET", "tds": 11, "games": 10, "rz_share": 0.30},
-         {"name": "Ja'Marr Chase", "pos": "WR", "team": "CIN", "tds": 9, "games": 10, "rz_share": 0.30},
-         {"name": "Amon-Ra St. Brown", "pos": "WR", "team": "DET", "tds": 9, "games": 10, "rz_share": 0.28},
-         {"name": "CeeDee Lamb", "pos": "WR", "team": "DAL", "tds": 6, "games": 10, "rz_share": 0.25},
-         {"name": "George Kittle", "pos": "TE", "team": "SF", "tds": 7, "games": 9, "rz_share": 0.23},
-         {"name": "Travis Kelce", "pos": "TE", "team": "KC", "tds": 6, "games": 10, "rz_share": 0.20},
-         # Add more as needed
+        # === ELITE RBs (High TD Volume) ===
+        {"name": "Christian McCaffrey", "pos": "RB", "team": "SF", "tds": 14, "games": 8, "rz_share": 0.45},
+        {"name": "Derrick Henry", "pos": "RB", "team": "BAL", "tds": 13, "games": 10, "rz_share": 0.42},
+        {"name": "Saquon Barkley", "pos": "RB", "team": "PHI", "tds": 11, "games": 10, "rz_share": 0.38},
+        {"name": "Bijan Robinson", "pos": "RB", "team": "ATL", "tds": 11, "games": 10, "rz_share": 0.36},
+        {"name": "Jahmyr Gibbs", "pos": "RB", "team": "DET", "tds": 11, "games": 10, "rz_share": 0.30},
+        {"name": "Josh Jacobs", "pos": "RB", "team": "GB", "tds": 10, "games": 10, "rz_share": 0.35},
+        {"name": "Alvin Kamara", "pos": "RB", "team": "NO", "tds": 9, "games": 10, "rz_share": 0.32},
+        {"name": "Kyren Williams", "pos": "RB", "team": "LAR", "tds": 8, "games": 10, "rz_share": 0.34},
+        {"name": "James Cook", "pos": "RB", "team": "BUF", "tds": 8, "games": 10, "rz_share": 0.30},
+        {"name": "Jonathan Taylor", "pos": "RB", "team": "IND", "tds": 7, "games": 9, "rz_share": 0.35},
+        {"name": "De'Von Achane", "pos": "RB", "team": "MIA", "tds": 7, "games": 8, "rz_share": 0.28},
+        {"name": "Aaron Jones", "pos": "RB", "team": "MIN", "tds": 6, "games": 10, "rz_share": 0.25},
+        {"name": "Tony Pollard", "pos": "RB", "team": "TEN", "tds": 6, "games": 10, "rz_share": 0.30},
+        {"name": "Isiah Pacheco", "pos": "RB", "team": "KC", "tds": 5, "games": 8, "rz_share": 0.30},
+        {"name": "Breece Hall", "pos": "RB", "team": "NYJ", "tds": 5, "games": 10, "rz_share": 0.28},
+        {"name": "David Montgomery", "pos": "RB", "team": "DET", "tds": 8, "games": 10, "rz_share": 0.30},
+        {"name": "Rhamondre Stevenson", "pos": "RB", "team": "NE", "tds": 5, "games": 10, "rz_share": 0.32},
+        {"name": "Joe Mixon", "pos": "RB", "team": "HOU", "tds": 6, "games": 9, "rz_share": 0.30},
+        
+        # === ELITE WRs (TD Threats) ===
+        {"name": "Ja'Marr Chase", "pos": "WR", "team": "CIN", "tds": 9, "games": 10, "rz_share": 0.30},
+        {"name": "Amon-Ra St. Brown", "pos": "WR", "team": "DET", "tds": 9, "games": 10, "rz_share": 0.28},
+        {"name": "CeeDee Lamb", "pos": "WR", "team": "DAL", "tds": 6, "games": 10, "rz_share": 0.25},
+        {"name": "Tyreek Hill", "pos": "WR", "team": "MIA", "tds": 6, "games": 10, "rz_share": 0.22},
+        {"name": "A.J. Brown", "pos": "WR", "team": "PHI", "tds": 6, "games": 9, "rz_share": 0.22},
+        {"name": "Justin Jefferson", "pos": "WR", "team": "MIN", "tds": 5, "games": 10, "rz_share": 0.20},
+        {"name": "Davante Adams", "pos": "WR", "team": "NYJ", "tds": 5, "games": 10, "rz_share": 0.22},
+        {"name": "Stefon Diggs", "pos": "WR", "team": "HOU", "tds": 5, "games": 10, "rz_share": 0.20},
+        {"name": "DeVonta Smith", "pos": "WR", "team": "PHI", "tds": 4, "games": 10, "rz_share": 0.18},
+        {"name": "Mike Evans", "pos": "WR", "team": "TB", "tds": 6, "games": 10, "rz_share": 0.25},
+        {"name": "Chris Godwin", "pos": "WR", "team": "TB", "tds": 5, "games": 8, "rz_share": 0.22},
+        {"name": "Puka Nacua", "pos": "WR", "team": "LAR", "tds": 4, "games": 8, "rz_share": 0.20},
+        {"name": "Nico Collins", "pos": "WR", "team": "HOU", "tds": 5, "games": 8, "rz_share": 0.25},
+        {"name": "Malik Nabers", "pos": "WR", "team": "NYG", "tds": 4, "games": 10, "rz_share": 0.22},
+        {"name": "Jaylen Waddle", "pos": "WR", "team": "MIA", "tds": 4, "games": 10, "rz_share": 0.18},
+        {"name": "DK Metcalf", "pos": "WR", "team": "SEA", "tds": 4, "games": 10, "rz_share": 0.20},
+        {"name": "Terry McLaurin", "pos": "WR", "team": "WAS", "tds": 5, "games": 10, "rz_share": 0.22},
+        {"name": "Keenan Allen", "pos": "WR", "team": "CHI", "tds": 3, "games": 10, "rz_share": 0.18},
+        {"name": "Ladd McConkey", "pos": "WR", "team": "LAC", "tds": 4, "games": 10, "rz_share": 0.20},
+        
+        # === ELITE TEs ===
+        {"name": "George Kittle", "pos": "TE", "team": "SF", "tds": 7, "games": 9, "rz_share": 0.23},
+        {"name": "Travis Kelce", "pos": "TE", "team": "KC", "tds": 6, "games": 10, "rz_share": 0.20},
+        {"name": "Trey McBride", "pos": "TE", "team": "ARI", "tds": 4, "games": 10, "rz_share": 0.18},
+        {"name": "Mark Andrews", "pos": "TE", "team": "BAL", "tds": 4, "games": 10, "rz_share": 0.18},
+        {"name": "Brock Bowers", "pos": "TE", "team": "LV", "tds": 3, "games": 10, "rz_share": 0.15},
+        {"name": "Sam LaPorta", "pos": "TE", "team": "DET", "tds": 4, "games": 10, "rz_share": 0.15},
+        {"name": "Evan Engram", "pos": "TE", "team": "JAX", "tds": 3, "games": 10, "rz_share": 0.15},
+        {"name": "Dallas Goedert", "pos": "TE", "team": "PHI", "tds": 3, "games": 9, "rz_share": 0.12},
     ]
     return players
 
