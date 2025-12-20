@@ -48,6 +48,11 @@ MIN_EDGE_OVER_LINE = 2.0  # Player must average 2.0+ above prop line for OVER
 MIN_EDGE_UNDER_LINE = 1.5  # Player must average 1.5+ below prop line for UNDER
 MIN_RECENT_FORM_EDGE = 1.2  # Recent form must strongly support
 
+# UNDER BET CONTROLS (Dec 20, 2024 analysis)
+# UNDERs are 26-35 (42.6%) with -8.47u loss while OVERs are 64.4%
+# Set to True to temporarily pause tracking UNDER bets
+PAUSE_UNDERS = True  # UNDERs underperforming - pause until pattern changes
+
 # ANSI color codes
 class Colors:
     GREEN = '\033[92m'
@@ -130,6 +135,10 @@ def track_new_picks(over_plays, under_plays):
         # Extract prop line from prop string (e.g., "OVER 23.5 PTS" -> 23.5)
         prop_str = play.get('prop', '')
         bet_type = 'over' if 'OVER' in prop_str else 'under'
+        
+        # FILTER: Skip UNDER bets if PAUSE_UNDERS is enabled
+        if bet_type == 'under' and PAUSE_UNDERS:
+            continue  # UNDERs are 42.6% - paused until pattern improves
         
         # Parse prop line from string
         import re

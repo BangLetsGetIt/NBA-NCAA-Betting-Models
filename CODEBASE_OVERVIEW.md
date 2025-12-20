@@ -304,6 +304,20 @@ HOME_COURT_ADVANTAGE = 3.2
 
 ---
 
+## NBA Props Models Parameters
+
+> **Updated Dec 20, 2024**: Tightened AI Score thresholds based on analysis
+
+### Rebounds Props (`nba_rebounds_props_model.py`)
+```python
+MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 60.9% hit rate)
+```
+
+| AI Score | Win% | Action |
+|----------|------|--------|
+| 7-10 | 33-50% | ❌ Filtered |
+| **10+** | **60.9%** | ✅ Keep |
+
 ## HTML Styling Reference
 
 ### Color Scheme
