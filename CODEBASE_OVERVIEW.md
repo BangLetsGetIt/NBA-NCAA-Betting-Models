@@ -318,6 +318,17 @@ MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 60.9% hit rate)
 | 7-10 | 33-50% | ❌ Filtered |
 | **10+** | **60.9%** | ✅ Keep |
 
+### Points Props (`nba_points_props_model.py`)
+```python
+MIN_AI_SCORE = 9.5  # Display threshold
+PAUSE_UNDERS = True  # UNDERs paused - 42.6% with -8.47u loss
+```
+
+| Bet Type | Win% | Profit | Status |
+|----------|------|--------|--------|
+| **OVERs** | **64.4%** | **+12.45u** | ✅ Active |
+| UNDERs | 42.6% | -8.47u | ⏸️ Paused |
+
 ## HTML Styling Reference
 
 ### Color Scheme
