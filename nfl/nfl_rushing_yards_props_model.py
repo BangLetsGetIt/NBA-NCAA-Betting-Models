@@ -364,7 +364,19 @@ def analyze_props(props, stats_cache):
         # Calculate Projected Yards
         projected = (season_avg * 0.4) + (recent_avg * 0.6)
         
+        current_time = datetime.now(pytz.utc)
+
         for entry in entries:
+            # Strict Game Time Filter
+            ct_str = entry.get('commence_time')
+            if ct_str:
+                try:
+                    ct_dt = datetime.fromisoformat(ct_str.replace('Z', '+00:00'))
+                    if ct_dt < current_time:
+                        continue
+                except:
+                    pass
+
             side = entry.get('side') 
             line = entry.get('line')
             price = entry.get('price')

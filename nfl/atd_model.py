@@ -440,9 +440,24 @@ def analyze_opportunities(odds_list, players_stats):
     
     opportunities = []
     
+    # Filter past games first
+    current_time = datetime.now(pytz.utc)
+    valid_odds = []
+    
+    for o in odds_list:
+        ct_str = o.get('commence_time')
+        if ct_str:
+            try:
+                ct_dt = datetime.fromisoformat(ct_str.replace('Z', '+00:00'))
+                if ct_dt < current_time:
+                    continue
+            except:
+                pass
+        valid_odds.append(o)
+    
     # Group odds by player to find best price
     grouped = {}
-    for o in odds_list:
+    for o in valid_odds:
         p = o['player']
         if p not in grouped: grouped[p] = []
         grouped[p].append(o)
