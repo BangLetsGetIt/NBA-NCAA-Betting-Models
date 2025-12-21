@@ -76,6 +76,15 @@ class BettingTracker:
     
     def add_bet(self, game_id, bet_type, team, line, predicted_value, edge, confidence, recommendation):
         """Add a new bet to tracking (only high-confidence bets)"""
+        # Check for duplicates
+        for b in self.bets:
+            # Match on ID, type, and team. Line should be close.
+            if (b.get('game_id') == game_id and 
+                b.get('bet_type') == bet_type and 
+                b.get('team') == team and 
+                abs(float(b.get('line', 0)) - float(line)) < 0.1):
+                return b
+
         bet = {
             'game_id': game_id,
             'bet_type': bet_type,
