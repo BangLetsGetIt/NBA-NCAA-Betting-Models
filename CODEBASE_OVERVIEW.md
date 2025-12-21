@@ -235,6 +235,9 @@ alias wnbamodels="cd /Users/rico/sports-models && ./run_wnba_models.sh"
 9. **Fixed NFL main model** - Jinja2 scoping bug preventing bets from displaying
 10. **Added Daily Performance** section to NCAAB model
 11. **Regenerated NFL prop HTMLs** - season/recent avg now display correctly
+12. **Zombie Plays Fix** - Added robust `pytz` time filters to ALL models (skips past games)
+13. **Duplicate Bets Fix** - Added deduplication to NFL Main Model
+14. **Best Plays Enhanced** - Added team logos, player stats (L5/Season), and matchups
 
 ### NBA Model Optimization (Dec 20, 2024) ✅
 12. **Fixed 98% UNDER bias** - Model projected totals ~18pts below market
@@ -461,6 +464,10 @@ git push origin main
   - Tracks all plays with **Score ≥ 80**
   - Persistent record displayed in header
   - Auto-updates win/loss status daily
+- **Features**:
+  - Team Logos (ESPN CDN)
+  - Player Stats (Season & L5 Avg)
+  - Matchup Details
 - **Styling**: Matches dark theme (Green for OVER, Red for UNDER)
 - **Run Command**: `python3 best_plays_bot.py` (also runs in `auto_grader.py` loop)
 
