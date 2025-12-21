@@ -228,6 +228,9 @@ def generate_html(plays):
         else:
             bet_display = play['bet_type']
         
+        # Bet color: green for OVER, red for UNDER
+        bet_class = "play-bet-under" if "UNDER" in play['bet_type'].upper() else "play-bet-over"
+        
         # Format edge
         edge_display = f"+{play['edge']:.1f}" if play['edge'] > 0 else f"{play['edge']:.1f}"
         
@@ -241,7 +244,7 @@ def generate_html(plays):
                 </div>
                 <div class="play-main">
                     <div class="play-player">{play['player']}</div>
-                    <div class="play-bet">{bet_display}</div>
+                    <div class="{bet_class}">{bet_display}</div>
                 </div>
                 <div class="play-meta">
                     <span class="meta-tag">{play['sport']}</span>
@@ -391,10 +394,16 @@ def generate_html(plays):
             margin-bottom: 4px;
         }}
         
-        .play-bet {{
+        .play-bet-over {{
             font-size: 22px;
             font-weight: 800;
             color: var(--accent-green);
+        }}
+        
+        .play-bet-under {{
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent-red);
         }}
         
         .play-meta {{
