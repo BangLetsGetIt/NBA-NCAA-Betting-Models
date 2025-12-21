@@ -362,13 +362,14 @@ CONFIDENT_TOTAL_EDGE = 12.0
 MIN_EDGE_THRESHOLD = 0.05  # Lowered from 8% to 5%
 SHARP_EDGE_THRESHOLD = 0.08  # Lowered from 10%
 ```
-- Player database expanded: 10 → 45 players
+- Player database expanded: 10 → 45 → **414 players** (scans ALL players with odds)
 - Added First TD market support
+- 109 +EV opportunities identified per run
 
 ### NFL Spread/Total Model (`nfl/nfl_model_IMPROVED.py`)
-- **Auto-grading added** (Dec 20, 2024)
+- **Auto-grading fixed** (Dec 20, 2024): `status='win'/'loss'` correctly tracked
 - Thresholds: 8+ pt spread edge, 12+ pt total edge for logging
-- Status: 0-0 (tracking file needs cleanup)
+- Record: **51-62 (45.1%)** | -15.6u
 
 ### NFL Props Models (Dec 20, 2024)
 | Model | Record | Profit | Status |
@@ -378,6 +379,12 @@ SHARP_EDGE_THRESHOLD = 0.08  # Lowered from 10%
 | Receiving Yards | 2-2 | -0.27u | ✅ Working |
 | Receptions | 0-0 | +0.00u | ✅ Working |
 | **TOTAL** | **5-2 (71.4%)** | **+2.39u** | ✅ |
+
+### Tracking System Updates (Dec 20, 2024)
+- **`auto_grader.py`**: Now ALWAYS regenerates HTML (fixes stale TODAY/YESTERDAY)
+- **`verify_tracking.py`**: Health check script for all models
+- Cleaned duplicate pending picks across all tracking files
+- All 12 models now tracking correctly with daily stats
 
 ## HTML Styling Reference
 
