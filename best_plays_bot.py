@@ -434,7 +434,7 @@ def generate_html(plays, fire_record=None):
                 <span class="stat-value">{season}</span>
             </div>
             <div class="stat">
-                <span class="stat-label">L5 Avg</span>
+                <span class="stat-label">{"L10 Avg" if play.get('sport') == 'NBA' else "L5 Avg"}</span>
                 <span class="stat-value">{recent}</span>
             </div>
              '''
