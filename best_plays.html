@@ -244,10 +244,14 @@
 
         .stats-header-container {
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .breakdown-section {
+            margin-top: 50px;
             margin-bottom: 30px;
-            align-items: stretch;
+            display: flex;
             justify-content: center;
         }
 
@@ -302,12 +306,7 @@
                 <h1>🎯 Best Plays</h1>
                 <div class="subtitle">Top 50 Highest Confidence Bets</div>
             </div>
-            <div class="timestamp">Generated: 2025-12-21 05:13 PM ET</div>
-        </header>
-        
-        
-    <div class="stats-header-container">
-        
+            
             <div class="fire-stats-box">
                 <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
                 <div class="fire-record">
@@ -316,97 +315,8 @@
                 </div>
             </div>
         
-        
-        <div class="breakdown-box">
-            <div class="breakdown-title">📊 All Models Performance</div>
-            <table class="breakdown-table">
-                <thead>
-                    <tr>
-                        <th style="text-align: left;">Model</th>
-                        <th>Record</th>
-                        <th>Win %</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Receptions</td>
-                <td style="padding: 4px 8px;">2-0</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">100.0%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA 3PT Props</td>
-                <td style="padding: 4px 8px;">18-5</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">78.3%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Rushing Yards</td>
-                <td style="padding: 4px 8px;">8-4</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">66.7%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Rebounds Props</td>
-                <td style="padding: 4px 8px;">32-21</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">60.4%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Points Props</td>
-                <td style="padding: 4px 8px;">77-63</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">55.0%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Main</td>
-                <td style="padding: 4px 8px;">112-94</td>
-                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">54.4%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NCAAB</td>
-                <td style="padding: 4px 8px;">990-894</td>
-                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">52.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">Soccer</td>
-                <td style="padding: 4px 8px;">50-53</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">48.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Receiving Yards</td>
-                <td style="padding: 4px 8px;">7-8</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">46.7%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Main</td>
-                <td style="padding: 4px 8px;">10-13</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">43.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Assists Props</td>
-                <td style="padding: 4px 8px;">11-17</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">39.3%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Passing Yards</td>
-                <td style="padding: 4px 8px;">4-8</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">33.3%</td>
-            </tr>
-            
-                </tbody>
-            </table>
-        </div>
-        
-    </div>
-    
+            <div class="timestamp">Generated: 2025-12-21 05:20 PM ET</div>
+        </header>
         
         <div class="plays-grid">
             
@@ -1929,6 +1839,98 @@
         </div>
         
         </div>
+
+        
+        <div class="breakdown-section">
+            <div class="breakdown-box">
+                <div class="breakdown-title">📊 All Models Performance</div>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Model</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Receptions</td>
+                <td style="padding: 4px 8px;">2-0</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">100.0%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA 3PT Props</td>
+                <td style="padding: 4px 8px;">18-5</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">78.3%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Rushing Yards</td>
+                <td style="padding: 4px 8px;">8-4</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">66.7%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Rebounds Props</td>
+                <td style="padding: 4px 8px;">32-21</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">60.4%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Points Props</td>
+                <td style="padding: 4px 8px;">77-63</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">55.0%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Main</td>
+                <td style="padding: 4px 8px;">112-94</td>
+                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">54.4%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NCAAB</td>
+                <td style="padding: 4px 8px;">991-894</td>
+                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">52.6%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">Soccer</td>
+                <td style="padding: 4px 8px;">50-53</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">48.5%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Receiving Yards</td>
+                <td style="padding: 4px 8px;">7-8</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">46.7%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Main</td>
+                <td style="padding: 4px 8px;">10-13</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">43.5%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Assists Props</td>
+                <td style="padding: 4px 8px;">11-17</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">39.3%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Passing Yards</td>
+                <td style="padding: 4px 8px;">4-8</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">33.3%</td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
     </div>
 </body>
 </html>
