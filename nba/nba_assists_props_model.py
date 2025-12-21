@@ -1187,8 +1187,21 @@ def analyze_props(props_list, player_stats, assists_factors):
     skipped_no_stats = 0
     skipped_low_score = 0
 
+    current_time = datetime.now(timezone.utc)
+
     for prop in props_list:
         player_name = prop.get("player")
+        
+        # Strict Game Time Filter: Ignore if game has already started
+        gt_str = prop.get("game_time")
+        if gt_str:
+            try:
+                gt_dt = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                if gt_dt < current_time:
+                    continue
+            except:
+                pass
+
         prop_line = prop.get("prop_line")
         opponent_team = prop.get("opponent")
         if not player_name or prop_line is None or not opponent_team:
