@@ -192,6 +192,9 @@ def get_pending_plays():
                 'model_record': model_stats['record'],
                 'model_win_rate': model_stats['win_rate'],
                 'confidence': confidence,
+                'team': p.get('team', ''),
+                'season_avg': p.get('season_avg', 0),
+                'recent_avg': p.get('recent_avg', 0),
             }
             all_plays.append(play)
     
