@@ -418,13 +418,25 @@ def analyze_props(props, stats_cache):
 
         for entry in entries:
             # Strict Game Time Filter
-            ct_str = entry.get('commence_time')
             if ct_str:
                 try:
-                    ct_dt = datetime.fromisoformat(ct_str.replace('Z', '+00:00'))
+                    # Parse ISO string
+                    if 'Z' in ct_str:
+                        ct_dt = datetime.fromisoformat(ct_str.replace('Z', '+00:00'))
+                    else:
+                        ct_dt = datetime.fromisoformat(ct_str)
+                        
+                    # Ensure offset-aware
+                    if ct_dt.tzinfo is None:
+                        ct_dt = ct_dt.replace(tzinfo=pytz.utc)
+                    else:
+                        ct_dt = ct_dt.astimezone(pytz.utc)
+                    
+                    # Compare
                     if ct_dt < current_time:
                         continue
-                except:
+                except Exception as e:
+                    print(f"Rec Time Filter Error: {e} for {ct_str}")
                     pass
 
             side = entry.get('side') 
