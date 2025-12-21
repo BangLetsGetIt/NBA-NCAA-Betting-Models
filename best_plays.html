@@ -224,14 +224,66 @@
         }
         
         .fire-stats-box {
-            background: var(--bg-card);
-            border: 1px solid var(--accent-orange);
-            border-radius: 8px;
-            padding: 8px 16px;
+            background: rgba(255, 69, 0, 0.1);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px 25px;
             text-align: center;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+            min-width: 250px;
         }
-        
+
+        .breakdown-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 13px;
+            max-width: 600px;
+            flex-grow: 1;
+        }
+
+        .stats-header-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .breakdown-section {
+            margin-top: 50px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .breakdown-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text-primary);
+        }
+
+        .breakdown-table th {
+            color: var(--text-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .breakdown-table td {
+            padding: 6px 0;
+            text-align: center;
+        }
+
         .fire-title {
             font-size: 12px;
             color: var(--text-secondary);
@@ -239,9 +291,9 @@
             font-weight: 600;
             margin-bottom: 2px;
         }
-        
+
         .fire-record {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 800;
             color: var(--text-primary);
         }
@@ -255,15 +307,24 @@
                 <div class="subtitle">Top 50 Highest Confidence Bets</div>
             </div>
             
-        <div class="fire-stats-box">
-            <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
-            <div class="fire-record">
-                6-7 
-                <span style="color: #f87171; font-size: 0.8em;">(46.2%)</span>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div class="fire-stats-box">
+                    <div class="fire-title">🔥 Fire Plays (80+)</div>
+                    <div class="fire-record">
+                        8-7 
+                        <span style="color: #ffffff; font-size: 0.8em;">(53.3%)</span>
+                    </div>
+                </div>
+                <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
+                    <div class="fire-title" style="color: #60a5fa;">💎 Solid Plays (70+)</div>
+                    <div class="fire-record">
+                        17-7 
+                        <span style="color: #4ade80; font-size: 0.8em;">(70.8%)</span>
+                    </div>
+                </div>
             </div>
-        </div>
         
-            <div class="timestamp">Generated: 2025-12-21 06:11 PM ET</div>
+            <div class="timestamp">Generated: 2025-12-21 06:14 PM ET</div>
         </header>
         
         <div class="plays-grid">
@@ -1190,115 +1251,13 @@
             <div class="play-content">
                 <div class="play-header">
                     <div class="header-left-group" style="display: flex; align-items: center; gap: 10px;">
-                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="Team" style="width: 40px; height: 40px; object-fit: contain;">
-                        <div>
-                             <div class="play-player">Mikal Bridges</div>
-                             <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">Miami Heat</div>
-                        </div>
-                    </div>
-                    <div class="play-rank-inline">#19</div>
-                </div>
-                
-                <div class="play-main">
-                    <div class="play-bet-over">OVER 15.5</div>
-                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">NBA Points Props</div>
-                </div>
-                
-                <div class="play-meta-row" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                     <div class="play-tier" style="color:#60a5fa">⚡ VALUE (62.4)</div>
-                     <span class="meta-tag">Sun 06:12 PM</span>
-                </div>
-                
-                <div class="play-stats" style="margin-top: 12px;">
-                    
-                    <div class="stat">
-                        <span class="stat-label">Edge</span>
-                        <span class="stat-value">0.0</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Win Rate</span>
-                        <span class="stat-value">55%</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Model Record</span>
-                        <span class="stat-value">77-63</span>
-                    </div>
-        
-             <div class="stat">
-                <span class="stat-label">Season</span>
-                <span class="stat-value">16.8</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">L10 Avg</span>
-                <span class="stat-value">17.5</span>
-            </div>
-             
-                </div>
-            </div>
-        </div>
-        
-        <div class="play-card">
-            <div class="play-content">
-                <div class="play-header">
-                    <div class="header-left-group" style="display: flex; align-items: center; gap: 10px;">
-                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="Team" style="width: 40px; height: 40px; object-fit: contain;">
-                        <div>
-                             <div class="play-player">Andrew Wiggins</div>
-                             <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">Miami Heat</div>
-                        </div>
-                    </div>
-                    <div class="play-rank-inline">#20</div>
-                </div>
-                
-                <div class="play-main">
-                    <div class="play-bet-over">OVER 14.5</div>
-                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">NBA Points Props</div>
-                </div>
-                
-                <div class="play-meta-row" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                     <div class="play-tier" style="color:#60a5fa">⚡ VALUE (62.4)</div>
-                     <span class="meta-tag">Sun 06:12 PM</span>
-                </div>
-                
-                <div class="play-stats" style="margin-top: 12px;">
-                    
-                    <div class="stat">
-                        <span class="stat-label">Edge</span>
-                        <span class="stat-value">0.0</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Win Rate</span>
-                        <span class="stat-value">55%</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Model Record</span>
-                        <span class="stat-value">77-63</span>
-                    </div>
-        
-             <div class="stat">
-                <span class="stat-label">Season</span>
-                <span class="stat-value">16.3</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">L10 Avg</span>
-                <span class="stat-value">15.6</span>
-            </div>
-             
-                </div>
-            </div>
-        </div>
-        
-        <div class="play-card">
-            <div class="play-content">
-                <div class="play-header">
-                    <div class="header-left-group" style="display: flex; align-items: center; gap: 10px;">
                         <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" alt="Team" style="width: 40px; height: 40px; object-fit: contain;">
                         <div>
                              <div class="play-player">Donte DiVincenzo</div>
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">Milwaukee Bucks</div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#21</div>
+                    <div class="play-rank-inline">#19</div>
                 </div>
                 
                 <div class="play-main">
@@ -1349,7 +1308,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">Houston Rockets</div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#22</div>
+                    <div class="play-rank-inline">#20</div>
                 </div>
                 
                 <div class="play-main">
@@ -1400,7 +1359,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">San Francisco 49ers @ Indianapolis Colts</div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#23</div>
+                    <div class="play-rank-inline">#21</div>
                 </div>
                 
                 <div class="play-main">
@@ -1451,7 +1410,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">New England Patriots @ Baltimore Ravens</div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#24</div>
+                    <div class="play-rank-inline">#22</div>
                 </div>
                 
                 <div class="play-main">
@@ -1502,7 +1461,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">New England Patriots @ Baltimore Ravens</div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#25</div>
+                    <div class="play-rank-inline">#23</div>
                 </div>
                 
                 <div class="play-main">
@@ -1553,7 +1512,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#26</div>
+                    <div class="play-rank-inline">#24</div>
                 </div>
                 
                 <div class="play-main">
@@ -1595,7 +1554,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#27</div>
+                    <div class="play-rank-inline">#25</div>
                 </div>
                 
                 <div class="play-main">
@@ -1637,7 +1596,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#28</div>
+                    <div class="play-rank-inline">#26</div>
                 </div>
                 
                 <div class="play-main">
@@ -1679,7 +1638,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#29</div>
+                    <div class="play-rank-inline">#27</div>
                 </div>
                 
                 <div class="play-main">
@@ -1721,7 +1680,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#30</div>
+                    <div class="play-rank-inline">#28</div>
                 </div>
                 
                 <div class="play-main">
@@ -1763,7 +1722,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#31</div>
+                    <div class="play-rank-inline">#29</div>
                 </div>
                 
                 <div class="play-main">
@@ -1805,7 +1764,7 @@
                              <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);"></div>
                         </div>
                     </div>
-                    <div class="play-rank-inline">#32</div>
+                    <div class="play-rank-inline">#30</div>
                 </div>
                 
                 <div class="play-main">
@@ -1838,6 +1797,98 @@
         </div>
         
         </div>
+
+        
+        <div class="breakdown-section">
+            <div class="breakdown-box">
+                <div class="breakdown-title">📊 All Models Performance</div>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Model</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Receptions</td>
+                <td style="padding: 4px 8px;">2-0</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">100.0%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA 3PT Props</td>
+                <td style="padding: 4px 8px;">18-5</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">78.3%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Rushing Yards</td>
+                <td style="padding: 4px 8px;">8-4</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">66.7%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Rebounds Props</td>
+                <td style="padding: 4px 8px;">32-21</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">60.4%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Points Props</td>
+                <td style="padding: 4px 8px;">77-63</td>
+                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">55.0%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Main</td>
+                <td style="padding: 4px 8px;">112-94</td>
+                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">54.4%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NCAAB</td>
+                <td style="padding: 4px 8px;">995-899</td>
+                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">52.5%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">Soccer</td>
+                <td style="padding: 4px 8px;">50-53</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">48.5%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Receiving Yards</td>
+                <td style="padding: 4px 8px;">7-8</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">46.7%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Main</td>
+                <td style="padding: 4px 8px;">10-13</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">43.5%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NBA Assists Props</td>
+                <td style="padding: 4px 8px;">11-17</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">39.3%</td>
+            </tr>
+            
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">NFL Passing Yards</td>
+                <td style="padding: 4px 8px;">4-8</td>
+                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">33.3%</td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
     </div>
 </body>
 </html>

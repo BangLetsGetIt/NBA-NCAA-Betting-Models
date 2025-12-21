@@ -19,7 +19,8 @@ import pytz
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "best_plays.html")
 FIRE_TRACKING_FILE = os.path.join(SCRIPT_DIR, "best_plays_tracking.json")
-FIRE_SCORE_THRESHOLD = 80  # Minimum score to track
+FIRE_SCORE_THRESHOLD = 80  # Minimum score for FIRE
+SOLID_SCORE_THRESHOLD = 70 # Minimum score for SOLID
 
 # Timezone
 ET = pytz.timezone('US/Eastern')
@@ -345,7 +346,7 @@ def update_fire_tracking(current_plays):
             existing_keys.add(key)
     
     for play in current_plays:
-        if play['confidence'] >= FIRE_SCORE_THRESHOLD:
+        if play['confidence'] >= SOLID_SCORE_THRESHOLD:
             # Format game_time for storage
             gt_str = play['game_time'].isoformat() if play['game_time'] else today_str()
             key = f"{play['player']}_{play['bet_type']}_{gt_str}"
@@ -462,17 +463,37 @@ def update_fire_tracking(current_plays):
                 # stop searching other files for this tracked play
                 continue
     
-    # 3. Calculate Record
-    wins = sum(1 for p in tracked_plays if p.get('status') == 'win')
-    losses = sum(1 for p in tracked_plays if p.get('status') == 'loss')
-    total = wins + losses
-    win_rate = (wins / total * 100) if total > 0 else 0.0
+    # 3. Calculate Records
+    fire_wins = 0
+    fire_losses = 0
+    solid_wins = 0
+    solid_losses = 0
+
+    for p in tracked_plays:
+        status = p.get('status', '').lower()
+        confidence = p.get('confidence', 0)
+        
+        if status == 'win':
+            if confidence >= FIRE_SCORE_THRESHOLD:
+                fire_wins += 1
+            elif confidence >= SOLID_SCORE_THRESHOLD:
+                solid_wins += 1
+        elif status == 'loss':
+            if confidence >= FIRE_SCORE_THRESHOLD:
+                fire_losses += 1
+            elif confidence >= SOLID_SCORE_THRESHOLD:
+                solid_losses += 1
+            
+    fire_total = fire_wins + fire_losses
+    fire_wr = (fire_wins / fire_total * 100) if fire_total > 0 else 0.0
+
+    solid_total = solid_wins + solid_losses
+    solid_wr = (solid_wins / solid_total * 100) if solid_total > 0 else 0.0
     
     tracking['plays'] = tracked_plays
     tracking['record'] = {
-        'wins': wins,
-        'losses': losses,
-        'win_rate': win_rate
+        'fire': {'wins': fire_wins, 'losses': fire_losses, 'win_rate': fire_wr},
+        'solid': {'wins': solid_wins, 'losses': solid_losses, 'win_rate': solid_wr}
     }
     
     save_fire_tracking(tracking)
@@ -488,17 +509,38 @@ def generate_html(plays, fire_record=None, breakdown=None):
     # Fire Record & Breakdown Display
     stats_header_html = ""
     
-    # Left Side: Fire Record
+    # Left Side: Fire & Solid Records
     fire_stats_content = ""
     if fire_record:
-        wr = fire_record['win_rate']
-        wr_color = "#4ade80" if wr >= 55 else "#ffffff" if wr >= 50 else "#f87171"
+        # Compatibility check: if it's the old flat dict, wrap it
+        if 'wins' in fire_record:
+             fire_data = fire_record
+             solid_data = {'wins': 0, 'losses': 0, 'win_rate': 0.0}
+        else:
+             fire_data = fire_record.get('fire', {})
+             solid_data = fire_record.get('solid', {})
+
+        fire_wr = fire_data.get('win_rate', 0.0)
+        fire_color = "#4ade80" if fire_wr >= 55 else "#ffffff" if fire_wr >= 50 else "#f87171"
+        
+        solid_wr = solid_data.get('win_rate', 0.0)
+        solid_color = "#4ade80" if solid_wr >= 55 else "#ffffff" if solid_wr >= 50 else "#f87171"
+
         fire_stats_content = f'''
-            <div class="fire-stats-box">
-                <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
-                <div class="fire-record">
-                    {fire_record['wins']}-{fire_record['losses']} 
-                    <span style="color: {wr_color}; font-size: 0.8em;">({wr:.1f}%)</span>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div class="fire-stats-box">
+                    <div class="fire-title">🔥 Fire Plays (80+)</div>
+                    <div class="fire-record">
+                        {fire_data.get('wins',0)}-{fire_data.get('losses',0)} 
+                        <span style="color: {fire_color}; font-size: 0.8em;">({fire_wr:.1f}%)</span>
+                    </div>
+                </div>
+                <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
+                    <div class="fire-title" style="color: #60a5fa;">💎 Solid Plays (70+)</div>
+                    <div class="fire-record">
+                        {solid_data.get('wins',0)}-{solid_data.get('losses',0)} 
+                        <span style="color: {solid_color}; font-size: 0.8em;">({solid_wr:.1f}%)</span>
+                    </div>
                 </div>
             </div>
         '''
@@ -517,30 +559,26 @@ def generate_html(plays, fire_record=None, breakdown=None):
             </tr>
             '''
         
+        
         breakdown_html = f'''
-        <div class="breakdown-box">
-            <div class="breakdown-title">📊 All Models Performance</div>
-            <table class="breakdown-table">
-                <thead>
-                    <tr>
-                        <th style="text-align: left;">Model</th>
-                        <th>Record</th>
-                        <th>Win %</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+        <div class="breakdown-section">
+            <div class="breakdown-box">
+                <div class="breakdown-title">📊 All Models Performance</div>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Model</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            </div>
         </div>
         '''
-
-    stats_header_html = f'''
-    <div class="stats-header-container">
-        {fire_stats_content}
-        {breakdown_html}
-    </div>
-    '''
     
     # Build play cards HTML
     play_cards = ""
@@ -882,10 +920,14 @@ def generate_html(plays, fire_record=None, breakdown=None):
 
         .stats-header-container {{
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }}
+
+        .breakdown-section {{
+            margin-top: 50px;
             margin-bottom: 30px;
-            align-items: stretch;
+            display: flex;
             justify-content: center;
         }}
 
@@ -940,14 +982,15 @@ def generate_html(plays, fire_record=None, breakdown=None):
                 <h1>🎯 Best Plays</h1>
                 <div class="subtitle">Top 50 Highest Confidence Bets</div>
             </div>
+            {fire_stats_content}
             <div class="timestamp">Generated: {timestamp}</div>
         </header>
-        
-        {stats_header_html}
         
         <div class="plays-grid">
             {play_cards if play_cards else '<div class="empty-state">No pending plays found. Check back after models run.</div>'}
         </div>
+
+        {breakdown_html}
     </div>
 </body>
 </html>'''
@@ -967,7 +1010,17 @@ def main():
     # Update Fire plays tracking
     print("🔥 Updating Fire plays tracking...")
     fire_record = update_fire_tracking(plays)
-    print(f"   Fire Record: {fire_record['wins']}-{fire_record['losses']} ({fire_record['win_rate']:.1f}%)")
+    
+    # Check for legacy format compatibility during transition
+    if 'wins' in fire_record:
+         # It's the old format
+         print(f"   Fire Record: {fire_record['wins']}-{fire_record['losses']} ({fire_record['win_rate']:.1f}%)")
+    else:
+         # New nested format
+         fr = fire_record.get('fire', {})
+         sr = fire_record.get('solid', {})
+         print(f"   Fire Record: {fr.get('wins',0)}-{fr.get('losses',0)} ({fr.get('win_rate',0):.1f}%)")
+         print(f"   Solid Record: {sr.get('wins',0)}-{sr.get('losses',0)} ({sr.get('win_rate',0):.1f}%)")
     
     # 3. Calculate breakdown
     print("📋 Calculating breakdown stats...")
