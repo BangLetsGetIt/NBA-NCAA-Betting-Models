@@ -452,6 +452,17 @@ git push origin main
 | NFL Receptions | https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/nfl/nfl_receptions_props.html |
 | NCAAB Main | https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/ncaa/ncaab_model_output.html |
 | Soccer | https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/soccer/soccer_model_output.html |
+| **Best Plays** | https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/best_plays.html |
+
+### Best Plays Aggregator (`best_plays_bot.py`) - New Dec 20, 2024
+- **Function**: Scans ALL models and ranks pending plays by confidence (0-100)
+- **Top 50 Plays**: Auto-generated HTML showing highest confidence bets
+- **Fire Plays Tracking**:
+  - Tracks all plays with **Score ≥ 80**
+  - Persistent record displayed in header
+  - Auto-updates win/loss status daily
+- **Styling**: Matches dark theme (Green for OVER, Red for UNDER)
+- **Run Command**: `python3 best_plays_bot.py` (also runs in `auto_grader.py` loop)
 
 ---
 
