@@ -84,11 +84,10 @@
             }
             header {
                 flex-direction: column;
-                align-items: center;
-                text-align: center;
+                align-items: flex-start;
             }
             .timestamp {
-                align-self: center;
+                align-self: flex-start;
             }
         }
         
@@ -217,7 +216,7 @@
         }
         
         @media (max-width: 600px) {
-            header { flex-direction: column; align-items: center; gap: 10px; }
+            header { flex-direction: column; align-items: flex-start; gap: 10px; }
             h1 { font-size: 20px; }
             .play-stats { flex-wrap: wrap; gap: 12px; }
             .play-rank { width: 45px; font-size: 14px; }
@@ -225,66 +224,14 @@
         }
         
         .fire-stats-box {
-            background: rgba(255, 69, 0, 0.1);
-            border: 1px solid rgba(255, 69, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-orange);
+            border-radius: 8px;
+            padding: 8px 16px;
             text-align: center;
-            min-width: 250px;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
         }
-
-        .breakdown-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 13px;
-            max-width: 600px;
-            flex-grow: 1;
-        }
-
-        .stats-header-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .breakdown-section {
-            margin-top: 50px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .breakdown-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .breakdown-table {
-            width: 100%;
-            border-collapse: collapse;
-            color: var(--text-primary);
-        }
-
-        .breakdown-table th {
-            color: var(--text-secondary);
-            font-size: 11px;
-            text-transform: uppercase;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .breakdown-table td {
-            padding: 6px 0;
-            text-align: center;
-        }
-
+        
         .fire-title {
             font-size: 12px;
             color: var(--text-secondary);
@@ -292,9 +239,9 @@
             font-weight: 600;
             margin-bottom: 2px;
         }
-
+        
         .fire-record {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--text-primary);
         }
@@ -308,24 +255,15 @@
                 <div class="subtitle">Top 50 Highest Confidence Bets</div>
             </div>
             
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-                <div class="fire-stats-box">
-                    <div class="fire-title">🔥 Fire Plays (80+)</div>
-                    <div class="fire-record">
-                        8-7 
-                        <span style="color: #ffffff; font-size: 0.8em;">(53.3%)</span>
-                    </div>
-                </div>
-                <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
-                    <div class="fire-title" style="color: #60a5fa;">💎 Solid Plays (70+)</div>
-                    <div class="fire-record">
-                        17-7 
-                        <span style="color: #4ade80; font-size: 0.8em;">(70.8%)</span>
-                    </div>
-                </div>
+        <div class="fire-stats-box">
+            <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
+            <div class="fire-record">
+                25-14 
+                <span style="color: #4ade80; font-size: 0.8em;">(64.1%)</span>
             </div>
+        </div>
         
-            <div class="timestamp">Generated: 2025-12-21 06:24 PM ET</div>
+            <div class="timestamp">Generated: 2025-12-21 06:26 PM ET</div>
         </header>
         
         <div class="plays-grid">
@@ -1798,98 +1736,6 @@
         </div>
         
         </div>
-
-        
-        <div class="breakdown-section">
-            <div class="breakdown-box">
-                <div class="breakdown-title">📊 All Models Performance</div>
-                <table class="breakdown-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">Model</th>
-                            <th>Record</th>
-                            <th>Win %</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Receptions</td>
-                <td style="padding: 4px 8px;">2-0</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">100.0%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA 3PT Props</td>
-                <td style="padding: 4px 8px;">18-5</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">78.3%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Rushing Yards</td>
-                <td style="padding: 4px 8px;">8-4</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">66.7%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Rebounds Props</td>
-                <td style="padding: 4px 8px;">32-21</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">60.4%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Points Props</td>
-                <td style="padding: 4px 8px;">77-63</td>
-                <td style="padding: 4px 8px; color: #4ade80; font-weight: 600;">55.0%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Main</td>
-                <td style="padding: 4px 8px;">112-94</td>
-                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">54.4%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NCAAB</td>
-                <td style="padding: 4px 8px;">995-900</td>
-                <td style="padding: 4px 8px; color: #ffffff; font-weight: 600;">52.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">Soccer</td>
-                <td style="padding: 4px 8px;">50-53</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">48.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Receiving Yards</td>
-                <td style="padding: 4px 8px;">7-8</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">46.7%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Main</td>
-                <td style="padding: 4px 8px;">10-13</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">43.5%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NBA Assists Props</td>
-                <td style="padding: 4px 8px;">11-17</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">39.3%</td>
-            </tr>
-            
-            <tr>
-                <td style="text-align: left; padding: 4px 8px;">NFL Passing Yards</td>
-                <td style="padding: 4px 8px;">4-8</td>
-                <td style="padding: 4px 8px; color: #f87171; font-weight: 600;">33.3%</td>
-            </tr>
-            
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
     </div>
 </body>
 </html>
