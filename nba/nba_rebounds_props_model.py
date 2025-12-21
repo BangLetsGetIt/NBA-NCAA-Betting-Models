@@ -1201,8 +1201,8 @@ def analyze_props(props_list, player_stats, reb_factors):
     skipped_no_stats = 0
     skipped_low_score = 0
 
-    current_time = datetime.now(timezone.utc)
-
+    current_time = datetime.now(pytz.utc)
+    
     for prop in props_list:
         player_name = prop.get("player")
         
@@ -1210,10 +1210,24 @@ def analyze_props(props_list, player_stats, reb_factors):
         gt_str = prop.get("game_time")
         if gt_str:
             try:
-                gt_dt = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                # Parse ISO string
+                if 'Z' in gt_str:
+                    gt_dt = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                else:
+                    gt_dt = datetime.fromisoformat(gt_str)
+                    
+                # Ensure offset-aware
+                if gt_dt.tzinfo is None:
+                    gt_dt = gt_dt.replace(tzinfo=pytz.utc)
+                else:
+                    gt_dt = gt_dt.astimezone(pytz.utc)
+                
+                # Compare
                 if gt_dt < current_time:
+                    # Skip past games
                     continue
-            except:
+            except Exception as e:
+                print(f"Rec Time Filter Error: {e} for {gt_str}")
                 pass
 
         prop_line = prop.get("prop_line")
