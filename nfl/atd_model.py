@@ -292,7 +292,7 @@ def fetch_atd_odds():
     
     url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events"
     try:
-        r = requests.get(url, params={'apiKey': API_KEY, 'regions': 'us', 'markets': 'player_anytime_td,player_first_td'})
+        r = requests.get(url, params={'apiKey': API_KEY}, timeout=10)
         r.raise_for_status()
         raw_events = r.json()
         
@@ -317,24 +317,29 @@ def fetch_atd_odds():
     # TD market types to fetch
     td_markets = ['player_anytime_td', 'player_first_td']
     
-    for event in events:
+    for i, event in enumerate(events):
          game_id = event['id']
          commence_time = event['commence_time']
          home = event['home_team']
          away = event['away_team']
          
-         # Fetch specific odds for both market types
+         print(f"  [{i+1}/{len(events)}] {away[:15]} @ {home[:15]}...", end=' ', flush=True)
+         
+         # Fetch specific odds - use single market (comma-separated returns 422)
          o_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/{game_id}/odds"
          try:
              orsp = requests.get(o_url, params={
                  'apiKey': API_KEY, 
                  'regions': 'us', 
-                 'markets': ','.join(td_markets), 
+                 'markets': 'player_anytime_td',  # Single market only
                  'oddsFormat': 'american'
-             })
-             if orsp.status_code != 200: continue
+             }, timeout=10)
+             if orsp.status_code != 200:
+                 print(f"Skip (status {orsp.status_code})")
+                 continue
              odata = orsp.json()
              
+             game_offers = 0
              for book in odata.get('bookmakers', []):
                  bk_name = book['title']
                  for m in book.get('markets', []):
@@ -355,7 +360,11 @@ def fetch_atd_odds():
                                  'away_team': away,
                                  'commence_time': commence_time
                              })
-         except: continue
+                             game_offers += 1
+             print(f"{game_offers} offers")
+         except Exception as e:
+             print(f"Error: {e}")
+             continue
          
     attd_count = sum(1 for o in all_offers if o.get('market_type') == 'ATTD')
     first_td_count = sum(1 for o in all_offers if o.get('market_type') == 'First TD')
