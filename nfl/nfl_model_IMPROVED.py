@@ -994,37 +994,19 @@ def generate_picks_html(analyses, stats, tracker):
 
         {% if completed_picks %}
         <div class="tracking-section">
-            <div class="tracking-header">📊 Recent Results (Last 20)</div>
-            <div class="prop-card" style="padding: 0; overflow: hidden;">
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Recommendation</th>
-                                <th>Type</th>
-                                <th>Result</th>
-                                <th>Profit</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for pick in completed_picks[:20] %}
-                            <tr>
-                                <td class="text-gray">{{ pick.get('date_placed', '')[:10] if pick.get('date_placed') else 'N/A' }}</td>
-                                <td class="font-bold">{{ pick.get('recommendation', '') }}</td>
-                                <td>{{ pick.get('bet_type', '')|upper }}</td>
-                                <td class="text-gray">{{ pick.get('result', '')|upper }}</td>
-                                <td class="{{ 'text-green' if pick.get('profit', 0) > 0 else ('text-red' if pick.get('profit', 0) < 0 else 'text-gray') }}">
-                                    {{ "%+.2f"|format((pick.get('profit', 0) or 0) / 100) }}u
-                                </td>
-                                <td>
-                                    <span class="badge badge-{{ pick.get('result', 'pending') }}">{{ pick.get('result', '')|upper }}</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="tracking-header">📊 Graded Picks Summary</div>
+            <div class="summary-grid">
+                <div class="prop-card" style="padding: 1rem; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">WINS</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);">{{ stats.won }}</div>
+                </div>
+                <div class="prop-card" style="padding: 1rem; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">LOSSES</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-red);">{{ stats.lost }}</div>
+                </div>
+                <div class="prop-card" style="padding: 1rem; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">WIN RATE</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: {{ 'var(--accent-green)' if stats.win_rate >= 52 else 'var(--accent-red)' }};">{{ "%.1f"|format(stats.win_rate) }}%</div>
                 </div>
             </div>
         </div>
