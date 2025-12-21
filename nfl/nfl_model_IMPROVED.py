@@ -220,8 +220,8 @@ def grade_pending_picks():
                         # Away team with spread
                         covered = (away_score - home_score + line) > 0
                     
-                    pick['status'] = 'complete'
-                    pick['result'] = 'won' if covered else 'lost'
+                    pick['status'] = 'win' if covered else 'loss'
+                    pick['result'] = 'win' if covered else 'loss'
                     pick['profit'] = 91 if covered else -100
                     pick['actual_home_score'] = home_score
                     pick['actual_away_score'] = away_score
@@ -240,8 +240,8 @@ def grade_pending_picks():
                     elif team == 'Under':
                         hit = actual_total < line
                     
-                    pick['status'] = 'complete'
-                    pick['result'] = 'won' if hit else 'lost'
+                    pick['status'] = 'win' if hit else 'loss'
+                    pick['result'] = 'win' if hit else 'loss'
                     pick['profit'] = 91 if hit else -100
                     pick['actual_home_score'] = home_score
                     pick['actual_away_score'] = away_score
