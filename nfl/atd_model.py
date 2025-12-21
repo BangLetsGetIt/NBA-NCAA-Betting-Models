@@ -431,7 +431,11 @@ def load_player_data_manual():
     return players
 
 def analyze_opportunities(odds_list, players_stats):
-    # Map stats
+    """
+    Analyze ALL players with TD odds - not just those in manual database.
+    Uses odds-based probability estimation for players without stats.
+    """
+    # Map known stats (optional enhancement)
     stat_map = {n['name']: n for n in players_stats}
     
     opportunities = []
@@ -442,47 +446,79 @@ def analyze_opportunities(odds_list, players_stats):
         p = o['player']
         if p not in grouped: grouped[p] = []
         grouped[p].append(o)
+    
+    print(f"  Analyzing {len(grouped)} unique players...")
         
     for player_name, offers in grouped.items():
-        stats = stat_map.get(player_name)
-        if not stats: continue
-        
-        # Determine best odds
+        # Determine best odds across all books
         best_offer = max(offers, key=lambda x: x['odds'])
         best_odds = best_offer['odds']
         
-        # Resolve Team/Opp
-        team = stats['team']
+        # Skip extreme longshots (+2000 or worse) and heavy favorites (-200 or better)
+        if best_odds > 2000 or best_odds < -200:
+            continue
+        
         home = best_offer['home_team'] 
         away = best_offer['away_team']
+        matchup = f"{away} @ {home}"
         
-        # Dirty team mapping check
-        opponent = home if team in away or away in team else away
-        if team in home or home in team: opponent = away
+        # Get stats if available, otherwise estimate from position/odds
+        stats = stat_map.get(player_name)
         
-        # Calculate Model Prob
-        # Simple Logic for Demo: Base on TD rate + RZ share
-        # (Replace with complex logic from original if desired)
-        td_rate = (stats['tds'] / max(1, stats['games']))
-        rz_boost = stats['rz_share'] * 0.5
+        if stats:
+            # Use known stats
+            team = stats['team']
+            pos = stats['pos']
+            td_rate = (stats['tds'] / max(1, stats['games']))
+            rz_share = stats['rz_share']
+            
+            # Calculate model probability
+            raw_prob = (td_rate * 0.4 + rz_share * 0.6)
+            
+        else:
+            # DYNAMIC ESTIMATION: Use odds + book consensus for unknown players
+            # The key insight: if MULTIPLE books offer similar odds, the true prob is close to implied
+            # But if one book is an outlier, there's potential value
+            
+            team = "UNK"
+            pos = "UNK"
+            
+            # Calculate consensus implied probability from all offers
+            all_implied = [american_to_implied_prob(o['odds']) for o in offers]
+            consensus_prob = sum(all_implied) / len(all_implied)
+            
+            # The best odds will have lower implied prob than consensus
+            best_implied = american_to_implied_prob(best_odds)
+            
+            # Model probability = consensus (market wisdom) with slight boost for discrepancy
+            # If best odds are significantly better than consensus, trust market less
+            prob_boost = max(0, consensus_prob - best_implied) * 0.5  # Half-credit the discrepancy
+            raw_prob = consensus_prob + prob_boost
+            
+            rz_share = 0.0  # Unknown
         
-        def_ratings = DEFENSE_TD_RATINGS.get(opponent, {"RB": 1.0, "WR": 1.0, "TE": 1.0})
-        pos_mult = def_ratings.get(stats['pos'], 1.0)
+        # Apply opponent adjustment if we know team
+        opponent = away if team in home or home.startswith(team[:3]) else home
+        def_ratings = DEFENSE_TD_RATINGS.get(opponent[:3].upper(), {"RB": 1.0, "WR": 1.0, "TE": 1.0})
+        pos_mult = def_ratings.get(pos, 1.0)
         
-        raw_prob = (td_rate * 0.4 + rz_boost * 0.6) * pos_mult
-        model_prob = min(0.75, max(0.10, raw_prob)) # Clamp
+        # Final model probability
+        model_prob = min(0.65, max(0.08, raw_prob * pos_mult))  # Clamp to realistic range
         
         implied_val = american_to_implied_prob(best_odds)
         edge = model_prob - implied_val
         ev = calculate_expected_value(model_prob, best_odds)
         kelly = calculate_kelly_bet_size(model_prob, best_odds)
         
-        if ev > 0 and edge >= MIN_EDGE_THRESHOLD:
+        # Lower threshold for unknown players to catch more value
+        min_edge = MIN_EDGE_THRESHOLD if stats else 0.03  # 3% edge for unknowns
+        
+        if ev > 0 and edge >= min_edge:
             opportunities.append({
                 'player': player_name,
                 'team': team,
                 'opponent': opponent,
-                'pos': stats['pos'],
+                'pos': pos,
                 'best_odds': best_odds,
                 'best_book': best_offer['bookmaker'],
                 'model_prob': round(model_prob, 3),
@@ -491,9 +527,14 @@ def analyze_opportunities(odds_list, players_stats):
                 'ev': round(ev, 3),
                 'kelly_pct': round(kelly, 3),
                 'commence_time': best_offer['commence_time'],
-                'matchup': f"{away} @ {home}"
+                'matchup': matchup,
+                'num_books': len(offers)  # Track how many books have this player
             })
-            
+    
+    # Sort by EV (best plays first)
+    opportunities.sort(key=lambda x: x['ev'], reverse=True)
+    
+    print(f"  Found {len(opportunities)} +EV opportunities")
     return opportunities
 
 # =============================================================================
