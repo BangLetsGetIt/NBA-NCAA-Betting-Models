@@ -105,23 +105,36 @@ def track_new_picks(recommendations, odds_data):
                 'season_avg': rec.get('season_avg'),
                 'recent_avg': rec.get('recent_avg')
             }
-            data['picks'].append(new_pick)
-            new_picks_count += 1
-        if pick_id in existing_ids:
-            # Update existing pick with stats if missing or if odds changed
-            for pick in data['picks']:
-                if pick['pick_id'] == pick_id and pick.get('status') == 'pending':
-                    # Update stats if missing
-                    if 'season_avg' not in pick:
-                        pick['season_avg'] = rec.get('season_avg')
-                    if 'recent_avg' not in pick:
-                        pick['recent_avg'] = rec.get('recent_avg')
-                    
-                    # Update odds if changed
-                    if pick.get('latest_odds') != rec.get('odds'):
-                        pick['latest_odds'] = rec.get('odds')
+    # Create lookup for stats by player name (from current run's recommendations)
+    stats_lookup = {}
+    for p in recommendations:
+        stats_lookup[p['player']] = {
+            'season_avg': p.get('season_avg'),
+            'recent_avg': p.get('recent_avg'),
+            'odds': p.get('odds')
+        }
+
+    # Robust Backfill: Update ALL pending picks that are missing stats
+    updated_stats_count = 0
+    for pick in data['picks']:
+        if pick.get('status') == 'pending':
+            # 1. Update stats if missing (lookup by player name)
+            if 'season_avg' not in pick and pick['player'] in stats_lookup:
+                s_data = stats_lookup[pick['player']]
+                pick['season_avg'] = s_data['season_avg']
+                pick['recent_avg'] = s_data['recent_avg']
+                updated_stats_count += 1
+            
+            # 2. Update odds if ID matches (exact match only for odds to be safe)
+            if pick['pick_id'] in existing_ids:
+                if pick['player'] in stats_lookup:
+                     s_data = stats_lookup[pick['player']]
+                     if pick.get('latest_odds') != s_data['odds']:
+                        pick['latest_odds'] = s_data['odds']
                         pick['last_updated'] = datetime.now(pytz.utc).isoformat()
-                    break
+    
+    if updated_stats_count > 0:
+        print(f"{Colors.GREEN}✓ Backfilled stats for {updated_stats_count} pending picks{Colors.END}")
             
     if new_picks_count > 0:
         save_tracking_data(data)

@@ -195,6 +195,7 @@ def get_pending_plays():
                 'team': p.get('team', ''),
                 'season_avg': p.get('season_avg', 0),
                 'recent_avg': p.get('recent_avg', 0),
+                'season_record': p.get('season_record', ''),
             }
             all_plays.append(play)
     
@@ -421,14 +422,30 @@ def generate_html(plays, fire_record=None):
         # Format edge
         edge_display = f"+{play['edge']:.1f}" if play['edge'] > 0 else f"{play['edge']:.1f}"
         
-        # Stats Block (Only if data exists)
+        # Stats Block (Always show at least Edge, Win Rate, and Model Record)
         season = play.get('season_avg', 0)
         recent = play.get('recent_avg', 0)
+        season_record = play.get('season_record', '')
         
-        stats_html = ""
-        # Only show stats if they are non-zero (or close to it/valid)
-        if season > 0 or recent > 0:
-             stats_html = f'''
+        # Base stats (Uniform for all cards)
+        stats_html = f'''
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">{edge_display}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value">{play['model_win_rate']:.0f}%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Record</span>
+                        <span class="stat-value">{play['model_record']}</span>
+                    </div>
+        '''
+        
+        # Additional context for Player Props
+        if (isinstance(season, (int, float)) and season > 0) or (isinstance(recent, (int, float)) and recent > 0):
+             stats_html += f'''
              <div class="stat">
                 <span class="stat-label">Season</span>
                 <span class="stat-value">{season}</span>
@@ -438,6 +455,15 @@ def generate_html(plays, fire_record=None):
                 <span class="stat-value">{recent}</span>
             </div>
              '''
+        # Fallback for Team Bets if specific team record was backfilled
+        elif season_record:
+             stats_html += f'''
+             <div class="stat">
+                <span class="stat-label">Team Record</span>
+                <span class="stat-value">{season_record}</span>
+            </div>
+             '''
+        
         
         # Team Logo
         logo_url = get_team_logo_url(play.get('team', 'UNK'), play.get('sport', 'NBA'))
@@ -467,14 +493,6 @@ def generate_html(plays, fire_record=None):
                 </div>
                 
                 <div class="play-stats" style="margin-top: 12px;">
-                    <div class="stat">
-                        <span class="stat-label">Edge</span>
-                        <span class="stat-value">{edge_display}</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Win Rate</span>
-                        <span class="stat-value">{play['model_win_rate']:.0f}%</span>
-                    </div>
                     {stats_html}
                 </div>
             </div>
