@@ -571,9 +571,29 @@ def fetch_odds():
         
         filtered_games = []
         for game in games:
-            game_time = datetime.fromisoformat(game['commence_time'].replace('Z', '+00:00'))
-            if now <= game_time <= cutoff:
-                filtered_games.append(game)
+            gt_str = game.get('commence_time')
+            if not gt_str:
+                continue
+                
+            try:
+                # Parse ISO string (Robust)
+                if 'Z' in gt_str:
+                    gt_dt = datetime.fromisoformat(gt_str.replace('Z', '+00:00'))
+                else:
+                    gt_dt = datetime.fromisoformat(gt_str)
+                
+                # Ensure offset-aware (UTC)
+                if gt_dt.tzinfo is None:
+                    gt_dt = gt_dt.replace(tzinfo=pytz.utc)
+                else:
+                    gt_dt = gt_dt.astimezone(pytz.utc)
+                
+                # Compare (now is Eastern aware, gt_dt is UTC aware - comparison is safe)
+                if now <= gt_dt <= cutoff:
+                    filtered_games.append(game)
+            except Exception as e:
+                print(f"Time Parse Error: {e} for {gt_str}")
+                continue
         
         print(f"{Colors.GREEN}✓ {len(filtered_games)} games in the next {DAYS_AHEAD_TO_FETCH} days{Colors.END}")
         

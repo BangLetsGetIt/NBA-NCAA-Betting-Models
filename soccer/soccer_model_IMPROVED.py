@@ -329,7 +329,19 @@ def analyze_game(game):
         try:
             from datetime import datetime
             import pytz
-            dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+            
+            # Robust Parse
+            if 'Z' in commence_time:
+                dt = datetime.fromisoformat(commence_time.replace('Z', '+00:00'))
+            else:
+                dt = datetime.fromisoformat(commence_time)
+                
+            # Ensure offset-aware
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=pytz.utc)
+            else:
+                dt = dt.astimezone(pytz.utc)
+                
             now = datetime.now(pytz.utc)
             
             # Check if game already started
