@@ -345,6 +345,18 @@ MIN_AI_SCORE = 10.0  # Raised from 7.5 (AI 10+ = 66.7%)
 - Mobile optimized (viewport + @media queries)
 - Season record: 30-33-3 (47.6%)
 
+### NCAAB Model (`ncaa/ncaab_model_2ndFINAL.py`) - Updated Dec 20, 2024
+```python
+SPREAD_THRESHOLD = 10.0  # Raised from 6.0 (edge 6-10 losing -41u)
+TOTAL_THRESHOLD = 6.0    # Keep - totals profitable (+25u)
+CONFIDENT_SPREAD_EDGE = 12.0
+CONFIDENT_TOTAL_EDGE = 12.0
+```
+| Edge Range | Record | Profit | Action |
+|------------|--------|--------|--------|
+| 6-10 pts | 179-204 (46.7%) | -41.11u | ❌ Filtered |
+| 10+ pts | 733-623 (54.1%) | +44.03u | ✅ Keep |
+
 ### NFL ATD Model (`nfl/atd_model.py`)
 ```python
 MIN_EDGE_THRESHOLD = 0.05  # Lowered from 8% to 5%
