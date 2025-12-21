@@ -198,8 +198,8 @@ def get_pending_plays():
             }
             all_plays.append(play)
     
-    # Sort by confidence score (highest first)
-    all_plays.sort(key=lambda x: x['confidence'], reverse=True)
+    # Sort by confidence score (highest first) AND prioritize plays with stats
+    all_plays.sort(key=lambda x: (x['confidence'], x.get('season_avg', 0) > 0), reverse=True)
     
     # Deduplicate: Keep only highest confidence play per player+category
     unique_plays = []

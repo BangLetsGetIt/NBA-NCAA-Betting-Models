@@ -108,9 +108,21 @@ def track_new_picks(recommendations, odds_data):
             data['picks'].append(new_pick)
             new_picks_count += 1
             existing_ids.add(pick_id)
-        else:
-            # Update existing pick if needed (e.g. check for duplicate analysis runs)
-            pass
+        if pick_id in existing_ids:
+            # Update existing pick with stats if missing or if odds changed
+            for pick in data['picks']:
+                if pick['pick_id'] == pick_id and pick.get('status') == 'pending':
+                    # Update stats if missing
+                    if 'season_avg' not in pick:
+                        pick['season_avg'] = rec.get('season_avg')
+                    if 'recent_avg' not in pick:
+                        pick['recent_avg'] = rec.get('recent_avg')
+                    
+                    # Update odds if changed
+                    if pick.get('latest_odds') != rec.get('odds'):
+                        pick['latest_odds'] = rec.get('odds')
+                        pick['last_updated'] = datetime.now(pytz.utc).isoformat()
+                    break
             
     if new_picks_count > 0:
         save_tracking_data(data)
