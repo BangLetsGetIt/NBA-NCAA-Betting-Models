@@ -201,7 +201,24 @@ def get_pending_plays():
     # Sort by confidence score (highest first)
     all_plays.sort(key=lambda x: x['confidence'], reverse=True)
     
-    return all_plays
+    # Deduplicate: Keep only highest confidence play per player+category
+    unique_plays = []
+    seen_keys = set()
+    
+    for play in all_plays:
+        # Filter invalid player names
+        if play['player'] in ['Unknown', 'UNK', 'N/A']:
+            continue
+
+        # Create unique key (Sport + Category + Player)
+        # We ignore side (OVER/UNDER) to prevent conflicting bets on same prop
+        key = (play['sport'], play['category'], play['player'])
+        
+        if key not in seen_keys:
+            seen_keys.add(key)
+            unique_plays.append(play)
+            
+    return unique_plays
 
 
 def get_team_logo_url(team_name, sport):
