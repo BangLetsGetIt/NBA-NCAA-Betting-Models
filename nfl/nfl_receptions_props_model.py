@@ -33,7 +33,7 @@ MIN_EDGE_UNDER = 1.0   # Must project 1.0+ catches UNDER the line
 MIN_CONSISTENCY = 0.5  # Player must be somewhat consistent
 MIN_AI_SCORE = 7.0     # 0-10 Scale
 UNIT_SIZE = 100        # $100 units for ROI calc
-CURRENT_SEASON = "2024" # Adjust as needed
+CURRENT_SEASON = "2025" # Adjust as needed
 
 # ANSI Colors
 class Colors:
@@ -348,7 +348,7 @@ def get_nfl_props_odds():
                     for market in selected_book.get('markets', []):
                         if market['key'] == 'player_receptions':
                             for outcome in market['outcomes']:
-                                p_name = outcome['description']
+                                p_name = outcome['description'].strip()
                                 all_props.append({
                                     'player': p_name,
                                     'team': 'UNK', 
@@ -478,10 +478,11 @@ def analyze_props(props, stats_cache):
                 
     best_plays = {}
     for r in recommendations:
-        p = r['player']
+        p = r['player'].strip()
         if p not in best_plays or r['ai_score'] > best_plays[p]['ai_score']:
             best_plays[p] = r
             
+    print(f"Deduplicated from {len(recommendations)} to {len(best_plays)} picks.")
     return list(best_plays.values())
 
 # =============================================================================
