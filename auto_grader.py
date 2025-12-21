@@ -260,8 +260,8 @@ def run_nba_grading(force=False):
                 except:
                     pass
             
-            # 2. Regenerate HTML
-            if updated or force:
+            # 2. Regenerate HTML ALWAYS to refresh date-dependent stats (TODAY/YESTERDAY)
+            if True:  # Always regenerate to ensure TODAY stats are fresh
                 if mod_name == 'nba_model_IMPROVED':
                      # Main Model use update_pick_results()
                      if hasattr(mod, 'update_pick_results'):
@@ -523,12 +523,17 @@ def run_ncaab_grading(force=False):
                 if isinstance(res, int) and res > 0:
                     log(f"Updated {res} picks for {mod_name}", "success")
                     any_updates = True
-                elif force and hasattr(mod, 'generate_tracking_html'):
-                     mod.generate_tracking_html()
-                     log(f"Forced HTML regeneration for {mod_name}", "success")
-                     any_updates = True
             except Exception as e:
                 log(f"Error updating NCAAB model: {e}", "error")
+        
+        # ALWAYS regenerate HTML to refresh date-dependent stats
+        if hasattr(mod, 'generate_tracking_html'):
+            try:
+                mod.generate_tracking_html()
+                log(f"Regenerated HTML for {mod_name}", "success")
+                any_updates = True
+            except Exception as e:
+                log(f"HTML generation failed for {mod_name}: {e}", "warning")
                 
     except Exception as e:
         log(f"Error processing {mod_name}: {e}", "error")
