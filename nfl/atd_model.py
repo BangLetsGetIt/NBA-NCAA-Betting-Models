@@ -445,6 +445,7 @@ def analyze_opportunities(odds_list, players_stats):
     valid_odds = []
     
     for o in odds_list:
+        ct_str = o.get('commence_time')
         if ct_str:
             try:
                 # Parse ISO string

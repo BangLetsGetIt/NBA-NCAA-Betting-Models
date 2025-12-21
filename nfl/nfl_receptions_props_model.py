@@ -368,6 +368,7 @@ def analyze_props(props, stats_cache):
 
         for entry in entries:
             # Strict Game Time Filter
+            ct_str = entry.get('commence_time')
             if ct_str:
                 try:
                     # Parse ISO string
