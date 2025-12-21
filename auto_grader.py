@@ -537,7 +537,7 @@ def run_ncaab_grading(force=False):
 
 def run_soccer_grading(force=False):
     """
-    Grades Soccer pending picks using update_pick_results.
+    Grades Soccer pending picks and regenerates HTML with fresh data.
     """
     log("Starting Soccer Grading...", "info")
     
@@ -567,13 +567,11 @@ def run_soccer_grading(force=False):
         else:
             log(f"{mod_name} has no update_pick_results function", "warning")
         
-        # Regenerate HTML if force or updated
-        if any_updates or force:
-            if hasattr(mod, 'generate_html') and hasattr(mod, 'load_tracking'):
-                tracking_data = mod.load_tracking()
-                mod.generate_html([], tracking_data)
-                log(f"Regenerated HTML for {mod_name}", "success")
-                any_updates = True
+        # Always run full model to get fresh games (Dec 20, 2024 fix)
+        if hasattr(mod, 'main'):
+            log("Running full soccer model for fresh games...", "info")
+            mod.main()
+            any_updates = True
     
     except Exception as e:
         log(f"Error processing Soccer: {e}", "error")
