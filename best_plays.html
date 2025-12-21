@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Plays • CourtSide Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-card: #141414;
+            --bg-card-hover: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --accent-orange: #ff6b35;
+            --border-color: #2a2a2a;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4ade80, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .timestamp {
+            display: inline-block;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+        
+        .plays-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .play-card {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .play-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-green);
+        }
+        
+        .play-rank {
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #000;
+        }
+        
+        .play-content {
+            flex: 1;
+            padding: 1rem;
+        }
+        
+        .play-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .play-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .play-tier {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .play-main {
+            margin-bottom: 0.75rem;
+        }
+        
+        .play-player {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .play-bet {
+            font-size: 1rem;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+        
+        .play-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+        
+        .meta-tag {
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .play-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .play-stats { flex-wrap: wrap; gap: 1rem; }
+            .play-rank { width: 40px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Best Plays</h1>
+            <div class="subtitle">Top 20 Highest Confidence Bets Across All Models</div>
+            <div class="timestamp">Generated: 2025-12-20 10:17 PM ET</div>
+        </header>
+        
+        <div class="plays-grid">
+            
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#1</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Dak Prescott</div>
+                    <div class="play-bet">OVER 248.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+57.3</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#2</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Jacoby Brissett</div>
+                    <div class="play-bet">OVER 242.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 04:05 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+46.8</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#3</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Drake Maye</div>
+                    <div class="play-bet">OVER 234.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 08:20 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+21.3</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#4</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Geno Smith</div>
+                    <div class="play-bet">OVER 170.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 04:25 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+24.6</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#5</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">James Cook</div>
+                    <div class="play-bet">OVER 84.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+15.3</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#6</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">De'Von Achane</div>
+                    <div class="play-bet">OVER 82.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+21.0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#7</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">100</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Javonte Williams</div>
+                    <div class="play-bet">OVER 68.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+10.9</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#8</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">99.2</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Jonathan Taylor</div>
+                    <div class="play-bet">OVER 97.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Mon 08:15 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+9.5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#9</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">99.2</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Breece Hall</div>
+                    <div class="play-bet">OVER 44.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+9.5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#10</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">96.7</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Jahmyr Gibbs</div>
+                    <div class="play-bet">OVER 72.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 04:25 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+7.8</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#11</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">93.3</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Bijan Robinson</div>
+                    <div class="play-bet">OVER 86.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Sun 04:05 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+6.4</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">9.8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#12</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">90.7</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Trevor Lawrence</div>
+                    <div class="play-bet">OVER 220.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 04:05 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+16.7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">8.6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#13</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">88.7</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Josh Allen</div>
+                    <div class="play-bet">OVER 214.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+15.5</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">8.3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#14</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">87.5</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Baker Mayfield</div>
+                    <div class="play-bet">UNDER 228.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+46.0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#15</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">87.5</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Joe Burrow</div>
+                    <div class="play-bet">UNDER 257.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+65.7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#16</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">87.5</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Justin Herbert</div>
+                    <div class="play-bet">UNDER 244.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+57.2</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#17</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">87.5</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Aaron Rodgers</div>
+                    <div class="play-bet">UNDER 232.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 04:25 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+44.4</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">10.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#18</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">87.3</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Bo Nix</div>
+                    <div class="play-bet">OVER 231.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 04:05 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+15.1</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">8.1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#19</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">84.7</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Shedeur Sanders</div>
+                    <div class="play-bet">OVER 173.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Passing Yards</span>
+                    <span class="meta-tag">Sun 01:00 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">2-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+15.7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">7.7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="play-card">
+            <div class="play-rank" style="background: #ff6b35;">#20</div>
+            <div class="play-content">
+                <div class="play-header">
+                    <div class="play-score" style="color: #ff6b35;">84.7</div>
+                    <div class="play-tier">🔥 FIRE</div>
+                </div>
+                <div class="play-main">
+                    <div class="play-player">Christian McCaffrey</div>
+                    <div class="play-bet">OVER 59.5</div>
+                </div>
+                <div class="play-meta">
+                    <span class="meta-tag">NFL</span>
+                    <span class="meta-tag">NFL Rushing Yards</span>
+                    <span class="meta-tag">Mon 08:15 PM</span>
+                </div>
+                <div class="play-stats">
+                    <div class="stat">
+                        <span class="stat-label">Model Record</span>
+                        <span class="stat-value">1-0 (100.0%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Edge</span>
+                        <span class="stat-value">+6.0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">AI Score</span>
+                        <span class="stat-value">8.6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+</body>
+</html>

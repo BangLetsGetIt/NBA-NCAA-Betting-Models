@@ -603,6 +603,14 @@ def main():
             updates_soccer = run_soccer_grading(force=args.force)
             
             if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
+                # Regenerate Best Plays aggregator
+                try:
+                    import best_plays_bot
+                    best_plays_bot.main()
+                    log("Regenerated best_plays.html", "success")
+                except Exception as e:
+                    log(f"Best plays generation failed: {e}", "warning")
+                
                 trigger_git_push()
             else:
                 log("No updates found.", "info")
