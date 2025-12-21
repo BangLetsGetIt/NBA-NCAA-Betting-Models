@@ -23,8 +23,12 @@ FIRE_SCORE_THRESHOLD = 80  # Minimum score to track
 
 # Timezone
 ET = pytz.timezone('US/Eastern')
-NOW = datetime.now(ET)
-TODAY = NOW.strftime('%Y-%m-%d')
+
+def now_et():
+    return datetime.now(ET)
+
+def today_str():
+    return now_et().strftime('%Y-%m-%d')
 
 # All tracking files to scan
 TRACKING_SOURCES = [
@@ -52,8 +56,11 @@ def load_tracking_data(filepath):
     try:
         with open(full_path, 'r') as f:
             data = json.load(f)
-        return data.get('picks', []) if isinstance(data, dict) else data
-    except:
+        picks = data.get('picks', []) if isinstance(data, dict) else data
+        # print(f"Loaded {len(picks)} picks from {filepath}")
+        return picks
+    except Exception as e:
+        print(f"Error loading {filepath}: {e}")
         return []
 
 
@@ -81,7 +88,6 @@ def calculate_model_stats(picks):
         'record': f"{wins}-{losses}"
     }
 
-
 def calculate_bet_type_stats(picks, bet_type):
     """Calculate win rate for a specific bet type (OVER/UNDER/Spread)"""
     bt = bet_type.lower()
@@ -91,6 +97,24 @@ def calculate_bet_type_stats(picks, bet_type):
     total = len(graded)
     
     return (wins / total * 100) if total > 0 else 50.0
+
+
+def get_record_breakdown():
+    """Aggregate records by sport and model"""
+    breakdown = []
+    for model_name, filepath, sport, category in TRACKING_SOURCES:
+        picks = load_tracking_data(filepath)
+        stats = calculate_model_stats(picks)
+        if stats['total'] > 0:
+            breakdown.append({
+                'name': model_name,
+                'sport': sport,
+                'category': category,
+                'record': stats['record'],
+                'win_rate': stats['win_rate']
+            })
+    # Sort by win rate descending
+    return sorted(breakdown, key=lambda x: x['win_rate'], reverse=True)
 
 
 def parse_game_time(game_time_str):
@@ -150,7 +174,8 @@ def calculate_confidence_score(play, model_stats, bet_type_rate):
 def get_pending_plays():
     """Gather all pending plays from all models with confidence scores"""
     all_plays = []
-    
+    now = now_et()
+
     for model_name, filepath, sport, category in TRACKING_SOURCES:
         picks = load_tracking_data(filepath)
         if not picks:
@@ -165,7 +190,7 @@ def get_pending_plays():
         for p in pending:
             # Parse game time - only include future games
             game_time = parse_game_time(p.get('game_time') or p.get('game_date'))
-            if game_time and game_time < NOW:
+            if game_time and game_time < now:
                 continue  # Skip past games
             
             # Get bet type
@@ -189,6 +214,7 @@ def get_pending_plays():
                 'game_time': game_time,
                 'game_time_str': game_time.strftime('%a %I:%M %p') if game_time else 'TBD',
                 'matchup': p.get('matchup', p.get('opponent', '')),
+                'source_pick_id': p.get('pick_id'),
                 'model_record': model_stats['record'],
                 'model_win_rate': model_stats['win_rate'],
                 'confidence': confidence,
@@ -308,26 +334,44 @@ def update_fire_tracking(current_plays):
     
     # 1. Add new high-confidence plays
     # Create a set of existing tracked items to avoid duplicates
-    # Key: player + bet_type + game_time
+    # Prefer source `pick_id` when available, otherwise fallback to normalized key
     existing_keys = set()
+    existing_pick_ids = set()
     for p in tracked_plays:
-        key = f"{p['player']}_{p['bet_type']}_{p['game_time']}"
-        existing_keys.add(key)
+        if p.get('source_pick_id'):
+            existing_pick_ids.add(p['source_pick_id'])
+        else:
+            key = f"{p.get('player','').strip().lower()}_{p.get('bet_type','').strip().upper()}_{p.get('game_time','') }_{p.get('line','') }"
+            existing_keys.add(key)
     
     for play in current_plays:
         if play['confidence'] >= FIRE_SCORE_THRESHOLD:
             # Format game_time for storage
-            gt_str = play['game_time'].isoformat() if play['game_time'] else TODAY
+            gt_str = play['game_time'].isoformat() if play['game_time'] else today_str()
             key = f"{play['player']}_{play['bet_type']}_{gt_str}"
             
-            if key not in existing_keys:
+            # If source_pick_id present on play, prefer dedup by that
+            src_id = play.get('pick_id') or play.get('pickId')
+            if src_id and src_id in existing_pick_ids:
+                continue
+
+            if src_id:
+                key = src_id
+            else:
+                key = f"{play.get('player','').strip().lower()}_{play.get('bet_type','').strip().upper()}_{gt_str}_{play.get('line','') }"
+
+            if (src_id and src_id not in existing_pick_ids) or (not src_id and key not in existing_keys):
                 # Add new play
                 new_play = play.copy()
                 new_play['game_time'] = gt_str # Serialize datetime
                 new_play['status'] = 'pending'
-                new_play['tracked_at'] = NOW.isoformat()
+                new_play['tracked_at'] = now_et().isoformat()
+                if src_id:
+                    new_play['source_pick_id'] = src_id
+                    existing_pick_ids.add(src_id)
+                else:
+                    existing_keys.add(key)
                 tracked_plays.append(new_play)
-                existing_keys.add(key)
     
     # 2. Check status of pending plays
     # We need to reload source files to check for results
@@ -341,31 +385,82 @@ def update_fire_tracking(current_plays):
             if status in ['win', 'won', 'loss', 'lost']:
                 pass # Logic handled below
 
-    # Re-implementing step 2 with direct lookup to avoid complex key generation issues
-    # Iterate through tracked pending plays and look for them in source files
+    # Step 2: Iterate through tracked pending plays and look for them in source files
     for i, tp in enumerate(tracked_plays):
-        if tp.get('status') == 'pending':
-            # Find this play in source files
-            found = False
-            for _, filepath, _, _ in TRACKING_SOURCES:
-                picks = load_tracking_data(filepath)
-                for p in picks:
-                    # Match criteria
-                    p_player = p.get('player', p.get('team', 'Unknown'))
-                    p_bet = p.get('bet_type', p.get('pick_type', 'unknown')).upper()
-                    
-                    if p_player == tp['player'] and (p_bet in tp['bet_type'] or tp['bet_type'] in p_bet):
-                        # Found match, check status
-                        status = p.get('status', 'pending').lower()
-                        if status in ['win', 'won']:
-                            tracked_plays[i]['status'] = 'win'
-                            found = True
-                        elif status in ['loss', 'lost']:
-                            tracked_plays[i]['status'] = 'loss'
-                            found = True
+        if tp.get('status') != 'pending':
+            continue
+
+        matched = False
+        # If we have a source_pick_id, match exactly
+        tp_src = tp.get('source_pick_id')
+
+        for _, filepath, _, _ in TRACKING_SOURCES:
+            picks = load_tracking_data(filepath)
+            for p in picks:
+                # If source id exists, prefer exact match
+                p_src = p.get('pick_id') or p.get('pickId')
+                if tp_src and p_src and tp_src == p_src:
+                    status = (p.get('status') or 'pending').lower()
+                    if status in ['win', 'won']:
+                        tracked_plays[i]['status'] = 'win'
+                        matched = True
+                    elif status in ['loss', 'lost']:
+                        tracked_plays[i]['status'] = 'loss'
+                        matched = True
+                    if matched: break
+
+                # Fallback matching: normalize player, bet type, date, and line
+                if not matched:
+                    try:
+                        p_player = (p.get('player') or p.get('team') or '').strip().lower()
+                        tp_player = (tp.get('player') or '').strip().lower()
                         
-                        if found: break
-                if found: break
+                        # Primary bet type (OVER/UNDER/SPREAD/TOTAL)
+                        p_bet = (p.get('bet_type') or p.get('pick_type') or '').strip().upper()
+                        tp_bet = (tp.get('bet_type') or '').strip().upper()
+
+                        # Compare game dates (YYYY-MM-DD) to avoid timezone mismatches
+                        p_time = parse_game_time(p.get('game_time') or p.get('game_date'))
+                        tp_time = None
+                        try:
+                            if isinstance(tp.get('game_time'), str):
+                                tp_time = parse_game_time(tp.get('game_time'))
+                            else:
+                                tp_time = tp.get('game_time')
+                        except:
+                            tp_time = None
+
+                        p_date = p_time.date().isoformat() if p_time else None
+                        tp_date = tp_time.date().isoformat() if tp_time else None
+
+                        # Match player
+                        if p_player == tp_player:
+                            # Match bet type (check for Over/Under/Spread inclusion)
+                            # This handles "UNDER" vs "under" vs "Player Under 244.5"
+                            bet_matched = (p_bet in tp_bet or tp_bet in p_bet)
+                            
+                            # Match date
+                            date_matched = (p_date == tp_date) if (p_date and tp_date) else True
+                            
+                            if bet_matched and date_matched:
+                                status = (p.get('status') or 'pending').lower()
+                                if status in ['win', 'won']:
+                                    tracked_plays[i]['status'] = 'win'
+                                    matched = True
+                                elif status in ['loss', 'lost']:
+                                    tracked_plays[i]['status'] = 'loss'
+                                    matched = True
+                                elif status in ['push', 'void', 'cancelled', 'refunded']:
+                                    tracked_plays[i]['status'] = 'void'
+                                    matched = True
+                                
+                                if matched:
+                                    break
+                    except:
+                        continue
+            if matched:
+                # stop searching other files for this tracked play
+                continue
     
     # 3. Calculate Record
     wins = sum(1 for p in tracked_plays if p.get('status') == 'win')
@@ -384,26 +479,68 @@ def update_fire_tracking(current_plays):
     return tracking['record']
 
 
-def generate_html(plays, fire_record=None):
+def generate_html(plays, fire_record=None, breakdown=None):
     """Generate styled HTML output"""
     # Show up to 50 plays (or all if less than 50)
     top_plays = plays[:50]
-    timestamp = NOW.strftime('%Y-%m-%d %I:%M %p ET')
+    timestamp = now_et().strftime('%Y-%m-%d %I:%M %p ET')
     
-    # Fire Record Display
-    fire_stats_html = ""
+    # Fire Record & Breakdown Display
+    stats_header_html = ""
+    
+    # Left Side: Fire Record
+    fire_stats_content = ""
     if fire_record:
         wr = fire_record['win_rate']
         wr_color = "#4ade80" if wr >= 55 else "#ffffff" if wr >= 50 else "#f87171"
-        fire_stats_html = f'''
-        <div class="fire-stats-box">
-            <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
-            <div class="fire-record">
-                {fire_record['wins']}-{fire_record['losses']} 
-                <span style="color: {wr_color}; font-size: 0.8em;">({wr:.1f}%)</span>
+        fire_stats_content = f'''
+            <div class="fire-stats-box">
+                <div class="fire-title">🔥 Fire Plays Record (80+ Score)</div>
+                <div class="fire-record">
+                    {fire_record['wins']}-{fire_record['losses']} 
+                    <span style="color: {wr_color}; font-size: 0.8em;">({wr:.1f}%)</span>
+                </div>
             </div>
+        '''
+
+    # Right Side: Breakdown Table
+    breakdown_html = ""
+    if breakdown:
+        rows = ""
+        for b in breakdown:
+            wr_color = "#4ade80" if b['win_rate'] >= 55 else "#ffffff" if b['win_rate'] >= 50 else "#f87171"
+            rows += f'''
+            <tr>
+                <td style="text-align: left; padding: 4px 8px;">{b['name']}</td>
+                <td style="padding: 4px 8px;">{b['record']}</td>
+                <td style="padding: 4px 8px; color: {wr_color}; font-weight: 600;">{b['win_rate']:.1f}%</td>
+            </tr>
+            '''
+        
+        breakdown_html = f'''
+        <div class="breakdown-box">
+            <div class="breakdown-title">📊 All Models Performance</div>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Model</th>
+                        <th>Record</th>
+                        <th>Win %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
         </div>
         '''
+
+    stats_header_html = f'''
+    <div class="stats-header-container">
+        {fire_stats_content}
+        {breakdown_html}
+    </div>
+    '''
     
     # Build play cards HTML
     play_cards = ""
@@ -725,14 +862,62 @@ def generate_html(plays, fire_record=None):
         }}
         
         .fire-stats-box {{
-            background: var(--bg-card);
-            border: 1px solid var(--accent-orange);
-            border-radius: 8px;
-            padding: 8px 16px;
+            background: rgba(255, 69, 0, 0.1);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px 25px;
             text-align: center;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+            min-width: 250px;
         }}
-        
+
+        .breakdown-box {{
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 13px;
+            max-width: 600px;
+            flex-grow: 1;
+        }}
+
+        .stats-header-container {{
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            align-items: stretch;
+            justify-content: center;
+        }}
+
+        .breakdown-title {{
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }}
+
+        .breakdown-table {{
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text-primary);
+        }}
+
+        .breakdown-table th {{
+            color: var(--text-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }}
+
+        .breakdown-table td {{
+            padding: 6px 0;
+            text-align: center;
+        }}
+
         .fire-title {{
             font-size: 12px;
             color: var(--text-secondary);
@@ -740,9 +925,9 @@ def generate_html(plays, fire_record=None):
             font-weight: 600;
             margin-bottom: 2px;
         }}
-        
+
         .fire-record {{
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 800;
             color: var(--text-primary);
         }}
@@ -755,9 +940,10 @@ def generate_html(plays, fire_record=None):
                 <h1>🎯 Best Plays</h1>
                 <div class="subtitle">Top 50 Highest Confidence Bets</div>
             </div>
-            {fire_stats_html}
             <div class="timestamp">Generated: {timestamp}</div>
         </header>
+        
+        {stats_header_html}
         
         <div class="plays-grid">
             {play_cards if play_cards else '<div class="empty-state">No pending plays found. Check back after models run.</div>'}
@@ -783,9 +969,13 @@ def main():
     fire_record = update_fire_tracking(plays)
     print(f"   Fire Record: {fire_record['wins']}-{fire_record['losses']} ({fire_record['win_rate']:.1f}%)")
     
-    # Generate HTML
+    # 3. Calculate breakdown
+    print("📋 Calculating breakdown stats...")
+    breakdown = get_record_breakdown()
+
+    # 4. Generate HTML
     print("📄 Generating HTML...")
-    html = generate_html(plays, fire_record)
+    html = generate_html(plays, fire_record, breakdown)
     
     with open(OUTPUT_HTML, 'w') as f:
         f.write(html)
