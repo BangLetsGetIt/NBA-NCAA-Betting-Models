@@ -172,7 +172,7 @@ def fetch_soccer_odds(api_key):
         url = f"{ODDS_API_BASE}/sports/{sport}/odds"
         params = {
             'apiKey': api_key,
-            'regions': 'us',
+            'regions': 'us,us2',
             'markets': 'spreads,totals',
             'oddsFormat': 'american'
         }
@@ -359,12 +359,15 @@ def analyze_game(game):
     
     league_avg = LEAGUE_AVG_GOALS.get(sport_key, 2.65)
     
-    # Get market lines from first bookmaker
+    # Get market lines from prioritized bookmakers
     bookmakers = game.get('bookmakers', [])
     if not bookmakers:
         return None
     
-    bookmaker = bookmakers[0]
+    # Prioritize Hard Rock Bet, then FanDuel, then first available
+    bookmaker = next((b for b in bookmakers if b['key'] == 'hardrockbet'),
+                next((b for b in bookmakers if b['key'] == 'fanduel'), 
+                     bookmakers[0]))
     markets = bookmaker.get('markets', [])
     
     spread_market = next((m for m in markets if m['key'] == 'spreads'), None)

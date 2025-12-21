@@ -30,7 +30,7 @@ if not API_KEY:
 BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds/"
 PARAMS = {
     "apiKey": API_KEY,
-    "regions": "us",
+    "regions": "us,us2",
     "markets": "h2h,spreads,totals",
     "oddsFormat": "american",
     "dateFormat": "iso"
@@ -2147,7 +2147,10 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
             if not game.get('bookmakers'):
                 continue
 
-            bookmaker = game['bookmakers'][0]
+            # Prioritize Hard Rock Bet, then FanDuel, then first available
+            bookmaker = next((b for b in game['bookmakers'] if b['key'] == 'hardrockbet'),
+                        next((b for b in game['bookmakers'] if b['key'] == 'fanduel'), 
+                             game['bookmakers'][0]))
             markets = {m['key']: m for m in bookmaker.get('markets', [])}
 
             # Extract lines

@@ -330,7 +330,7 @@ def fetch_atd_odds():
          try:
              orsp = requests.get(o_url, params={
                  'apiKey': API_KEY, 
-                 'regions': 'us', 
+                 'regions': 'us,us2', 
                  'markets': 'player_anytime_td',  # Single market only
                  'oddsFormat': 'american'
              }, timeout=10)

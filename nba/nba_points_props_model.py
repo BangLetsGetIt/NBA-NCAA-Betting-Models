@@ -1024,7 +1024,7 @@ def get_player_props():
             odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
             odds_params = {
                 'apiKey': API_KEY,
-                'regions': 'us',
+                'regions': 'us,us2',
                 'markets': 'player_points',
                 'oddsFormat': 'american'
             }
@@ -1034,11 +1034,13 @@ def get_player_props():
             if odds_response.status_code == 200:
                 odds_data = odds_response.json()
                 if 'bookmakers' in odds_data and odds_data['bookmakers']:
-                    fanduel = next((b for b in odds_data['bookmakers'] if b['key'] == 'fanduel'),
-                                  odds_data['bookmakers'][0])
+                    # Prioritize Hard Rock Bet, then FanDuel, then first available
+                    selected_book = next((b for b in odds_data['bookmakers'] if b['key'] == 'hardrockbet'),
+                                       next((b for b in odds_data['bookmakers'] if b['key'] == 'fanduel'), 
+                                            odds_data['bookmakers'][0]))
 
-                    if 'markets' in fanduel:
-                        for market in fanduel['markets']:
+                    if 'markets' in selected_book:
+                        for market in selected_book['markets']:
                             if market['key'] == 'player_points':
                                 for outcome in market['outcomes']:
                                     player_name = outcome['description']

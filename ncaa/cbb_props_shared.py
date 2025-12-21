@@ -494,7 +494,7 @@ class CBBPropsEngine:
                 odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_ncaab/events/{event_id}/odds"
                 params = {
                     "apiKey": API_KEY,
-                    "regions": "us",
+                    "regions": "us,us2",
                     "markets": self.market_key,
                     "oddsFormat": "american"
                 }
@@ -504,8 +504,10 @@ class CBBPropsEngine:
                     data = odds_resp.json()
                     bookmakers = data.get('bookmakers', [])
                     
-                    # Find best book (FanDuel or DraftKings usually good for props)
-                    book = next((b for b in bookmakers if b['key'] in ['fanduel', 'draftkings']), None) or (bookmakers[0] if bookmakers else None)
+                    # Find best book (Hard Rock, FanDuel or DraftKings usually good for props)
+                    book = next((b for b in bookmakers if b['key'] == 'hardrockbet'), 
+                                next((b for b in bookmakers if b['key'] in ['fanduel', 'draftkings']), 
+                                     None) or (bookmakers[0] if bookmakers else None))
                     
                     if book:
                         for market in book.get('markets', []):

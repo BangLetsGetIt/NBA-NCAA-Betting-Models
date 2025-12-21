@@ -291,7 +291,7 @@ def get_nfl_props_odds():
     url = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events"
     params = {
         'apiKey': API_KEY,
-        'regions': 'us',
+        'regions': 'us,us2',
         'markets': 'h2h', 
         'oddsFormat': 'american'
     }
@@ -330,7 +330,7 @@ def get_nfl_props_odds():
             props_url = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/{game_id}/odds"
             props_params = {
                 'apiKey': API_KEY,
-                'regions': 'us',
+                'regions': 'us,us2',
                 'markets': 'player_receptions',
                 'oddsFormat': 'american'
             }
@@ -338,11 +338,14 @@ def get_nfl_props_odds():
             pr = requests.get(props_url, params=props_params)
             if pr.status_code == 200:
                 game_odds = pr.json()
-                for bookmaker in game_odds.get('bookmakers', []):
-                    # Prefer major books
-                    bk_key = bookmaker['key']
+                if 'bookmakers' in game_odds and game_odds['bookmakers']:
+                    # Prioritize Hard Rock Bet, then FanDuel, then first available
+                    selected_book = next((b for b in game_odds['bookmakers'] if b['key'] == 'hardrockbet'),
+                                       next((b for b in game_odds['bookmakers'] if b['key'] == 'fanduel'), 
+                                            game_odds['bookmakers'][0]))
                     
-                    for market in bookmaker.get('markets', []):
+                    bk_key = selected_book['key']
+                    for market in selected_book.get('markets', []):
                         if market['key'] == 'player_receptions':
                             for outcome in market['outcomes']:
                                 p_name = outcome['description']

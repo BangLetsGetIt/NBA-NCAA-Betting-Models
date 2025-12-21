@@ -27,7 +27,7 @@ if not API_KEY:
 BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds/"
 PARAMS = {
     "apiKey": API_KEY,
-    "regions": "us",
+    "regions": "us,us2",
     "markets": "h2h,spreads,totals",
     "oddsFormat": "american",
     "dateFormat": "iso"
@@ -699,10 +699,13 @@ def estimate_team_strength(team_name):
 # =========================
 
 def extract_best_odds(bookmakers, market_type):
-    """Extract best available odds for a given market"""
+    """Extract best available odds for a given market, prioritizing Hard Rock Bet"""
     best_odds = {}
     
-    for book in bookmakers:
+    # Prioritize Hard Rock Bet, then FanDuel
+    sorted_books = sorted(bookmakers, key=lambda b: 0 if b['key'] == 'hardrockbet' else (1 if b['key'] == 'fanduel' else 2))
+    
+    for book in sorted_books:
         for market in book.get('markets', []):
             if market['key'] != market_type:
                 continue

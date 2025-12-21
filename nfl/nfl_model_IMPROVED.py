@@ -335,7 +335,7 @@ def get_nfl_odds(api_key):
     
     params = {
         'apiKey': api_key,
-        'regions': 'us',
+        'regions': 'us,us2',
         'markets': 'spreads,totals',
         'oddsFormat': 'american'
     }
@@ -436,8 +436,10 @@ def analyze_game(game, tracker):
     if not bookmakers:
         return None
     
-    # Use first bookmaker (could be enhanced to shop for best line)
-    bookmaker = bookmakers[0]
+    # Prioritize Hard Rock Bet, then FanDuel, then first available
+    bookmaker = next((b for b in bookmakers if b['key'] == 'hardrockbet'),
+                next((b for b in bookmakers if b['key'] == 'fanduel'), 
+                     bookmakers[0]))
     markets = bookmaker.get('markets', [])
     
     spread_market = next((m for m in markets if m['key'] == 'spreads'), None)
