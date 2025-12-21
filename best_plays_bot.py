@@ -213,12 +213,13 @@ def get_confidence_tier(score):
 
 def generate_html(plays):
     """Generate styled HTML output"""
-    top_20 = plays[:20]
+    # Show up to 50 plays (or all if less than 50)
+    top_plays = plays[:50]
     timestamp = NOW.strftime('%Y-%m-%d %I:%M %p ET')
     
     # Build play cards HTML
     play_cards = ""
-    for i, play in enumerate(top_20, 1):
+    for i, play in enumerate(top_plays, 1):
         tier_label, tier_color = get_confidence_tier(play['confidence'])
         
         # Format bet display
@@ -452,7 +453,7 @@ def generate_html(plays):
     <div class="container">
         <header>
             <h1>🎯 Best Plays</h1>
-            <div class="subtitle">Top 20 Highest Confidence Bets Across All Models</div>
+            <div class="subtitle">Top 50 Highest Confidence Bets Across All Models</div>
             <div class="timestamp">Generated: {timestamp}</div>
         </header>
         
