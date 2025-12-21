@@ -1,0 +1,106 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Sat Dec 20 18:10:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 16 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Checking Mitchell Robinson (New York Knicks) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Mitchell Robinson on 2025-12-16 - will retry later[0m
+[96m  Checking Julian Champagnie (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Julian Champagnie on 2025-12-16 - will retry later[0m
+[96m  Checking Keldon Johnson (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Keldon Johnson on 2025-12-16 - will retry later[0m
+[96m  Checking Victor Wembanyama (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Victor Wembanyama on 2025-12-16 - will retry later[0m
+  Fetching team stats to verify completed games for 2025-12-20...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 11 upcoming games[0m
+[96m  Game 1/10: Boston Celtics @ Toronto Raptors[0m
+[96m  Game 2/10: Dallas Mavericks @ Philadelphia 76ers[0m
+[96m  Game 3/10: Indiana Pacers @ New Orleans Pelicans[0m
+[96m  Game 4/10: Charlotte Hornets @ Detroit Pistons[0m
+[96m  Game 5/10: Washington Wizards @ Memphis Grizzlies[0m
+[96m  Game 6/10: Phoenix Suns @ Golden State Warriors[0m
+[96m  Game 7/10: Orlando Magic @ Utah Jazz[0m
+[96m  Game 8/10: Portland Trail Blazers @ Sacramento Kings[0m
+[96m  Game 9/10: Los Angeles Lakers @ Los Angeles Clippers[0m
+[96m  Game 10/10: Chicago Bulls @ Atlanta Hawks[0m
+[92m✓ Fetched 109 player rebounds props (grouped)[0m
+
+[96mAnalyzing 109 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 4 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 5 props (no player stats found)[0m
+[93m  Skipped 203 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Daniel Gafford           [0m | [92mOVER 4.5 REB   [0m | Dallas Mavericks          vs Philadelphia 76ers        | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Sandro Mamukelashvili    [0m | [91mUNDER 7.5 REB  [0m | Toronto Raptors           vs Boston Celtics            | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Jaxson Hayes             [0m | [91mUNDER 5.5 REB  [0m | Los Angeles Clippers      vs Los Angeles Lakers        | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Ace Bailey               [0m | [91mUNDER 4.5 REB  [0m | Utah Jazz                 vs Orlando Magic             | [1mA.I.: 10.00[0m | Rating: 3.8 ⭐
+  [96m 4. Keon Ellis               [0m | [91mUNDER 2.5 REB  [0m | Sacramento Kings          vs Portland Trail Blazers    | [1mA.I.: 10.00[0m | Rating: 3.1 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Sat Dec 20 18:10:11 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main ed6f077] Update model outputs - 2025-12-20 18:10:11
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 36 insertions(+), 62 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   02a136d..ed6f077  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sat Dec 20 18:10:12 EST 2025
