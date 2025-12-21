@@ -438,7 +438,7 @@ def generate_html(plays, fire_record=None):
                         <span class="stat-value">{play['model_win_rate']:.0f}%</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Record</span>
+                        <span class="stat-label">Model Record</span>
                         <span class="stat-value">{play['model_record']}</span>
                     </div>
         '''
