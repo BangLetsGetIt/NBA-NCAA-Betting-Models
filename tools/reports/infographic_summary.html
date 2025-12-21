@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sports Models — Summary Infographic</title>
+  <style>
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;color:#111}
+    header{background:#0b4a6f;color:#fff;padding:24px;text-align:center}
+    .wrap{max-width:980px;margin:24px auto;padding:12px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{background:#fff;border-radius:8px;padding:16px;box-shadow:0 4px 14px rgba(2,6,23,.06)}
+    h1,h2{margin:0 0 8px 0}
+    .big{font-size:18px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:left}
+    .highlight{background:linear-gradient(90deg,#ffefc2,#ffe6d6);padding:8px;border-radius:6px}
+    footer{padding:12px;text-align:center;color:#666;font-size:13px}
+    ul{margin:0;padding-left:18px}
+    .full{grid-column:1/ -1}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#e8f8ff;color:#045;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sports Models — Snapshot & Remediation Infographic</h1>
+    <div style="margin-top:8px">Quick, beginner-friendly summary of findings, risks, and next steps</div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h2>What I did</h2>
+        <ul>
+          <li>Scanned repository for model tracking files and generated standardized metrics.</li>
+          <li>Validated and normalized tracking JSONs; created non-destructive backups.</li>
+          <li>Generated per-model reports, schema checks, and bet-realism checks.</li>
+        </ul>
+        <p class="big">Where to look: <span class="pill">tools/reports/</span></p>
+      </div>
+
+      <div class="card">
+        <h2>Top immediate findings</h2>
+        <ul>
+          <li><strong>Missing fields:</strong> many picks miss <code>odds</code> or <code>profit_loss</code> — blocks ROI & CLV.</li>
+          <li><strong>Timestamps:</strong> most files lack placement timestamps — can't confirm bet timing.</li>
+          <li><strong>High ROIs:</strong> <em>nba_3pt_props</em> (~23%), <em>nba_app_api</em> (~17%) — audit first.</li>
+          <li><strong>Negative ROIs:</strong> some models (e.g., <em>nba_assists</em>) losing money — check logic.</li>
+        </ul>
+      </div>
+
+      <div class="card full">
+        <h2>Key metrics (high level)</h2>
+        <p>Selected models and ROI (rounded)</p>
+        <table>
+          <thead><tr><th>Model file</th><th>Total settled</th><th>ROI %</th></tr></thead>
+          <tbody>
+            <tr><td>nba/nba_3pt_props_tracking.json</td><td>23</td><td>23.13%</td></tr>
+            <tr><td>nba_app_api/nba_picks_tracking.json</td><td>158</td><td>17.06%</td></tr>
+            <tr><td>nba/nba_picks_tracking.json</td><td>206</td><td>3.77%</td></tr>
+            <tr><td>ncaa/ncaab_picks_tracking.json</td><td>1853</td><td>0.55%</td></tr>
+            <tr><td>soccer/soccer_picks_tracking.json</td><td>86</td><td>-6.72%</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:8px;font-size:13px;color:#444">Full metrics: <a href="../audit_metrics_summary.csv">audit_metrics_summary.csv</a></p>
+      </div>
+
+      <div class="card">
+        <h2>Schema problems (summary)</h2>
+        <p>Files with required fields missing (examples):</p>
+        <ul>
+          <li><code>nba/nba_picks_tracking.json</code> — missing unified <code>odds</code> field.</li>
+          <li><code>ncaa/ncaab_picks_tracking.json</code> — many picks missing <code>odds</code>.</li>
+          <li><code>wnba/*</code> — many missing <code>game_time</code> or <code>odds</code>.</li>
+        </ul>
+        <p><a href="./schema_validation_comparison.csv">See full schema comparison</a></p>
+      </div>
+
+      <div class="card">
+        <h2>Bet-realism highlights</h2>
+        <ul>
+          <li>Placement timestamps largely absent; cannot verify when bets were placed relative to game start.</li>
+          <li>Odds snapshots (opening vs closing) are missing for many picks — slippage estimation impossible.</li>
+          <li>Some models show stakes concentrated in a few large bets — review exposure and limits.</li>
+        </ul>
+        <p><a href="./bet_realism_summary.csv">Open bet realism CSV</a></p>
+      </div>
+
+      <div class="card full">
+        <h2>Recommended next steps (simple)</h2>
+        <ol>
+          <li><strong>Enforce schema on write:</strong> always write `pick_id`, `game_time`, `odds`, `profit_loss`, and `placed_at`.</li>
+          <li><strong>Add placement timestamps</strong> where missing (instrument model runners).</li>
+          <li><strong>Run automated validation</strong> before scheduled runs (use `tools/validate_schema.py`).</li>
+          <li><strong>Audit top ROIs</strong> (`nba_3pt_props`, `nba_app_api`) for leakage/lookahead.</li>
+        </ol>
+      </div>
+
+      <div class="card full">
+        <h2>Where backups & diffs are</h2>
+        <ul>
+          <li>Backups: <code>tools/reports/backups/</code> (timestamped directories).</li>
+          <li>Overwrite log: <a href="./overwrite_log.csv">overwrite_log.csv</a></li>
+          <li>Diffs: <a href="./backups_vs_current_diff.csv">backups_vs_current_diff.csv</a> and <code>backups_diffs/</code></li>
+        </ul>
+      </div>
+
+      <div class="card full">
+        <h2>How I'll proceed (if you say go)</h2>
+        <ul>
+          <li>Run a focused leakage audit on the 2–3 highest-ROI models (time-aware feature check).</li>
+          <li>Instrument model writes to capture placement timestamps and opening/closing odds.</li>
+          <li>Automate validation and daily backups.</li>
+        </ul>
+      </div>
+
+      <div class="card full">
+        <h2>Need help or want me to continue?</h2>
+        <p>Choose one: <strong>Run leakage audits</strong> (deep, per-model) or <strong>Implement schema enforcement & CI</strong> (fast, prevents regressions). Reply which and I'll take it on.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    Generated on: December 21, 2025 — files live in <code>tools/reports/</code>
+  </footer>
+</body>
+</html>
