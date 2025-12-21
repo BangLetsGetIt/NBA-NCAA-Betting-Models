@@ -513,7 +513,7 @@ def generate_html(plays, fire_record=None):
         }}
         
         .container {{
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
         }}
         
@@ -524,9 +524,14 @@ def generate_html(plays, fire_record=None):
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
         }}
         
-        .header-left {{}}
+        .header-left {{
+             display: flex;
+             flex-direction: column;
+        }}
         
         h1 {{
             font-size: 24px;
@@ -546,32 +551,59 @@ def generate_html(plays, fire_record=None):
             border-radius: 6px;
             font-size: 12px;
             font-weight: 500;
+            white-space: nowrap;
         }}
         
         .plays-grid {{
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }}
+        
+        /* Mobile adjustment */
+        @media (max-width: 600px) {{
+            .plays-grid {{
+                grid-template-columns: 1fr;
+            }}
+            header {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .timestamp {{
+                align-self: flex-start;
+            }}
         }}
         
         .play-card {{
             display: flex;
+            flex-direction: column;
             background: var(--bg-card);
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }}
+        
+        .play-card:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            border-color: #444;
         }}
         
         .play-content {{
             padding: 15px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }}
         
         .play-header {{
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }}
         
         .play-rank-inline {{
