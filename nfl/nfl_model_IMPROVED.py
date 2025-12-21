@@ -108,14 +108,18 @@ class BettingTracker:
     def get_statistics(self):
         """Calculate performance statistics"""
         total_bets = len(self.bets)
-        completed = [b for b in self.bets if b['status'] == 'complete']
-        pending = [b for b in self.bets if b['status'] == 'pending']
+        # Count completed picks - support both old 'complete' status and new 'win'/'loss' status
+        completed = [b for b in self.bets if b.get('status') in ['complete', 'win', 'loss', 'push']]
+        pending = [b for b in self.bets if b.get('status') == 'pending']
         
-        won = [b for b in completed if b['result'] == 'won']
-        lost = [b for b in completed if b['result'] == 'lost']
+        # Count wins - support both formats
+        won = [b for b in self.bets if b.get('status') == 'win' or 
+               (b.get('status') == 'complete' and b.get('result') in ['won', 'win'])]
+        lost = [b for b in self.bets if b.get('status') == 'loss' or
+                (b.get('status') == 'complete' and b.get('result') in ['lost', 'loss'])]
         
         win_rate = (len(won) / len(completed) * 100) if completed else 0.0
-        total_profit = sum(b['profit'] for b in completed)
+        total_profit = sum(b.get('profit', 0) or 0 for b in completed)
         roi = (total_profit / (len(completed) * 100) * 100) if completed else 0.0
         
         return {
@@ -1007,15 +1011,15 @@ def generate_picks_html(analyses, stats, tracker):
                         <tbody>
                             {% for pick in completed_picks[:20] %}
                             <tr>
-                                <td class="text-gray">{{ pick.date_placed[:10] }}</td>
-                                <td class="font-bold">{{ pick.recommendation }}</td>
-                                <td>{{ pick.bet_type|upper }}</td>
-                                <td class="text-gray">{{ pick.result|upper }}</td>
-                                <td class="{{ 'text-green' if pick.profit > 0 else ('text-red' if pick.profit < 0 else 'text-gray') }}">
-                                    {{ "%+.2f"|format(pick.profit / 100) }}u
+                                <td class="text-gray">{{ pick.get('date_placed', '')[:10] if pick.get('date_placed') else 'N/A' }}</td>
+                                <td class="font-bold">{{ pick.get('recommendation', '') }}</td>
+                                <td>{{ pick.get('bet_type', '')|upper }}</td>
+                                <td class="text-gray">{{ pick.get('result', '')|upper }}</td>
+                                <td class="{{ 'text-green' if pick.get('profit', 0) > 0 else ('text-red' if pick.get('profit', 0) < 0 else 'text-gray') }}">
+                                    {{ "%+.2f"|format((pick.get('profit', 0) or 0) / 100) }}u
                                 </td>
                                 <td>
-                                    <span class="badge badge-{{ pick.result }}">{{ pick.result|upper }}</span>
+                                    <span class="badge badge-{{ pick.get('result', 'pending') }}">{{ pick.get('result', '')|upper }}</span>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -1079,13 +1083,19 @@ def normalize_nfl_tracking_data(bets_array):
         }
         
         # Map NFL status + result to standard status
-        if bet.get('status') == 'complete':
+        status = bet.get('status', 'pending')
+        if status in ['win', 'loss', 'push']:
+            # Already using standard format
+            pick['status'] = status
+        elif status == 'complete':
+            # Old format - convert based on result
             result = bet.get('result', '').lower()
-            if result == 'won':
+            if result in ['won', 'win']:
                 pick['status'] = 'win'
-            elif result == 'lost':
+            elif result in ['lost', 'loss']:
                 pick['status'] = 'loss'
-            # If result is None or empty, keep as pending
+            else:
+                pick['status'] = 'pending'
         else:
             pick['status'] = 'pending'
         
