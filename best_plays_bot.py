@@ -233,10 +233,10 @@ def generate_html(plays):
         
         play_cards += f'''
         <div class="play-card">
-            <div class="play-rank" style="background: {tier_color};">#{i}</div>
             <div class="play-content">
                 <div class="play-header">
-                    <div class="play-score" style="color: {tier_color};">{play['confidence']}</div>
+                    <div class="play-rank-inline">#{i}</div>
+                    <div class="play-score">{play['confidence']}</div>
                     <div class="play-tier">{tier_label}</div>
                 </div>
                 <div class="play-main">
@@ -348,26 +348,24 @@ def generate_html(plays):
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }}
         
-        .play-rank {{
-            width: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            color: #000;
-        }}
-        
         .play-content {{
-            flex: 1;
             padding: 15px 20px;
         }}
         
         .play-header {{
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 8px;
+        }}
+        
+        .play-rank-inline {{
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: var(--bg-card-secondary);
+            padding: 4px 10px;
+            border-radius: 6px;
         }}
         
         .play-score {{
