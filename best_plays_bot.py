@@ -275,16 +275,15 @@ def generate_html(plays):
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {{
-            --bg-main: #0a0a0a;
-            --bg-card: #141414;
-            --bg-card-hover: #1a1a1a;
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
             --text-primary: #ffffff;
-            --text-secondary: #8e8e93;
+            --text-secondary: #b3b3b3;
             --accent-green: #4ade80;
             --accent-red: #f87171;
             --accent-blue: #60a5fa;
-            --accent-orange: #ff6b35;
-            --border-color: #2a2a2a;
+            --border-color: #333333;
         }}
         
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -294,7 +293,8 @@ def generate_html(plays):
             background: var(--bg-main);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
         }}
         
         .container {{
@@ -303,121 +303,124 @@ def generate_html(plays):
         }}
         
         header {{
-            text-align: center;
-            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }}
         
+        .header-left {{}}
+        
         h1 {{
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #4ade80, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
         }}
         
         .subtitle {{
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 14px;
         }}
         
         .timestamp {{
-            display: inline-block;
-            background: var(--bg-card);
+            background: var(--bg-card-secondary);
             color: var(--text-secondary);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.85rem;
-            margin-top: 1rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
         }}
         
         .plays-grid {{
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 15px;
         }}
         
         .play-card {{
             display: flex;
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            transition: transform 0.2s, border-color 0.2s;
-        }}
-        
-        .play-card:hover {{
-            transform: translateY(-2px);
-            border-color: var(--accent-green);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }}
         
         .play-rank {{
-            width: 50px;
+            width: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 16px;
             color: #000;
         }}
         
         .play-content {{
             flex: 1;
-            padding: 1rem;
+            padding: 15px 20px;
         }}
         
         .play-header {{
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.5rem;
+            gap: 10px;
+            margin-bottom: 8px;
         }}
         
         .play-score {{
-            font-size: 1.5rem;
+            font-size: 24px;
             font-weight: 800;
         }}
         
         .play-tier {{
-            font-size: 0.8rem;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
         }}
         
         .play-main {{
-            margin-bottom: 0.75rem;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }}
         
         .play-player {{
-            font-size: 1.2rem;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 4px;
         }}
         
         .play-bet {{
-            font-size: 1rem;
+            font-size: 22px;
+            font-weight: 800;
             color: var(--accent-green);
-            font-weight: 600;
         }}
         
         .play-meta {{
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 0.75rem;
+            margin-bottom: 12px;
         }}
         
         .meta-tag {{
-            background: var(--bg-main);
+            background: var(--bg-card-secondary);
             color: var(--text-secondary);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
         }}
         
         .play-stats {{
             display: flex;
-            gap: 1.5rem;
+            gap: 20px;
+            background: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
         }}
         
         .stat {{
@@ -426,14 +429,16 @@ def generate_html(plays):
         }}
         
         .stat-label {{
-            font-size: 0.7rem;
+            font-size: 11px;
             color: var(--text-secondary);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }}
         
         .stat-value {{
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
         }}
         
         .empty-state {{
@@ -443,17 +448,21 @@ def generate_html(plays):
         }}
         
         @media (max-width: 600px) {{
-            h1 {{ font-size: 1.8rem; }}
-            .play-stats {{ flex-wrap: wrap; gap: 1rem; }}
-            .play-rank {{ width: 40px; font-size: 0.9rem; }}
+            header {{ flex-direction: column; align-items: flex-start; gap: 10px; }}
+            h1 {{ font-size: 20px; }}
+            .play-stats {{ flex-wrap: wrap; gap: 12px; }}
+            .play-rank {{ width: 45px; font-size: 14px; }}
+            .play-bet {{ font-size: 18px; }}
         }}
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎯 Best Plays</h1>
-            <div class="subtitle">Top 50 Highest Confidence Bets Across All Models</div>
+            <div class="header-left">
+                <h1>🎯 Best Plays</h1>
+                <div class="subtitle">Top 50 Highest Confidence Bets</div>
+            </div>
             <div class="timestamp">Generated: {timestamp}</div>
         </header>
         
