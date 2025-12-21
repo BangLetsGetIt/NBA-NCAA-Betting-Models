@@ -201,6 +201,51 @@ def get_pending_plays():
     return all_plays
 
 
+def get_team_logo_url(team_name, sport):
+    """Get ESPN logo URL for team"""
+    if not team_name or team_name == 'UNK':
+        return "https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nba.png" # Default
+    
+    # Normalize
+    t = team_name.lower().replace('76ers', 'sixers')
+    
+    # Abbreviation Map
+    abbr_map = {
+        # NBA
+        'atlanta hawks': 'atl', 'boston celtics': 'bos', 'brooklyn nets': 'bkn', 'charlotte hornets': 'cha',
+        'chicago bulls': 'chi', 'cleveland cavaliers': 'cle', 'dallas mavericks': 'dal', 'denver nuggets': 'den',
+        'detroit pistons': 'det', 'golden state warriors': 'gs', 'houston rockets': 'hou', 'indiana pacers': 'ind',
+        'los angeles clippers': 'lac', 'los angeles lakers': 'lal', 'memphis grizzlies': 'mem', 'miami heat': 'mia',
+        'milwaukee bucks': 'mil', 'minnesota timberwolves': 'min', 'new orleans pelicans': 'no', 'new york knicks': 'ny',
+        'oklahoma city thunder': 'okc', 'orlando magic': 'orl', 'philadelphia 76ers': 'phi', 'phoenix suns': 'phx',
+        'portland trail blazers': 'por', 'sacramento kings': 'sac', 'san antonio spurs': 'sas', 'toronto raptors': 'tor',
+        'utah jazz': 'uta', 'washington wizards': 'was', 'sixers': 'phi', 'cavs': 'cle',
+        # NFL
+        'arizona cardinals': 'ari', 'atlanta falcons': 'atl', 'baltimore ravens': 'bal', 'buffalo bills': 'buf',
+        'carolina panthers': 'car', 'chicago bears': 'chi', 'cincinnati bengals': 'cin', 'cleveland browns': 'cle',
+        'dallas cowboys': 'dal', 'denver broncos': 'den', 'detroit lions': 'det', 'green bay packers': 'gb',
+        'houston texans': 'hou', 'indianapolis colts': 'ind', 'jacksonville jaguars': 'jax', 'kansas city chiefs': 'kc',
+        'las vegas raiders': 'lv', 'los angeles chargers': 'lac', 'los angeles rams': 'lar', 'miami dolphins': 'mia',
+        'minnesota vikings': 'min', 'new england patriots': 'ne', 'new orleans saints': 'no', 'new york giants': 'nyg',
+        'new york jets': 'nyj', 'philadelphia eagles': 'phi', 'pittsburgh steelers': 'pit', 'san francisco 49ers': 'sf',
+        'seattle seahawks': 'sea', 'tampa bay buccaneers': 'tb', 'tennessee titans': 'ten', 'washington commanders': 'was'
+    }
+    
+    # Try exact match first
+    abbr = abbr_map.get(t)
+    if not abbr:
+        # Try finding key in name
+        for k, v in abbr_map.items():
+            if k in t: 
+                abbr = v
+                break
+    
+    if not abbr: abbr = team_name[:3].lower()
+    
+    sport_path = 'nba' if sport == 'NBA' else 'nfl' if sport == 'NFL' else 'ncaa'
+    return f"https://a.espncdn.com/i/teamlogos/{sport_path}/500/{abbr}.png"
+
+
 def get_confidence_tier(score):
     """Get tier label and color based on confidence score"""
     if score >= 80:
@@ -273,18 +318,7 @@ def update_fire_tracking(current_plays):
         for p in picks:
             status = p.get('status', 'pending').lower()
             if status in ['win', 'won', 'loss', 'lost']:
-                # Normalize key
-                player = p.get('player', p.get('team', 'Unknown'))
-                bet_type = p.get('bet_type', p.get('pick_type', 'unknown')).upper()
-                gt = p.get('game_time') or p.get('game_date')
-                if gt:
-                    # Parse to date string for loose matching if needed, 
-                    # but ideally we match the exact string or close enough
-                    # For now using a simple key match tactic
-                    pass
-                
-                # We'll use a simpler matching logic: check each pending tracked play against all picks
-                pass
+                pass # Logic handled below
 
     # Re-implementing step 2 with direct lookup to avoid complex key generation issues
     # Iterate through tracked pending plays and look for them in source files
@@ -367,36 +401,61 @@ def generate_html(plays, fire_record=None):
         # Format edge
         edge_display = f"+{play['edge']:.1f}" if play['edge'] > 0 else f"{play['edge']:.1f}"
         
+        # Stats Block (Only if data exists)
+        season = play.get('season_avg', 0)
+        recent = play.get('recent_avg', 0)
+        
+        stats_html = ""
+        # Only show stats if they are non-zero (or close to it/valid)
+        if season > 0 or recent > 0:
+             stats_html = f'''
+             <div class="stat">
+                <span class="stat-label">Season</span>
+                <span class="stat-value">{season}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">L5 Avg</span>
+                <span class="stat-value">{recent}</span>
+            </div>
+             '''
+        
+        # Team Logo
+        logo_url = get_team_logo_url(play.get('team', 'UNK'), play.get('sport', 'NBA'))
+        
         play_cards += f'''
         <div class="play-card">
             <div class="play-content">
                 <div class="play-header">
-                    <div class="play-rank-inline">#{i}</div>
-                    <div class="play-score">{play['confidence']}</div>
-                    <div class="play-tier">{tier_label}</div>
-                </div>
-                <div class="play-main">
-                    <div class="play-player">{play['player']}</div>
-                    <div class="{bet_class}">{bet_display}</div>
-                </div>
-                <div class="play-meta">
-                    <span class="meta-tag">{play['sport']}</span>
-                    <span class="meta-tag">{play['model']}</span>
-                    <span class="meta-tag">{play['game_time_str']}</span>
-                </div>
-                <div class="play-stats">
-                    <div class="stat">
-                        <span class="stat-label">Model Record</span>
-                        <span class="stat-value">{play['model_record']} ({play['model_win_rate']:.1f}%)</span>
+                    <div class="header-left-group" style="display: flex; align-items: center; gap: 10px;">
+                        <img src="{logo_url}" alt="Team" style="width: 40px; height: 40px; object-fit: contain;">
+                        <div>
+                             <div class="play-player">{play['player']}</div>
+                             <div class="play-matchup" style="font-size: 12px; color: var(--text-secondary);">{play['matchup']}</div>
+                        </div>
                     </div>
+                    <div class="play-rank-inline">#{i}</div>
+                </div>
+                
+                <div class="play-main">
+                    <div class="{bet_class}">{bet_display}</div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">{play['model']}</div>
+                </div>
+                
+                <div class="play-meta-row" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                     <div class="play-tier" style="color:{tier_color}">{tier_label} ({play['confidence']})</div>
+                     <span class="meta-tag">{play['game_time_str']}</span>
+                </div>
+                
+                <div class="play-stats" style="margin-top: 12px;">
                     <div class="stat">
                         <span class="stat-label">Edge</span>
                         <span class="stat-value">{edge_display}</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">AI Score</span>
-                        <span class="stat-value">{play['ai_score']:.1f}</span>
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value">{play['model_win_rate']:.0f}%</span>
                     </div>
+                    {stats_html}
                 </div>
             </div>
         </div>

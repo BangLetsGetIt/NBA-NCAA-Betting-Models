@@ -101,7 +101,9 @@ def track_new_picks(recommendations, odds_data):
                 'result': None,
                 'profit_loss': 0,
                 'actual_val': None,
-                'bet_size_units': 1.0
+                'bet_size_units': 1.0,
+                'season_avg': rec.get('season_avg'),
+                'recent_avg': rec.get('recent_avg')
             }
             data['picks'].append(new_pick)
             new_picks_count += 1
