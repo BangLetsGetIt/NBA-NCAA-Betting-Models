@@ -527,7 +527,7 @@ def generate_html(plays, fire_record=None, breakdown=None):
         solid_color = "#4ade80" if solid_wr >= 55 else "#ffffff" if solid_wr >= 50 else "#f87171"
 
         fire_stats_content = f'''
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
                 <div class="fire-stats-box">
                     <div class="fire-title">🔥 Fire Plays (80+)</div>
                     <div class="fire-record">
@@ -760,10 +760,11 @@ def generate_html(plays, fire_record=None, breakdown=None):
             }}
             header {{
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
+                text-align: center;
             }}
             .timestamp {{
-                align-self: flex-start;
+                align-self: center;
             }}
         }}
         
@@ -892,7 +893,7 @@ def generate_html(plays, fire_record=None, breakdown=None):
         }}
         
         @media (max-width: 600px) {{
-            header {{ flex-direction: column; align-items: flex-start; gap: 10px; }}
+            header {{ flex-direction: column; align-items: center; gap: 10px; }}
             h1 {{ font-size: 20px; }}
             .play-stats {{ flex-wrap: wrap; gap: 12px; }}
             .play-rank {{ width: 45px; font-size: 14px; }}
