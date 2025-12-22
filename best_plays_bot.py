@@ -21,6 +21,7 @@ OUTPUT_HTML = os.path.join(SCRIPT_DIR, "best_plays.html")
 FIRE_TRACKING_FILE = os.path.join(SCRIPT_DIR, "best_plays_tracking.json")
 FIRE_SCORE_THRESHOLD = 80  # Minimum score for FIRE
 SOLID_SCORE_THRESHOLD = 70 # Minimum score for SOLID
+VALUE_SCORE_THRESHOLD = 50 # Minimum score for VALUE
 
 # Timezone
 ET = pytz.timezone('US/Eastern')
@@ -191,7 +192,12 @@ def get_pending_plays():
         for p in pending:
             # Parse game time - only include future games
             game_time = parse_game_time(p.get('game_time') or p.get('game_date'))
-            if game_time and game_time < now:
+            
+            # Require valid game time to be displayed in Pending
+            if not game_time:
+                continue
+                
+            if game_time < now:
                 continue  # Skip past games
             
             # Get bet type
@@ -346,7 +352,7 @@ def update_fire_tracking(current_plays):
             existing_keys.add(key)
     
     for play in current_plays:
-        if play['confidence'] >= SOLID_SCORE_THRESHOLD:
+        if play['confidence'] >= VALUE_SCORE_THRESHOLD:
             # Format game_time for storage
             gt_str = play['game_time'].isoformat() if play['game_time'] else today_str()
             key = f"{play['player']}_{play['bet_type']}_{gt_str}"
@@ -468,6 +474,8 @@ def update_fire_tracking(current_plays):
     fire_losses = 0
     solid_wins = 0
     solid_losses = 0
+    value_wins = 0
+    value_losses = 0
 
     for p in tracked_plays:
         status = p.get('status', '').lower()
@@ -478,11 +486,15 @@ def update_fire_tracking(current_plays):
                 fire_wins += 1
             elif confidence >= SOLID_SCORE_THRESHOLD:
                 solid_wins += 1
+            elif confidence >= VALUE_SCORE_THRESHOLD:
+                value_wins += 1
         elif status == 'loss':
             if confidence >= FIRE_SCORE_THRESHOLD:
                 fire_losses += 1
             elif confidence >= SOLID_SCORE_THRESHOLD:
                 solid_losses += 1
+            elif confidence >= VALUE_SCORE_THRESHOLD:
+                value_losses += 1
             
     fire_total = fire_wins + fire_losses
     fire_wr = (fire_wins / fire_total * 100) if fire_total > 0 else 0.0
@@ -490,10 +502,14 @@ def update_fire_tracking(current_plays):
     solid_total = solid_wins + solid_losses
     solid_wr = (solid_wins / solid_total * 100) if solid_total > 0 else 0.0
     
+    value_total = value_wins + value_losses
+    value_wr = (value_wins / value_total * 100) if value_total > 0 else 0.0
+    
     tracking['plays'] = tracked_plays
     tracking['record'] = {
         'fire': {'wins': fire_wins, 'losses': fire_losses, 'win_rate': fire_wr},
-        'solid': {'wins': solid_wins, 'losses': solid_losses, 'win_rate': solid_wr}
+        'solid': {'wins': solid_wins, 'losses': solid_losses, 'win_rate': solid_wr},
+        'value': {'wins': value_wins, 'losses': value_losses, 'win_rate': value_wr}
     }
     
     save_fire_tracking(tracking)
@@ -516,15 +532,20 @@ def generate_html(plays, fire_record=None, breakdown=None):
         if 'wins' in fire_record:
              fire_data = fire_record
              solid_data = {'wins': 0, 'losses': 0, 'win_rate': 0.0}
+             value_data = {'wins': 0, 'losses': 0, 'win_rate': 0.0}
         else:
              fire_data = fire_record.get('fire', {})
              solid_data = fire_record.get('solid', {})
+             value_data = fire_record.get('value', {})
 
         fire_wr = fire_data.get('win_rate', 0.0)
         fire_color = "#4ade80" if fire_wr >= 55 else "#ffffff" if fire_wr >= 50 else "#f87171"
         
         solid_wr = solid_data.get('win_rate', 0.0)
         solid_color = "#4ade80" if solid_wr >= 55 else "#ffffff" if solid_wr >= 50 else "#f87171"
+
+        value_wr = value_data.get('win_rate', 0.0)
+        value_color = "#4ade80" if value_wr >= 55 else "#ffffff" if value_wr >= 50 else "#f87171"
 
         fire_stats_content = f'''
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
@@ -540,6 +561,13 @@ def generate_html(plays, fire_record=None, breakdown=None):
                     <div class="fire-record">
                         {solid_data.get('wins',0)}-{solid_data.get('losses',0)} 
                         <span style="color: {solid_color}; font-size: 0.8em;">({solid_wr:.1f}%)</span>
+                    </div>
+                </div>
+                <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
+                    <div class="fire-title" style="color: #60a5fa;">⚡ Value Plays (50+)</div>
+                    <div class="fire-record">
+                        {value_data.get('wins',0)}-{value_data.get('losses',0)} 
+                        <span style="color: {value_color}; font-size: 0.8em;">({value_wr:.1f}%)</span>
                     </div>
                 </div>
             </div>
