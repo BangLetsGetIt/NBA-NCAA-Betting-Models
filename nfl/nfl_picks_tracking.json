@@ -172,11 +172,13 @@
       "confidence": 1.0,
       "recommendation": "Houston Texans -9.5",
       "date_placed": "2025-12-11T21:38:10.209229",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "loss",
+      "result": "loss",
+      "profit": -100,
       "profit_loss": 0.0,
-      "pick_id": "aef8485c-71e2-429c-ac64-a070c9dc6390"
+      "pick_id": "aef8485c-71e2-429c-ac64-a070c9dc6390",
+      "actual_home_score": 23,
+      "actual_away_score": 21
     },
     {
       "game_id": "1aa1fb046f11dadb32dad77d5baf552e",
@@ -240,11 +242,13 @@
       "confidence": 1.0,
       "recommendation": "Jacksonville Jaguars -13.5",
       "date_placed": "2025-12-11T21:38:10.209984",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "win",
+      "result": "win",
+      "profit": 91,
       "profit_loss": 0.0,
-      "pick_id": "b737c857-f3a2-4ddd-82ab-1fd64571edef"
+      "pick_id": "b737c857-f3a2-4ddd-82ab-1fd64571edef",
+      "actual_home_score": 20,
+      "actual_away_score": 34
     },
     {
       "game_id": "cd5151f8a1e7fcba4901929e77b94acd",
@@ -376,11 +380,13 @@
       "confidence": 0.8733333333333333,
       "recommendation": "Denver Broncos -2.5",
       "date_placed": "2025-12-11T21:38:10.212809",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "loss",
+      "result": "loss",
+      "profit": -100,
       "profit_loss": 0.0,
-      "pick_id": "9703bcf9-1bfa-4800-9484-f3297cc2aea0"
+      "pick_id": "9703bcf9-1bfa-4800-9484-f3297cc2aea0",
+      "actual_home_score": 20,
+      "actual_away_score": 34
     },
     {
       "game_id": "d056f31082bdea4d018a26ba274b8430",
@@ -500,11 +506,13 @@
       "confidence": 0.94,
       "recommendation": "Denver Broncos -3.5",
       "date_placed": "2025-12-20T23:47:31.454521",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "loss",
+      "result": "loss",
+      "profit": -100,
       "profit_loss": 0.0,
-      "pick_id": "0b6f3b55-35e3-4ec6-a63b-9eaaa744add8"
+      "pick_id": "0b6f3b55-35e3-4ec6-a63b-9eaaa744add8",
+      "actual_home_score": 20,
+      "actual_away_score": 34
     },
     {
       "game_id": "a03f89d3aaadf737deb09be24986d5bf",
@@ -532,11 +540,13 @@
       "confidence": 1.0,
       "recommendation": "Houston Texans -14.5",
       "date_placed": "2025-12-20T23:47:31.459419",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "loss",
+      "result": "loss",
+      "profit": -100,
       "profit_loss": 0.0,
-      "pick_id": "daf90b0f-eb11-40af-80d8-79e602013c45"
+      "pick_id": "daf90b0f-eb11-40af-80d8-79e602013c45",
+      "actual_home_score": 23,
+      "actual_away_score": 21
     },
     {
       "game_id": "a0476b027679a1670f21e8b75a860ab9",
@@ -632,11 +642,13 @@
       "confidence": 1.0,
       "recommendation": "Houston Texans -14.0",
       "date_placed": "2025-12-21T03:15:06.255649",
-      "status": "pending",
-      "result": "PENDING",
-      "profit": 0.0,
+      "status": "loss",
+      "result": "loss",
+      "profit": -100,
       "profit_loss": 0.0,
-      "pick_id": "9114d515-a799-41fd-b9af-4e69b72335f2"
+      "pick_id": "9114d515-a799-41fd-b9af-4e69b72335f2",
+      "actual_home_score": 23,
+      "actual_away_score": 21
     },
     {
       "game_id": "a0476b027679a1670f21e8b75a860ab9",
@@ -692,9 +704,11 @@
       "confidence": 0.7055555555555557,
       "recommendation": "OVER 36.5",
       "date_placed": "2025-12-21T19:11:18.160685",
-      "status": "pending",
-      "result": null,
-      "profit": 0.0
+      "status": "win",
+      "result": "win",
+      "profit": 91,
+      "actual_home_score": 38,
+      "actual_away_score": 37
     },
     {
       "game_id": "596df6f5735277fee0cd78e61cd71060",
@@ -706,6 +720,36 @@
       "confidence": 0.5333333333333333,
       "recommendation": "Buffalo Bills -2.5",
       "date_placed": "2025-12-21T19:11:18.163172",
+      "status": "win",
+      "result": "win",
+      "profit": 91,
+      "actual_home_score": 20,
+      "actual_away_score": 23
+    },
+    {
+      "game_id": "d75c88e4fb7650ab0577264980bdf98f",
+      "bet_type": "spread",
+      "team": "New Orleans Saints",
+      "line": -3.0,
+      "predicted_value": -14.0,
+      "edge": -17.0,
+      "confidence": 1.0,
+      "recommendation": "New Orleans Saints -3.0",
+      "date_placed": "2025-12-21T19:26:27.954399",
+      "status": "pending",
+      "result": null,
+      "profit": 0.0
+    },
+    {
+      "game_id": "b0dedebd28a82f8f38398033356e9015",
+      "bet_type": "spread",
+      "team": "San Francisco 49ers",
+      "line": -2.5,
+      "predicted_value": 20.8,
+      "edge": 23.3,
+      "confidence": 1.0,
+      "recommendation": "San Francisco 49ers -2.5",
+      "date_placed": "2025-12-21T19:26:27.956887",
       "status": "pending",
       "result": null,
       "profit": 0.0
