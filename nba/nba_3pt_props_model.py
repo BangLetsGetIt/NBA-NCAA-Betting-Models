@@ -1026,6 +1026,8 @@ def get_player_props():
                         grouped: dict[tuple[str, float], dict] = {}
                         for outcome in market.get("outcomes", []):
                             player_name = outcome.get("description")
+                            if player_name:
+                                player_name = player_name.strip()
                             point = outcome.get("point")
                             if player_name is None or point is None:
                                 continue
@@ -1350,7 +1352,8 @@ def analyze_props(props_list, player_stats, three_factors):
     seen_over = set()
     unique_over = []
     for play in over_plays:
-        key = f"{play['player']}_{play['prop']}"
+        p_name = play['player'].strip()
+        key = f"{p_name}_{play['prop']}"
         if key not in seen_over:
             seen_over.add(key)
             unique_over.append(play)
@@ -1358,7 +1361,8 @@ def analyze_props(props_list, player_stats, three_factors):
     seen_under = set()
     unique_under = []
     for play in under_plays:
-        key = f"{play['player']}_{play['prop']}"
+        p_name = play['player'].strip()
+        key = f"{p_name}_{play['prop']}"
         if key not in seen_under:
             seen_under.add(key)
             unique_under.append(play)
