@@ -255,29 +255,6 @@ def grade_pending_picks():
                 # BETTER: Check status using completed_teams
                 is_game_final = pick.get('team') in completed_teams
                 
-                # If game is NOT final and < 4 hours, DO NOT GRADE (Live stats are dangerous)
-                # We need game status confirmation
-                # Note: We rely on completed_teams (leaguedashteamstats) to tell us if Final.
-                # If it's in there, it's Final (usually).
-                
-                if not is_game_final:
-                    # Logic: If not final, verify time buffer
-                    # We can't easily recalc hours here without time object, but we filtered by >= 1
-                    # If we really want to be safe: assuming anything < 4 hours MUST be confirmed final.
-                    # Parse game time again? Valid for safety.
-                    
-                    try:
-                        g_t_str = pick.get('game_time')
-                        if g_t_str:
-                            g_t_utc = datetime.fromisoformat(g_t_str.replace('Z', '+00:00'))
-                            now_u = datetime.now(pytz.UTC)
-                            h_since = (now_u - g_t_utc).total_seconds() / 3600
-                            if h_since < 4:
-                                # Too recent and NOT confirmed final -> Skip
-                                continue
-                    except:
-                        pass
-                
                 # Try exact match first, then partial match
                 player_key = player_name.lower()
                 actual_pts = daily_stats.get(player_key)
@@ -297,26 +274,46 @@ def grade_pending_picks():
                     
                     if not found:
                         # Check if game is actually COMPLETED but player didn't play (DNP)
-                        if pick.get('team') in completed_teams:
+                        if is_game_final:
                              print(f"{Colors.YELLOW}  ⚠️  Player {player_name} has no stats but game is final -> Marking as DNP/Void{Colors.END}")
                              pick['status'] = 'void'
                              pick['result'] = 'DNP'  # 'VOID'
                              pick['profit_loss'] = 0
-                             # pick['actual_pts'] = 0 # Or None? Kept as None usually
                              graded_count += 1
                              continue
                         
-                        print(f"{Colors.YELLOW}  ⚠️  Could not find stats for {player_name} in batch data{Colors.END}")
+                        # If game not final and stats not found, just skip (pending)
                         continue
-                
-                # Grade the pick
+
+                # We have actual_pts. Check if we can grade it.
                 prop_line = pick.get('prop_line')
                 bet_type = pick.get('bet_type')
                 
+                # Determine if result is finalized
+                # 1. Game is Final -> All bets finalized
+                # 2. Over bet and actual > line -> Win finalized (Live)
+                # 3. Under bet and actual > line -> Loss finalized (Live)
+                # Note: Under bet and actual < line -> Pending until game final
+                
+                is_determined = False
+                if is_game_final:
+                    is_determined = True
+                elif bet_type == 'over' and actual_pts > prop_line:
+                    is_determined = True # Early Win
+                elif bet_type == 'under' and actual_pts > prop_line:
+                     is_determined = True # Early Loss
+
+                if not is_determined:
+                    # Game still going and result not decided
+                    continue
+
+                # Grade the pick
                 if bet_type == 'over':
                     is_win = actual_pts > prop_line
                 else:  # under
                     is_win = actual_pts < prop_line
+                
+                # Calculate profit/loss
                 
                 # Calculate profit/loss
                 odds = pick.get('opening_odds') or pick.get('odds', -110)
@@ -1044,6 +1041,8 @@ def get_player_props():
                             if market['key'] == 'player_points':
                                 for outcome in market['outcomes']:
                                     player_name = outcome['description']
+                                    if player_name:
+                                        player_name = player_name.strip()
                                     player_team, player_opponent = match_player_to_team(
                                         player_name, home_team, away_team, rosters
                                     )
@@ -1374,21 +1373,40 @@ def analyze_props(props_list, player_stats, defense_factors):
         else:
             skipped_low_score += 1
 
-    seen_over = set()
-    unique_over = []
+    # Deduplicate: Keep BEST play per player (highest AI Rating)
+    final_over = {}
     for play in over_plays:
-        key = f"{play['player']}_{play['prop']}"
-        if key not in seen_over:
-            seen_over.add(key)
-            unique_over.append(play)
+        p_name = play['player'].strip()
+        # If new player or better rating, update
+        if p_name not in final_over:
+            final_over[p_name] = play
+        else:
+            # Compare ratings
+            curr_rating = final_over[p_name].get('ai_rating', 0)
+            new_rating = play.get('ai_rating', 0)
+            if new_rating > curr_rating:
+                final_over[p_name] = play
+            elif new_rating == curr_rating:
+                # Tiebreaker: AI Score
+                if play.get('ai_score', 0) > final_over[p_name].get('ai_score', 0):
+                    final_over[p_name] = play
 
-    seen_under = set()
-    unique_under = []
+    final_under = {}
     for play in under_plays:
-        key = f"{play['player']}_{play['prop']}"
-        if key not in seen_under:
-            seen_under.add(key)
-            unique_under.append(play)
+        p_name = play['player'].strip()
+        if p_name not in final_under:
+            final_under[p_name] = play
+        else:
+            curr_rating = final_under[p_name].get('ai_rating', 0)
+            new_rating = play.get('ai_rating', 0)
+            if new_rating > curr_rating:
+                final_under[p_name] = play
+            elif new_rating == curr_rating:
+                if play.get('ai_score', 0) > final_under[p_name].get('ai_score', 0):
+                    final_under[p_name] = play
+
+    over_plays = list(final_over.values())
+    under_plays = list(final_under.values())
 
     # Sort by A.I. Rating (primary), AI Score (secondary)
     def get_sort_score(play):
@@ -1396,11 +1414,11 @@ def analyze_props(props_list, player_stats, defense_factors):
         ai_score = play.get('ai_score', 0)
         return (rating, ai_score)
     
-    unique_over.sort(key=get_sort_score, reverse=True)
-    unique_under.sort(key=get_sort_score, reverse=True)
+    over_plays.sort(key=get_sort_score, reverse=True)
+    under_plays.sort(key=get_sort_score, reverse=True)
 
-    over_plays = unique_over[:TOP_PLAYS_COUNT]
-    under_plays = unique_under[:TOP_PLAYS_COUNT]
+    over_plays = over_plays[:TOP_PLAYS_COUNT]
+    under_plays = under_plays[:TOP_PLAYS_COUNT]
 
     print(f"{Colors.GREEN}✓ Found {len(over_plays)} top OVER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")
     print(f"{Colors.GREEN}✓ Found {len(under_plays)} top UNDER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")

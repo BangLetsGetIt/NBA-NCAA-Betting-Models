@@ -1028,6 +1028,8 @@ def get_player_props():
                         grouped: dict[tuple[str, float], dict] = {}
                         for outcome in market.get("outcomes", []):
                             player_name = outcome.get("description")
+                            if player_name:
+                                player_name = player_name.strip()
                             point = outcome.get("point")
                             if player_name is None or point is None:
                                 continue
@@ -1331,30 +1333,47 @@ def analyze_props(props_list, player_stats, reb_factors):
             skipped_low_score += 1
 
     # Deduplicate
-    seen_over = set()
-    unique_over = []
+    # Deduplicate: Keep BEST play per player (highest AI Rating)
+    final_over = {}
     for play in over_plays:
-        key = f"{play['player']}_{play['prop']}"
-        if key not in seen_over:
-            seen_over.add(key)
-            unique_over.append(play)
+        p_name = play['player'].strip()
+        if p_name not in final_over:
+            final_over[p_name] = play
+        else:
+            curr_rating = final_over[p_name].get('ai_rating', 0)
+            new_rating = play.get('ai_rating', 0)
+            if new_rating > curr_rating:
+                final_over[p_name] = play
+            elif new_rating == curr_rating:
+                if play.get('ai_score', 0) > final_over[p_name].get('ai_score', 0):
+                    final_over[p_name] = play
 
-    seen_under = set()
-    unique_under = []
+    final_under = {}
     for play in under_plays:
-        key = f"{play['player']}_{play['prop']}"
-        if key not in seen_under:
-            seen_under.add(key)
-            unique_under.append(play)
+        p_name = play['player'].strip()
+        if p_name not in final_under:
+            final_under[p_name] = play
+        else:
+            curr_rating = final_under[p_name].get('ai_rating', 0)
+            new_rating = play.get('ai_rating', 0)
+            if new_rating > curr_rating:
+                final_under[p_name] = play
+            elif new_rating == curr_rating:
+                if play.get('ai_score', 0) > final_under[p_name].get('ai_score', 0):
+                    final_under[p_name] = play
 
+    over_plays = list(final_over.values())
+    under_plays = list(final_under.values())
+
+    # Sort by A.I. Rating (primary), AI Score (secondary)
     def get_sort_score(p):
         return (p.get("ai_rating", 2.3), p.get("ai_score", 0), p.get("ev", 0))
 
-    unique_over.sort(key=get_sort_score, reverse=True)
-    unique_under.sort(key=get_sort_score, reverse=True)
+    over_plays.sort(key=get_sort_score, reverse=True)
+    under_plays.sort(key=get_sort_score, reverse=True)
 
-    over_plays = unique_over[:TOP_PLAYS_COUNT]
-    under_plays = unique_under[:TOP_PLAYS_COUNT]
+    over_plays = over_plays[:TOP_PLAYS_COUNT]
+    under_plays = under_plays[:TOP_PLAYS_COUNT]
 
     print(f"{Colors.GREEN}✓ Found {len(over_plays)} top OVER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")
     print(f"{Colors.GREEN}✓ Found {len(under_plays)} top UNDER plays (A.I. Score >= {MIN_AI_SCORE}){Colors.END}")
