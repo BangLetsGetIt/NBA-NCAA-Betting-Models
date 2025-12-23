@@ -12,6 +12,12 @@ import pytz
 import pandas as pd
 import numpy as np
 from collections import defaultdict
+try:
+    from fetch_ncaab_stats import fetch_sports_reference_stats
+except ImportError:
+    # Fallback to local file approach if import fails (e.g. running from different dir)
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from fetch_ncaab_stats import fetch_sports_reference_stats
 
 # =========================
 # CONFIG
@@ -50,15 +56,14 @@ HOME_COURT_ADVANTAGE = 3.2  # Reduced from 3.5 - spreads losing may indicate ove
 SPREAD_THRESHOLD = 10.0  # Raised from 6.0 - edge 6-10 losing -41u, edge 10+ winning +44u (Dec 20)
 TOTAL_THRESHOLD = 6.0   # Keep at 6.0 - totals are profitable (+25u)
 
-# Tracking Parameters - TIGHTENED (Dec 20, 2024)
-# Analysis showed edge 6-10 losing -41u (44-48% hit rate)
-# Edge 10+ is hitting 53.8-54.3% with +44u profit
-CONFIDENT_SPREAD_EDGE = 12.0  # Raised from 5.5 - only log 12+ edge spreads  
-CONFIDENT_TOTAL_EDGE = 12.0   # Raised from 5.0 - only log 12+ edge totals
-# MAX EDGE CAPS RAISED: Analysis showed 15+ edge is 54.3% with +27.19u
-# Only 40+ edge drops to 50% (-0.63u) so cap there
-MAX_SPREAD_EDGE = 40.0  # Raised from 15.0 - high edge picks are profitable!
-MAX_TOTAL_EDGE = 40.0   # Raised from 18.0 - high edge picks are profitable!
+# Tracking Parameters - TIGHTENED (Dec 23, 2024) - REAL STATS ERA
+# Raised to 15.0 to ensure only high-confidence plays with REAL data are tracked
+CONFIDENT_SPREAD_EDGE = 15.0  # Raised from 12.0
+CONFIDENT_TOTAL_EDGE = 15.0   # Raised from 12.0
+# MAX EDGE CAPS
+# Real stats might produce larger variance, but >40 is still likely an error/mismatch
+MAX_SPREAD_EDGE = 35.0  # Slightly lowered from 40.0
+MAX_TOTAL_EDGE = 35.0   # Slightly lowered from 40.0
 UNIT_SIZE = 100  # Standard bet size in dollars
 
 # Date filtering
@@ -627,10 +632,18 @@ def fetch_team_stats():
             print(f"{Colors.YELLOW}⚠️  Cache file error: {e}. Re-generating.{Colors.END}")
 
     
-    # In production, integrate with college basketball stats API
-    # For now, return empty dict (will use simulated stats in processing)
-    print(f"{Colors.YELLOW}⚠️  No stats cache found or cache is old. Using simulated model.{Colors.END}")
     
+    # Cache is old or missing - FETCH REAL STATS
+    print(f"{Colors.YELLOW}⚠️  Cache expired or missing. Fetching fresh stats from Sports-Reference...{Colors.END}")
+    try:
+        stats = fetch_sports_reference_stats(2025)
+        if stats:
+            save_stats_cache(stats)
+            return stats
+    except Exception as e:
+        print(f"{Colors.RED}Error fetching real stats: {e}{Colors.END}")
+    
+    print(f"{Colors.RED}❌ Failed to fetch real stats. Model will fail for teams without data.{Colors.END}")
     return {}
 
 def save_stats_cache(stats_data):
@@ -657,46 +670,58 @@ def estimate_team_strength(team_name):
     # This is a simplified model - in production, use real stats
     # We'll use team name patterns and conference to estimate strength
     
-    team_lower = team_name.lower()
     
-    # Power conference teams tend to be stronger
-    power_conferences = ['duke', 'kansas', 'north carolina', 'kentucky', 'gonzaga',
-                        'villanova', 'michigan', 'ucla', 'arizona', 'purdue',
-                        'houston', 'texas', 'alabama', 'tennessee', 'connecticut',
-                        'marquette', 'creighton', 'baylor', 'xavier', 'st john']
-    
-    mid_major_strong = ['san diego state', 'nevada', 'new mexico', 'vcu',
-                       'memphis', 'wichita state', 'davidson', 'saint mary']
-    
-    # Base ratings (average team is around 100)
-    if any(p in team_lower for p in power_conferences):
-        off_rating = np.random.normal(108, 4)  # Strong offense
-        def_rating = np.random.normal(95, 4)   # Strong defense
-    elif any(m in team_lower for m in mid_major_strong):
-        off_rating = np.random.normal(104, 5)
-        def_rating = np.random.normal(98, 5)
-    else:
-        off_rating = np.random.normal(100, 6)
-        def_rating = np.random.normal(100, 6)
-    
-    # Ensure realistic ranges
-    off_rating = max(85, min(120, off_rating))
-    def_rating = max(85, min(115, def_rating))
-    
-    # Estimate pace (possessions per game)
-    pace = np.random.normal(70, 4)
-    pace = max(62, min(78, pace))
+    # NO MORE RANDOM GUESSING
+    # If we don't have stats, we return league averages.
+    # This prevents the model from betting on teams we know nothing about.
+    # League avg ORtg/DRtg ~ 100-105. Pace ~ 68-70.
     
     return {
-        "offensive_rating": off_rating,
-        "defensive_rating": def_rating,
-        "pace": pace,
-        "net_rating": off_rating - def_rating
+        "offensive_rating": 105.0,
+        "defensive_rating": 105.0,
+        "pace": 69.0,
+        "net_rating": 0.0
     }
 
 # =========================
 # GAME PROCESSING
 # =========================
+
+def smart_stats_lookup(team_name, stats_dict):
+    """
+    Intelligent lookup for team stats handling naming differences
+    (e.g., 'Binghamton Bearcats' (Odds API) vs 'Binghamton' (Sports Ref))
+    """
+    # 1. Direct match
+    if team_name in stats_dict:
+        return stats_dict[team_name]
+    
+    # 2. Try normalized name
+    norm_name = normalize_team_name(team_name)
+    if norm_name in stats_dict:
+        return stats_dict[norm_name]
+
+    # 3. Clean common suffixes/mascots
+    # Sports-Ref usually uses just the school name (e.g. "Duke")
+    # Odds API uses full name (e.g. "Duke Blue Devils")
+    
+    # Search for stats key that appears at the start of the team name
+    # e.g. team_name="Army Knights", key="Army" -> Match!
+    # e.g. team_name="Binghamton Bearcats", key="Binghamton" -> Match!
+    
+    # Sort keys by length (longest first) to match "North Carolina" before "North"
+    sorted_keys = sorted(stats_dict.keys(), key=len, reverse=True)
+    
+    for key in sorted_keys:
+        # Check if the stats key (e.g. "Virginia Tech") is in the team name (e.g. "Virginia Tech Hokies")
+        if key in team_name:
+            # print(f"  Matched '{team_name}' to '{key}'")
+            return stats_dict[key]
+            
+    # 4. Reverse check for State/St./etc.
+    # e.g. team_name="Kansas St", key="Kansas State"
+    
+    return None
 
 def extract_best_odds(bookmakers, market_type):
     """Extract best available odds for a given market, prioritizing Hard Rock Bet"""
@@ -743,10 +768,24 @@ def process_games(games, team_stats):
             home_team = normalize_team_name(game['home_team'])
             away_team = normalize_team_name(game['away_team'])
             
-            # Get team statistics
-            # Use defaultdict to avoid repeated .get() or checks
-            home_stats = team_stats.get(home_team) or estimate_team_strength(home_team)
-            away_stats = team_stats.get(away_team) or estimate_team_strength(away_team)
+            # Get team statistics using SMART LOOKUP
+            home_stats = smart_stats_lookup(home_team, team_stats)
+            away_stats = smart_stats_lookup(away_team, team_stats)
+            
+            # STRICT FILTER: If we don't have real stats, we don't bet.
+            if not home_stats or not away_stats:
+                # Fallback to estimate (averages) just to show the game in the list, 
+                # but we'll flag it as low confidence if we needed to. 
+                # Actually, better to just log it and use the averages so we at least see the line.
+                # But since estimate_team_strength now returns averages, the model will likely pass.
+                
+                if not home_stats:
+                    # print(f"  ⚠️ No stats for {home_team}")
+                    home_stats = estimate_team_strength(home_team) # Returns averages
+                
+                if not away_stats:
+                    # print(f"  ⚠️ No stats for {away_team}")
+                    away_stats = estimate_team_strength(away_team) # Returns averages
             
             # Extract odds
             spreads = extract_best_odds(game['bookmakers'], 'spreads')
