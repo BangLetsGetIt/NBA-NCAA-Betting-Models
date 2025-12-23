@@ -56,14 +56,14 @@ HOME_COURT_ADVANTAGE = 3.2  # Reduced from 3.5 - spreads losing may indicate ove
 SPREAD_THRESHOLD = 10.0  # Raised from 6.0 - edge 6-10 losing -41u, edge 10+ winning +44u (Dec 20)
 TOTAL_THRESHOLD = 6.0   # Keep at 6.0 - totals are profitable (+25u)
 
-# Tracking Parameters - TIGHTENED (Dec 23, 2024) - REAL STATS ERA
-# Raised to 15.0 to ensure only high-confidence plays with REAL data are tracked
-CONFIDENT_SPREAD_EDGE = 15.0  # Raised from 12.0
-CONFIDENT_TOTAL_EDGE = 15.0   # Raised from 12.0
+# Tracking Parameters - ADJUSTED (Dec 23, 2024) - REAL STATS ERA
+# Lowered to 10.0 now that we have reliable data, to caption more value.
+CONFIDENT_SPREAD_EDGE = 10.0  # Lowered from 15.0 (was 12.0)
+CONFIDENT_TOTAL_EDGE = 10.0   # Lowered from 15.0 (was 12.0)
 # MAX EDGE CAPS
 # Real stats might produce larger variance, but >40 is still likely an error/mismatch
-MAX_SPREAD_EDGE = 35.0  # Slightly lowered from 40.0
-MAX_TOTAL_EDGE = 35.0   # Slightly lowered from 40.0
+MAX_SPREAD_EDGE = 35.0 
+MAX_TOTAL_EDGE = 35.0
 UNIT_SIZE = 100  # Standard bet size in dollars
 
 # Date filtering
