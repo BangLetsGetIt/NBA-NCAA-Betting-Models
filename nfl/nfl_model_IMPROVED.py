@@ -52,6 +52,80 @@ HOME_ADVANTAGE = 2.75
 # TRACKING SYSTEM
 # ============================================================================
 
+def calculate_clv_status(opening_line, closing_line, pick_type, pick_text):
+    """
+    Calculate if a pick beat the closing line (positive CLV).
+    
+    Args:
+        opening_line: The line when the pick was first logged
+        closing_line: The line at game time (or latest available)
+        pick_type: 'Spread' or 'Total'
+        pick_text: The pick text (e.g., "New York Knicks -2.5" or "OVER 234.5")
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If lines are the same, no CLV advantage
+        if abs(opening_line - closing_line) < 0.1:
+            return "neutral"
+        
+        if pick_type.lower() == 'spread':
+            # For spreads, determine if we're betting favorite or underdog
+            # Extract the spread value from pick text if possible, otherwise rely on opening_line sign
+            # This logic assumes "Team -Spread" format or similar
+            
+            # Simple heuristic: 
+            # If betting a negative spread (favorite), we want the line to move closer to 0 or positive (e.g. -3.5 -> -2.5 is good).
+            # Actually, standard betting:
+            # Bet -3.5. Closing -4.5. You got -3.5, which is BETTER than -4.5. (You cover easier).
+            # Wait. If I bet -3.5, and it closes -4.5. 
+            # If score is Team A 24, Team B 20. Win by 4.
+            # -3.5 wins. -4.5 loses.
+            # So -3.5 is BETTER than -4.5.
+            # So for favorites (negative), a higher (more positive/less negative) number is better? 
+            # -3.5 > -4.5. Yes.
+            
+            # If bet +3.5 (underdog). Closing +2.5.
+            # Score A 20, B 24. Lose by 4.
+            # +3.5 covers (23.5). +2.5 loses (22.5).
+            # So +3.5 is BETTER than +2.5.
+            # So for underdogs (positive), a higher number is better.
+            
+            # So generally for spreads: Higher algebraic value is ALWAYS better for the bettor.
+            # -2.5 > -3.5
+            # +3.5 > +2.5
+            
+            if opening_line > closing_line:
+                return "positive"
+            else:
+                return "negative"
+        
+        elif pick_type.lower() == 'total':
+            # For totals, need to know if OVER or UNDER
+            pick_upper = pick_text.upper()
+            
+            if 'OVER' in pick_upper:
+                # Betting OVER: Lower total is better (e.g., OVER 40.5 beats OVER 41.5)
+                if opening_line < closing_line:
+                    return "positive"
+                else:
+                    return "negative"
+            elif 'UNDER' in pick_upper:
+                # Betting UNDER: Higher total is better (e.g., UNDER 41.5 beats UNDER 40.5)
+                if opening_line > closing_line:
+                    return "positive"
+                else:
+                    return "negative"
+            else:
+                return "neutral"
+        
+        return "neutral"
+    
+    except Exception as e:
+        print(f"Error calculating CLV: {e}")
+        return "neutral"
+
 class BettingTracker:
     """Track bets and calculate performance metrics"""
     
@@ -64,25 +138,41 @@ class BettingTracker:
         if self.storage_file.exists():
             try:
                 with open(self.storage_file, 'r') as f:
-                    return json.load(f)
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        return data.get('picks', [])
+                    return data
             except:
                 return []
         return []
     
     def _save_bets(self):
-        """Save bets to file"""
+        """Save bets to file in normalized dict format"""
         with open(self.storage_file, 'w') as f:
-            json.dump(self.bets, f, indent=2)
+            json.dump({'picks': self.bets}, f, indent=2)
     
-    def add_bet(self, game_id, bet_type, team, line, predicted_value, edge, confidence, recommendation):
+    def add_bet(self, game_id, bet_type, team, line, predicted_value, edge, confidence, recommendation, game_time=None):
         """Add a new bet to tracking (only high-confidence bets)"""
         # Check for duplicates
         for b in self.bets:
-            # Match on ID, type, and team. Line should be close.
+            # Match on ID, type, and team.
             if (b.get('game_id') == game_id and 
                 b.get('bet_type') == bet_type and 
-                b.get('team') == team and 
-                abs(float(b.get('line', 0)) - float(line)) < 0.1):
+                b.get('team') == team):
+                
+                # Check for CLV update
+                current_closing = b.get('closing_line', b.get('line'))
+                if abs(float(current_closing) - float(line)) >= 0.1:
+                    b['closing_line'] = line
+                    # Calculate CLV
+                    b['clv_status'] = calculate_clv_status(
+                        b.get('opening_line', b.get('line')),
+                        line,
+                        bet_type,
+                        recommendation
+                    )
+                    self._save_bets()
+                    
                 return b
 
         bet = {
@@ -90,10 +180,14 @@ class BettingTracker:
             'bet_type': bet_type,
             'team': team,
             'line': line,
+            'opening_line': line,      # Track opening line
+            'closing_line': line,      # Initialize closing line
+            'clv_status': None,        # Initialize CLV status
             'predicted_value': predicted_value,
             'edge': edge,
             'confidence': confidence,
             'recommendation': recommendation,
+            'game_time': game_time,
             'date_placed': datetime.now().isoformat(),
             'status': 'pending',
             'result': None,
@@ -114,6 +208,32 @@ class BettingTracker:
                 return bet
         return None
     
+    def get_bet(self, game_id, bet_type, team):
+        """Retrieve an existing bet"""
+        for bet in self.bets:
+            if (bet.get('game_id') == game_id and 
+                bet.get('bet_type') == bet_type and 
+                bet.get('team') == team):
+                return bet
+        return None
+
+    def update_closing_line(self, game_id, bet_type, team, current_line, recommendation):
+        """Update closing line and CLV status for an existing bet"""
+        bet = self.get_bet(game_id, bet_type, team)
+        if bet:
+            current_closing = bet.get('closing_line', bet.get('line'))
+            if abs(float(current_closing) - float(current_line)) >= 0.1 or bet.get('clv_status') is None:
+                bet['closing_line'] = current_line
+                bet['clv_status'] = calculate_clv_status(
+                    bet.get('opening_line', bet.get('line')),
+                    current_line,
+                    bet_type,
+                    recommendation
+                )
+                self._save_bets()
+            return bet
+        return None
+
     def get_statistics(self):
         """Calculate performance statistics"""
         total_bets = len(self.bets)
@@ -180,7 +300,11 @@ def grade_pending_picks():
         return
     
     with open(PICKS_TRACKING_FILE, 'r') as f:
-        picks = json.load(f)
+        data = json.load(f)
+        if isinstance(data, dict):
+            picks = data.get('picks', [])
+        else:
+            picks = data
     
     if not picks:
         return
@@ -484,6 +608,10 @@ def analyze_game(game, tracker):
         # Confidence based on edge size (capped at 100%)
         confidence = min(abs(spread_edge) / 15.0, 1.0)
         
+        # Check if this is a tracked bet to get CLV status
+        tracked_bet = tracker.update_closing_line(game_id, 'spread', bet_team, bet_line, recommendation)
+        clv_status = tracked_bet.get('clv_status') if tracked_bet else None
+
         # Only LOG high-confidence bets (8+ point edge)
         if abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
             tracker.add_bet(
@@ -494,7 +622,8 @@ def analyze_game(game, tracker):
                 predicted_value=predicted_spread,
                 edge=spread_edge,
                 confidence=confidence,
-                recommendation=recommendation
+                recommendation=recommendation,
+                game_time=commence_time
             )
         
         bets.append({
@@ -504,7 +633,8 @@ def analyze_game(game, tracker):
             'edge': spread_edge,
             'recommendation': recommendation,
             'confidence': confidence,
-            'should_log': abs(spread_edge) >= CONFIDENT_SPREAD_EDGE
+            'should_log': abs(spread_edge) >= CONFIDENT_SPREAD_EDGE,
+            'clv_status': clv_status
         })
     
     # Total bet analysis
@@ -519,6 +649,10 @@ def analyze_game(game, tracker):
         # Confidence based on edge size (capped at 100%)
         confidence = min(abs(total_edge) / 18.0, 1.0)
         
+        # Check if this is a tracked bet to get CLV status
+        tracked_bet = tracker.update_closing_line(game_id, 'total', bet_team, market_total, recommendation)
+        clv_status = tracked_bet.get('clv_status') if tracked_bet else None
+
         # Only LOG high-confidence bets (12+ point edge)
         if abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
             tracker.add_bet(
@@ -529,7 +663,8 @@ def analyze_game(game, tracker):
                 predicted_value=predicted_total,
                 edge=total_edge,
                 confidence=confidence,
-                recommendation=recommendation
+                recommendation=recommendation,
+                game_time=commence_time
             )
         
         bets.append({
@@ -539,7 +674,8 @@ def analyze_game(game, tracker):
             'edge': total_edge,
             'recommendation': recommendation,
             'confidence': confidence,
-            'should_log': abs(total_edge) >= CONFIDENT_TOTAL_EDGE
+            'should_log': abs(total_edge) >= CONFIDENT_TOTAL_EDGE,
+            'clv_status': clv_status
         })
     
     return {
@@ -560,6 +696,39 @@ def analyze_game(game, tracker):
 # ============================================================================
 # HTML OUTPUT GENERATION - NBA STYLE AESTHETIC
 # ============================================================================
+
+# Result mapping
+def get_daily_stats(picks):
+    et_tz = pytz.timezone('US/Eastern')
+    now = datetime.now(et_tz)
+    today_str = now.strftime('%Y-%m-%d')
+    yesterday_str = (now - timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    stats = {
+        'today': {'w': 0, 'l': 0, 'p': 0},
+        'yesterday': {'w': 0, 'l': 0, 'p': 0}
+    }
+    
+    for p in picks:
+        status = p.get('status', '').lower()
+        if status not in ['win', 'loss', 'push', 'complete']: continue
+        
+        # Result mapping
+        res = 'p'
+        if status == 'win' or (status == 'complete' and p.get('result') == 'won'): res = 'w'
+        elif status == 'loss' or (status == 'complete' and p.get('result') == 'lost'): res = 'l'
+        
+        # Date check - use game_date if available (YYYY-MM-DD), otherwise parse game_time
+        g_date = p.get('game_date')
+        if not g_date and p.get('date_placed'):
+            g_date = p.get('date_placed')[:10]
+        
+        if g_date == today_str:
+            stats['today'][res] += 1
+        elif g_date == yesterday_str:
+            stats['yesterday'][res] += 1
+            
+    return stats
 
 def generate_picks_html(analyses, stats, tracker):
     """Generate HTML page with PROPS_HTML_STYLING_GUIDE aesthetic - REVISED COPY"""
@@ -600,6 +769,8 @@ def generate_picks_html(analyses, stats, tracker):
     pending_picks.sort(key=lambda x: x.get('date_placed', ''), reverse=True)
     completed_picks.sort(key=lambda x: x.get('date_placed', ''), reverse=True)
     
+    daily_perf = get_daily_stats(all_picks)
+
     # CSS/HTML Template matches the new revised aesthetic
     template_str = """<!DOCTYPE html>
 <html lang="en">
@@ -840,12 +1011,20 @@ def generate_picks_html(analyses, stats, tracker):
                 <div class="date-sub">Generated: {{ timestamp }}</div>
             </div>
             <div style="text-align: right;">
-                <div class="metric-title">SEASON RECORD</div>
+                <div class="metric-title">DAILY PERFORMANCE</div>
+                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                    <span style="color: var(--text-secondary);">TODAY:</span> 
+                    <span style="color: {{ 'var(--accent-green)' if daily_perf.today.w > daily_perf.today.l else 'var(--text-primary)' }}">
+                        {{ daily_perf.today.w }}-{{ daily_perf.today.l }}
+                    </span>
+                    <span style="margin-left: 10px; color: var(--text-secondary);">YESTERDAY:</span>
+                    <span style="color: {{ 'var(--accent-green)' if daily_perf.yesterday.w > daily_perf.yesterday.l else ('var(--accent-red)' if daily_perf.yesterday.l > daily_perf.yesterday.w else 'var(--text-primary)') }}">
+                        {{ daily_perf.yesterday.w }}-{{ daily_perf.yesterday.l }}
+                    </span>
+                </div>
+                <div class="metric-title" style="margin-top: 8px;">SEASON RECORD</div>
                 <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
                     {{ stats.won }}-{{ stats.lost }} ({{ "%.1f"|format(stats.win_rate) }}%)
-                </div>
-                <div style="font-size: 0.9rem; color: {{ 'var(--accent-green)' if stats.total_profit > 0 else 'var(--accent-red)' }};">
-                     {{ "%+.1f"|format(stats.total_profit/100) }}u
                 </div>
             </div>
         </header>
@@ -890,6 +1069,19 @@ def generate_picks_html(analyses, stats, tracker):
                         Model: {% if spread_bet %}{{ "%.1f"|format(spread_bet.model_prediction) }}{% else %}--{% endif %}
                         <span class="edge-val" style="color: {{ 'var(--accent-green)' if spread_bet and spread_bet.edge|abs >= 3.0 else 'var(--text-secondary)' }};">Edge: {% if spread_bet %}{{ "%+.1f"|format(spread_bet.edge) }}{% else %}--{% endif %}</span>
                     </div>
+                    {% if spread_bet and (spread_bet.should_log or spread_bet.clv_status) %}
+                    <div class="tags-row" style="margin-top: 8px; justify-content: flex-start;">
+                         {% if spread_bet.clv_status == 'positive' %}
+                            <span class="tag tag-green">✅ CLV: Beat Line</span>
+                         {% elif spread_bet.clv_status == 'negative' %}
+                            <span class="tag tag-red">⚠️ CLV: Missed Line</span>
+                         {% elif spread_bet.clv_status == 'neutral' %}
+                            <span class="tag tag-blue">➖ CLV: Neutral</span>
+                         {% elif spread_bet.clv_status is none %}
+                            <span class="tag tag-blue">⏳ CLV: Tracking</span>
+                         {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- TOTAL BET BLOCK -->
@@ -904,6 +1096,19 @@ def generate_picks_html(analyses, stats, tracker):
                         Model: {% if total_bet %}{{ "%.1f"|format(total_bet.model_prediction) }}{% else %}--{% endif %}
                         <span class="edge-val" style="color: {{ 'var(--accent-green)' if total_bet and total_bet.edge|abs >= 4.0 else 'var(--text-secondary)' }};">Edge: {% if total_bet %}{{ "%+.1f"|format(total_bet.edge|abs) }}{% else %}--{% endif %}</span>
                     </div>
+                    {% if total_bet and (total_bet.should_log or total_bet.clv_status) %}
+                    <div class="tags-row" style="margin-top: 8px; justify-content: flex-start;">
+                         {% if total_bet.clv_status == 'positive' %}
+                            <span class="tag tag-green">✅ CLV: Beat Line</span>
+                         {% elif total_bet.clv_status == 'negative' %}
+                            <span class="tag tag-red">⚠️ CLV: Missed Line</span>
+                         {% elif total_bet.clv_status == 'neutral' %}
+                            <span class="tag tag-blue">➖ CLV: Neutral</span>
+                         {% elif total_bet.clv_status is none %}
+                            <span class="tag tag-blue">⏳ CLV: Tracking</span>
+                         {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- METRICS ROW -->
@@ -1036,6 +1241,7 @@ def generate_picks_html(analyses, stats, tracker):
         last_10=last_10,
         last_20=last_20,
         last_50=last_50,
+        daily_perf=daily_perf,
         completed_picks=completed_picks
     )
     
@@ -1251,6 +1457,8 @@ def generate_tracking_html():
     last_50 = calculate_recent_performance(completed_picks, 50)
     last_20 = calculate_recent_performance(completed_picks, 20)
     
+    daily_perf = get_daily_stats(tracking_data.get('picks', []))
+    
     def format_game_date(date_str):
         """Format game_date to display date"""
         try:
@@ -1453,7 +1661,19 @@ def generate_tracking_html():
     <div class="container">
         <div class="card">
             <h1 class="text-center">🏈 NFL Model Performance</h1>
-            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
+            <p class="text-center subtitle" style="margin-bottom: 1rem;">CourtSide Analytics</p>
+
+            <!-- Daily Performance -->
+            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 2rem;">
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; text-align: center;">Today</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: {{ '#10b981' if daily_perf.today.w > daily_perf.today.l else '#ffffff' }}; text-align: center;">{{ daily_perf.today.w }}-{{ daily_perf.today.l }}</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; text-align: center;">Yesterday</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: {{ '#10b981' if daily_perf.yesterday.w > daily_perf.yesterday.l else ('#ef4444' if daily_perf.yesterday.l > daily_perf.yesterday.w else '#ffffff') }}; text-align: center;">{{ daily_perf.yesterday.w }}-{{ daily_perf.yesterday.l }}</div>
+                </div>
+            </div>
 
             <!-- Overall Performance Card -->
             <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
@@ -1702,6 +1922,7 @@ def generate_tracking_html():
         last_100=last_100,
         last_50=last_50,
         last_20=last_20,
+        daily_perf=daily_perf,
         timestamp=timestamp,
         format_game_date=format_game_date,
     )
@@ -1796,6 +2017,9 @@ def main():
     with open(PICKS_HTML_FILE, 'w') as f:
         f.write(picks_html)
     print(f"✅ Created: {PICKS_HTML_FILE}")
+    
+    # Generate overall tracking dashboard
+    generate_tracking_html()
     
     # Print summary
     print("\n" + "=" * 60)

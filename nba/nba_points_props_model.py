@@ -1940,12 +1940,17 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 tracked_pick = next((p for p in tracking_data.get('picks', []) 
                                     if p.get('pick_id') == pick_id), None)
                 
-                # Add CLV tag if positive CLV
-                if tracked_pick and tracked_pick.get('clv_status') == 'positive':
-                    tags.append({
-                        "text": "✅ CLV: Beat closing line",
-                        "color": "green"
-                    })
+                # Add CLV tag
+                if tracked_pick:
+                    clv = tracked_pick.get('clv_status')
+                    if clv == 'positive':
+                        tags.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                    elif clv == 'negative':
+                        tags.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                    elif clv == 'neutral':
+                        tags.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                    elif clv is None:
+                        tags.append({"text": "⏳ CLV: Tracking", "color": "blue"})
             
             tags_html = ""
             for tag in tags:
@@ -2090,12 +2095,17 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 tracked_pick = next((p for p in tracking_data.get('picks', []) 
                                     if p.get('pick_id') == pick_id), None)
                 
-                # Add CLV tag if positive CLV
-                if tracked_pick and tracked_pick.get('clv_status') == 'positive':
-                    tags.append({
-                        "text": "✅ CLV: Beat closing line",
-                        "color": "green"
-                    })
+                # Add CLV tag
+                if tracked_pick:
+                    clv = tracked_pick.get('clv_status')
+                    if clv == 'positive':
+                        tags.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                    elif clv == 'negative':
+                        tags.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                    elif clv == 'neutral':
+                        tags.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                    elif clv is None:
+                        tags.append({"text": "⏳ CLV: Tracking", "color": "blue"})
             
             tags_html = ""
             for tag in tags:

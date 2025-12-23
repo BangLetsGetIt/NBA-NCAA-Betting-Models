@@ -1,0 +1,96 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Sun Dec 21 15:05:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 3 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2025-12-21...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[96m  Fetching season assists stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL assists stats for 501 players[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 11 upcoming games[0m
+[96m  Filtered to 11 upcoming games[0m
+[96m  Game 1/10: Chicago Bulls @ Atlanta Hawks[0m
+[96m  Game 2/10: Toronto Raptors @ Brooklyn Nets[0m
+[96m  Game 3/10: Miami Heat @ New York Knicks[0m
+[96m  Game 4/10: Milwaukee Bucks @ Minnesota Timberwolves[0m
+[96m  Game 5/10: San Antonio Spurs @ Washington Wizards[0m
+[96m  Game 6/10: Houston Rockets @ Sacramento Kings[0m
+[96m  Game 7/10: Cleveland Cavaliers @ New York Knicks[0m
+[96m  Game 8/10: San Antonio Spurs @ Oklahoma City Thunder[0m
+[96m  Game 9/10: Dallas Mavericks @ Golden State Warriors[0m
+[96m  Game 10/10: Houston Rockets @ Los Angeles Lakers[0m
+[92m✓ Fetched 58 player assists props (grouped)[0m
+
+[96mAnalyzing 58 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 111 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Coby White               [0m | [92mOVER 3.5 AST   [0m | Chicago Bulls             vs Atlanta Hawks             | [1mA.I.: 10.00[0m | Rating: 3.5 ⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Sun Dec 21 15:05:13 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main ef919d9] Update model outputs - 2025-12-21 15:05:13
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 6 insertions(+), 49 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   f2e16da..ef919d9  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Dec 21 15:05:13 EST 2025

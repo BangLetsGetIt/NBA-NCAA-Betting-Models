@@ -31,7 +31,7 @@ MIN_EDGE_THRESHOLD = 0.05  # 5% minimum edge (was 8%)
 SHARP_EDGE_THRESHOLD = 0.08  # 8%+ edge for "SHARP BET" (was 10%)
 KELLY_FRACTION = 0.25  # Conservative Kelly (1/4 Kelly)
 MIN_CONFIDENCE = 0.65  # Confidence required
-CURRENT_SEASON = "2024" # Adjust as needed
+CURRENT_SEASON = "2025" # Adjust as needed
 
 # Defense Ratings (Position specific - Lower is better for Defense)
 DEFENSE_TD_RATINGS = {
@@ -124,14 +124,43 @@ def track_new_picks(recommendations):
             # For consistent tracking, we'll assume 1 unit plays or fraction of bankroll logic?
             # Let's stick to simple units for display, but store kelly for detail.
             new_pick['bet_size_units'] = 1.0 
+            new_pick['clv_status'] = None
             
             data['picks'].append(new_pick)
             new_picks_count += 1
             existing_ids.add(pick_id)
+    
+    # Update existing pending picks with latest odds/CLV
+    # Create lookup from current recommendations
+    current_odds_lookup = {
+        f"{r['player']}_ATD_{r['commence_time'][:10]}": r['best_odds']
+        for r in recommendations
+    }
+    
+    updated_count = 0
+    for pick in data['picks']:
+        if pick.get('status') == 'pending':
+            p_id = pick.get('pick_id')
+            if p_id in current_odds_lookup:
+                current_odds = current_odds_lookup[p_id]
+                old_latest = pick.get('latest_odds', pick.get('odds'))
+                
+                # Check if odds changed
+                if current_odds != old_latest:
+                    pick['latest_odds'] = current_odds
+                    pick['clv_status'] = calculate_clv_status_props(
+                        pick.get('opening_odds', pick.get('odds')),
+                        pick['latest_odds'],
+                        'over' # ATD is always 'positive' odds logic, which helper handles
+                    )
+                    updated_count += 1
             
-    if new_picks_count > 0:
+    if new_picks_count > 0 or updated_count > 0:
         save_tracking_data(data)
-        print(f"{Colors.GREEN}✓ Tracked {new_picks_count} new picks{Colors.END}")
+        if new_picks_count > 0:
+            print(f"{Colors.GREEN}✓ Tracked {new_picks_count} new picks{Colors.END}")
+        if updated_count > 0:
+            print(f"{Colors.GREEN}✓ Updated odds/CLV for {updated_count} pending picks{Colors.END}")
 
 def backfill_profit_loss():
     tracking_data = load_tracking_data()
@@ -350,12 +379,16 @@ def fetch_atd_odds():
                              if out['name'] == 'Over': continue
                              name = out['description'] if 'description' in out else out['name']
                              
+                             # Resolve team specifically if possible
+                             # (The odds API doesn't tell us player team, but we can guess from home/away)
+                             # We'll resolve it better in analyze_opportunities using the stat_map
+                             
                              all_offers.append({
                                  'player': name,
                                  'bookmaker': bk_name,
                                  'odds': out['price'],
                                  'market_type': market_type,
-                                 'team': 'UNK',
+                                 'team': 'UNK', # Placeholder
                                  'home_team': home,
                                  'away_team': away,
                                  'commence_time': commence_time
@@ -569,6 +602,49 @@ def analyze_opportunities(odds_list, players_stats):
 # HTML GENERATION (CourtSide Style)
 # =============================================================================
 
+
+def calculate_clv_status_props(opening_odds, latest_odds, bet_type):
+    """
+    Calculate if a props pick beat the closing line (positive CLV).
+    
+    For props, better odds = positive CLV:
+    - Negative odds (e.g., -110): Lower number (less negative) is better
+    - Positive odds (e.g., +150): Higher number is better
+    
+    Args:
+        opening_odds: Odds when pick was first logged
+        latest_odds: Current odds (closing line)
+        bet_type: 'over' or 'under' (not used in calculation but kept for consistency)
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If odds are the same, no CLV advantage
+        if opening_odds == latest_odds:
+            return "neutral"
+        
+        # For negative odds: lower number (less negative) is better
+        # For positive odds: higher number is better
+        if opening_odds < 0 and latest_odds < 0:
+            # Both negative: opening is better if it's less negative (closer to 0)
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds > 0:
+            # Both positive: opening is better if it's higher
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds < 0:
+            # Opening positive, closing negative: opening is better
+            return "positive"
+        else:
+            # Opening negative, closing positive: closing is better
+            return "negative"
+    
+    except Exception as e:
+        # If calculation fails, return neutral (fail gracefully)
+        print(f"{Colors.YELLOW}⚠ Error calculating CLV status: {e}{Colors.END}")
+        return "neutral"
+
+
 def get_team_logo(team_abbr):
     # Basic mapping
     mapping = {'SF': 'sf', 'BAL': 'bal', 'PHI': 'phi', 'KC': 'kc', 
@@ -627,6 +703,12 @@ def generate_html_output(plays, stats, tracking_data):
         .odds-badge {{ font-size:18px; color:var(--text-secondary); margin-left:8px; }}
         .player-stats {{ background:var(--bg-card-secondary); padding:10px; border-radius:8px; display:flex; justify-content:space-between; margin-top:15px; border:1px solid var(--border-color); }}
         .section-title {{ font-size:18px; margin:30px 0 15px 0; font-weight:600; }}
+        
+        .tags-container {{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }}
+        .tag {{ font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 500; }}
+        .tag-green {{ background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }}
+        .tag-red {{ background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }}
+        .tag-blue {{ background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }}
     </style>
 </head>
 <body>
@@ -671,6 +753,26 @@ def generate_html_output(plays, stats, tracking_data):
         model_prob = play.get('model_prob', 0.0)
         implied_prob = play.get('implied_prob', 0.0)
         kelly_pct = play.get('kelly_pct', 0.0)
+        
+        # Build Tags (CLV)
+        tags_list = []
+        if tracking_data:
+            g_date = play.get('commence_time', '')[:10]
+            p_id = f"{play['player']}_ATD_{g_date}"
+            tracked_pick = next((p for p in tracking_data.get('picks',[]) if p.get('pick_id') == p_id), None)
+            
+            if tracked_pick:
+                clv = tracked_pick.get('clv_status')
+                if clv == 'positive':
+                     tags_list.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                elif clv == 'negative':
+                     tags_list.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                elif clv == 'neutral':
+                     tags_list.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                elif clv is None:
+                     tags_list.append({"text": "⏳ CLV: Tracking", "color": "blue"})
+        
+        tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>' for tag in tags_list])
         
         html += f"""
         <div class="prop-card">
@@ -723,6 +825,8 @@ def generate_html_output(plays, stats, tracking_data):
                         <div style="font-weight:700; color:{'var(--accent-green)' if p_stats and p_stats['player_roi']>0 else 'var(--text-primary)'};">{roi_str}</div>
                     </div>
                 </div>
+                
+                <div class="tags-container">{tags_html}</div>
             </div>
         </div>
         """

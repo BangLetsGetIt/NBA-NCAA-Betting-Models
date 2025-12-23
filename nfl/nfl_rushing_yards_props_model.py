@@ -102,7 +102,8 @@ def track_new_picks(recommendations, odds_data):
                 'actual_val': None,
                 'bet_size_units': 1.0,
                 'season_avg': rec.get('season_avg'),
-                'recent_avg': rec.get('recent_avg')
+                'recent_avg': rec.get('recent_avg'),
+                'clv_status': None
             }
             data['picks'].append(new_pick)
             new_picks_count += 1
@@ -135,13 +136,20 @@ def track_new_picks(recommendations, odds_data):
                      if pick.get('latest_odds') != s_data['odds']:
                         pick['latest_odds'] = s_data['odds']
                         pick['last_updated'] = datetime.now(pytz.utc).isoformat()
+                        pick['clv_status'] = calculate_clv_status_props(
+                            pick.get('opening_odds', pick.get('odds')),
+                            pick['latest_odds'],
+                            pick.get('bet_type', 'over')
+                        )
+                        updated_stats_count += 1
     
     if updated_stats_count > 0:
-        print(f"{Colors.GREEN}✓ Backfilled stats for {updated_stats_count} pending picks{Colors.END}")
+        print(f"{Colors.GREEN}✓ Backfilled stats/odds for {updated_stats_count} pending picks{Colors.END}")
             
-    if new_picks_count > 0:
+    if new_picks_count > 0 or updated_stats_count > 0:
         save_tracking_data(data)
-        print(f"{Colors.GREEN}✓ Tracked {new_picks_count} new picks{Colors.END}")
+        if new_picks_count > 0:
+             print(f"{Colors.GREEN}✓ Tracked {new_picks_count} new picks{Colors.END}")
 
 def backfill_profit_loss():
     """Backfill profit_loss for graded picks that are missing it"""
@@ -494,6 +502,49 @@ def analyze_props(props, stats_cache):
 # HTML GENERATION (Matching NBA Rebounds Style)
 # =============================================================================
 
+
+def calculate_clv_status_props(opening_odds, latest_odds, bet_type):
+    """
+    Calculate if a props pick beat the closing line (positive CLV).
+    
+    For props, better odds = positive CLV:
+    - Negative odds (e.g., -110): Lower number (less negative) is better
+    - Positive odds (e.g., +150): Higher number is better
+    
+    Args:
+        opening_odds: Odds when pick was first logged
+        latest_odds: Current odds (closing line)
+        bet_type: 'over' or 'under' (not used in calculation but kept for consistency)
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If odds are the same, no CLV advantage
+        if opening_odds == latest_odds:
+            return "neutral"
+        
+        # For negative odds: lower number (less negative) is better
+        # For positive odds: higher number is better
+        if opening_odds < 0 and latest_odds < 0:
+            # Both negative: opening is better if it's less negative (closer to 0)
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds > 0:
+            # Both positive: opening is better if it's higher
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds < 0:
+            # Opening positive, closing negative: opening is better
+            return "positive"
+        else:
+            # Opening negative, closing positive: closing is better
+            return "negative"
+    
+    except Exception as e:
+        # If calculation fails, return neutral (fail gracefully)
+        print(f"{Colors.YELLOW}⚠ Error calculating CLV status: {e}{Colors.END}")
+        return "neutral"
+
+
 def get_team_abbreviation(team_name):
     """Map full team names & abbrs to valid ESPN logo abbreviations."""
     m = {
@@ -745,6 +796,26 @@ def generate_html_output(plays, stats, tracking_data):
                 </div>'''
             
             tags = generate_reasoning_tags(play)
+            
+            # Check for CLV status
+            if tracking_data:
+                commence = play.get('commence_time', '')
+                g_date = commence[:10] if commence else datetime.now().strftime('%Y-%m-%d')
+                # ID format must match track_new_picks: Player_Type_Date
+                p_id = f"{play['player']}_{play.get('type')}_{g_date}"
+                
+                tracked_pick = next((p for p in tracking_data.get('picks',[]) if p.get('pick_id') == p_id), None)
+                
+                if tracked_pick:
+                    clv = tracked_pick.get('clv_status')
+                    if clv == 'positive':
+                        tags.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                    elif clv == 'negative':
+                        tags.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                    elif clv == 'neutral':
+                        tags.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                    elif clv is None:
+                        tags.append({"text": "⏳ CLV: Tracking", "color": "blue"})
             tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>' for tag in tags])
             
             # Safe parsing

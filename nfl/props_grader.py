@@ -19,6 +19,10 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 import pytz
+try:
+    from nfl.sleeper_client import SleeperClient
+except ImportError:
+    from sleeper_client import SleeperClient
 
 
 ET_TZ = pytz.timezone("US/Eastern")
@@ -243,6 +247,9 @@ TEAM_NAME_TO_ABBR: dict[str, str] = {
     "Washington Commanders": "WAS",
 }
 
+# Inverse map for abbr lookups
+ABBR_TO_TEAM_NAME = {v: k for k, v in TEAM_NAME_TO_ABBR.items()}
+
 
 def grade_props_tracking_file(
     tracking_file: str | Path,
@@ -302,6 +309,10 @@ def grade_props_tracking_file(
             print("⚠️ nflreadpy schedules missing required columns (gameday/week); cannot grade.")
         return 0
 
+    # Initialize Sleeper Client
+    sleeper = SleeperClient()
+    weekly_stats_cache = {} # (season, week) -> stats_dict
+
     updated = 0
     now_et = datetime.now(ET_TZ)
 
@@ -317,7 +328,15 @@ def grade_props_tracking_file(
         target_date = game_dt_et.strftime("%Y-%m-%d")
         player_name = str(pick.get("player", ""))
         team_name = str(pick.get("team", ""))
-        team_abbr = TEAM_NAME_TO_ABBR.get(team_name, "")
+        
+        # Resolve Abbr: Handle both "Buffalo Bills" and "BUF"
+        team_abbr = None
+        if team_name:
+            if team_name.upper() in ABBR_TO_TEAM_NAME: # Already an abbr
+                team_abbr = team_name.upper()
+            else: # Try mapping from full name
+                team_abbr = TEAM_NAME_TO_ABBR.get(team_name)
+        
         prop_line = _safe_float(pick.get("prop_line"))
         bet_type = str(pick.get("bet_type", "")).lower()
         if prop_line is None or bet_type not in {"over", "under"}:
@@ -344,20 +363,36 @@ def grade_props_tracking_file(
             sched_team = sched_day[(sched_day["home_team"] == team_abbr) | (sched_day["away_team"] == team_abbr)]
             if not getattr(sched_team, "empty", False):
                 sched_day = sched_team
+            else:
+                # Specific game not found for this team on this day - could be a TNF/MNF date mismatch
+                # or the pick has the wrong team assigned.
+                continue
+        else:
+            # If no team_abbr, we can't reliably know which game is theirs.
+            # Avoid grading until we have a team.
+            continue
 
         # Check if game appears completed (has scores)
+        # Must be after game start AND have significantly non-None scores.
+        # Use 3.5 hours as a conservative guess for NFL game length.
         game_finished = False
         try:
             row = sched_day.iloc[0]
-            if _safe_float(row.get("home_score")) is not None and _safe_float(row.get("away_score")) is not None:
-                # If scores exist, treat as potentially final.
-                # nflreadpy usually updates after game.
+            home_s = _safe_float(row.get("home_score"))
+            away_s = _safe_float(row.get("away_score"))
+            
+            # If it has scores and it's been at least 3 hours since kickoff, it's likely finished.
+            if hours_ago > 3.0 and home_s is not None and away_s is not None:
+                game_finished = True
+            # Alternatively, check for a status column if it exists in nflreadpy
+            elif str(row.get("game_status", "")).lower() in ["closed", "final", "official"]:
                 game_finished = True
         except Exception:
             pass
 
-        # If game is finished, we can grade immediately (bypass 4 hour buffer)
-        effective_buffer = 0.5 if game_finished else hours_after_game_to_grade
+        # If game is finished, we can grade immediately.
+        # If not finished, we wait at least hours_after_game_to_grade (default 4)
+        effective_buffer = 0.1 if game_finished else hours_after_game_to_grade
         
         if hours_ago < effective_buffer:
             continue
@@ -367,6 +402,57 @@ def grade_props_tracking_file(
             continue
         week = int(week_val)
 
+        # --- ALPHA: Try Sleeper Grading First (Real-time) ---
+        sleeper_graded = False
+        try:
+            if (season_year, week) not in weekly_stats_cache:
+                weekly_stats_cache[(season_year, week)] = sleeper.get_weekly_stats(season_year, week)
+            
+            stats = weekly_stats_cache[(season_year, week)]
+            pid = sleeper.get_player_id(player_name)
+            
+            if pid and pid in stats:
+                actual = sleeper.get_player_stat(stats, pid, stat_kind)
+                if actual is not None:
+                    # Found stats in Sleeper!
+                    if actual == prop_line:
+                        pick["status"] = "push"
+                        pick["result"] = "PUSH"
+                    else:
+                        if stat_kind == "anytime_td":
+                             is_win = actual >= 1
+                        elif bet_type == "over":
+                            is_win = actual > prop_line
+                        else:
+                            is_win = actual < prop_line
+                        pick["status"] = "win" if is_win else "loss"
+                        pick["result"] = "WIN" if is_win else "LOSS"
+                    
+                    pick[spec.actual_field] = float(actual)
+                    pick["updated_at"] = now_et.isoformat()
+                    
+                    # Profit/Loss logic
+                    odds = pick.get('opening_odds') or pick.get('odds', -110)
+                    if pick['status'] == 'win':
+                        p_l = int(odds) if odds > 0 else int((100.0 / abs(odds)) * 100)
+                        pick['profit_loss'] = p_l
+                    elif pick['status'] == 'loss':
+                        pick['profit_loss'] = -100
+                    else:
+                        pick['profit_loss'] = 0
+                        
+                    updated += 1
+                    sleeper_graded = True
+                    if verbose:
+                        print(f"⚡ {stat_kind} graded via Sleeper: {player_name} {bet_type.upper()} {prop_line} -> {actual} ({pick['result']})")
+        except Exception as e:
+            if verbose:
+                print(f"⚠️ Sleeper grading failed for {player_name}: {e}")
+
+        if sleeper_graded:
+            continue
+
+        # --- BETA: Fallback to nflreadpy (Robust/Official) ---
         df_week = df[(df["season"] == season_year) & (df["week"] == week)]
         if team_abbr and "team" in getattr(df_week, "columns", []):
             df_week = df_week[df_week["team"].astype(str) == team_abbr]
@@ -388,9 +474,9 @@ def grade_props_tracking_file(
                 break
 
         if match_idx is None:
-            # If game is finished and player not found -> DNP -> Void Immediately
-            # Or if too old (fallback)
-            if game_finished or hours_ago >= hours_after_game_to_void:
+            # If game is finished AND it's been a few hours since kickoff, and player not found -> DNP -> Void
+            # We wait 6.0 hours total (roughly 3 hours after game ends) to be safe vs data lag.
+            if (game_finished and hours_ago >= 6.0) or hours_ago >= hours_after_game_to_void:
                 pick["status"] = "push" # void
                 pick["result"] = "VOID"
                 pick[spec.actual_field] = None

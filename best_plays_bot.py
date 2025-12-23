@@ -229,6 +229,7 @@ def get_pending_plays():
                 'season_avg': p.get('season_avg', 0),
                 'recent_avg': p.get('recent_avg', 0),
                 'season_record': p.get('season_record', ''),
+                'clv_status': p.get('clv_status')
             }
             all_plays.append(play)
     
@@ -695,6 +696,11 @@ def generate_html(plays, fire_record=None, breakdown=None):
                      <span class="meta-tag">{play['game_time_str']}</span>
                 </div>
                 
+                {f'<div class="tags-row"><span class="tag tag-green">✅ CLV: Beat Line</span></div>' if play.get('clv_status') == 'positive' else ''}
+                {f'<div class="tags-row"><span class="tag tag-red">⚠️ CLV: Missed Line</span></div>' if play.get('clv_status') == 'negative' else ''}
+                {f'<div class="tags-row"><span class="tag tag-blue">➖ CLV: Neutral</span></div>' if play.get('clv_status') == 'neutral' else ''}
+                {f'<div class="tags-row"><span class="tag tag-blue">⏳ CLV: Tracking</span></div>' if play.get('clv_status') is None else ''}
+                
                 <div class="play-stats" style="margin-top: 12px;">
                     {stats_html}
                 </div>
@@ -1002,6 +1008,24 @@ def generate_html(plays, fire_record=None, breakdown=None):
             font-weight: 800;
             color: var(--text-primary);
         }}
+        
+        .tags-row {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }}
+        
+        .tag {{
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }}
+        
+        .tag-green {{ background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }}
+        .tag-red {{ background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }}
+        .tag-blue {{ background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }}
     </style>
 </head>
 <body>

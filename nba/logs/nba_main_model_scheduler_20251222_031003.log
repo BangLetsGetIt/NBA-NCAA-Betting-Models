@@ -1,0 +1,36 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Mon Dec 22 03:10:03 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 2 pending picks...[0m
+[96mFetching completed NBA game scores...[0m
+[92m✓ Fetched 33 games from API[0m
+[92m✓ Found 21 completed games[0m
+  ✓ Updating: Houston Rockets 124 @ Sacramento Kings 125
+    Result: Win
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 3220, in <module>
+    main()
+    ~~~~^^
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 3131, in main
+    update_pick_results()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rico/sports-models/nba/nba_model_IMPROVED.py", line 604, in update_pick_results
+    tracking_data['summary'] = calculate_summary_stats(tracking_data['picks'])
+                               ^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'calculate_summary_stats' is not defined. Did you mean: 'calculate_tracking_stats'?

@@ -117,6 +117,12 @@ def track_new_picks(over_plays, under_plays):
             if existing_pick.get('latest_odds') != play.get('odds'):
                 existing_pick['latest_odds'] = play.get('odds')
                 existing_pick['last_updated'] = datetime.now(pytz.timezone('US/Eastern')).isoformat()
+                # Calculate and store CLV status
+                existing_pick['clv_status'] = calculate_clv_status_props(
+                    existing_pick.get('opening_odds', play.get('odds')),
+                    play.get('odds'),
+                    existing_pick.get('bet_type', bet_type)
+                )
                 updated_count += 1
         else:
             # Add new pick
@@ -137,7 +143,8 @@ def track_new_picks(over_plays, under_plays):
                 'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
                 'status': 'pending',
                 'result': None,
-                'actual_3pm': None
+                'actual_3pm': None,
+                'clv_status': None  # Will be calculated when odds are updated on subsequent runs
             }
             tracking_data['picks'].append(new_pick)
             new_count += 1
@@ -1390,6 +1397,49 @@ def analyze_props(props_list, player_stats, three_factors):
 # HTML Helper Functions
 # =============================================================================
 
+
+def calculate_clv_status_props(opening_odds, latest_odds, bet_type):
+    """
+    Calculate if a props pick beat the closing line (positive CLV).
+    
+    For props, better odds = positive CLV:
+    - Negative odds (e.g., -110): Lower number (less negative) is better
+    - Positive odds (e.g., +150): Higher number is better
+    
+    Args:
+        opening_odds: Odds when pick was first logged
+        latest_odds: Current odds (closing line)
+        bet_type: 'over' or 'under' (not used in calculation but kept for consistency)
+    
+    Returns:
+        "positive" if beat closing line, "negative" if worse, "neutral" if same
+    """
+    try:
+        # If odds are the same, no CLV advantage
+        if opening_odds == latest_odds:
+            return "neutral"
+        
+        # For negative odds: lower number (less negative) is better
+        # For positive odds: higher number is better
+        if opening_odds < 0 and latest_odds < 0:
+            # Both negative: opening is better if it's less negative (closer to 0)
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds > 0:
+            # Both positive: opening is better if it's higher
+            return "positive" if opening_odds > latest_odds else "negative"
+        elif opening_odds > 0 and latest_odds < 0:
+            # Opening positive, closing negative: opening is better
+            return "positive"
+        else:
+            # Opening negative, closing positive: closing is better
+            return "negative"
+    
+    except Exception as e:
+        # If calculation fails, return neutral (fail gracefully)
+        print(f"{Colors.YELLOW}⚠ Error calculating CLV status: {e}{Colors.END}")
+        return "neutral"
+
+
 def get_team_abbreviation(team_name):
     """Get the team abbreviation for ESPN logo URLs."""
     abbrev_map = {
@@ -1798,6 +1848,31 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             
             player_stats_data = calculate_player_stats(play.get('player'), tracking_data) if tracking_data else None
             tags = generate_reasoning_tags(play, player_data, opponent_factors)
+            
+            # Check for CLV status if tracking data is available
+            if tracking_data:
+                # Generate pick ID to match with tracking data
+                prop_str = play.get('prop', '')
+                match = re.search(r'(\d+\.?\d*)', prop_str)
+                prop_line = float(match.group(1)) if match else 0
+                bet_type = 'over'  # OVER plays
+                pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
+                
+                # Find matching tracked pick
+                tracked_pick = next((p for p in tracking_data.get('picks', []) 
+                                    if p.get('pick_id') == pick_id), None)
+                
+                # Add CLV tag
+                if tracked_pick:
+                    clv = tracked_pick.get('clv_status')
+                    if clv == 'positive':
+                        tags.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                    elif clv == 'negative':
+                        tags.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                    elif clv == 'neutral':
+                        tags.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                    elif clv is None:
+                        tags.append({"text": "⏳ CLV: Tracking", "color": "blue"})
             tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n' for tag in tags])
             
             season_avg = play.get('season_avg', 0)
@@ -1896,6 +1971,31 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             
             player_stats_data = calculate_player_stats(play.get('player'), tracking_data) if tracking_data else None
             tags = generate_reasoning_tags(play, player_data, opponent_factors)
+            
+            # Check for CLV status if tracking data is available
+            if tracking_data:
+                # Generate pick ID to match with tracking data
+                prop_str = play.get('prop', '')
+                match = re.search(r'(\d+\.?\d*)', prop_str)
+                prop_line = float(match.group(1)) if match else 0
+                bet_type = 'under'  # UNDER plays
+                pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
+                
+                # Find matching tracked pick
+                tracked_pick = next((p for p in tracking_data.get('picks', []) 
+                                    if p.get('pick_id') == pick_id), None)
+                
+                # Add CLV tag
+                if tracked_pick:
+                    clv = tracked_pick.get('clv_status')
+                    if clv == 'positive':
+                        tags.append({"text": "✅ CLV: Beat Line", "color": "green"})
+                    elif clv == 'negative':
+                        tags.append({"text": "⚠️ CLV: Missed Line", "color": "red"})
+                    elif clv == 'neutral':
+                        tags.append({"text": "➖ CLV: Neutral", "color": "blue"})
+                    elif clv is None:
+                        tags.append({"text": "⏳ CLV: Tracking", "color": "blue"})
             tags_html = "".join([f'<span class="tag tag-{tag["color"]}">{tag["text"]}</span>\n' for tag in tags])
             
             season_avg = play.get('season_avg', 0)

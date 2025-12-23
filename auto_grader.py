@@ -16,6 +16,8 @@ import os
 import sys
 import time
 import json
+import importlib
+import importlib.util
 import argparse
 import subprocess
 from datetime import datetime, timedelta
@@ -84,19 +86,20 @@ def retrieve_active_plays(tracking_data, stat_type="PTS"):
             p_date = dt_et.date()
             
             # CRITERIA TO DISPLAY:
-            # 1. It is TODAY's game (Pending or Graded) -> Show
-            # 2. It is FUTURE game (Pending) -> Show
-            # 3. It is YESTERDAY's game AND still Pending (maybe late finish) -> Show
-            # 4. Old pending games (> 1 day old) -> HIDE
+            # 1. FUTURE games (p_dt > now) -> Show pending plays
+            # 2. TODAY's games -> Show only *pending* plays that haven't started (grace period 15m)
+            # 3. Old pending games -> HIDE
+            
+            p_dt_aware = dt_et.astimezone(pytz.utc)
+            now_utc = datetime.now(pytz.utc)
             
             should_show = False
-            
-            if p_date == today_date:
-                should_show = True
-            elif p_date > today_date:
-                should_show = True
-            elif p_date == yesterday_date and p.get('status') == 'pending':
-                should_show = True
+            status = (p.get('status') or 'pending').lower()
+
+            if status == 'pending':
+                # Show if game is in future OR started within last 15 minutes (grace period)
+                if p_dt_aware > (now_utc - timedelta(minutes=15)):
+                    should_show = True
             
             if should_show:
                 # Reconstruct play object
@@ -147,16 +150,13 @@ def retrieve_active_plays_nfl(tracking_data, stats_cache=None):
         if game_time_str:
             try:
                 # Parse date
-                g_dt = datetime.fromisoformat(game_time_str.replace('Z', '+00:00')).astimezone(us_et).date()
+                g_dt_utc = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
+                now_utc = datetime.now(pytz.UTC)
                 
-                # STRICT logic: Only show plays >= Today
-                # This hides yesterday's pending picks (stale) and yesterday's graded picks.
-                if g_dt >= today:
-                    if status == 'pending':
+                # Show only if pending AND (future OR started in last 15 mins)
+                if status == 'pending':
+                    if g_dt_utc > (now_utc - timedelta(minutes=15)):
                         is_relevant = True
-                    # Optional: Include today's graded picks if desired (uncomment if needed)
-                    # elif status in ['win', 'loss']:
-                    #    is_relevant = True
             except:
                 pass
                 
@@ -236,12 +236,13 @@ def run_nba_grading(force=False):
             try:
                 mod = __import__(mod_name)
             except ImportError:
-                # If direct import fails, try importlib with path
-                import importlib.util
                 spec = importlib.util.spec_from_file_location(mod_name, os.path.join("nba", filename))
                 mod = importlib.util.module_from_spec(spec)
                 sys.modules[mod_name] = mod
                 spec.loader.exec_module(mod)
+            
+            # FORCE RELOAD to ensure fresh code/logic (crucial for long-running process)
+            importlib.reload(mod)
 
             # 1. Run Grading
             updated = False
@@ -271,9 +272,11 @@ def run_nba_grading(force=False):
                              if isinstance(res, int) and res > 0:
                                  log(f"Updated {res} picks for {mod_name}", "success")
                                  any_updates = True
-                             elif force and hasattr(mod, 'generate_tracking_html'):
+                             
+                             # ALWAYS regenerate tracking HTML if available
+                             if hasattr(mod, 'generate_tracking_html'):
                                  mod.generate_tracking_html()
-                                 log(f"Forced HTML regeneration for {mod_name}", "success")
+                                 log(f"Regenerated tracking HTML for {mod_name}", "success")
                                  any_updates = True
                          except Exception as e:
                              log(f"Error updating main NBA model: {e}", "error")
@@ -335,6 +338,7 @@ def run_nfl_grading(force=False):
         ('nfl_receiving_yards_props_model', 'nfl_receiving_yards_props_model.py'),
         ('nfl_receptions_props_model', 'nfl_receptions_props_model.py'),
         ('atd_model', 'atd_model.py'),
+        ('nfl_model_IMPROVED', 'nfl_model_IMPROVED.py'),
     ]
     
     any_updates = False
@@ -346,15 +350,28 @@ def run_nfl_grading(force=False):
             try:
                 mod = __import__(mod_name)
             except ImportError:
-                import importlib.util
                 spec = importlib.util.spec_from_file_location(mod_name, os.path.join("nfl", filename))
                 mod = importlib.util.module_from_spec(spec)
                 sys.modules[mod_name] = mod
                 spec.loader.exec_module(mod)
             
+            # FORCE RELOAD
+            importlib.reload(mod)
+            
             updated = False
             # 1. Grading
-            if hasattr(mod, 'grade_props_tracking_file') and hasattr(mod, 'TRACKING_FILE'):
+            if mod_name == 'nfl_model_IMPROVED':
+                if hasattr(mod, 'grade_pending_picks'):
+                    try:
+                        res = mod.grade_pending_picks()
+                        if isinstance(res, int) and res > 0:
+                            log(f"Graded {res} picks for {mod_name}", "success")
+                            updated = True
+                        elif force:
+                            updated = True # Force HTML regen
+                    except Exception as e:
+                        log(f"Error grading NFL main model: {e}", "error")
+            elif hasattr(mod, 'grade_props_tracking_file') and hasattr(mod, 'TRACKING_FILE'):
                 stat_kind = None
                 if 'passing' in filename: stat_kind = 'passing_yards'
                 elif 'rushing' in filename: stat_kind = 'rushing_yards'
@@ -372,7 +389,18 @@ def run_nfl_grading(force=False):
             
             # 2. Regenerate HTML
             if True: # Always regen to restore pending plays
-                 if hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
+                 if mod_name == 'nfl_model_IMPROVED':
+                     try:
+                         # For NFL main model, we just run main() to refresh odds and HTML
+                         # but we might want to avoid re-analysis if just grading.
+                         # However, nfl_model_IMPROVED analysis is fast.
+                         if hasattr(mod, 'main'):
+                             mod.main()
+                             log(f"Regenerated HTML for {mod_name}", "success")
+                             any_updates = True
+                     except Exception as e:
+                         log(f"HTML gen failed for {mod_name}: {e}", "warning")
+                 elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
                     try:
                         t_data = mod.load_tracking_data()
                         # Load Stats Cache if available
@@ -433,11 +461,13 @@ def run_wnba_grading(force=False):
         try:
             mod = __import__(mod_name)
         except ImportError:
-            import importlib.util
             spec = importlib.util.spec_from_file_location(mod_name, os.path.join("wnba", filename))
             mod = importlib.util.module_from_spec(spec)
             sys.modules[mod_name] = mod
             spec.loader.exec_module(mod)
+            
+        # FORCE RELOAD
+        importlib.reload(mod)
             
         # Verify functions exist
         if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
@@ -474,11 +504,13 @@ def run_wnba_grading(force=False):
         try:
             mod = __import__(mod_name)
         except ImportError:
-            import importlib.util
             spec = importlib.util.spec_from_file_location(mod_name, os.path.join("wnba", filename))
             mod = importlib.util.module_from_spec(spec)
             sys.modules[mod_name] = mod
             spec.loader.exec_module(mod)
+            
+        # FORCE RELOAD
+        importlib.reload(mod)
             
         if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
             if force:
@@ -510,11 +542,13 @@ def run_ncaab_grading(force=False):
         try:
             mod = __import__(mod_name)
         except ImportError:
-            import importlib.util
             spec = importlib.util.spec_from_file_location(mod_name, os.path.join("ncaa", filename))
             mod = importlib.util.module_from_spec(spec)
             sys.modules[mod_name] = mod
             spec.loader.exec_module(mod)
+            
+        # FORCE RELOAD
+        importlib.reload(mod)
             
         # Run grading
         if hasattr(mod, 'update_pick_results'):
@@ -557,11 +591,13 @@ def run_soccer_grading(force=False):
         try:
             mod = __import__(mod_name)
         except ImportError:
-            import importlib.util
             spec = importlib.util.spec_from_file_location(mod_name, os.path.join("soccer", filename))
             mod = importlib.util.module_from_spec(spec)
             sys.modules[mod_name] = mod
             spec.loader.exec_module(mod)
+
+        # FORCE RELOAD
+        importlib.reload(mod)
         
         # Call update_pick_results (Soccer's grading function)
         if hasattr(mod, 'update_pick_results'):
@@ -606,6 +642,8 @@ def main():
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
+                    import importlib
+                    importlib.reload(best_plays_bot)
                     best_plays_bot.main()
                     log("Regenerated best_plays.html", "success")
                 except Exception as e:
@@ -628,6 +666,16 @@ def main():
         updates_soccer = run_soccer_grading(force=args.force)
         
         if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
+            # Regenerate Best Plays aggregator
+            try:
+                import best_plays_bot
+                import importlib
+                importlib.reload(best_plays_bot)
+                best_plays_bot.main()
+                log("Regenerated best_plays.html", "success")
+            except Exception as e:
+                log(f"Best plays generation failed: {e}", "warning")
+            
             trigger_git_push()
         else:
             log("No updates found.", "info")

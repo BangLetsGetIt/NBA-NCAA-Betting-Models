@@ -1,0 +1,18 @@
+model_name,path,tracking_file,notes
+mlb_master_model,mlb/mlb_master_model.py,mlb/mlb_master_model_tracking.json,tracking present
+cfb_model,cfb/cfb_model.py,,no explicit tracking file found (uses HTML output)
+cbb_assists,ncaa/cbb_assists_props_model.py,cbb_assists_props_tracking.json,uses `cbb_props_shared` which sets tracking file
+cbb_points,ncaa/cbb_points_props_model.py,cbb_points_props_tracking.json,uses `cbb_props_shared`
+cbb_rebounds,ncaa/cbb_rebounds_props_model.py,cbb_rebounds_props_tracking.json,uses `cbb_props_shared`
+nfl_receptions,nfl/nfl_receptions_props_model.py,nfl_receptions_props_tracking.json,tracking present
+nfl_receiving_yards,nfl/nfl_receiving_yards_props_model.py,nfl_receiving_yards_props_tracking.json,tracking present
+nfl_atd,nfl/atd_model.py,atd_model_tracking.json,tracking present
+nba_player_prop_model,nba/nba_player_prop_model.py,,tracking file not identified (unknown)
+nba_rebounds,nba/nba_rebounds_props_model.py,nba_rebounds_props_tracking.json,tracking present
+nfl_passing_yards,nfl/nfl_passing_yards_props_model.py,nfl_passing_yards_props_tracking.json,tracking present
+nba_assists,nba/nba_assists_props_model.py,nba_assists_props_tracking.json,tracking present
+wnba_props,wnba/wnba_props_model.py,wnba_props_tracking.json,tracking present
+wnba_model,wnba/wnba_model.py,wnba_model_tracking.json,tracking present
+nba_points,nba/nba_points_props_model.py,nba_points_props_tracking.json,tracking present
+nba_3pt,nba/nba_3pt_props_model.py,nba_3pt_props_tracking.json,tracking present
+nfl_rushing_yards,nfl/nfl_rushing_yards_props_model.py,nfl_rushing_yards_props_tracking.json,tracking present

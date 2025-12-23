@@ -1,0 +1,113 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Mon Dec 22 02:45:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 10 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Checking Mitchell Robinson (New York Knicks) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Mitchell Robinson on 2025-12-16 - will retry later[0m
+[96m  Checking Julian Champagnie (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Julian Champagnie on 2025-12-16 - will retry later[0m
+[96m  Checking Keldon Johnson (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Keldon Johnson on 2025-12-16 - will retry later[0m
+[96m  Checking Victor Wembanyama (San Antonio Spurs) on 2025-12-16...[0m
+[93m  ⚠ Could not find stats for Victor Wembanyama on 2025-12-16 - will retry later[0m
+  Fetching team stats to verify completed games for 2025-12-21...
+[96m  Checking Maxime Raynaud (Sacramento Kings) on 2025-12-21...[0m
+    [91mLOSS[0m: Maxime Raynaud had 14 rebounds (line: 7.5, bet: UNDER) | Profit: -1.00 units
+[96m  Checking Nique Clifford (Sacramento Kings) on 2025-12-21...[0m
+    [91mLOSS[0m: Nique Clifford had 6 rebounds (line: 3.5, bet: UNDER) | Profit: -1.00 units
+[96m  Checking Steven Adams (Sacramento Kings) on 2025-12-21...[0m
+[93m  ⚠️  Player Steven Adams has no stats but game is final -> Marking as DNP/Void[0m
+  Fetching team stats to verify completed games for 2025-12-22...
+
+[92m✓ Graded 3 picks[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Charlotte Hornets @ Cleveland Cavaliers[0m
+[96m  Game 2/10: Indiana Pacers @ Boston Celtics[0m
+[96m  Game 3/10: Dallas Mavericks @ New Orleans Pelicans[0m
+[96m  Game 4/10: Utah Jazz @ Denver Nuggets[0m
+[96m  Game 5/10: Memphis Grizzlies @ Oklahoma City Thunder[0m
+[96m  Game 6/10: Detroit Pistons @ Portland Trail Blazers[0m
+[96m  Game 7/10: Orlando Magic @ Golden State Warriors[0m
+[96m  Game 8/10: Cleveland Cavaliers @ New York Knicks[0m
+[96m  Game 9/10: San Antonio Spurs @ Oklahoma City Thunder[0m
+[96m  Game 10/10: Dallas Mavericks @ Golden State Warriors[0m
+[92m✓ Fetched 84 player rebounds props (grouped)[0m
+
+[96mAnalyzing 84 player props with REAL stats...[0m
+[92m✓ Found 2 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 4 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 158 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 4 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. P.J. Washington          [0m | [92mOVER 6.5 REB   [0m | Dallas Mavericks          vs New Orleans Pelicans      | [1mA.I.: 10.00[0m | Rating: 4.7 ⭐⭐
+  [96m 2. Goga Bitadze             [0m | [92mOVER 3.5 REB   [0m | Golden State Warriors     vs Orlando Magic             | [1mA.I.: 10.00[0m | Rating: 4.1 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Jock Landale             [0m | [91mUNDER 7.5 REB  [0m | Oklahoma City Thunder     vs Memphis Grizzlies         | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Cam Spencer              [0m | [91mUNDER 3.5 REB  [0m | Oklahoma City Thunder     vs Memphis Grizzlies         | [1mA.I.: 10.00[0m | Rating: 4.6 ⭐⭐
+  [96m 3. Jarrett Allen            [0m | [91mUNDER 9.5 REB  [0m | Cleveland Cavaliers       vs Charlotte Hornets         | [1mA.I.: 10.00[0m | Rating: 4.4 ⭐⭐
+  [96m 4. Dean Wade                [0m | [91mUNDER 5.5 REB  [0m | Cleveland Cavaliers       vs Charlotte Hornets         | [1mA.I.: 10.00[0m | Rating: 3.9 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Mon Dec 22 02:45:13 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 0c3023d] Update model outputs - 2025-12-22 02:45:13
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 283 insertions(+), 39 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   9b225a2..0c3023d  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Dec 22 02:45:14 EST 2025

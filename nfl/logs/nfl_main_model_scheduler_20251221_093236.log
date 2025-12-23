@@ -1,0 +1,26 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Dec 21 09:32:36 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 0.1+ pts (display)
+Spread Logging: 8.0+ pts (sharp +EV)
+Total Threshold: 0.1+ pts (display)
+Total Logging: 12.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/nfl/nfl_model_IMPROVED.py", line 1816, in <module>
+    main()
+    ~~~~^^
+  File "/Users/rico/sports-models/nfl/nfl_model_IMPROVED.py", line 1741, in main
+    grade_pending_picks()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/rico/sports-models/nfl/nfl_model_IMPROVED.py", line 188, in grade_pending_picks
+    pending = [p for p in picks if p.get('status') == 'pending']
+                                   ^^^^^
+AttributeError: 'str' object has no attribute 'get'

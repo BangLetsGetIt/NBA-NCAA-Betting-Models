@@ -1,0 +1,98 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Dec 21 18:10:04 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 0.1+ pts (display)
+Spread Logging: 8.0+ pts (sharp +EV)
+Total Threshold: 0.1+ pts (display)
+Total Logging: 12.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 16 pending picks...
+
+🏈 Fetching completed NFL scores...
+   Found 10 completed games
+   No picks matched completed games
+
+📡 Fetching current NFL odds...
+Fetched 6 games, filtered to 2 upcoming.
+✅ Found 2 games
+
+🔍 Analyzing games...
+
+New England Patriots @ Baltimore Ravens
+  🕐 2025-12-22T01:20:00Z
+  📊 Ratings: Baltimore Ravens (71.2) vs New England Patriots (42.3)
+  📈 Predicted: Baltimore Ravens 38.5, New England Patriots 6.8
+  SPREAD (⭐ LOGGED):
+    Market: Baltimore Ravens -3.5
+    Model:  31.7
+    Edge:   +35.2
+    ✅ SHARP BET: Baltimore Ravens -3.5
+  TOTAL (👁️ Display Only):
+    Market: 48.5
+    Model:  45.4
+    Edge:   -3.1
+    ⚠️  Below logging threshold: UNDER 48.5
+
+San Francisco 49ers @ Indianapolis Colts
+  🕐 2025-12-23T01:15:00Z
+  📊 Ratings: Indianapolis Colts (51.8) vs San Francisco 49ers (67.3)
+  📈 Predicted: Indianapolis Colts 17.0, San Francisco 49ers 29.8
+  SPREAD (⭐ LOGGED):
+    Market: Indianapolis Colts +5.5
+    Model:  -12.8
+    Edge:   -18.3
+    ✅ SHARP BET: San Francisco 49ers -5.5
+  TOTAL (👁️ Display Only):
+    Market: 46.5
+    Model:  46.8
+    Edge:   +0.3
+    ⚠️  Below logging threshold: OVER 46.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 2
+Bets Logged:    2 (high-confidence +EV only)
+Total Tracked:  39
+Completed:      23
+Pending:        16
+Win Rate:       43.5%
+ROI:            -17.0%
+Total Profit:   $-390.00
+============================================================
+✅ Completed: nfl_main_model at Sun Dec 21 18:10:05 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 6c03fc6] Update model outputs - 2025-12-21 18:10:05
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   b302569..6c03fc6  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Dec 21 18:10:06 EST 2025

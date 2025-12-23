@@ -2563,28 +2563,25 @@ def save_html(results):
 
     # Add CLV status to each result
     for result in results:
-        result['clv_beat_closing'] = False
-        result['clv_beat_closing_spread'] = False
-        result['clv_beat_closing_total'] = False
+        result['clv_status_spread'] = None
+        result['clv_status_total'] = None
         
         try:
-            # Check for matching spread pick with positive CLV
+            # Check for matching spread pick
             if '✅' in result.get('ATS Pick', ''):
                 spread_pick_id = f"{result['home_team']}_{result['away_team']}_{result['commence_time']}_spread"
                 spread_pick = next((p for p in tracking_data.get('picks', []) if p.get('pick_id') == spread_pick_id), None)
                 
-                if spread_pick and spread_pick.get('clv_status') == 'positive':
-                    result['clv_beat_closing'] = True
-                    result['clv_beat_closing_spread'] = True
+                if spread_pick:
+                    result['clv_status_spread'] = spread_pick.get('clv_status')
             
-            # Check for matching total pick with positive CLV
+            # Check for matching total pick
             if '✅' in result.get('Total Pick', ''):
                 total_pick_id = f"{result['home_team']}_{result['away_team']}_{result['commence_time']}_total"
                 total_pick = next((p for p in tracking_data.get('picks', []) if p.get('pick_id') == total_pick_id), None)
                 
-                if total_pick and total_pick.get('clv_status') == 'positive':
-                    result['clv_beat_closing'] = True
-                    result['clv_beat_closing_total'] = True
+                if total_pick:
+                    result['clv_status_total'] = total_pick.get('clv_status')
         except Exception as e:
             # Fail gracefully - don't break HTML generation if CLV check fails
             pass
@@ -2953,8 +2950,28 @@ def save_html(results):
                 <div class="tag tag-blue">{{ r.team_indicator.emoji }} {{ r.team_indicator.message }}</div>
                 {% endif %}
                 
-                {% if r.clv_beat_closing %}
-                <div class="tag tag-green">✅ CLV: Beat closing line</div>
+                {% if r.clv_status_spread %}
+                    {% if r.clv_status_spread == 'positive' %}
+                        <div class="tag tag-green">✅ CLV: Beat spread</div>
+                    {% elif r.clv_status_spread == 'negative' %}
+                        <div class="tag tag-red">⚠️ CLV: Missed spread</div>
+                    {% else %}
+                         <div class="tag tag-blue">➖ CLV: Neutral</div>
+                    {% endif %}
+                {% elif '✅' in r['ATS Pick'] %}
+                     <div class="tag tag-blue">⏳ CLV: Tracking</div>
+                {% endif %}
+
+                {% if r.clv_status_total %}
+                    {% if r.clv_status_total == 'positive' %}
+                        <div class="tag tag-green">✅ CLV: Beat total</div>
+                    {% elif r.clv_status_total == 'negative' %}
+                        <div class="tag tag-red">⚠️ CLV: Missed total</div>
+                    {% else %}
+                         <div class="tag tag-blue">➖ CLV: Neutral</div>
+                    {% endif %}
+                {% elif '✅' in r['Total Pick'] %}
+                     <div class="tag tag-blue">⏳ CLV: Tracking</div>
                 {% endif %}
                 
                 {% if r['ATS Explanation'] %}

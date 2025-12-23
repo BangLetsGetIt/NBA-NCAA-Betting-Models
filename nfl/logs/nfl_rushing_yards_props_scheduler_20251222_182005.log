@@ -1,0 +1,49 @@
+============================================================
+Scheduler run: nfl_rushing_yards_props
+Time: Mon Dec 22 18:20:05 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_rushing_yards_props_model.py
+============================================================
+[1m🏈 NFL Rushing Props Model - Sharp +EV[0m
+
+[96m--- Grading Pending Picks ---[0m
+Graded 0 picks.
+  Found 17 upcoming games (filtered from 17)
+[96mFound 17 upcoming games. Fetching rushing props...[0m
+
+Analyzing 22 players...
+Deduplicated from 7 to 7 picks.
+
+Found 7 sharp plays:
+  ⭐ Jonathan Taylor OVER 97.5 (Proj: 107.0) | Edge: 9.5 | AI: 10.0
+  ⭐ Javonte Williams UNDER 78.5 (Proj: 71.1) | Edge: 7.4 | AI: 10.0
+  ⭐ Omarion Hampton OVER 61.5 (Proj: 70.7) | Edge: 9.2 | AI: 10.0
+  ⭐ Derrick Henry OVER 76.5 (Proj: 82.7) | Edge: 6.2 | AI: 9.4
+  ⭐ Tony Pollard OVER 59.5 (Proj: 78.9) | Edge: 19.4 | AI: 10.0
+  ⭐ Saquon Barkley UNDER 86.5 (Proj: 77.8) | Edge: 8.7 | AI: 10.0
+  ⭐ James Cook OVER 91.5 (Proj: 108.5) | Edge: 17.0 | AI: 10.0
+[92m✓ Tracked 5 new picks[0m
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_rushing_yards_props.html
+✅ Completed: nfl_rushing_yards_props at Mon Dec 22 18:20:15 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main e1717ab] Update model outputs - 2025-12-22 18:20:16
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 286 insertions(+), 36 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   8f1afd3..e1717ab  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Dec 22 18:20:17 EST 2025
