@@ -4452,11 +4452,11 @@
       "edge": 16.0,
       "pick": "\u2705 BET: OVER 221.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 122,
+      "actual_away_score": 140,
       "clv_status": "positive"
     },
     {
@@ -4474,11 +4474,11 @@
       "edge": 9.4,
       "pick": "\u2705 BET: Orlando Magic -6.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 105,
+      "actual_away_score": 120,
       "clv_status": "negative"
     },
     {
@@ -4550,9 +4550,9 @@
   ],
   "summary": {
     "total_picks": 223,
-    "wins": 117,
-    "losses": 99,
+    "wins": 118,
+    "losses": 100,
     "pushes": 2,
-    "pending": 5
+    "pending": 3
   }
 }

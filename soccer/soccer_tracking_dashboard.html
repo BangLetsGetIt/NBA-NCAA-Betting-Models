@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Model - Performance Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: #1a1a1a;
+            border-radius: 1.25rem;
+            border: none;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .stat-card {
+            background: #262626;
+            border: none;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #262626; }
+        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
+        tr:hover { background: #262626; }
+        .text-center { text-align: center; }
+        .text-green-400 { color: #10b981; }
+        .text-blue-400 { color: #3b82f6; }
+        .text-pink-400 { color: #f472b6; }
+        .text-red-400 { color: #ef4444; }
+        .text-yellow-400 { color: #f59e0b; }
+        .text-gray-400 { color: #94a3b8; }
+        .text-orange-400 { color: #fb923c; }
+        .font-bold { font-weight: 700; }
+        .text-sm { font-size: 0.875rem; }
+        .badge {
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .badge-win { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-loss { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container { max-width: 100%; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card { padding: 1.25rem; }
+
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.125rem; }
+            h4 { font-size: 1rem; }
+
+            div[style*="grid-template-columns: repeat(5, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            div[style*="grid-template-columns: repeat(4, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            div[style*="grid-template-columns: repeat(2, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            .stat-label {
+                font-size: 0.6875rem;
+            }
+
+            table {
+                font-size: 0.8125rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+            th, td {
+                padding: 0.625rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; }
+
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.125rem; }
+            h3 { font-size: 1rem; }
+
+            .stat-value { font-size: 1.5rem; }
+            .stat-label { font-size: 0.625rem; }
+            .stat-card { padding: 0.75rem; }
+
+            div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center">⚽ Soccer Model Performance</h1>
+            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics</p>
+
+            <!-- Overall Performance Card -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Overall Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">162</div>
+                        <div class="stat-label">Total Bets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">52-55-4</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">48.6%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -7.68u
+                        </div>
+                        <div class="stat-label">Total Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -7.2%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (61 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">23-36-2</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">39.0%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-red-400 font-bold">-15.07u</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (50 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">29-19-2</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">60.4%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">7.39u</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="card">
+            <h2>🎯 Today's Projections</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game Date</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Pick</th>
+                            <th>Line</th>
+                            <th>Edge</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 07:30 AM</td>
+                            <td class="font-bold">Manchester City @ Nottingham Forest</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Manchester City 0.5</td>
+                            <td>0.5</td>
+                            <td>-1.40</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 07:30 AM</td>
+                            <td class="font-bold">Manchester City @ Nottingham Forest</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.50</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 09:00 AM</td>
+                            <td class="font-bold">Como @ Lecce</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.25</td>
+                            <td>2.25</td>
+                            <td>+0.53</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 09:00 AM</td>
+                            <td class="font-bold">Cagliari @ Torino</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Torino -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.85</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Brighton and Hove Albion @ Arsenal</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Arsenal -1.5</td>
+                            <td>-1.5</td>
+                            <td>+2.45</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Brighton and Hove Albion @ Arsenal</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.50</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Bournemouth @ Brentford</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Brentford -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.60</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Everton @ Burnley</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Everton 0.5</td>
+                            <td>0.5</td>
+                            <td>-0.70</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Wolverhampton Wanderers @ Liverpool</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Liverpool -1.5</td>
+                            <td>-1.5</td>
+                            <td>+2.60</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 10:00 AM</td>
+                            <td class="font-bold">Wolverhampton Wanderers @ Liverpool</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">UNDER 3.5</td>
+                            <td>3.5</td>
+                            <td>-0.46</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 12:00 PM</td>
+                            <td class="font-bold">Lazio @ Udinese</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.25</td>
+                            <td>2.25</td>
+                            <td>+0.64</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 12:30 PM</td>
+                            <td class="font-bold">Aston Villa @ Chelsea</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Chelsea -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.95</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 12:30 PM</td>
+                            <td class="font-bold">Aston Villa @ Chelsea</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.44</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 02:45 PM</td>
+                            <td class="font-bold">Juventus @ Pisa</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Juventus 1.0</td>
+                            <td>1.0</td>
+                            <td>-1.35</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/27 02:45 PM</td>
+                            <td class="font-bold">Juventus @ Pisa</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.47</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 06:30 AM</td>
+                            <td class="font-bold">Hellas Verona @ AC Milan</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.44</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 06:30 AM</td>
+                            <td class="font-bold">Hellas Verona @ AC Milan</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">AC Milan -1.5</td>
+                            <td>-1.5</td>
+                            <td>+2.45</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 09:00 AM</td>
+                            <td class="font-bold">Leeds United @ Sunderland</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Sunderland -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.85</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 09:00 AM</td>
+                            <td class="font-bold">Napoli @ Cremonese</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Napoli 1.0</td>
+                            <td>1.0</td>
+                            <td>-1.15</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 09:00 AM</td>
+                            <td class="font-bold">Napoli @ Cremonese</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.41</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 11:30 AM</td>
+                            <td class="font-bold">Tottenham Hotspur @ Crystal Palace</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Crystal Palace -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.75</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 12:00 PM</td>
+                            <td class="font-bold">Sassuolo @ Bologna</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Bologna -0.5</td>
+                            <td>-0.5</td>
+                            <td>+1.00</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 02:45 PM</td>
+                            <td class="font-bold">Inter Milan @ Atalanta BC</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Inter Milan 0.5</td>
+                            <td>0.5</td>
+                            <td>-0.95</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/28 02:45 PM</td>
+                            <td class="font-bold">Inter Milan @ Atalanta BC</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.50</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/29 02:45 PM</td>
+                            <td class="font-bold">Genoa @ AS Roma</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">AS Roma -0.75</td>
+                            <td>-0.75</td>
+                            <td>+1.10</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/29 02:45 PM</td>
+                            <td class="font-bold">Genoa @ AS Roma</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.25</td>
+                            <td>2.25</td>
+                            <td>+0.53</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 02:30 PM</td>
+                            <td class="font-bold">Bournemouth @ Chelsea</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Chelsea -0.5</td>
+                            <td>-0.5</td>
+                            <td>+1.10</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 02:30 PM</td>
+                            <td class="font-bold">Bournemouth @ Chelsea</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">UNDER 3.5</td>
+                            <td>3.5</td>
+                            <td>-0.60</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 02:30 PM</td>
+                            <td class="font-bold">Newcastle United @ Burnley</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Newcastle United 0.5</td>
+                            <td>0.5</td>
+                            <td>-0.75</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 02:30 PM</td>
+                            <td class="font-bold">Everton @ Nottingham Forest</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Nottingham Forest -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.55</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 03:15 PM</td>
+                            <td class="font-bold">Aston Villa @ Arsenal</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Arsenal -1.5</td>
+                            <td>-1.5</td>
+                            <td>+2.30</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 03:15 PM</td>
+                            <td class="font-bold">Aston Villa @ Arsenal</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.54</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 03:15 PM</td>
+                            <td class="font-bold">Wolverhampton Wanderers @ Manchester United</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Manchester United -1.5</td>
+                            <td>-1.5</td>
+                            <td>+1.95</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">12/30 03:15 PM</td>
+                            <td class="font-bold">Wolverhampton Wanderers @ Manchester United</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">UNDER 3.5</td>
+                            <td>3.5</td>
+                            <td>-0.64</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 12:30 PM</td>
+                            <td class="font-bold">Fulham @ Crystal Palace</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Crystal Palace -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.95</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 12:30 PM</td>
+                            <td class="font-bold">Leeds United @ Liverpool</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Liverpool -1.5</td>
+                            <td>-1.5</td>
+                            <td>+2.60</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 12:30 PM</td>
+                            <td class="font-bold">Leeds United @ Liverpool</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.54</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 03:00 PM</td>
+                            <td class="font-bold">Tottenham Hotspur @ Brentford</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Brentford -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.60</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 03:00 PM</td>
+                            <td class="font-bold">Manchester City @ Sunderland</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Manchester City 1.5</td>
+                            <td>1.5</td>
+                            <td>-2.05</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/01 03:00 PM</td>
+                            <td class="font-bold">Manchester City @ Sunderland</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.5</td>
+                            <td>2.5</td>
+                            <td>+0.58</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/02 03:00 PM</td>
+                            <td class="font-bold">Getafe @ Rayo Vallecano</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Rayo Vallecano -0.5</td>
+                            <td>-0.5</td>
+                            <td>+1.00</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/02 03:00 PM</td>
+                            <td class="font-bold">Getafe @ Rayo Vallecano</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.0</td>
+                            <td>2.0</td>
+                            <td>+0.69</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/03 08:00 AM</td>
+                            <td class="font-bold">Valencia @ Celta Vigo</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Celta Vigo -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.80</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/03 10:15 AM</td>
+                            <td class="font-bold">Athletic Bilbao @ CA Osasuna</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.25</td>
+                            <td>2.25</td>
+                            <td>+0.54</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/04 08:00 AM</td>
+                            <td class="font-bold">Levante @ Sevilla</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Sevilla -0.75</td>
+                            <td>-0.75</td>
+                            <td>+1.35</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/04 10:15 AM</td>
+                            <td class="font-bold">Real Betis @ Real Madrid</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">UNDER 3.5</td>
+                            <td>3.5</td>
+                            <td>-0.46</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/09 02:30 PM</td>
+                            <td class="font-bold">Borussia Dortmund @ Eintracht Frankfurt</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Borussia Dortmund 0.25</td>
+                            <td>0.25</td>
+                            <td>-0.55</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/10 09:30 AM</td>
+                            <td class="font-bold">RB Leipzig @ FC St. Pauli</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">RB Leipzig 0.5</td>
+                            <td>0.5</td>
+                            <td>-0.70</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/10 09:30 AM</td>
+                            <td class="font-bold">RB Leipzig @ FC St. Pauli</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">OVER 2.75</td>
+                            <td>2.75</td>
+                            <td>+0.46</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/11 09:30 AM</td>
+                            <td class="font-bold">Augsburg @ Borussia Monchengladbach</td>
+                            <td>SPREAD</td>
+                            <td class="text-yellow-400">Borussia Monchengladbach -0.5</td>
+                            <td>-0.5</td>
+                            <td>+0.85</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">01/11 11:30 AM</td>
+                            <td class="font-bold">VfL Wolfsburg @ Bayern Munich</td>
+                            <td>TOTAL</td>
+                            <td class="text-yellow-400">UNDER 4.0</td>
+                            <td>4.0</td>
+                            <td>-0.67</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
+        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
+                <p class="subtitle">Verified Track Record</p>
+            </div>
+
+            <!-- Last 100 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Last 100 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value">47-49-4</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">47.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -6.23u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -6.2%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (54 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">20-32-2</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">37.0%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-25.6%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (46 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">27-17-2</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">58.7%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+16.5%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 50 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    🚀 Last 50 Picks
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">24-25-1</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">48.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -3.16u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -6.3%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (26 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">11-15</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-red-400 font-bold">42.3%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-19.2%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (24 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">13-10-1</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">54.2%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+7.6%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 20 Picks -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
+                <h3 style="color: #fb923c; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    ⚡ Last 20 Picks (Hot Streak)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">8-11-1</div>
+                        <div class="stat-label">Record</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">40.0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -3.72u
+                        </div>
+                        <div class="stat-label">Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-red-400">
+                            -18.6%
+                        </div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (11 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">3-8</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-red-400 font-bold">27.3%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-47.9%</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (9 picks)</h4>
+                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">5-3-1</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">55.6%</span></div>
+                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+17.2%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
+            <p>Last updated: 2025-12-26 09:59 PM</p>
+        </div>
+    </div>
+</body>
+</html>
