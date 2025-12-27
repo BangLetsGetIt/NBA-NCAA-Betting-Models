@@ -4496,11 +4496,11 @@
       "edge": 17.8,
       "pick": "\u2705 BET: OVER 226.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 125,
+      "actual_away_score": 104,
       "clv_status": "positive"
     },
     {
@@ -4518,11 +4518,11 @@
       "edge": 8.5,
       "pick": "\u2705 BET: New Orleans Pelicans +5.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 108,
+      "actual_away_score": 115,
       "clv_status": null
     },
     {
@@ -4550,9 +4550,9 @@
   ],
   "summary": {
     "total_picks": 223,
-    "wins": 118,
-    "losses": 100,
+    "wins": 119,
+    "losses": 101,
     "pushes": 2,
-    "pending": 3
+    "pending": 1
   }
 }
