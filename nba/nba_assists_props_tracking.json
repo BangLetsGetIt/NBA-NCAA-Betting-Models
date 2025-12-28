@@ -954,11 +954,12 @@
       "season_avg": 2.3,
       "recent_avg": 1.7,
       "tracked_at": "2025-12-26T23:46:20.998498-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_ast": null,
       "clv_status": "positive",
-      "last_updated": "2025-12-27T10:05:12.676660-05:00"
+      "last_updated": "2025-12-27T10:05:12.676660-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Tre Jones_3.5_over_2025-12-28T01:10:00Z",
@@ -975,11 +976,13 @@
       "season_avg": 5.0,
       "recent_avg": 5.1,
       "tracked_at": "2025-12-27T02:40:17.932425-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 6,
       "clv_status": "positive",
-      "last_updated": "2025-12-27T07:00:11.805747-05:00"
+      "last_updated": "2025-12-27T07:00:11.805747-05:00",
+      "profit_loss": 62,
+      "updated_at": "2025-12-28T02:40:06.806943-05:00"
     },
     {
       "pick_id": "Kyle Kuzma_3.5_under_2025-12-28T01:10:00Z",
@@ -996,10 +999,12 @@
       "season_avg": 2.2,
       "recent_avg": 2.4,
       "tracked_at": "2025-12-27T02:40:17.932508-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 4,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2025-12-28T02:40:06.806981-05:00"
     },
     {
       "pick_id": "Tyus Jones_4.5_under_2025-12-28T00:10:00Z",
@@ -1038,11 +1043,13 @@
       "season_avg": 4.8,
       "recent_avg": 4.0,
       "tracked_at": "2025-12-27T15:05:10.259753-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 0,
       "clv_status": "neutral",
-      "last_updated": "2025-12-27T18:05:13.747618-05:00"
+      "last_updated": "2025-12-27T18:05:13.747618-05:00",
+      "profit_loss": -100,
+      "updated_at": "2025-12-28T02:40:06.807006-05:00"
     },
     {
       "pick_id": "Ja Morant_6.5_over_2025-12-28T23:10:00Z",
@@ -1054,7 +1061,7 @@
       "ai_score": 10.0,
       "odds": -120,
       "opening_odds": -120,
-      "latest_odds": -120,
+      "latest_odds": -155,
       "game_time": "2025-12-28T23:10:00Z",
       "season_avg": 7.7,
       "recent_avg": 8.0,
@@ -1062,7 +1069,8 @@
       "status": "pending",
       "result": null,
       "actual_ast": null,
-      "clv_status": null
+      "clv_status": "positive",
+      "last_updated": "2025-12-28T02:40:16.301835-05:00"
     }
   ]
 }
