@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourtSide Analytics</title>
+    <title>CourtSide Analytics - NBA Points</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+
         :root {
             --bg-main: #121212;
             --bg-card: #1e1e1e;
@@ -27,42 +28,43 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 650px; margin: 0 auto; }
 
         header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
-        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
-        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
 
-        /* Summary Stats */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
         }
         .stat-box {
             background-color: var(--bg-card);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
-        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 700; }
 
         .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
             display: flex; align-items: center;
         }
-        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 13px; }
 
-        /* Prop Card */
         .prop-card {
             background-color: var(--bg-card);
             border-radius: 16px;
@@ -73,7 +75,7 @@
         }
 
         .card-header {
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -81,90 +83,35 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+        .game-meta { text-align: right; }
+        .game-date-time { font-size: 11px; color: var(--text-secondary); background: #333; padding: 4px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
 
-        .team-logo {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            padding: 2px;
-            object-fit: contain;
-        }
-
-        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
-        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
-
-        .game-meta {
-            text-align: right;
-        }
-        .game-date-time {
-            font-size: 12px;
-            color: var(--text-secondary);
-            background: #333;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .card-body { padding: 20px; }
-
-        .bet-main-row { margin-bottom: 15px; }
-        .bet-selection { font-size: 22px; font-weight: 800; }
+        .card-body { padding: 16px; }
+        .bet-main-row { margin-bottom: 12px; }
+        .bet-selection { font-size: 20px; font-weight: 800; }
         .bet-selection .line { color: var(--text-primary); }
-        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+        .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
-        .model-subtext {
-            color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
+        .model-subtext { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .model-subtext strong { color: var(--text-primary); }
 
-        .metrics-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
-        }
-        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
-        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .metric-val { font-size: 16px; font-weight: 700; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
+        .metric-val { font-size: 14px; font-weight: 700; }
 
-        /* Player Stats Section */
-        .player-stats {
-            background-color: var(--bg-card-secondary);
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--border-color);
-        }
-        .player-stats-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .player-stats-value {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .player-stats-item {
-            text-align: center;
-            flex: 1;
-        }
-        .player-stats-divider {
-            width: 1px;
-            height: 30px;
-            background-color: var(--border-color);
-        }
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 14px; font-weight: 700; }
+        .player-stats-item { text-align: center; flex: 1; }
+        .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
 
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
 
         .txt-green { color: var(--accent-green); }
         .txt-red { color: var(--accent-red); }
@@ -172,6 +119,44 @@
         .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
         .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+        
+        .metric-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .text-red { color: var(--accent-red); }
+        .tracking-section { margin-top: 2.5rem; }
+        .tracking-header { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.25rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .metric-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .metric-value.good { color: var(--accent-green); }
 
         @media (max-width: 600px) {
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
@@ -180,18 +165,99 @@
             .team-logo { width: 38px; height: 38px; }
             .player-info h2 { font-size: 16px; }
         }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .nav-pill {
+            padding: 8px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .stat-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+    
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>CourtSide Analytics</h1>
-        <div class="subheader">NBA Points Model</div>
-        <div class="date-sub">Profitable Version • Season 2025-26</div>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">NBA Points Model</div>
+            <div class="date-sub">Profitable Version &bull; Season 2025-26</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="metric-title">SEASON RECORD</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                124-119 (51.0%)
+            </div>
+            <div style="font-size: 0.9rem; color: var(--accent-red);">
+                 -9.4u
+            </div>
+        </div>
+        </div>
     </header>
 
-    
+    <div class="nav-bar">
+        <a href="nba_points_props.html" class="nav-pill active">Points</a>
+        <a href="nba_assists_props.html" class="nav-pill">Assists</a>
+        <a href="nba_rebounds_props.html" class="nav-pill">Rebounds</a>
+        <a href="nba_3pt_props.html" class="nav-pill">3-Pointers</a>
+    </div>
+
     <section>
         <div class="summary-grid">
             <div class="stat-box">
@@ -209,10 +275,6 @@
         </div>
     </section>
         
-
-    
-
-    
         <div class="prop-card glow-green">
             <div class="card-header">
                 <div class="header-left">
@@ -230,12 +292,12 @@
                 <div class="bet-main-row">
                     <div class="bet-selection">
                         <span class="txt-red">UNDER</span> 
-                        <span class="line">20.5 PTS</span> 
-                        <span class="bet-odds">-105</span>
+                        <span class="line">19.5 PTS</span> 
+                        <span class="bet-odds">-125</span>
                     </div>
                 </div>
                 <div class="model-subtext">
-                    Model Predicts: <strong>15.3 PTS</strong> (Edge: 2.6)
+                    Model Predicts: <strong>16.3 PTS</strong> (Edge: 1.6)
                 </div>
 
                 <!-- TALE OF THE TAPE -->
@@ -257,7 +319,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+36.7%</span>
+                        <span class="metric-val txt-green">+26.0%</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">WIN %</span>
@@ -268,7 +330,6 @@
                 <div class="tags-container">
                     <span class="tag tag-blue">Opp allows 109.8 PPG</span>
 <span class="tag tag-blue">Avg 17.8 L10 Games</span>
-<span class="tag tag-green">Edge +2.6</span>
 
                 </div>
             </div>
@@ -292,7 +353,7 @@
                     <div class="bet-selection">
                         <span class="txt-red">UNDER</span> 
                         <span class="line">14.5 PTS</span> 
-                        <span class="bet-odds">-110</span>
+                        <span class="bet-odds">-105</span>
                     </div>
                 </div>
                 <div class="model-subtext">
@@ -318,7 +379,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+33.6%</span>
+                        <span class="metric-val txt-green">+36.7%</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">WIN %</span>
@@ -353,7 +414,7 @@
                     <div class="bet-selection">
                         <span class="txt-red">UNDER</span> 
                         <span class="line">10.5 PTS</span> 
-                        <span class="bet-odds">-115</span>
+                        <span class="bet-odds">-110</span>
                     </div>
                 </div>
                 <div class="model-subtext">
@@ -379,7 +440,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+30.9%</span>
+                        <span class="metric-val txt-green">+33.6%</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">WIN %</span>
@@ -413,7 +474,7 @@
                     <div class="bet-selection">
                         <span class="txt-red">UNDER</span> 
                         <span class="line">11.5 PTS</span> 
-                        <span class="bet-odds">-105</span>
+                        <span class="bet-odds">-120</span>
                     </div>
                 </div>
                 <div class="model-subtext">
@@ -439,7 +500,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+36.7%</span>
+                        <span class="metric-val txt-green">+28.3%</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">WIN %</span>
@@ -473,12 +534,12 @@
                 <div class="bet-main-row">
                     <div class="bet-selection">
                         <span class="txt-red">UNDER</span> 
-                        <span class="line">12.5 PTS</span> 
-                        <span class="bet-odds">-105</span>
+                        <span class="line">11.5 PTS</span> 
+                        <span class="bet-odds">-130</span>
                     </div>
                 </div>
                 <div class="model-subtext">
-                    Model Predicts: <strong>1.7 PTS</strong> (Edge: 5.4)
+                    Model Predicts: <strong>2.7 PTS</strong> (Edge: 4.4)
                 </div>
 
                 <!-- TALE OF THE TAPE -->
@@ -500,7 +561,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+36.7%</span>
+                        <span class="metric-val txt-green">+23.9%</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">WIN %</span>
@@ -511,14 +572,12 @@
                 <div class="tags-container">
                     <span class="tag tag-blue">Opp allows 116.1 PPG</span>
 <span class="tag tag-blue">Avg 9.0 L10 Games</span>
-<span class="tag tag-green">Strong Edge +5.4</span>
+<span class="tag tag-green">Strong Edge +4.4</span>
 
                 </div>
             </div>
         </div>
         
-
-    
         <section style="margin-top: 2rem;">
             <div class="section-title">📅 Daily Performance</div>
             <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -543,8 +602,82 @@
             </div>
         </section>
         
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">4-6</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">40%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-2.4u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-24.0%</div>
+                        </div>
+                    </div>
+                </div>
 
-    
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">7-13</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">35%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-6.8u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-34.0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 50 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">21-29</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value text-red">42%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-10.3u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-20.7%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     <section>
         <div class="section-title">NBA Points Model Performance</div>
         <div class="summary-grid">
@@ -566,8 +699,4 @@
             </div>
         </div>
     </section>
-        
-</div>
-
-</body>
-</html>
+        </div></body></html>
