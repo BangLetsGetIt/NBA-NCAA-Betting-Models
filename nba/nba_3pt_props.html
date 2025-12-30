@@ -28,7 +28,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 650px; margin: 0 auto; }
 
         header {
             display: flex;
@@ -38,32 +38,32 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
-        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
-        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
         }
         .stat-box {
             background-color: var(--bg-card);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
-        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 700; }
 
         .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
             display: flex; align-items: center;
         }
-        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 13px; }
 
         .prop-card {
             background-color: var(--bg-card);
@@ -75,7 +75,7 @@
         }
 
         .card-header {
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -83,35 +83,35 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
-        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
-        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         .game-meta { text-align: right; }
-        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+        .game-date-time { font-size: 11px; color: var(--text-secondary); background: #333; padding: 4px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
 
-        .card-body { padding: 20px; }
-        .bet-main-row { margin-bottom: 15px; }
-        .bet-selection { font-size: 22px; font-weight: 800; }
+        .card-body { padding: 16px; }
+        .bet-main-row { margin-bottom: 12px; }
+        .bet-selection { font-size: 20px; font-weight: 800; }
         .bet-selection .line { color: var(--text-primary); }
-        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+        .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
-        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .model-subtext strong { color: var(--text-primary); }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
-        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .metric-val { font-size: 16px; font-weight: 700; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
+        .metric-val { font-size: 14px; font-weight: 700; }
 
-        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
-        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 14px; font-weight: 700; }
         .player-stats-item { text-align: center; flex: 1; }
         .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
 
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
 
         .txt-green { color: var(--accent-green); }
         .txt-red { color: var(--accent-red); }
@@ -121,7 +121,7 @@
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
         
         .metric-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -129,22 +129,22 @@
             font-weight: 600;
         }
         .text-red { color: var(--accent-red); }
-        .tracking-section { margin-top: 3rem; }
+        .tracking-section { margin-top: 2.5rem; }
         .tracking-header { 
-            font-size: 1.5rem; 
+            font-size: 1.25rem; 
             font-weight: 700; 
             color: var(--text-primary); 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.25rem; 
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
         }
         .metrics-row {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
         .metric-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -152,7 +152,7 @@
             font-weight: 600;
         }
         .metric-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: var(--text-primary);
         }
@@ -164,6 +164,68 @@
             .card-header { padding: 12px 15px; }
             .team-logo { width: 38px; height: 38px; }
             .player-info h2 { font-size: 16px; }
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .nav-pill {
+            padding: 8px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .stat-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
         }
     
     </style>
@@ -180,533 +242,14 @@
         <div style="text-align: right;">
             <div class="metric-title">SEASON RECORD</div>
             <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
-                53-22 (70.7%)
+                60-27 (69.0%)
             </div>
             <div style="font-size: 0.9rem; color: var(--accent-green);">
-                 +9.5u
+                 +9.2u
             </div>
         </div>
     </header>
-<section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 7.5</span></div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png" alt="Indiana Pacers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Aaron Nesmith</h2>
-                        <div class="matchup-info">Pacers @ Rockets</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">+100</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>4.1 3PM</strong> (Edge: +1.3)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+40.0%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-blue">Good Edge</span>
-<span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-blue">⏳ CLV: Tracking</span>
 
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="New York Knicks Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Jalen Brunson</h2>
-                        <div class="matchup-info">Knicks @ Pelicans</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">2.5 3PT</span> 
-                        <span class="bet-odds">-125</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>3.5 3PM</strong> (Edge: +0.5)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+26.0%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-green">Hot Shooter</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-blue">➖ CLV: Neutral</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="New York Knicks Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Mikal Bridges</h2>
-                        <div class="matchup-info">Knicks @ Pelicans</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-240</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>3.3 3PM</strong> (Edge: +0.9)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.6</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-19.6%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-green">✅ CLV: Beat Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" alt="New York Knicks Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Miles McBride</h2>
-                        <div class="matchup-info">Knicks @ Pelicans</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-190</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>4.1 3PM</strong> (Edge: +1.3)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+6.8%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-blue">Good Edge</span>
-<span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-green">Hot Shooter</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-green">✅ CLV: Beat Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" alt="San Antonio Spurs Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Harrison Barnes</h2>
-                        <div class="matchup-info">Cavaliers @ Spurs</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-155</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>2.9 3PM</strong> (Edge: +0.7)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.6</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-9.1%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-red">Cold Streak</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-red">⚠️ CLV: Missed Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" alt="Cleveland Cavaliers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Sam Merrill</h2>
-                        <div class="matchup-info">Cavaliers @ Spurs</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">2.5 3PT</span> 
-                        <span class="bet-odds">-160</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>4.3 3PM</strong> (Edge: +0.9)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.8</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-7.8%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-red">Cold Streak</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-red">⚠️ CLV: Missed Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" alt="Cleveland Cavaliers Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Donovan Mitchell</h2>
-                        <div class="matchup-info">Cavaliers @ Spurs</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">3.5 3PT</span> 
-                        <span class="bet-odds">-105</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>4.5 3PM</strong> (Edge: +0.5)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.6</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+4.9%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-blue">⏳ CLV: Tracking</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png" alt="Brooklyn Nets Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Cam Thomas</h2>
-                        <div class="matchup-info">Warriors @ Nets</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 07:40 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-165</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>2.7 3PM</strong> (Edge: +0.6)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.6</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+3.6%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Hot Shooter</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-green">✅ CLV: Beat Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" alt="Oklahoma City Thunder Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Shai Gilgeous-Alexander</h2>
-                        <div class="matchup-info">Hawks @ Thunder</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 08:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-125</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>2.7 3PM</strong> (Edge: +0.6)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">7.5</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-1.9%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">44%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-blue">⏳ CLV: Tracking</span>
-
-                </div>
-            </div>
-        </div></section>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" alt="Phoenix Suns Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>Devin Booker</h2>
-                        <div class="matchup-info">Suns @ Wizards</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 07:10 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">2.5 3PT</span> 
-                        <span class="bet-odds">-185</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>0.9 3PM</strong> (Edge: 0.8)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+7.8%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-red">Cold Streak</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-red">⚠️ CLV: Missed Line</span>
-
-                </div>
-            </div>
-        </div>
-        <div class="prop-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/gs.png" alt="Golden State Warriors Logo" class="team-logo">
-                    <div class="player-info">
-                        <h2>De'Anthony Melton</h2>
-                        <div class="matchup-info">Warriors @ Nets</div>
-                    </div>
-                </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Mon 12/29 07:40 PM ET</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <div class="bet-selection">
-                        <span class="txt-red">UNDER</span> 
-                        <span class="line">1.5 3PT</span> 
-                        <span class="bet-odds">-240</span>
-                    </div>
-                </div>
-                <div class="model-subtext">
-                    Model Predicts: <strong>-0.3 3PM</strong> (Edge: 0.9)
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-red">-0.8%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-red">Strong 3PT Defense</span>
-<span class="tag tag-blue">⏳ CLV: Tracking</span>
-
-                </div>
-            </div>
-        </div>
         <section style="margin-top: 2rem;">
             <div class="section-title">📅 Daily Performance</div>
             <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -723,9 +266,9 @@
                 <div class="prop-card" style="padding: 1rem; margin:0;">
                     <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
                     <div style="text-align:center;">
-                        <div style="font-weight:700; font-size:1.1rem;">2-1</div>
-                        <div class="txt-green">+0.1u</div>
-                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">4.7% ROI</div>
+                        <div style="font-weight:700; font-size:1.1rem;">7-5</div>
+                        <div class="txt-red">-0.3u</div>
+                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">-2.3% ROI</div>
                     </div>
                 </div>
             </div>
@@ -742,7 +285,30 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
                         <div>
                             <div class="metric-label">Record</div>
-                            <div class="metric-value">6-4</div>
+                            <div class="metric-value">5-5</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value ">50%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value text-red">-1.4u</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value text-red">-14.1%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">12-8</div>
                         </div>
                         <div>
                             <div class="metric-label">Win Rate</div>
@@ -754,30 +320,7 @@
                         </div>
                         <div>
                             <div class="metric-label">ROI</div>
-                            <div class="metric-value text-red">-5.7%</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Last 20 -->
-                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
-                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
-                        <div>
-                            <div class="metric-label">Record</div>
-                            <div class="metric-value">11-9</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Win Rate</div>
-                            <div class="metric-value good">55%</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Profit</div>
-                            <div class="metric-value text-red">-2.9u</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">ROI</div>
-                            <div class="metric-value text-red">-14.7%</div>
+                            <div class="metric-value text-red">-3.2%</div>
                         </div>
                     </div>
                 </div>
@@ -788,19 +331,19 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
                         <div>
                             <div class="metric-label">Record</div>
-                            <div class="metric-value">34-16</div>
+                            <div class="metric-value">31-19</div>
                         </div>
                         <div>
                             <div class="metric-label">Win Rate</div>
-                            <div class="metric-value good">68%</div>
+                            <div class="metric-value good">62%</div>
                         </div>
                         <div>
                             <div class="metric-label">Profit</div>
-                            <div class="metric-value good">+4.6u</div>
+                            <div class="metric-value text-red">-0.4u</div>
                         </div>
                         <div>
                             <div class="metric-label">ROI</div>
-                            <div class="metric-value good">+9.2%</div>
+                            <div class="metric-value text-red">-0.9%</div>
                         </div>
                     </div>
                 </div>
@@ -812,19 +355,19 @@
         <div class="summary-grid">
             <div class="stat-box">
                 <div class="stat-label">Overall Record</div>
-                <div class="stat-value">53-22</div>
+                <div class="stat-value">60-27</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">ROI</div>
-                <div class="stat-value txt-green">+12.6%</div>
+                <div class="stat-value txt-green">+10.6%</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">OVER: 36-17</div>
-                <div class="stat-value txt-green">+11.9% ROI</div>
+                <div class="stat-label">OVER: 41-22</div>
+                <div class="stat-value txt-green">+8.1% ROI</div>
             </div>
             <div class="stat-box">
-                <div class="stat-label">UNDER: 17-5</div>
-                <div class="stat-value txt-green">+14.3% ROI</div>
+                <div class="stat-label">UNDER: 19-5</div>
+                <div class="stat-value txt-green">+16.9% ROI</div>
             </div>
         </div>
     </section></div></body></html>
