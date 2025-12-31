@@ -4980,11 +4980,11 @@
       "edge": 13.6,
       "pick": "\u2705 BET: Indiana Pacers +4.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 110,
+      "actual_away_score": 112,
       "clv_status": null
     },
     {
@@ -5002,11 +5002,11 @@
       "edge": 9.1,
       "pick": "\u2705 BET: OVER 225.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 110,
+      "actual_away_score": 112,
       "clv_status": "positive"
     },
     {
@@ -5042,7 +5042,7 @@
       "model_line": 13.6,
       "market_line": 1.0,
       "opening_line": 1.0,
-      "closing_line": -2.0,
+      "closing_line": -1.5,
       "edge": 14.6,
       "pick": "\u2705 BET: Chicago Bulls +1.0",
       "units": 1,
@@ -5064,7 +5064,7 @@
       "model_line": 239.0,
       "market_line": 245.0,
       "opening_line": 245.0,
-      "closing_line": 248.0,
+      "closing_line": 248.5,
       "edge": -6.0,
       "pick": "\u2705 BET: UNDER 245.0",
       "units": 1,
@@ -5188,9 +5188,9 @@
   ],
   "summary": {
     "total_picks": 252,
-    "wins": 131,
-    "losses": 109,
+    "wins": 132,
+    "losses": 110,
     "pushes": 2,
-    "pending": 10
+    "pending": 8
   }
 }
