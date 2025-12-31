@@ -1903,7 +1903,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                  {s_prof_str}
             </div>
         </div>
-        </div>
+
     </header>
 
     <div class="nav-bar">
