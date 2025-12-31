@@ -1515,19 +1515,19 @@ def format_game_datetime(game_time_str):
 def calculate_player_stats(player_name, tracking_data):
     """Calculate per-player stats from tracking data. Returns dict with season_record and player_roi, or None if no data."""
     if not tracking_data or not tracking_data.get('picks'):
-        return None
+        return {'season_record': '0-0', 'player_roi': 0.0}
     
     player_picks = [p for p in tracking_data['picks'] 
                    if p.get('player') == player_name and p.get('status') in ['win', 'loss']]
     
     if not player_picks:
-        return None
+        return {'season_record': '0-0', 'player_roi': 0.0}
     
     wins = sum(1 for p in player_picks if p.get('status') == 'win')
     losses = sum(1 for p in player_picks if p.get('status') == 'loss')
     
     if wins + losses == 0:
-        return None
+        return {'season_record': '0-0', 'player_roi': 0.0}
     
     # Calculate player ROI
     total_profit_cents = 0
@@ -2091,8 +2091,23 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ai_score = play.get('ai_score', 0)
             win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
             
-            # Player stats HTML (conditional) - REMOVED
+            # Player stats HTML (conditional)
             player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f"""
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
+                </div>
+                """
 
             
             # EV formatting
@@ -2160,6 +2175,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                     </div>
                 </div>
 
+                {player_stats_html}
                 <div class="tags-container">
                     {tags_html}
                 </div>
@@ -2252,8 +2268,23 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ai_score = play.get('ai_score', 0)
             win_prob = min(70, max(40, 50 + (ai_score - 9.5) * 3))
             
-            # Player stats HTML (conditional) - REMOVED
+            # Player stats HTML (conditional)
             player_stats_html = ""
+            if player_stats_data:
+                player_roi_sign = '+' if player_stats_data['player_roi'] > 0 else ''
+                player_stats_html = f"""
+                <div class="player-stats">
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">This Season</div>
+                        <div class="player-stats-value">{player_stats_data['season_record']}</div>
+                    </div>
+                    <div class="player-stats-divider"></div>
+                    <div class="player-stats-item">
+                        <div class="player-stats-label">Player ROI</div>
+                        <div class="player-stats-value txt-green">{player_roi_sign}{player_stats_data['player_roi']:.1f}%</div>
+                    </div>
+                </div>
+                """
 
             
             # EV formatting
@@ -2321,6 +2352,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                     </div>
                 </div>
 
+                {player_stats_html}
                 <div class="tags-container">
                     {tags_html}
                 </div>

@@ -1510,13 +1510,13 @@ def format_game_datetime(game_time_str):
 def calculate_player_stats(player_name, tracking_data):
     """Calculate player-specific stats from tracking data."""
     if not tracking_data:
-        return None
+        return {'season_record': '0-0', 'player_roi': 0.0}
     
     picks = tracking_data.get('picks', [])
     player_picks = [p for p in picks if p.get('player') == player_name and p.get('result') in ['win', 'loss']]
     
     if not player_picks:
-        return None
+        return {'season_record': '0-0', 'player_roi': 0.0}
     
     wins = sum(1 for p in player_picks if p.get('result') == 'win')
     losses = len(player_picks) - wins
