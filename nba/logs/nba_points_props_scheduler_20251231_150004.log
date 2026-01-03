@@ -1,0 +1,126 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Wed Dec 31 15:00:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 31 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 4 picks for 2025-12-31...[0m
+[96m  Fetching batch stats for 12/31/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-31...
+[93m  ⚠️  No stats found for 2025-12-31 yet[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 505 players[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Fetched defense factors for 30 teams[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 9 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/9: Minnesota Timberwolves @ Atlanta Hawks[0m
+[96m  Game 2/9: Orlando Magic @ Indiana Pacers[0m
+[96m  Game 3/9: Phoenix Suns @ Cleveland Cavaliers[0m
+[96m  Game 4/9: New Orleans Pelicans @ Chicago Bulls[0m
+[96m  Game 5/9: New York Knicks @ San Antonio Spurs[0m
+[96m  Game 6/9: Denver Nuggets @ Toronto Raptors[0m
+[96m  Game 7/9: Washington Wizards @ Milwaukee Bucks[0m
+[96m  Game 8/9: Portland Trail Blazers @ Oklahoma City Thunder[0m
+[92m✓ Fetched 200 total player props[0m
+
+[96mAnalyzing 200 player props with REAL stats...[0m
+[92m✓ Found 10 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 10 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 8 props (no player stats found)[0m
+[93m  Skipped 332 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 4 new picks[0m
+[93m✓ Updated odds for 5 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Zaccharie Risacher       [0m | [92mOVER 8.5 PTS   [0m | Atlanta Hawks vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Onyeka Okongwu           [0m | [92mOVER 14.5 PTS  [0m | Atlanta Hawks vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jalen Suggs              [0m | [92mOVER 13.5 PTS  [0m | Orlando Magic vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Aaron Nesmith            [0m | [92mOVER 10.5 PTS  [0m | Indiana Pacers vs Orlando Magic | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Mark Williams            [0m | [92mOVER 11.5 PTS  [0m | Phoenix Suns vs Cleveland Cavaliers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Jaylon Tyson             [0m | [92mOVER 11.5 PTS  [0m | Cleveland Cavaliers vs Phoenix Suns | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Trey Murphy III          [0m | [92mOVER 19.5 PTS  [0m | New Orleans Pelicans vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Jordan Poole             [0m | [92mOVER 14.5 PTS  [0m | New Orleans Pelicans vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Keldon Johnson           [0m | [92mOVER 11.5 PTS  [0m | San Antonio Spurs vs New York Knicks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Miles McBride            [0m | [92mOVER 7.5 PTS   [0m | New York Knicks vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Paolo Banchero           [0m | [91mUNDER 22.5 PTS [0m | Orlando Magic vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Matas Buzelis            [0m | [91mUNDER 15.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Kevin Huerter            [0m | [91mUNDER 15.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Tre Jones                [0m | [91mUNDER 14.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Patrick Williams         [0m | [91mUNDER 8.5 PTS  [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Jalen Smith              [0m | [91mUNDER 11.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Ayo Dosunmu              [0m | [91mUNDER 17.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Peyton Watson            [0m | [91mUNDER 13.5 PTS [0m | Denver Nuggets vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Bruce Brown              [0m | [91mUNDER 9.5 PTS  [0m | Denver Nuggets vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Jalen Williams           [0m | [91mUNDER 19.5 PTS [0m | Oklahoma City Thunder vs Portland Trail Blazers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Wed Dec 31 15:00:31 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 700d36a] Update model outputs - 2025-12-31 15:00:31
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 306 insertions(+), 221 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at d8773d82bbe15ce4d79a1dad48999c7c74134fe8 but expected 7e2e2b8af21bbd7265e633ce6402466b88f68807)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Wed Dec 31 15:00:31 EST 2025

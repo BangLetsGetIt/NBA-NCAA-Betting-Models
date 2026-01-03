@@ -1,0 +1,142 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Tue Dec 30 03:10:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 1 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[92m✓ Found 19 completed games (Free API)[0m
+  ✓ Updating: Dallas Mavericks 122 @ Portland Trail Blazers 125
+    Result: Win
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✅ Updated 1 picks[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✅ Updated 1 picks[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 4 total games[0m
+[92m✓ Filtered to 4 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Memphis Grizzlies +1.0 (Edge: +16.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 232.5 (Edge: +7.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Boston Celtics -7.5 (Edge: -7.6)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Los Angeles Lakers +2.0 (Edge: +6.6)[0m
+[91m❌ Missing stats for Los Angeles Clippers or Sacramento Kings[0m
+[91m❌ Missing stats for Los Angeles Clippers or Sacramento Kings[0m
+[91m❌ Skipping Sacramento Kings @ Los Angeles Clippers - missing model data[0m
+
+[1m[92m✅ Analyzed 3 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mPhiladelphia 76ers @ Memphis Grizzlies[0m
+  🕐 12/30/25 08:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  [93m⚠️ CAUTION: Memphis Grizzlies - Below average: 3-5 (38%) | -2.50u over 8 picks[0m
+  📊 Spread: Market +1.0 | Model +15.5
+  🎯 Total: Market 232.5 | Model 239.8
+  [92m✅ BET: Memphis Grizzlies +1.0[0m
+     [96mModel projects Memphis Grizzlies to win outright, easily covering +1.0.[0m
+  [92m✅ BET: OVER 232.5[0m
+     [96mModel projects 240 total points, bet the OVER[0m
+  📈 Predicted: Philadelphia 76ers 112, Memphis Grizzlies 128
+
+[1m[96mBoston Celtics @ Utah Jazz[0m
+  🕐 12/30/25 09:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.5 ⭐ (GOOD PLAY)[0m
+  [92m🔥 HOT: Boston Celtics - Strong performer: 5-1 (83%) | +3.90u over 6 picks[0m
+  📊 Spread: Market +7.5 | Model -15.1
+  🎯 Total: Market 240.0 | Model 236.5
+  [92m✅ BET: Boston Celtics -7.5[0m
+     [96mModel projects Utah Jazz to lose by 15.1, Boston Celtics covers -7.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Boston Celtics 126, Utah Jazz 111
+
+[1m[96mDetroit Pistons @ Los Angeles Lakers[0m
+  🕐 12/30/25 10:40 PM EST
+  [93m[1m🎯 A.I. Rating: 3.3 ⭐ (STANDARD PLAY)[0m
+  [93m⚠️ CAUTION: Los Angeles Lakers - Below average: 1-2 (33%) | -1.29u over 3 picks[0m
+  📊 Spread: Market +2.0 | Model +4.6
+  🎯 Total: Market 231.5 | Model 236.0
+  [92m✅ BET: Los Angeles Lakers +2.0[0m
+     [96mModel projects Los Angeles Lakers to win outright, easily covering +2.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Detroit Pistons 116, Los Angeles Lakers 120
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 241[0m
+[92mRecord: 129-106-2[0m
+[92mWin Rate: 54.9%[0m
+[92mProfit: +11.56 units[0m
+[92mROI: +4.5%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+✅ Completed: nba_main_model at Tue Dec 30 03:10:59 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 12f3767] Update model outputs - 2025-12-30 03:11:00
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 498 insertions(+), 76 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   353f0ef..12f3767  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 30 03:11:00 EST 2025

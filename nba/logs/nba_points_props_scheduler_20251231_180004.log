@@ -1,0 +1,121 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Wed Dec 31 18:00:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 35 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 16 picks for 2025-12-31...[0m
+[96m  Fetching batch stats for 12/31/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-31...
+    [92mWIN[0m: Kon Knueppel had 20 points (line: 17.5, bet: OVER) | Profit: 0.95 units
+    [91mLOSS[0m: Stephen Curry had 26 points (line: 27.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Brandin Podziemski had 19 points (line: 10.5, bet: OVER) | Profit: 0.76 units
+    [92mWIN[0m: Kon Knueppel had 20 points (line: 16.5, bet: OVER) | Profit: 0.80 units
+    [92mWIN[0m: Zaccharie Risacher had 9 points (line: 8.5, bet: OVER) | Profit: 0.80 units
+    [92mWIN[0m: Onyeka Okongwu had 17 points (line: 14.5, bet: OVER) | Profit: 0.83 units
+    [92mWIN[0m: Jalen Johnson had 34 points (line: 22.5, bet: OVER) | Profit: 0.80 units
+
+[92m✓ Graded 7 picks[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[96m  Filtered to 5 upcoming games[0m
+[96m  Game 1/6: New Orleans Pelicans @ Chicago Bulls[0m
+[96m  Game 2/6: New York Knicks @ San Antonio Spurs[0m
+[96m  Game 3/6: Denver Nuggets @ Toronto Raptors[0m
+[96m  Game 4/6: Washington Wizards @ Milwaukee Bucks[0m
+[96m  Game 5/6: Portland Trail Blazers @ Oklahoma City Thunder[0m
+[92m✓ Fetched 128 total player props[0m
+
+[96mAnalyzing 128 player props with REAL stats...[0m
+[92m✓ Found 8 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 7 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 4 props (no player stats found)[0m
+[93m  Skipped 218 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 2 new picks[0m
+[93m✓ Updated odds for 6 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Keldon Johnson           [0m | [92mOVER 11.5 PTS  [0m | San Antonio Spurs vs New York Knicks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Miles McBride            [0m | [92mOVER 7.5 PTS   [0m | New York Knicks vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Stephon Castle           [0m | [92mOVER 17.5 PTS  [0m | San Antonio Spurs vs New York Knicks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Jordan Clarkson          [0m | [92mOVER 7.5 PTS   [0m | New York Knicks vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Kyle Kuzma               [0m | [92mOVER 10.5 PTS  [0m | Milwaukee Bucks vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Bobby Portis             [0m | [92mOVER 11.5 PTS  [0m | Milwaukee Bucks vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Deni Avdija              [0m | [92mOVER 23.5 PTS  [0m | Portland Trail Blazers vs Oklahoma City Thunder | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Shaedon Sharpe           [0m | [92mOVER 20.5 PTS  [0m | Portland Trail Blazers vs Oklahoma City Thunder | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Matas Buzelis            [0m | [91mUNDER 15.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Kevin Huerter            [0m | [91mUNDER 15.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Patrick Williams         [0m | [91mUNDER 8.5 PTS  [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Jalen Smith              [0m | [91mUNDER 11.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Ayo Dosunmu              [0m | [91mUNDER 17.5 PTS [0m | Chicago Bulls vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Peyton Watson            [0m | [91mUNDER 13.5 PTS [0m | Denver Nuggets vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Bruce Brown              [0m | [91mUNDER 9.5 PTS  [0m | Denver Nuggets vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Wed Dec 31 18:00:35 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 32b279e] Update model outputs - 2025-12-31 18:00:35
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 246 insertions(+), 560 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   1fc1b56..32b279e  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Dec 31 18:00:36 EST 2025

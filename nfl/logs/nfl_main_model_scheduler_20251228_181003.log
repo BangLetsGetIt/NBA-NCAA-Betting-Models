@@ -1,0 +1,131 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Dec 28 18:10:03 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 0.1+ pts (display)
+Spread Logging: 8.0+ pts (sharp +EV)
+Total Threshold: 0.1+ pts (display)
+Total Logging: 12.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 2 pending picks...
+
+🏈 Fetching completed NFL scores...
+   Found 10 completed games
+   ✅ WIN: Seattle Seahawks -7.0
+   ✅ WIN: Cincinnati Bengals -7.5
+
+   ✅ Graded 2 picks!
+
+📡 Fetching current NFL odds...
+Fetched 6 games, filtered to 4 upcoming.
+✅ Found 4 games
+
+🔍 Analyzing games...
+
+Chicago Bears @ San Francisco 49ers
+  🕐 2025-12-29T01:20:00Z
+  📊 Ratings: San Francisco 49ers (67.3) vs Chicago Bears (49.2)
+  📈 Predicted: San Francisco 49ers 33.5, Chicago Bears 12.7
+  SPREAD (⭐ LOGGED):
+    Market: San Francisco 49ers -3.5
+    Model:  20.8
+    Edge:   +24.3
+    ✅ SHARP BET: San Francisco 49ers -3.5
+  TOTAL (👁️ Display Only):
+    Market: 51.5
+    Model:  46.1
+    Edge:   -5.4
+    ⚠️  Below logging threshold: UNDER 51.5
+
+Los Angeles Rams @ Atlanta Falcons
+  🕐 2025-12-30T01:15:00Z
+  📊 Ratings: Atlanta Falcons (61.7) vs Los Angeles Rams (55.6)
+  📈 Predicted: Atlanta Falcons 27.6, Los Angeles Rams 18.7
+  SPREAD (👁️ Display Only):
+    Market: Atlanta Falcons +7.5
+    Model:  8.9
+    Edge:   +1.4
+    ⚠️  Below logging threshold: Atlanta Falcons +7.5
+  TOTAL (👁️ Display Only):
+    Market: 50.0
+    Model:  46.3
+    Edge:   -3.7
+    ⚠️  Below logging threshold: UNDER 50.0
+
+Baltimore Ravens @ Pittsburgh Steelers
+  🕐 2026-01-04T18:00:00Z
+  📊 Ratings: Pittsburgh Steelers (64.8) vs Baltimore Ravens (71.2)
+  📈 Predicted: Pittsburgh Steelers 23.6, Baltimore Ravens 27.4
+  SPREAD (👁️ Display Only):
+    Market: Pittsburgh Steelers +3.0
+    Model:  -3.7
+    Edge:   -6.7
+    ⚠️  Below logging threshold: Baltimore Ravens -3.0
+  TOTAL (👁️ Display Only):
+    Market: 43.5
+    Model:  51.0
+    Edge:   +7.5
+    ⚠️  Below logging threshold: OVER 43.5
+
+Carolina Panthers @ Tampa Bay Buccaneers
+  🕐 2026-01-04T18:00:00Z
+  📊 Ratings: Tampa Bay Buccaneers (59.4) vs Carolina Panthers (36.2)
+  📈 Predicted: Tampa Bay Buccaneers 33.4, Carolina Panthers 7.5
+  SPREAD (⭐ LOGGED):
+    Market: Tampa Bay Buccaneers -3.5
+    Model:  25.9
+    Edge:   +29.4
+    ✅ SHARP BET: Tampa Bay Buccaneers -3.5
+  TOTAL (👁️ Display Only):
+    Market: 45.5
+    Model:  40.9
+    Edge:   -4.6
+    ⚠️  Below logging threshold: UNDER 45.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 4
+Bets Logged:    2 (high-confidence +EV only)
+Total Tracked:  54
+Completed:      51
+Pending:        3
+Win Rate:       47.1%
+ROI:            -10.1%
+Total Profit:   $-516.00
+============================================================
+✅ Completed: nfl_main_model at Sun Dec 28 18:10:04 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 8f1ef2e] Update model outputs - 2025-12-28 18:10:04
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 337 insertions(+), 3 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   94abd1c..8f1ef2e  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Dec 28 18:10:05 EST 2025

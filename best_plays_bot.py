@@ -313,13 +313,65 @@ def get_confidence_tier(score):
         return '📊 PLAY', '#8e8e93'
 
 
+def deduplicate_tracking(plays):
+    """
+    Remove duplicate plays from tracking data.
+    Keeps the most recent entry with a graded status (win/loss) if available.
+    Key: (player, bet_type, game_date, line)
+    """
+    if not plays:
+        return plays
+    
+    seen = {}  # key -> (index, play)
+    
+    for i, p in enumerate(plays):
+        # Normalize key components
+        player = (p.get('player') or '').strip().lower()
+        bet_type = (p.get('bet_type') or '').strip().upper()
+        line = str(p.get('line', ''))
+        
+        # Extract date from game_time
+        game_time = p.get('game_time', '')
+        if isinstance(game_time, str):
+            game_date = game_time[:10]  # YYYY-MM-DD
+        else:
+            game_date = str(game_time)[:10] if game_time else ''
+        
+        key = f"{player}_{bet_type}_{game_date}_{line}"
+        
+        if key in seen:
+            # Compare: prefer graded status over pending
+            existing = seen[key][1]
+            existing_status = (existing.get('status') or 'pending').lower()
+            new_status = (p.get('status') or 'pending').lower()
+            
+            # Priority: win/loss > void > pending
+            status_priority = {'win': 3, 'loss': 3, 'void': 2, 'pending': 1}
+            if status_priority.get(new_status, 0) >= status_priority.get(existing_status, 0):
+                seen[key] = (i, p)
+        else:
+            seen[key] = (i, p)
+    
+    # Return deduplicated list in original order
+    deduped = [v[1] for v in sorted(seen.values(), key=lambda x: x[0])]
+    
+    if len(plays) != len(deduped):
+        print(f"   🧹 Cleaned {len(plays) - len(deduped)} duplicate entries")
+    
+    return deduped
+
+
 def load_fire_tracking():
-    """Load Fire plays tracking data"""
+    """Load Fire plays tracking data and deduplicate"""
     if not os.path.exists(FIRE_TRACKING_FILE):
         return {'plays': [], 'record': {'wins': 0, 'losses': 0, 'win_rate': 0.0}}
     try:
         with open(FIRE_TRACKING_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+        # Deduplicate on load
+        if 'plays' in data:
+            data['plays'] = deduplicate_tracking(data['plays'])
+        return data
     except:
         return {'plays': [], 'record': {'wins': 0, 'losses': 0, 'win_rate': 0.0}}
 

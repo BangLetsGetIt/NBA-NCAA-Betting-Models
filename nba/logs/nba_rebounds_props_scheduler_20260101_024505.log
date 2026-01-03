@@ -1,0 +1,99 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Thu Jan  1 02:45:05 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 8 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+[96m  Fetching batch stats for 12/30/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-31...
+[96m  Fetching batch stats for 12/31/2025...[0m
+    [92mWIN[0m: Yves Missi had 6 rebounds (line: 3.5, bet: OVER) | Profit: 0.61 units
+    [91mLOSS[0m: Isaac Okoro had 5 rebounds (line: 3.5, bet: UNDER) | Profit: -1.00 units
+    [91mLOSS[0m: Peyton Watson had 8 rebounds (line: 5.5, bet: UNDER) | Profit: -1.00 units
+
+[92m✓ Graded 3 picks[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 5 upcoming games[0m
+[96m  Filtered to 5 upcoming games[0m
+[96m  Game 1/5: Houston Rockets @ Brooklyn Nets[0m
+[96m  Game 2/5: Miami Heat @ Detroit Pistons[0m
+[96m  Game 3/5: Philadelphia 76ers @ Dallas Mavericks[0m
+[96m  Game 4/5: Boston Celtics @ Sacramento Kings[0m
+[96m  Game 5/5: Utah Jazz @ Los Angeles Clippers[0m
+[92m✓ Fetched 56 player rebounds props (grouped)[0m
+
+[96mAnalyzing 56 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 5 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 105 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 5 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Kyle Filipowski          [0m | [91mUNDER 8.5 REB  [0m | Utah Jazz                 vs Los Angeles Clippers      | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Brice Sensabaugh         [0m | [91mUNDER 4.5 REB  [0m | Utah Jazz                 vs Los Angeles Clippers      | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. John Collins             [0m | [91mUNDER 6.5 REB  [0m | Los Angeles Clippers      vs Utah Jazz                 | [1mA.I.: 10.00[0m | Rating: 4.2 ⭐⭐
+  [96m 4. Taylor Hendricks         [0m | [91mUNDER 4.5 REB  [0m | Utah Jazz                 vs Los Angeles Clippers      | [1mA.I.: 10.00[0m | Rating: 4.1 ⭐⭐
+  [96m 5. Brook Lopez              [0m | [91mUNDER 6.5 REB  [0m | Los Angeles Clippers      vs Utah Jazz                 | [1mA.I.: 10.00[0m | Rating: 4.1 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Thu Jan  1 02:45:14 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 9f62e32] Update model outputs - 2026-01-01 02:45:14
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 499 insertions(+), 38 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   8da2c87..9f62e32  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Thu Jan  1 02:45:15 EST 2026

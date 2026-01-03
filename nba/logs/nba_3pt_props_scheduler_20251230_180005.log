@@ -1,0 +1,95 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Tue Dec 30 18:00:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 5 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[96m  Fetching season 3-pointers stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL 3-pointers stats for 505 players[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Fetched 3-pointers factors for 30 teams[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/8: Philadelphia 76ers @ Memphis Grizzlies[0m
+[96m  Game 2/8: Boston Celtics @ Utah Jazz[0m
+[96m  Game 3/8: Detroit Pistons @ Los Angeles Lakers[0m
+[96m  Game 4/8: Sacramento Kings @ Los Angeles Clippers[0m
+[96m  Game 5/8: Minnesota Timberwolves @ Atlanta Hawks[0m
+[96m  Game 6/8: Orlando Magic @ Indiana Pacers[0m
+[96m  Game 7/8: Phoenix Suns @ Cleveland Cavaliers[0m
+[96m  Game 8/8: New York Knicks @ San Antonio Spurs[0m
+[92m✓ Fetched 37 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 37 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 1 top UNDER plays (A.I. Score >= 7.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 70 props (score below 7.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 2 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Lauri Markkanen          [0m | [92mOVER 2.5 3PT   [0m | Utah Jazz                 vs Boston Celtics            | [1mA.I.: 7.70[0m | Rating: 3.8 ⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Brice Sensabaugh         [0m | [91mUNDER 2.5 3PT  [0m | Utah Jazz                 vs Boston Celtics            | [1mA.I.: 7.54[0m | Rating: 3.2 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Tue Dec 30 18:00:53 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main cb2b6c8] Update model outputs - 2025-12-30 18:00:53
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 10 insertions(+), 132 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   7e8acbe..cb2b6c8  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 30 18:00:54 EST 2025

@@ -50,7 +50,7 @@ TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_rebounds_props_tracking.json")
 
 # Model Parameters - STRICT FOR PROFITABILITY
 MIN_AI_SCORE = 10.0  # Raised to 10+ after analysis (60.9% hit rate vs 37-50% below 10)
-TOP_PLAYS_COUNT = 5  # Quality over quantity
+TOP_PLAYS_COUNT = 10  # Quality over quantity
 RECENT_GAMES_WINDOW = 10
 CURRENT_SEASON = "2025-26"
 
@@ -145,6 +145,8 @@ def track_new_picks(over_plays, under_plays):
                 'game_time': play.get('game_time'),
                 'season_avg': play.get('season_avg'),
                 'recent_avg': play.get('recent_avg'),
+                'edge': play.get('edge'),
+                'ev': play.get('ev'),
                 'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
                 'status': 'pending',
                 'result': None,
@@ -163,68 +165,52 @@ def track_new_picks(over_plays, under_plays):
     if new_count == 0 and updated_count == 0:
         print(f"{Colors.CYAN}No new picks to track{Colors.END}")
 
-def fetch_player_rebounds_from_nba_api(player_name, team_name, game_date_str):
+
+def fetch_all_player_stats_for_date(game_date_str):
     """
-    Fetch actual player rebounds from NBA API for a specific game
-    Returns the actual rebounds count or None if not found
+    Fetch all player stats for a specific date in one batch request
+    Returns a dictionary mapping player_name -> rebounds
     """
     try:
-        # Find player ID
-        player_list = players.get_players()
-        player_info = None
+        # Fetch daily player stats
+        target_date = datetime.strptime(game_date_str, '%Y-%m-%d').strftime('%m/%d/%Y')
         
-        # Match player name (handle variations)
-        name_parts = player_name.lower().split()
-        for p in player_list:
-            p_name = p['full_name'].lower()
-            p_parts = p_name.split()
-            if len(name_parts) >= 2 and len(p_parts) >= 2:
-                if name_parts[0] in p_parts[0] and name_parts[-1] in p_parts[-1]:
-                    player_info = p
-                    break
+        print(f"{Colors.CYAN}  Fetching batch stats for {target_date}...{Colors.END}")
         
-        if not player_info:
-            print(f"{Colors.YELLOW}    Could not find player {player_name} in NBA API{Colors.END}")
-            return None
+        # Use LeagueDashPlayerStats helper to get everything at once
+        daily_stats = leaguedashplayerstats.LeagueDashPlayerStats(
+            season=CURRENT_SEASON,
+            date_from_nullable=target_date,
+            date_to_nullable=target_date,
+            measure_type_detailed_defense='Base',
+            per_mode_detailed='PerGame',
+            timeout=30
+        )
         
-        player_id = player_info['id']
-        
-        # Get player game log
-        game_log = playergamelog.PlayerGameLog(player_id=player_id, season=CURRENT_SEASON, timeout=30)
-        df = game_log.get_data_frames()[0]
+        df = daily_stats.get_data_frames()[0]
         
         if df.empty:
-            return None
-        
-        # Find the game by date
-        target_date = datetime.strptime(game_date_str, '%Y-%m-%d').date()
-        
+            return {}
+            
+        # Create mapping of player name -> rebounds
+        stats_map = {}
         for _, row in df.iterrows():
-            game_date_str_nba = row.get('GAME_DATE', '')
-            if not game_date_str_nba:
-                continue
+            name = row.get('PLAYER_NAME', '').lower()
+            reb = row.get('REB', 0)
+            stats_map[name] = int(reb)
             
-            # Parse NBA date format (usually "DEC 11, 2025" or similar)
-            try:
-                game_date = datetime.strptime(game_date_str_nba, '%b %d, %Y').date()
-            except:
-                try:
-                    game_date = datetime.strptime(game_date_str_nba, '%Y-%m-%d').date()
-                except:
-                    continue
-            
-            if game_date == target_date:
-                rebounds = row.get('REB', 0)
-                return int(rebounds) if rebounds else 0
-        
-        return None
+        return stats_map
         
     except Exception as e:
-        print(f"{Colors.YELLOW}  Error fetching stats from NBA API for {player_name}: {str(e)}{Colors.END}")
-        return None
+        print(f"{Colors.YELLOW}  Error fetching batch stats for {game_date_str}: {e}{Colors.END}")
+        return {}
+
+def fetch_player_rebounds_from_nba_api(player_name, team_name, game_date_str):
+    """Legacy wrapper - redirected to use batch fetching in grade_pending_picks"""
+    return None # Should not be called directly in new logic
 
 def grade_pending_picks():
-    """Grade pending picks by fetching actual stats from NBA API"""
+    """Grade pending picks using efficient batch stats fetching"""
     tracking_data = load_tracking_data()
     pending_picks = [p for p in tracking_data['picks'] if p.get('status') == 'pending']
     
@@ -239,9 +225,12 @@ def grade_pending_picks():
     
     graded_count = 0
     completed_teams_cache = {}
+    stats_cache = {} # date_str -> {player_name: rebounds}
+    
+    # Sort pending picks by date to optimize batch processing
+    pending_picks.sort(key=lambda x: x.get('game_time', ''))
     
     for pick in pending_picks:
-        # Check if game has passed (add 4 hour buffer for games to complete)
         try:
             game_time_str = pick.get('game_time')
             if not game_time_str:
@@ -249,58 +238,76 @@ def grade_pending_picks():
                 
             game_time_utc = datetime.fromisoformat(game_time_str.replace('Z', '+00:00'))
             current_time = datetime.now(pytz.UTC)
-            hours_since_game = (current_time - game_time_utc).total_seconds() / 3600
             
-            # Determine game status early to skip buffer if final
+            # Determine game date
             et_tz = pytz.timezone('US/Eastern')
             game_date = game_time_utc.astimezone(et_tz).strftime('%Y-%m-%d')
             
+            # 1. Update team completion status for this date
             if game_date not in completed_teams_cache:
                 completed_teams_cache[game_date] = fetch_completed_teams_for_date(game_date)
             
-            # Check if team's game is completed
-            is_game_final = False
-            team_name = pick.get('team')
-            if team_name in completed_teams_cache[game_date]:
-                is_game_final = True
+            # 2. Update stats cache for this date
+            if game_date not in stats_cache:
+                 # Only fetch if we have completed games or it is past game time
+                 if completed_teams_cache[game_date] or (current_time > game_time_utc):
+                     stats_cache[game_date] = fetch_all_player_stats_for_date(game_date)
             
-            if hours_since_game < 4 and not is_game_final:
-                continue  # Game too recent and not final, wait
-            
-            # Fetch actual rebounds from NBA API
             player_name = pick.get('player')
-            # game_date already calculated
-            
-            print(f"{Colors.CYAN}  Checking {player_name} ({team_name}) on {game_date}...{Colors.END}")
-            actual_reb = fetch_player_rebounds_from_nba_api(player_name, team_name, game_date)
-            
-            if actual_reb is None:
-                # Check DNP (Did Not Play)
-                if game_date not in completed_teams_cache:
-                    completed_teams_cache[game_date] = fetch_completed_teams_for_date(game_date)
-                
-                if team_name in completed_teams_cache[game_date]:
-                    print(f"{Colors.YELLOW}  ⚠️  Player {player_name} has no stats but game is final -> Marking as DNP/Void{Colors.END}")
-                    pick['status'] = 'void'
-                    pick['result'] = 'DNP'
-                    pick['profit_loss'] = 0
-                    # pick['actual_reb'] = 0
-                    graded_count += 1
-                    continue
-
-                print(f"{Colors.YELLOW}  ⚠ Could not find stats for {player_name} on {game_date} - will retry later{Colors.END}")
-                continue
-            
-            # Grade the pick
+            team_name = pick.get('team')
             prop_line = pick.get('prop_line')
             bet_type = pick.get('bet_type')
             
+            # Check results
+            actual_reb = None
+            is_determined = False
+            
+            # Lookup in batch stats
+            if game_date in stats_cache:
+                batch_stats = stats_cache[game_date]
+                p_key = player_name.lower()
+                
+                # Direct match
+                if p_key in batch_stats:
+                    actual_reb = batch_stats[p_key]
+                else:
+                    # Fuzzy match
+                    for k, v in batch_stats.items():
+                        if p_key in k or k in p_key:
+                             actual_reb = v
+                             break
+            
+            # Determine if final
+            is_game_final = team_name in completed_teams_cache[game_date]
+            
+            if actual_reb is not None:
+                if is_game_final:
+                    is_determined = True
+                elif bet_type == 'over' and actual_reb > prop_line:
+                    is_determined = True # Early Win
+                elif bet_type == 'under' and actual_reb > prop_line: # Wait, if result > line on under, it's a loss, determined
+                     is_determined = True # Early Loss
+
+            if not is_determined:
+                 if is_game_final and actual_reb is None:
+                     # DNP case
+                     print(f"{Colors.YELLOW}  ⚠️  Player {player_name} has no stats but game is final -> Marking as DNP/Void{Colors.END}")
+                     pick['status'] = 'void'
+                     pick['result'] = 'DNP'
+                     pick['profit_loss'] = 0
+                     graded_count += 1
+                     continue
+                 
+                 # Game potentially still going or stats not updated yet
+                 continue
+            
+            # Grade the pick
             if bet_type == 'over':
                 is_win = actual_reb > prop_line
             else:  # under
                 is_win = actual_reb < prop_line
             
-            # Calculate profit/loss - USE OPENING ODDS (the odds the bet was actually placed at)
+            # Calculate profit/loss - USE OPENING ODDS
             odds = pick.get('opening_odds') or pick.get('odds', -110)
             if is_win:
                 if odds > 0:
@@ -826,10 +833,49 @@ def get_nba_team_rosters():
     }
 
 
-def match_player_to_team(player_name: str, home_team: str, away_team: str, rosters: dict):
-    """Match a player to their team based on name matching with rosters."""
+def match_player_to_team(player_name: str, home_team: str, away_team: str, rosters: dict, player_stats: dict = None):
+    """Match a player to their team based on name matching with rosters OR stats cache."""
     full_name_lower = player_name.lower()
 
+    # 1. Try Stats Cache First (Most Accurate)
+    if player_stats:
+        p_data = player_stats.get(player_name)
+        if not p_data:
+             # Fuzzy match
+             for name, data in player_stats.items():
+                 if player_name in name or name in player_name:
+                     p_data = data
+                     break
+        
+        if p_data:
+            team_abbrev = p_data.get('team', '').upper()
+            
+            # Map abbrev to home/away
+            # We need a robust mapping or heuristic. 
+            # Since we have full team names for home/away, let's try to match abbrev
+            # Simple heuristic: First letter match + length or known map.
+            # actually better: We don't have abbrev->full map easily here without adding it.
+            # But we can try to check if the team name contains the abbrev letters or is associated.
+            # EASIER: If we know the team abbrev, we can check known mappings:
+            
+            # Helper to check if abbrev matches team name
+            def abbrev_matches(abbrev, team_name):
+                # Basic map
+                map_lookup = {
+                    'ATL': 'Hawks', 'BOS': 'Celtics', 'BKN': 'Nets', 'CHA': 'Hornets', 'CHI': 'Bulls',
+                    'CLE': 'Cavaliers', 'DAL': 'Mavericks', 'DEN': 'Nuggets', 'DET': 'Pistons', 'GSW': 'Warriors',
+                    'HOU': 'Rockets', 'IND': 'Pacers', 'LAC': 'Clippers', 'LAL': 'Lakers', 'MEM': 'Grizzlies',
+                    'MIA': 'Heat', 'MIL': 'Bucks', 'MIN': 'Timberwolves', 'NOP': 'Pelicans', 'NYK': 'Knicks',
+                    'OKC': 'Thunder', 'ORL': 'Magic', 'PHI': '76ers', 'PHX': 'Suns', 'POR': 'Blazers',
+                    'SAC': 'Kings', 'SAS': 'Spurs', 'TOR': 'Raptors', 'UTA': 'Jazz', 'WAS': 'Wizards'
+                }
+                if map_lookup.get(abbrev) in team_name: return True
+                return False
+
+            if abbrev_matches(team_abbrev, home_team): return home_team, away_team
+            if abbrev_matches(team_abbrev, away_team): return away_team, home_team
+
+    # 2. roster fallback
     if home_team in rosters:
         for roster_name in rosters[home_team]:
             roster_lower = roster_name.lower()
@@ -963,7 +1009,7 @@ def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
 # Odds fetching
 # =============================================================================
 
-def get_player_props():
+def get_player_props(player_stats=None):
     """Fetch player rebounds prop odds from The Odds API.
 
     Returns list of dicts each containing:
@@ -1047,7 +1093,7 @@ def get_player_props():
                             key = (player_name, float(point))
                             if key not in grouped:
                                 player_team, player_opponent = match_player_to_team(
-                                    player_name, home_team, away_team, rosters
+                                    player_name, home_team, away_team, rosters, player_stats
                                 )
                                 grouped[key] = {
                                     "player": player_name,
@@ -1738,8 +1784,15 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
             ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
             
+            # Determine Glow Class
+            glow_class = ""
+            if play.get('ai_score', 0) >= 10.0:
+                glow_class = "glow-green"
+            elif play.get('ai_score', 0) >= 9.0:
+                glow_class = "glow-blue"
+
             over_html += f'''
-        <div class="prop-card">
+        <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
@@ -1763,6 +1816,19 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 <div class="model-subtext">
                     Model Predicts: <strong>{model_prediction:.1f} REB</strong> (Edge: {edge:+.1f})
                 </div>
+                
+                <!-- TALE OF THE TAPE -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-title">Season Avg</div>
+                        <div class="stat-val">{play.get('season_avg', 0)}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">Last 10 Avg</div>
+                        <div class="stat-val {('txt-green' if play.get('recent_avg', 0) > play.get('season_avg', 0) else 'txt-red') if bet_type == 'over' else ('txt-green' if play.get('recent_avg', 0) < play.get('season_avg', 0) else 'txt-red')}">{play.get('recent_avg', 0)}</div>
+                    </div>
+                </div>
+
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <span class="metric-lbl">AI SCORE</span>
@@ -1861,8 +1927,15 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
             ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
             
+            # Determine Glow Class
+            glow_class = ""
+            if play.get('ai_score', 0) >= 10.0:
+                glow_class = "glow-green"
+            elif play.get('ai_score', 0) >= 9.0:
+                glow_class = "glow-blue"
+
             under_html += f'''
-        <div class="prop-card">
+        <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
@@ -1886,6 +1959,19 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 <div class="model-subtext">
                     Model Predicts: <strong>{model_prediction:.1f} REB</strong> (Edge: {edge:.1f})
                 </div>
+
+                <!-- TALE OF THE TAPE -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-title">Season Avg</div>
+                        <div class="stat-val">{play.get('season_avg', 0)}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">Last 10 Avg</div>
+                        <div class="stat-val {('txt-green' if play.get('recent_avg', 0) > play.get('season_avg', 0) else 'txt-red') if bet_type == 'over' else ('txt-green' if play.get('recent_avg', 0) < play.get('season_avg', 0) else 'txt-red')}">{play.get('recent_avg', 0)}</div>
+                    </div>
+                </div>
+
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <span class="metric-lbl">AI SCORE</span>
@@ -2094,7 +2180,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 650px; margin: 0 auto; }
 
         header {
             display: flex;
@@ -2104,32 +2190,32 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
-        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
-        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
         }
         .stat-box {
             background-color: var(--bg-card);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
-        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 700; }
 
         .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
             display: flex; align-items: center;
         }
-        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 13px; }
 
         .prop-card {
             background-color: var(--bg-card);
@@ -2141,7 +2227,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         }
 
         .card-header {
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2149,35 +2235,35 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             border-bottom: 1px solid var(--border-color);
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
-        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
-        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         .game-meta { text-align: right; }
-        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+        .game-date-time { font-size: 11px; color: var(--text-secondary); background: #333; padding: 4px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
 
-        .card-body { padding: 20px; }
-        .bet-main-row { margin-bottom: 15px; }
-        .bet-selection { font-size: 22px; font-weight: 800; }
+        .card-body { padding: 16px; }
+        .bet-main-row { margin-bottom: 12px; }
+        .bet-selection { font-size: 20px; font-weight: 800; }
         .bet-selection .line { color: var(--text-primary); }
-        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+        .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
-        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .model-subtext strong { color: var(--text-primary); }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
-        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .metric-val { font-size: 16px; font-weight: 700; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
+        .metric-val { font-size: 14px; font-weight: 700; }
 
-        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
-        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 14px; font-weight: 700; }
         .player-stats-item { text-align: center; flex: 1; }
         .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
 
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
 
         .txt-green { color: var(--accent-green); }
         .txt-red { color: var(--accent-red); }
@@ -2187,7 +2273,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
         
         .metric-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -2195,22 +2281,22 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             font-weight: 600;
         }
         .text-red { color: var(--accent-red); }
-        .tracking-section { margin-top: 3rem; }
+        .tracking-section { margin-top: 2.5rem; }
         .tracking-header { 
-            font-size: 1.5rem; 
+            font-size: 1.25rem; 
             font-weight: 700; 
             color: var(--text-primary); 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.25rem; 
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
         }
         .metrics-row {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
         .metric-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -2218,7 +2304,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             font-weight: 600;
         }
         .metric-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: var(--text-primary);
         }
@@ -2230,6 +2316,68 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             .card-header { padding: 12px 15px; }
             .team-logo { width: 38px; height: 38px; }
             .player-info h2 { font-size: 16px; }
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .nav-pill {
+            padding: 8px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .stat-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
         }
 """
     
@@ -2272,6 +2420,13 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             </div>
         </div>
     </header>
+
+    <div class="nav-bar">
+        <a href="nba_points_props.html" class="nav-pill">Points</a>
+        <a href="nba_assists_props.html" class="nav-pill">Assists</a>
+        <a href="nba_rebounds_props.html" class="nav-pill active">Rebounds</a>
+        <a href="nba_3pt_props.html" class="nav-pill">3-Pointers</a>
+    </div>
 
     {summary_html}
 
@@ -2320,7 +2475,7 @@ def main():
 
     player_stats = get_nba_player_rebounds_stats()
     reb_factors = get_opponent_rebounding_factors()
-    props_list = get_player_props()
+    props_list = get_player_props(player_stats)
 
     over_plays, under_plays = analyze_props(props_list, player_stats, reb_factors)
 

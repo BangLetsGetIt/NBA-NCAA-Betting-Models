@@ -1,0 +1,111 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Fri Dec 26 18:00:05 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 21 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 503 players[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Fetched defense factors for 30 teams[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 10 upcoming games[0m
+[96m  Filtered to 10 upcoming games[0m
+[96m  Game 1/10: Miami Heat @ Atlanta Hawks[0m
+[96m  Game 2/10: Boston Celtics @ Indiana Pacers[0m
+[96m  Game 3/10: Charlotte Hornets @ Orlando Magic[0m
+[96m  Game 4/10: Toronto Raptors @ Washington Wizards[0m
+[96m  Game 5/10: Philadelphia 76ers @ Chicago Bulls[0m
+[96m  Game 6/10: Phoenix Suns @ New Orleans Pelicans[0m
+[96m  Game 7/10: Milwaukee Bucks @ Memphis Grizzlies[0m
+[96m  Game 8/10: Detroit Pistons @ Utah Jazz[0m
+[96m  Game 9/10: Los Angeles Clippers @ Portland Trail Blazers[0m
+[96m  Game 10/10: Cleveland Cavaliers @ Houston Rockets[0m
+[92m✓ Fetched 226 total player props[0m
+
+[96mAnalyzing 226 player props with REAL stats...[0m
+[92m✓ Found 5 top OVER plays (A.I. Score >= 9.5)[0m
+[92m✓ Found 5 top UNDER plays (A.I. Score >= 9.5)[0m
+[93m  Skipped 10 props (no player stats found)[0m
+[93m  Skipped 364 props (score below 9.5)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Nickeil Alexander-Walker [0m | [92mOVER 17.5 PTS  [0m | Atlanta Hawks vs Miami Heat | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. LaMelo Ball              [0m | [92mOVER 18.5 PTS  [0m | Charlotte Hornets vs Orlando Magic | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Kon Knueppel             [0m | [92mOVER 16.5 PTS  [0m | Charlotte Hornets vs Orlando Magic | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Tre Johnson              [0m | [92mOVER 9.5 PTS   [0m | Washington Wizards vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Khris Middleton          [0m | [92mOVER 8.5 PTS   [0m | Washington Wizards vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Onyeka Okongwu           [0m | [91mUNDER 17.5 PTS [0m | Atlanta Hawks vs Miami Heat | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Andrew Wiggins           [0m | [91mUNDER 17.5 PTS [0m | Atlanta Hawks vs Miami Heat | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Kel'el Ware              [0m | [91mUNDER 16.5 PTS [0m | Miami Heat vs Atlanta Hawks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Jay Huff                 [0m | [91mUNDER 9.5 PTS  [0m | Indiana Pacers vs Boston Celtics | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Paolo Banchero           [0m | [91mUNDER 25.5 PTS [0m | Orlando Magic vs Charlotte Hornets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Fri Dec 26 18:01:21 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 8c1d896] Update model outputs - 2025-12-26 18:01:21
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 96 insertions(+), 109 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   01a4d9a..8c1d896  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Dec 26 18:01:21 EST 2025

@@ -145,6 +145,8 @@ def track_new_picks(over_plays, under_plays):
                 'game_time': play.get('game_time'),
                 'season_avg': play.get('season_avg'),
                 'recent_avg': play.get('recent_avg'),
+                'edge': play.get('edge'),
+                'ev': play.get('ev'),
                 'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
                 'status': 'pending',
                 'result': None,
@@ -1630,7 +1632,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 650px; margin: 0 auto; }
 
         header {
             display: flex;
@@ -1640,32 +1642,32 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
-        h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
-        .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
         }
         .stat-box {
             background-color: var(--bg-card);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
-        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 700; }
 
         .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
             display: flex; align-items: center;
         }
-        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 14px; }
+        .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 13px; }
 
         .prop-card {
             background-color: var(--bg-card);
@@ -1677,7 +1679,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         }
 
         .card-header {
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1685,35 +1687,35 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             border-bottom: 1px solid var(--border-color);
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .team-logo { width: 45px; height: 45px; border-radius: 50%; padding: 2px; object-fit: contain; }
-        .player-info h2 { margin: 0; font-size: 18px; line-height: 1.2; }
-        .matchup-info { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; }
+        .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         .game-meta { text-align: right; }
-        .game-date-time { font-size: 12px; color: var(--text-secondary); background: #333; padding: 6px 10px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+        .game-date-time { font-size: 11px; color: var(--text-secondary); background: #333; padding: 4px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
 
-        .card-body { padding: 20px; }
-        .bet-main-row { margin-bottom: 15px; }
-        .bet-selection { font-size: 22px; font-weight: 800; }
+        .card-body { padding: 16px; }
+        .bet-main-row { margin-bottom: 12px; }
+        .bet-selection { font-size: 20px; font-weight: 800; }
         .bet-selection .line { color: var(--text-primary); }
-        .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+        .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
-        .model-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .model-subtext { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .model-subtext strong { color: var(--text-primary); }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
-        .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .metric-val { font-size: 16px; font-weight: 700; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
+        .metric-val { font-size: 14px; font-weight: 700; }
 
-        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
-        .player-stats-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .player-stats-value { font-size: 16px; font-weight: 700; }
+        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
+        .player-stats-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .player-stats-value { font-size: 14px; font-weight: 700; }
         .player-stats-item { text-align: center; flex: 1; }
         .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
 
-        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { font-size: 12px; padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
 
         .txt-green { color: var(--accent-green); }
         .txt-red { color: var(--accent-red); }
@@ -1723,7 +1725,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
         
         .metric-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -1731,22 +1733,22 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             font-weight: 600;
         }
         .text-red { color: var(--accent-red); }
-        .tracking-section { margin-top: 3rem; }
+        .tracking-section { margin-top: 2.5rem; }
         .tracking-header { 
-            font-size: 1.5rem; 
+            font-size: 1.25rem; 
             font-weight: 700; 
             color: var(--text-primary); 
-            margin-bottom: 1.5rem; 
+            margin-bottom: 1.25rem; 
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
         }
         .metrics-row {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
         .metric-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-secondary);
             letter-spacing: 0.05em;
@@ -1754,7 +1756,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             font-weight: 600;
         }
         .metric-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: var(--text-primary);
         }
@@ -1766,6 +1768,68 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             .card-header { padding: 12px 15px; }
             .team-logo { width: 38px; height: 38px; }
             .player-info h2 { font-size: 16px; }
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .nav-pill {
+            padding: 8px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .stat-val {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
         }
     """
     
@@ -1808,6 +1872,13 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             </div>
         </div>
     </header>
+
+    <div class="nav-bar">
+        <a href="nba_points_props.html" class="nav-pill">Points</a>
+        <a href="nba_assists_props.html" class="nav-pill active">Assists</a>
+        <a href="nba_rebounds_props.html" class="nav-pill">Rebounds</a>
+        <a href="nba_3pt_props.html" class="nav-pill">3-Pointers</a>
+    </div>
 """
 
 
@@ -1888,8 +1959,15 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
             ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
             
+            # Determine Glow Class
+            glow_class = ""
+            if play.get('ai_score', 0) >= 10.0:
+                glow_class = "glow-green"
+            elif play.get('ai_score', 0) >= 9.0:
+                glow_class = "glow-blue"
+
             over_html += f'''
-        <div class="prop-card">
+        <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
@@ -1913,6 +1991,19 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 <div class="model-subtext">
                     Model Predicts: <strong>{model_prediction:.1f} AST</strong> (Edge: {edge:+.1f})
                 </div>
+                
+                <!-- TALE OF THE TAPE -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-title">Season Avg</div>
+                        <div class="stat-val">{play.get('season_avg', 0)}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">Last 10 Avg</div>
+                        <div class="stat-val {('txt-green' if play.get('recent_avg', 0) > play.get('season_avg', 0) else 'txt-red') if bet_type == 'over' else ('txt-green' if play.get('recent_avg', 0) < play.get('season_avg', 0) else 'txt-red')}">{play.get('recent_avg', 0)}</div>
+                    </div>
+                </div>
+
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <span class="metric-lbl">AI SCORE</span>
@@ -2011,8 +2102,15 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             ev_display = f"{ev:+.1f}%" if ev != 0 else "0.0%"
             ev_color_class = "txt-green" if ev > 0 else "txt-red" if ev < 0 else ""
             
+            # Determine Glow Class
+            glow_class = ""
+            if play.get('ai_score', 0) >= 10.0:
+                glow_class = "glow-green"
+            elif play.get('ai_score', 0) >= 9.0:
+                glow_class = "glow-blue"
+
             under_html += f'''
-        <div class="prop-card">
+        <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
@@ -2036,6 +2134,19 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
                 <div class="model-subtext">
                     Model Predicts: <strong>{model_prediction:.1f} AST</strong> (Edge: {edge:.1f})
                 </div>
+
+                <!-- TALE OF THE TAPE -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-title">Season Avg</div>
+                        <div class="stat-val">{play.get('season_avg', 0)}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">Last 10 Avg</div>
+                        <div class="stat-val {('txt-green' if play.get('recent_avg', 0) > play.get('season_avg', 0) else 'txt-red') if bet_type == 'over' else ('txt-green' if play.get('recent_avg', 0) < play.get('season_avg', 0) else 'txt-red')}">{play.get('recent_avg', 0)}</div>
+                    </div>
+                </div>
+
                 <div class="metrics-grid">
                     <div class="metric-item">
                         <span class="metric-lbl">AI SCORE</span>

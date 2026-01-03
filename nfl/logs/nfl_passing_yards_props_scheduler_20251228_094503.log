@@ -1,0 +1,60 @@
+============================================================
+Scheduler run: nfl_passing_yards_props
+Time: Sun Dec 28 09:45:03 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_passing_yards_props_model.py
+============================================================
+[1m🏈 NFL Passing Props Model - Sharp +EV[0m
+
+[96m--- Grading Pending Picks ---[0m
+Graded 0 picks.
+  Found 11 upcoming games (filtered from 11)
+[96mFound 11 upcoming games. Fetching passing props...[0m
+  Game 7aeff5d5bb88b218c7d72f267a90eb7f: Found 13 bookmakers
+  Game 8e7a26b4026e4eca7394cc523fa10a64: Found 13 bookmakers
+  Game e6721ef0adb705a8abcbedc2ef6dfb3a: Found 12 bookmakers
+  Game f960b282ac197513c9d80bd28baa7e38: Found 13 bookmakers
+  Game 374166780155b8c14e867face95885ee: Found 13 bookmakers
+  Game 95bdb9f5b22f0491bfba1381637c5009: Found 13 bookmakers
+  Game d75c88e4fb7650ab0577264980bdf98f: Found 13 bookmakers
+  Game dd4aec72c5175cb8cea67d5edc7b1990: Found 13 bookmakers
+  Game 596df6f5735277fee0cd78e61cd71060: Found 13 bookmakers
+  Game b0dedebd28a82f8f38398033356e9015: Found 13 bookmakers
+  Game ea5fe5f603483c8d46f83081cf780397: Found 12 bookmakers
+
+Analyzing 22 players...
+Deduplicated from 7 to 7 picks.
+
+Found 7 sharp plays:
+  ⭐ Joe Burrow UNDER 267.5 (Proj: 223.1) | Edge: 44.4 | AI: 10.0
+  ⭐ Bryce Young OVER 193.5 (Proj: 218.1) | Edge: 24.6 | AI: 10.0
+  ⭐ Aaron Rodgers OVER 185.5 (Proj: 202.6) | Edge: 17.1 | AI: 8.4
+  ⭐ Baker Mayfield UNDER 223.5 (Proj: 177.3) | Edge: 46.2 | AI: 10.0
+  ⭐ Drake Maye OVER 253.5 (Proj: 272.3) | Edge: 18.8 | AI: 9.8
+  ⭐ Jalen Hurts OVER 189.5 (Proj: 217.3) | Edge: 27.8 | AI: 10.0
+  ⭐ Matthew Stafford OVER 269.5 (Proj: 306.1) | Edge: 36.6 | AI: 10.0
+[96mNo new picks to track[0m
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_passing_yards_props.html
+✅ Completed: nfl_passing_yards_props at Sun Dec 28 09:45:07 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main da09644] Update model outputs - 2025-12-28 09:45:07
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   0f228eb..da09644  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Dec 28 09:45:09 EST 2025

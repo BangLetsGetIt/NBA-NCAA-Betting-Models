@@ -1,0 +1,45 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Wed Dec 24 18:10:05 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 0.1+ pts (display)
+Spread Logging: 8.0+ pts (sharp +EV)
+Total Threshold: 0.1+ pts (display)
+Total Logging: 12.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 1 pending picks...
+
+🏈 Fetching completed NFL scores...
+⚠️ Error fetching scores: 401 Client Error: Unauthorized for url: https://api.the-odds-api.com/v4/sports/americanfootball_nfl/scores/?apiKey=faabaed9ec8604dcc24db96c53d6ae01&daysFrom=3
+
+📡 Fetching current NFL odds...
+Error fetching odds: 401 Client Error: Unauthorized for url: https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=faabaed9ec8604dcc24db96c53d6ae01&regions=us%2Cus2&markets=spreads%2Ctotals&oddsFormat=american
+❌ No games found or API error
+✅ Completed: nfl_main_model at Wed Dec 24 18:10:06 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main cf59e2e] Update model outputs - 2025-12-24 18:10:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   14aea04..cf59e2e  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Dec 24 18:10:07 EST 2025

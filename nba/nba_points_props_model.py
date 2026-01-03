@@ -179,6 +179,8 @@ def track_new_picks(over_plays, under_plays):
                 'game_time': play.get('game_time'),
                 'season_avg': play.get('season_avg'),
                 'recent_avg': play.get('recent_avg'),
+                'edge': play.get('edge'),
+                'ev': play.get('ev'),
                 'tracked_at': datetime.now(pytz.timezone('US/Eastern')).isoformat(),
                 'status': 'pending',
                 'result': None,

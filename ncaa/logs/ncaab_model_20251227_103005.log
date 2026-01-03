@@ -1,0 +1,406 @@
+==========================================
+NCAA Model Run: Sat Dec 27 10:30:05 EST 2025
+==========================================
+Running NCAA Basketball model (IMPROVED)...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 28 pending picks...[0m
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 21 completed games[0m
+[93mNo picks were updated (games may not be complete yet)[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[93m⚠️  Cache expired or missing. Fetching fresh stats from Sports-Reference...[0m
+Fetching NCAA basketball stats for 2025 season...
+Columns found: [' 0_Rk', ' 1_School', ' 2_Conf', ' 3_ 3', ' 4_W', ' 5_L', ' 6_Pts', ' 7_Opp', ' 8_MOV', ' 9_ 9', ' 10_SOS', ' 11_ 11', 'SRS_OSRS', 'SRS_DSRS', 'SRS_SRS', 'Adjusted_ORtg', 'Adjusted_DRtg', 'Adjusted_NRtg']
+
+Sample data:
+   0_Rk  1_School  2_Conf  ...  Adjusted_ORtg Adjusted_DRtg Adjusted_NRtg
+0     1      Duke     ACC  ...         131.42         86.60         44.82
+1     2    Auburn     SEC  ...         129.16         88.83         40.33
+2     3   Houston  Big 12  ...         125.20         82.34         42.86
+
+[3 rows x 18 columns]
+
+✓ Successfully fetched stats for 364 teams
+[92m✓ Stats cached to /Users/rico/sports-models/ncaa/ncaab_stats_cache.json[0m
+
+[1m[96mSTEP 3: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched 21 games from The Odds API[0m
+[92m✓ 21 games in the next 7 days[0m
+
+[1m[96mSTEP 4: Processing Games & Generating Sharp Picks[0m
+
+
+[1m[92m✅ Analyzed 21 games with complete odds[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: CSU Northridge Matadors @ Stanford Cardinal ━━━[0m
+[96m🕐 12/27 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -17.5 | Model: +6.0 | Edge: +23.5
+  [92m✅ BET: CSU Northridge Matadors +17.5[0m
+  [96mHIGH confidence (+23.5 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 164.5 | Model: 145.2 | Edge: -19.3
+  [92m✅ BET: UNDER 164.5[0m
+  [96mHIGH confidence (19.3 edge)[0m
+
+[35m📈 CSU Northridge Matadors 69.6, Stanford Cardinal 75.6[0m
+
+[1m[96m━━━ GAME 2: Le Moyne Dolphins @ Boston College Eagles ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -13.5 | Model: +1.2 | Edge: +14.7
+  [92m✅ BET: Le Moyne Dolphins +13.5[0m
+  [96mHIGH confidence (+14.7 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 146.5 | Model: 133.4 | Edge: -13.1
+  [92m✅ BET: UNDER 146.5[0m
+  [96mHIGH confidence (13.1 edge)[0m
+
+[35m📈 Le Moyne Dolphins 66.1, Boston College Eagles 67.3[0m
+
+[1m[96m━━━ GAME 3: Harvard Crimson @ Colgate Raiders ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +5.5 | Edge: +10.0
+  [92m✅ BET: Harvard Crimson +4.5[0m
+  [96mHIGH confidence (+10.0 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 133.6 | Edge: -6.9
+  [92m✅ BET: UNDER 140.5[0m
+  [96mMEDIUM confidence (6.9 edge)[0m
+
+[35m📈 Harvard Crimson 64.1, Colgate Raiders 69.6[0m
+
+[1m[96m━━━ GAME 4: Columbia Lions @ North Florida Ospreys ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +13.5 | Model: +4.8 | Edge: -8.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-8.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 134.7 | Edge: -26.8
+  [92m✅ BET: UNDER 161.5[0m
+  [96mHIGH confidence (26.8 edge)[0m
+
+[35m📈 Columbia Lions 64.9, North Florida Ospreys 69.8[0m
+
+[1m[96m━━━ GAME 5: Florida A&M Rattlers @ Georgia Tech Yellow Jackets ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -18.5 | Model: +2.3 | Edge: +20.8
+  [92m✅ BET: Florida A&M Rattlers +18.5[0m
+  [96mHIGH confidence (+20.8 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 138.1 | Edge: -10.4
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (10.4 edge)[0m
+
+[35m📈 Florida A&M Rattlers 67.9, Georgia Tech Yellow Jackets 70.2[0m
+
+[1m[96m━━━ GAME 6: Liberty Flames @ Florida Int'l Golden Panthers ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +4.5 | Model: +7.6 | Edge: +3.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.1)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 159.7 | Edge: +9.2
+  [92m✅ BET: OVER 150.5[0m
+  [96mHIGH confidence (9.2 edge)[0m
+
+[35m📈 Liberty Flames 76.1, Florida Int'l Golden Panthers 83.7[0m
+
+[1m[96m━━━ GAME 7: UL Monroe Warhawks @ Kansas St Wildcats ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -32.5 | Model: +4.2 | Edge: +36.7
+  [91m❌ NO BET[0m
+  [96m⚠️ SKIPPED: Edge too large (36.7 > 35.0) - likely model error[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 167.5 | Model: 150.3 | Edge: -17.2
+  [92m✅ BET: UNDER 167.5[0m
+  [96mHIGH confidence (17.2 edge)[0m
+
+[35m📈 UL Monroe Warhawks 73.0, Kansas St Wildcats 77.2[0m
+
+[1m[96m━━━ GAME 8: Winthrop Eagles @ Texas Tech Red Raiders ━━━[0m
+[96m🕐 12/28 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -18.5 | Model: +8.2 | Edge: +26.7
+  [92m✅ BET: Winthrop Eagles +18.5[0m
+  [96mHIGH confidence (+26.7 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 166.5 | Model: 153.4 | Edge: -13.1
+  [92m✅ BET: UNDER 166.5[0m
+  [96mHIGH confidence (13.1 edge)[0m
+
+[35m📈 Winthrop Eagles 72.6, Texas Tech Red Raiders 80.8[0m
+
+[1m[96m━━━ GAME 9: CSU Fullerton Titans @ SMU Mustangs ━━━[0m
+[96m🕐 12/28 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -20.5 | Model: +3.2 | Edge: +23.7
+  [92m✅ BET: CSU Fullerton Titans +20.5[0m
+  [96mHIGH confidence (+23.7 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 172.5 | Model: 139.4 | Edge: -33.1
+  [92m✅ BET: UNDER 172.5[0m
+  [96mHIGH confidence (33.1 edge)[0m
+
+[35m📈 CSU Fullerton Titans 68.1, SMU Mustangs 71.3[0m
+
+[1m[96m━━━ GAME 10: N Colorado Bears @ Colorado Buffaloes ━━━[0m
+[96m🕐 12/28 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -14.5 | Model: +3.2 | Edge: +17.7
+  [92m✅ BET: N Colorado Bears +14.5[0m
+  [96mHIGH confidence (+17.7 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 158.5 | Model: 150.6 | Edge: -7.9
+  [92m✅ BET: UNDER 158.5[0m
+  [96mHIGH confidence (7.9 edge)[0m
+
+[35m📈 N Colorado Bears 73.7, Colorado Buffaloes 76.9[0m
+
+[1m[96m━━━ GAME 11: Norfolk St Spartans @ Louisiana Ragin' Cajuns ━━━[0m
+[96m🕐 12/28 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +1.7 | Edge: +3.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 127.5 | Model: 134.9 | Edge: +7.4
+  [92m✅ BET: OVER 127.5[0m
+  [96mHIGH confidence (7.4 edge)[0m
+
+[35m📈 Norfolk St Spartans 66.6, Louisiana Ragin' Cajuns 68.3[0m
+
+[1m[96m━━━ GAME 12: Charleston Southern Buccaneers @ Richmond Spiders ━━━[0m
+[96m🕐 12/28 04:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +5.1 | Edge: +17.6
+  [92m✅ BET: Charleston Southern Buccaneers +12.5[0m
+  [96mHIGH confidence (+17.6 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 154.5 | Model: 133.2 | Edge: -21.3
+  [92m✅ BET: UNDER 154.5[0m
+  [96mHIGH confidence (21.3 edge)[0m
+
+[35m📈 Charleston Southern Buccaneers 64.1, Richmond Spiders 69.2[0m
+
+[1m[96m━━━ GAME 13: Pennsylvania Quakers @ George Mason Patriots ━━━[0m
+[96m🕐 12/28 05:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.5 | Model: +0.8 | Edge: +16.3
+  [92m✅ BET: Pennsylvania Quakers +15.5[0m
+  [96mHIGH confidence (+16.3 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 139.7 | Edge: -8.8
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (8.8 edge)[0m
+
+[35m📈 Pennsylvania Quakers 69.5, George Mason Patriots 70.3[0m
+
+[1m[96m━━━ GAME 14: Washington St Cougars @ Portland Pilots ━━━[0m
+[96m🕐 12/28 05:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +4.5 | Model: +3.2 | Edge: -1.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 153.5 | Model: 141.6 | Edge: -11.9
+  [92m✅ BET: UNDER 153.5[0m
+  [96mHIGH confidence (11.9 edge)[0m
+
+[35m📈 Washington St Cougars 69.2, Portland Pilots 72.4[0m
+
+[1m[96m━━━ GAME 15: Old Dominion Monarchs @ Maryland Terrapins ━━━[0m
+[96m🕐 12/28 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -13.5 | Model: +6.6 | Edge: +20.1
+  [92m✅ BET: Old Dominion Monarchs +13.5[0m
+  [96mHIGH confidence (+20.1 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 147.9 | Edge: -3.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.6)[0m
+
+[35m📈 Old Dominion Monarchs 70.7, Maryland Terrapins 77.2[0m
+
+[1m[96m━━━ GAME 16: Santa Clara Broncos @ Oregon St Beavers ━━━[0m
+[96m🕐 12/28 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +6.5 | Model: +1.6 | Edge: -4.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 153.5 | Model: 157.6 | Edge: +4.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.1)[0m
+
+[35m📈 Santa Clara Broncos 78.0, Oregon St Beavers 79.6[0m
+
+[1m[96m━━━ GAME 17: Pacific Tigers @ San Diego Toreros ━━━[0m
+[96m🕐 12/28 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: +2.4 | Edge: -1.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.1)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 133.9 | Edge: -14.6
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (14.6 edge)[0m
+
+[35m📈 Pacific Tigers 65.7, San Diego Toreros 68.2[0m
+
+[1m[96m━━━ GAME 18: Saint Mary's Gaels @ Loyola Marymount Lions ━━━[0m
+[96m🕐 12/28 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +8.5 | Model: +2.6 | Edge: -5.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 139.5 | Model: 140.8 | Edge: +1.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.3)[0m
+
+[35m📈 Saint Mary's Gaels 69.1, Loyola Marymount Lions 71.7[0m
+
+[1m[96m━━━ GAME 19: Gonzaga Bulldogs @ Pepperdine Waves ━━━[0m
+[96m🕐 12/28 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +28.5 | Model: -0.6 | Edge: -29.1
+  [92m✅ BET: Pepperdine Waves +28.5[0m
+  [96mHIGH confidence (-29.1 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 152.3 | Edge: -0.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.2)[0m
+
+[35m📈 Gonzaga Bulldogs 76.5, Pepperdine Waves 75.9[0m
+
+[1m[96m━━━ GAME 20: Omaha Mavericks @ Oregon Ducks ━━━[0m
+[96m🕐 12/28 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -20.5 | Model: +2.5 | Edge: +23.0
+  [92m✅ BET: Omaha Mavericks +20.5[0m
+  [96mHIGH confidence (+23.0 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 150.3 | Edge: -1.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.2)[0m
+
+[35m📈 Omaha Mavericks 73.9, Oregon Ducks 76.4[0m
+
+[1m[96m━━━ GAME 21: San Francisco Dons @ Seattle Redhawks ━━━[0m
+[96m🕐 12/28 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +1.0 | Edge: -0.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 146.3 | Edge: +3.8
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.8)[0m
+
+[35m📈 San Francisco Dons 72.6, Seattle Redhawks 73.7[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 5: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 2017[0m
+[92mRecord: 1037-949-3[0m
+[92mWin Rate: 52.2%[0m
+[91mProfit: -5.33 units[0m
+[91mROI: -0.3%[0m
+[1m====================================================================================================[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 25f0ff7] Update model outputs - 2025-12-27 10:30:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 59 insertions(+), 59 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   0a5b2bb..25f0ff7  main -> main
+✅ Successfully pushed to GitHub!

@@ -52,14 +52,14 @@ PICKS_TRACKING_FILE = os.path.join(SCRIPT_DIR, "ncaab_picks_tracking.json")
 TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "ncaab_tracking_dashboard.html")
 
 # --- Model Parameters (Tuned for College Basketball) ---
-HOME_COURT_ADVANTAGE = 3.2  # Reduced from 3.5 - spreads losing may indicate overvaluing home teams
-SPREAD_THRESHOLD = 10.0  # Raised from 6.0 - edge 6-10 losing -41u, edge 10+ winning +44u (Dec 20)
+HOME_COURT_ADVANTAGE = 2.8  # Reduced from 3.2 - slightly more neutral
+SPREAD_THRESHOLD = 6.0    # Lowered from 10.0 - capturing more value
 TOTAL_THRESHOLD = 6.0   # Keep at 6.0 - totals are profitable (+25u)
 
 # Tracking Parameters - ADJUSTED (Dec 23, 2024) - REAL STATS ERA
 # Lowered to 10.0 now that we have reliable data, to caption more value.
-CONFIDENT_SPREAD_EDGE = 10.0  # Lowered from 15.0 (was 12.0)
-CONFIDENT_TOTAL_EDGE = 10.0   # Lowered from 15.0 (was 12.0)
+CONFIDENT_SPREAD_EDGE = 6.0   # Matched to SPREAD_THRESHOLD (Was 7.0)
+CONFIDENT_TOTAL_EDGE = 6.0    # Matched to TOTAL_THRESHOLD (Was 10.0)
 # MAX EDGE CAPS
 # Real stats might produce larger variance, but >40 is still likely an error/mismatch
 MAX_SPREAD_EDGE = 35.0 
@@ -71,8 +71,8 @@ DAYS_AHEAD_TO_FETCH = 7  # Only fetch games within next 7 days
 
 # --- Parameters for Team Form/Momentum ---
 LAST_N_GAMES = 8       # Smaller recent sample for college
-SEASON_WEIGHT = 0.65   # Less weight on full season
-FORM_WEIGHT = 0.35     # More weight on recent form
+SEASON_WEIGHT = 0.40   # Reduced weight on full season
+FORM_WEIGHT = 0.60     # Increased weight on recent form
 
 # --- Parameters for Home/Away Splits ---
 USE_HOME_AWAY_SPLITS = True  

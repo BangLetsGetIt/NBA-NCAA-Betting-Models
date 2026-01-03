@@ -55,13 +55,13 @@ TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "nba_tracking_dashboard.html")
 CURRENT_SEASON = '2024-25'
 
 # --- IMPROVED Model Parameters ---
-HOME_COURT_ADVANTAGE = 3.0  # Reduced from 3.5 - modern NBA HCA trending lower
+HOME_COURT_ADVANTAGE = 2.5  # Reduced from 3.0 - modern NBA HCA trending lower
 SPREAD_THRESHOLD = 5.0      # Tightened from 3.0 - only show higher confidence plays
 TOTAL_THRESHOLD = 6.0       # Tightened from 4.0 - only show higher confidence plays
 
 # Stricter thresholds for LOGGING picks (these are the bets we actually track)
-CONFIDENT_SPREAD_EDGE = 8.0  # Keep at 8 - spreads performing well
-CONFIDENT_TOTAL_EDGE = 15.0  # Increased from 12.0 - totals underperforming
+CONFIDENT_SPREAD_EDGE = 5.0  # MATCHES VISUAL THRESHOLD (was 8.0)
+CONFIDENT_TOTAL_EDGE = 6.0   # MATCHES VISUAL THRESHOLD (was 15.0)
 
 # CALIBRATION: Model projects ~18 points lower than market (98% UNDER bias)
 # Adding calibration to balance OVER/UNDER betting
@@ -73,8 +73,8 @@ DAYS_AHEAD_TO_FETCH = 2  # Only fetch games within next 2 days (today + tomorrow
 
 # --- Parameters for Team Form/Momentum ---
 LAST_N_GAMES = 10
-SEASON_WEIGHT = 0.55    # Slightly less emphasis on full season
-FORM_WEIGHT = 0.45      # More emphasis on recent form
+SEASON_WEIGHT = 0.40    # Reduced emphasis on full season
+FORM_WEIGHT = 0.60      # Increased emphasis on recent form
 
 # --- Parameters for Home/Away Splits ---
 USE_HOME_AWAY_SPLITS = True
@@ -443,30 +443,81 @@ def calculate_clv_status(opening_line, closing_line, pick_type, pick_text):
         return "neutral"
 
 def fetch_completed_scores_nba():
-    """Fetch NBA scores for recently completed games from The Odds API"""
-    print(f"{Colors.CYAN}Fetching completed NBA game scores...{Colors.END}")
+    """Fetch NBA scores for recently completed games using FREE NBA API (ScoreboardV2)"""
+    print(f"{Colors.CYAN}Fetching completed NBA game scores (via NBA API)...{Colors.END}")
 
+    completed_games = []
+    
+    # Check last 3 days
+    from datetime import datetime, timedelta
+    dates_to_check = []
+    for i in range(3):
+        d = datetime.now() - timedelta(days=i)
+        dates_to_check.append(d.strftime('%m/%d/%Y'))
+    
     try:
-        scores_url = "https://api.the-odds-api.com/v4/sports/basketball_nba/scores/"
-        params = {
-            "apiKey": API_KEY,
-            "daysFrom": 3  # Check last 3 days
-        }
+        from nba_api.stats.endpoints import scoreboardv2
+        
+        for date_str in dates_to_check:
+            try:
+                # Add delay to avoid rate limits
+                time.sleep(0.6)
+                
+                board = scoreboardv2.ScoreboardV2(game_date=date_str, timeout=30)
+                dfs = board.get_data_frames()
+                games_df = dfs[0] # GameHeader
+                lines_df = dfs[1] # LineScore
+                
+                if games_df.empty:
+                    continue
+                    
+                for _, game in games_df.iterrows():
+                    # Only collect completed games
+                    status = game['GAME_STATUS_TEXT']
+                    if 'Final' not in status and 'FINAL' not in status.upper():
+                        continue
+                        
+                    game_id = game['GAME_ID']
+                    home_id = game['HOME_TEAM_ID']
+                    away_id = game['VISITOR_TEAM_ID']
+                    
+                    # Get scores
+                    home_row = lines_df[lines_df['TEAM_ID'] == home_id]
+                    away_row = lines_df[lines_df['TEAM_ID'] == away_id]
+                    
+                    if home_row.empty or away_row.empty:
+                        continue
+                        
+                    home_score = int(home_row['PTS'].values[0])
+                    away_score = int(away_row['PTS'].values[0])
+                    
+                    # Manual Lookup for 30 teams (reliable)
+                    try:
+                        home_info = nba_teams.find_team_name_by_id(home_id)
+                        away_info = nba_teams.find_team_name_by_id(away_id)
+                        home_name = home_info['full_name']
+                        away_name = away_info['full_name']
+                    except:
+                        continue
 
-        response = requests.get(scores_url, params=params, timeout=10)
+                    game_obj = {
+                        'id': game_id,
+                        'home_team': home_name,
+                        'away_team': away_name,
+                        'completed': True,
+                        'scores': [
+                            {'name': home_name, 'score': str(home_score)},
+                            {'name': away_name, 'score': str(away_score)}
+                        ]
+                    }
+                    completed_games.append(game_obj)
+                    
+            except Exception as e:
+                print(f"{Colors.YELLOW}  ⚠️  Error fetching for {date_str}: {e}{Colors.END}")
+                continue
 
-        if response.status_code == 200:
-            scores = response.json()
-            print(f"{Colors.GREEN}✓ Fetched {len(scores)} games from API{Colors.END}")
-            completed = [g for g in scores if g.get('completed')]
-            print(f"{Colors.GREEN}✓ Found {len(completed)} completed games{Colors.END}")
-            return completed
-        else:
-            print(f"{Colors.YELLOW}⚠️  Could not fetch scores: {response.status_code}{Colors.END}")
-            if response.status_code == 422:
-                print(f"{Colors.YELLOW}   API Response: {response.text[:200]}{Colors.END}")
-                print(f"{Colors.YELLOW}   This may be a temporary API issue. Results will update on next run.{Colors.END}")
-            return []
+        print(f"{Colors.GREEN}✓ Found {len(completed_games)} completed games (Free API){Colors.END}")
+        return completed_games
 
     except Exception as e:
         print(f"{Colors.RED}Error fetching NBA scores: {e}{Colors.END}")
@@ -600,8 +651,7 @@ def update_pick_results():
     save_picks_tracking(tracking_data)
 
     if updated_count > 0:
-        # Recalculate summary
-        tracking_data['summary'] = calculate_summary_stats(tracking_data['picks'])
+        print(f"{Colors.GREEN}✅ Updated {updated_count} picks{Colors.END}")
         save_picks_tracking(tracking_data)
         print(f"{Colors.GREEN}✅ Updated {updated_count} picks{Colors.END}")
         
@@ -2064,6 +2114,7 @@ def fetch_odds():
         cutoff_date = now + timedelta(days=DAYS_AHEAD_TO_FETCH)
 
         filtered_games = []
+        started_games_count = 0
         for game in all_games:
             commence_time_str = game.get('commence_time', '')
             try:
@@ -2071,16 +2122,20 @@ def fetch_odds():
                 dt_naive = dt.replace(tzinfo=None)
 
                 if dt_naive <= cutoff_date:
-                    # NEW: Filter out games that have already started
-                    # API returns UTC time string like '2023-10-25T23:00:00Z'
-                    # We compare with current UTC time
-                    game_time_utc = pytz.utc.localize(dt_naive)
-                    current_time_utc = datetime.now(pytz.utc)
+                    # Filter out games that have already started
+                    # dt is timezone-aware (UTC) from fromisoformat
+                    now_utc = datetime.now(dt.tzinfo) 
                     
-                    if game_time_utc > current_time_utc:
+                    if dt > now_utc:
                         filtered_games.append(game)
+                    else:
+                        started_games_count += 1
             except:
                 continue
+
+        if started_games_count > 0:
+            print(f"{Colors.YELLOW}ℹ️  Skipped {started_games_count} games that have already started/finished.{Colors.END}")
+
 
         print(f"{Colors.GREEN}✓ Fetched odds for {len(all_games)} total games{Colors.END}")
         print(f"{Colors.GREEN}✓ Filtered to {len(filtered_games)} games in next {DAYS_AHEAD_TO_FETCH} days{Colors.END}")

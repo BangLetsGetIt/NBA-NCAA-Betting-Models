@@ -1,0 +1,213 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Mon Dec 29 10:20:02 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 11 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[92m✓ Found 15 completed games (Free API)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[93mNo picks were updated (games may not be complete yet)[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[92m✓ Using cached composite stats (less than 6 hours old)[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[92m✓ Using cached home/away splits (less than 6 hours old)[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 11 total games[0m
+[92m✓ Filtered to 11 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Indiana Pacers +15.5 (Edge: -5.8)[0m
+
+[1m[92m✅ Analyzed 11 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mIndiana Pacers @ Houston Rockets[0m
+  🕐 12/29/25 08:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  [96m📊 NEUTRAL+: Indiana Pacers - Slightly above average: 6-5 (55%) | +0.50u over 11 picks[0m
+  📊 Spread: Market -15.5 | Model +9.7
+  🎯 Total: Market 221.5 | Model 240.2
+  [92m✅ BET: Indiana Pacers +15.5[0m
+     [96mModel projects Houston Rockets to win by only 9.7, not enough to cover -15.5.[0m
+  [92m✅ BET: OVER 221.5[0m
+     [96mModel projects 240 total points, bet the OVER[0m
+  📈 Predicted: Indiana Pacers 115, Houston Rockets 125
+
+[1m[96mNew York Knicks @ New Orleans Pelicans[0m
+  🕐 12/29/25 08:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.8 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market +8.5 | Model -4.3
+  🎯 Total: Market 246.5 | Model 232.5
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+4.2)[0m
+  [92m✅ BET: UNDER 246.5[0m
+     [96mModel projects 232 total points, bet the UNDER[0m
+  📈 Predicted: New York Knicks 118, New Orleans Pelicans 114
+
+[1m[96mOrlando Magic @ Toronto Raptors[0m
+  🕐 12/29/25 07:40 PM EST
+  [92m[1m🎯 A.I. Rating: 4.0 ⭐⭐ (STRONG PLAY)[0m
+  📊 Spread: Market +1.5 | Model +3.2
+  🎯 Total: Market 220.5 | Model 230.3
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+4.7)[0m
+  [92m✅ BET: OVER 220.5[0m
+     [96mModel projects 230 total points, bet the OVER[0m
+  📈 Predicted: Orlando Magic 114, Toronto Raptors 117
+
+[1m[96mGolden State Warriors @ Brooklyn Nets[0m
+  🕐 12/29/25 07:40 PM EST
+  [96m[1m🎯 A.I. Rating: 3.9 ⭐ (GOOD PLAY)[0m
+  [91m🚫 COLD: Golden State Warriors - Poor performer: 1-3 (25%) | -2.30u over 4 picks[0m
+  📊 Spread: Market +4.5 | Model -10.2
+  🎯 Total: Market 221.5 | Model 231.5
+  [92m✅ BET: Golden State Warriors -4.5[0m
+     [96mModel projects Brooklyn Nets to lose by 10.2, Golden State Warriors covers -4.5.[0m
+  [92m✅ BET: OVER 221.5[0m
+     [96mModel projects 232 total points, bet the OVER[0m
+  📈 Predicted: Golden State Warriors 121, Brooklyn Nets 111
+
+[1m[96mDenver Nuggets @ Miami Heat[0m
+  🕐 12/29/25 07:40 PM EST
+  [96m[1m🎯 A.I. Rating: 3.8 ⭐ (GOOD PLAY)[0m
+  📊 Spread: Market +2.0 | Model +3.6
+  🎯 Total: Market 245.5 | Model 237.0
+  [92m✅ BET: Miami Heat +2.0[0m
+     [96mModel projects Miami Heat to win outright, easily covering +2.0.[0m
+  [92m✅ BET: UNDER 245.5[0m
+     [96mModel projects 237 total points, bet the UNDER[0m
+  📈 Predicted: Denver Nuggets 117, Miami Heat 120
+
+[1m[96mCleveland Cavaliers @ San Antonio Spurs[0m
+  🕐 12/29/25 08:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.7 ⭐ (GOOD PLAY)[0m
+  [93m⚠️ CAUTION: Cleveland Cavaliers - Below average: 3-6 (33%) | -3.60u over 9 picks[0m
+  📊 Spread: Market -2.5 | Model -5.7
+  🎯 Total: Market 242.0 | Model 238.0
+  [92m✅ BET: Cleveland Cavaliers +2.5[0m
+     [96mModel projects San Antonio Spurs to win by only 5.7, not enough to cover -2.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Cleveland Cavaliers 122, San Antonio Spurs 116
+
+[1m[96mPhoenix Suns @ Washington Wizards[0m
+  🕐 12/29/25 07:10 PM EST
+  [93m[1m🎯 A.I. Rating: 3.4 ⭐ (STANDARD PLAY)[0m
+  [96mℹ️ LIMITED: Washington Wizards - Limited data: 1-0 (100%) | +1.00u (1 pick)[0m
+  📊 Spread: Market +10.5 | Model -3.2
+  🎯 Total: Market 233.0 | Model 236.7
+  [92m✅ BET: Washington Wizards +10.5[0m
+     [96mModel projects Washington Wizards to lose by only 3.2, covering +10.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Phoenix Suns 120, Washington Wizards 117
+
+[1m[96mMilwaukee Bucks @ Charlotte Hornets[0m
+  🕐 12/29/25 07:10 PM EST
+  [93m[1m🎯 A.I. Rating: 3.3 ⭐ (STANDARD PLAY)[0m
+  📊 Spread: Market +3.0 | Model +0.2
+  🎯 Total: Market 228.0 | Model 234.2
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+3.2)[0m
+  [92m✅ BET: OVER 228.0[0m
+     [96mModel projects 234 total points, bet the OVER[0m
+  📈 Predicted: Milwaukee Bucks 117, Charlotte Hornets 117
+
+[1m[96mAtlanta Hawks @ Oklahoma City Thunder[0m
+  🕐 12/29/25 08:10 PM EST
+  [93m[1m🎯 A.I. Rating: 3.2 ⭐ (STANDARD PLAY)[0m
+  📊 Spread: Market -16.0 | Model +17.1
+  🎯 Total: Market 236.5 | Model 242.1
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.1)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Atlanta Hawks 112, Oklahoma City Thunder 130
+
+[1m[96mDallas Mavericks @ Portland Trail Blazers[0m
+  🕐 12/29/25 10:40 PM EST
+  [93m[1m🎯 A.I. Rating: 3.1 ⭐ (STANDARD PLAY)[0m
+  [96mℹ️ LIMITED: Portland Trail Blazers - Limited data: 1-1 (50%) | -0.10u (2 picks)[0m
+  📊 Spread: Market -2.5 | Model +7.9
+  🎯 Total: Market 232.5 | Model 233.9
+  [92m✅ BET: Portland Trail Blazers -2.5[0m
+     [96mModel projects Portland Trail Blazers to win by 7.9, covering -2.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Dallas Mavericks 113, Portland Trail Blazers 121
+
+[1m[96mMinnesota Timberwolves @ Chicago Bulls[0m
+  🕐 12/29/25 08:10 PM EST
+  [93m[1m🎯 A.I. Rating: 2.8  (MARGINAL PLAY)[0m
+  📊 Spread: Market +6.0 | Model -2.9
+  🎯 Total: Market 240.5 | Model 240.1
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+3.1)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Minnesota Timberwolves 122, Chicago Bulls 119
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 237[0m
+[92mRecord: 121-102-2[0m
+[92mWin Rate: 54.3%[0m
+[92mProfit: +7.96 units[0m
+[92mROI: +3.2%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+✅ Completed: nba_main_model at Mon Dec 29 10:20:06 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main 02228cf] Update model outputs - 2025-12-29 10:20:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 40 insertions(+), 8 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   1a43754..02228cf  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Dec 29 10:20:07 EST 2025

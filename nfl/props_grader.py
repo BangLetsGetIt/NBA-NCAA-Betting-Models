@@ -476,7 +476,7 @@ def grade_props_tracking_file(
         if match_idx is None:
             # If game is finished AND it's been a few hours since kickoff, and player not found -> DNP -> Void
             # We wait 6.0 hours total (roughly 3 hours after game ends) to be safe vs data lag.
-            if (game_finished and hours_ago >= 6.0) or hours_ago >= hours_after_game_to_void:
+            if (game_finished and hours_ago >= 12.0) or hours_ago >= hours_after_game_to_void:
                 pick["status"] = "push" # void
                 pick["result"] = "VOID"
                 pick[spec.actual_field] = None
@@ -496,7 +496,7 @@ def grade_props_tracking_file(
             actual = _find_stat_value(row, spec.stat_candidates)
 
         if actual is None:
-            if game_finished or hours_ago >= hours_after_game_to_void:
+            if (game_finished and hours_ago >= 12.0) or hours_ago >= hours_after_game_to_void:
                 pick["status"] = "push"
                 pick["result"] = "VOID"
                 pick[spec.actual_field] = None

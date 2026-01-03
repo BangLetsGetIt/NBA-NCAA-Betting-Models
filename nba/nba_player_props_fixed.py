@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import statistics
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class NBAPlayerPropModel:
     def __init__(self, api_key):
@@ -768,7 +772,7 @@ class NBAPlayerPropModel:
 
 if __name__ == "__main__":
     # Initialize model with API key
-    API_KEY = "c32141ecbcaa976a824db8cd16031208"
+    API_KEY = os.getenv('ODDS_API_KEY')
     model = NBAPlayerPropModel(API_KEY)
     
     print("🏀 NBA Player Props Model")

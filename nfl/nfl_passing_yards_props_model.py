@@ -1054,5 +1054,107 @@ def main():
     # Gen HTML
     generate_html_output(plays, ts, t_data)
 
-if __name__ == "__main__":
-    main()
+def merge_pending_picks(current_plays, tracking_data, stats_cache):
+    """
+    Merge pending picks from tracking data into the display list.
+    Ensures that once a pick is tracked, it stays on the dashboard 
+    until graded, even if odds change or game starts.
+    """
+    if not tracking_data or 'picks' not in tracking_data:
+        return current_plays
+        
+    # efficient lookup for current plays
+    current_ids = set()
+    for p in current_plays:
+        # Construct ID to match tracking (Player_Type_Date)
+        commence = p.get('commence_time', '')
+        g_date = commence[:10] if commence else datetime.now().strftime('%Y-%m-%d')
+        pid = f"{p['player']}_{p['type']}_{g_date}"
+        current_ids.add(pid)
+        
+    merged = current_plays.copy()
+    
+    for pick in tracking_data['picks']:
+        if pick.get('status') == 'pending':
+            # Check if already in current plays
+            if pick['pick_id'] in current_ids:
+                continue
+                
+            # Reconstruct play object for HTML display
+            player_name = pick['player']
+            stats = stats_cache.get(player_name, {})
+            
+            # Recalculate projection for display
+            season_avg = pick.get('season_avg') or stats.get('season_pass_yds_avg', 0)
+            recent_avg = pick.get('recent_avg') or stats.get('recent_pass_yds_avg', 0)
+            
+            try:
+                # Re-run projection logic if stats available
+                if season_avg and recent_avg:
+                     model_proj = (season_avg * 0.4) + (recent_avg * 0.6)
+                else:
+                     model_proj = pick.get('model_proj', 0)
+            except:
+                model_proj = 0
+            
+            reconstructed = {
+                'player': player_name,
+                'team': pick.get('team', 'UNK'),
+                'opponent': pick.get('opponent', 'UNK'),
+                'home_team': 'UNK',
+                'away_team': 'UNK',
+                'matchup': pick.get('matchup', ''),
+                'commence_time': pick.get('game_time', ''),
+                'type': pick.get('bet_type', '').upper(),
+                'line': pick.get('line', 0),
+                'odds': pick.get('odds', 0),
+                'model_proj': round(model_proj, 1),
+                'edge': pick.get('edge', 0),
+                'ai_score': pick.get('ai_score', 0),
+                'bookmaker': pick.get('bookmaker', 'N/A'),
+                'season_avg': season_avg,
+                'recent_avg': recent_avg
+            }
+            
+            merged.append(reconstructed)
+            
+    return merged
+
+def main():
+    print(f"{Colors.BOLD}🏈 NFL Passing Yards Props Model - Sharp +EV{Colors.END}")
+    
+    print(f"\n{Colors.CYAN}--- Grading Pending Picks ---{Colors.END}")
+    try:
+        updated = grade_props_tracking_file(TRACKING_FILE, stat_kind='passing_yards')
+        print(f"Graded {updated} picks.")
+    except Exception as e:
+        print(f"{Colors.YELLOW}Grading failed: {e}{Colors.END}")
+        
+    backfill_profit_loss()
+    
+    stats = load_player_stats()
+    t_data = load_tracking_data()
+
+    if not stats: return
+    
+    odds = get_nfl_props_odds()
+    plays = []
+    
+    if odds:
+        plays = analyze_props(odds, stats)
+        print(f"\nFound {len(plays)} sharp plays:")
+        for p in plays:
+            print(f"  ⭐ {p['player']} {p['type']} {p['line']} (Proj: {p['model_proj']}) | Edge: {p['edge']} | AI: {p['ai_score']}")
+        track_new_picks(plays, odds)
+        
+        # Reload tracking data
+        t_data = load_tracking_data()
+    else:
+        print(f"No odds found. Generating HTML with tracking data only.")
+    
+    # CRITICAL FIX: Merge pending picks into display list
+    plays = merge_pending_picks(plays, t_data, stats)
+    
+    ts = calculate_tracking_stats(t_data)
+    
+    generate_html_output(plays, ts, t_data)

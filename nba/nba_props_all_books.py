@@ -2,9 +2,14 @@ import requests
 import json
 from datetime import datetime
 import pytz
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # API Configuration
-ODDS_API_KEY = 'c32141ecbcaa976a824db8cd16031208'
+ODDS_API_KEY = os.getenv('ODDS_API_KEY')
 ODDS_API_BASE = 'https://api.the-odds-api.com/v4'
 
 def get_player_props():

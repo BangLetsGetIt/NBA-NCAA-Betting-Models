@@ -118,8 +118,28 @@ def retrieve_active_plays(tracking_data, stat_type="PTS"):
                     'opponent': p.get('opponent'),
                     'ai_score': p.get('ai_score', 9.5), 
                     'odds': p.get('odds'),
-                    'home_team': p.get('team') 
+                    'home_team': p.get('team'),
+                    'season_avg': p.get('season_avg', 0),
+                    'recent_avg': p.get('recent_avg', 0),
+                    'ev': p.get('ev', 0)
                 }
+                
+                # Retrieve or Calculate Edge
+                edge = p.get('edge')
+                if edge is None and play['season_avg']:
+                    try:
+                        # Re-calculate edge if missing (Season Avg - Line)
+                        s_avg = float(play['season_avg'])
+                        line_val = float(line)
+                        if 'OVER' in b_type:
+                            edge = s_avg - line_val
+                        else:
+                            edge = line_val - s_avg
+                    except:
+                        edge = 0
+                
+                play['edge'] = edge if edge is not None else 0
+                
                 active_plays.append(play)
         except Exception:
             continue
@@ -210,11 +230,118 @@ def retrieve_active_plays_nfl(tracking_data, stats_cache=None):
             
     return active_picks
 
-def run_nba_grading(force=False):
+def retrieve_active_plays_game(tracking_data, sport="nba"):
     """
-    Grades NBA props by importing model modules dynamically.
+    Reconstruct 'Game' objects from tracking data for today's/pending games.
+    Used for NBA/NCAAB main models where we need to reconstruct the full 'results' list
+    for save_html when we don't fetch fresh odds.
+    """
+    results = []
+    if not tracking_data or 'picks' not in tracking_data:
+        return results
+        
+    # Get today's date in ET
+    et_tz = pytz.timezone('US/Eastern')
+    now = datetime.now(et_tz)
+    today_date = now.date()
+    
+    # 1. Group picks by game (Key: GameTime + Matchup)
+    games_map = {}
+    
+    for p in tracking_data['picks']:
+        try:
+            status = (p.get('status') or 'pending').lower()
+            
+            # SHOW CRITERIA:
+            # 1. "pending" status
+            # 2. Future game OR started within last hour (to keep it on board for a bit)
+            # 3. If Sport is NCAAB, we might want to check date widely
+            
+            if status != 'pending':
+                continue
+                
+            g_time_str = p.get('game_time') or p.get('game_date')
+            if not g_time_str: continue
+            
+            # Parse Date
+            if 'Z' in g_time_str:
+                dt = datetime.fromisoformat(g_time_str.replace('Z', '+00:00'))
+            else:
+                dt = datetime.fromisoformat(g_time_str)
+            
+            dt_et = dt.astimezone(et_tz)
+            
+            # Filter out old games (more than 4 hours ago)
+            now_utc = datetime.now(pytz.utc)
+            game_dt_utc = dt.astimezone(pytz.utc)
+            
+            if game_dt_utc < (now_utc - timedelta(hours=4)):
+                continue
+
+            # Create Key
+            home = p.get('home_team')
+            away = p.get('away_team')
+            key = f"{g_time_str}_{home}_{away}"
+            
+            if key not in games_map:
+                # Initialize Game Object
+                games_map[key] = {
+                    "commence_time": g_time_str,
+                    "GameTime": dt_et.strftime("%m/%d %I:%M %p"),
+                    "Matchup": f"{away} @ {home}",
+                    "home_team": home,
+                    "away_team": away,
+                    "Market Spread": "N/A",
+                    "Model Spread": "N/A",
+                    "spread_edge": 0,
+                    "ATS Pick": "",
+                    "ATS Explanation": "",
+                    "Market Total": "N/A",
+                    "Model Total": "N/A",
+                    "total_edge": 0,
+                    "Total Pick": "",
+                    "Total Explanation": "",
+                    "Predicted Score": "Pending Stats...", # Placeholder
+                    "ai_rating": 2.5 # Default
+                }
+            
+            # Populate Data from Pick
+            game_obj = games_map[key]
+            p_type = p.get('pick_type', '').lower()
+            
+            # Handle pick text key difference
+            pick_text = p.get('pick') if 'pick' in p else p.get('pick_text', '')
+            
+            if 'spread' in p_type:
+                game_obj['Market Spread'] = f"{p.get('market_line'):+.1f}" if p.get('market_line') else "N/A"
+                game_obj['Model Spread'] = f"{p.get('model_line'):+.1f}" if p.get('model_line') else "N/A"
+                game_obj['spread_edge'] = p.get('edge', 0)
+                game_obj['ATS Pick'] = pick_text
+                
+            elif 'total' in p_type:
+                game_obj['Market Total'] = f"{p.get('market_line'):.1f}" if p.get('market_line') else "N/A"
+                game_obj['Model Total'] = f"{p.get('model_line'):.1f}" if p.get('model_line') else "N/A"
+                game_obj['total_edge'] = p.get('edge', 0)
+                game_obj['Total Pick'] = pick_text
+
+        except Exception as e:
+            continue
+            
+    # Convert map to list
+    results = list(games_map.values())
+    
+    # Sort by time
+    results.sort(key=lambda x: x['commence_time'])
+    
+    return results
+
+def run_nba_grading(force=False, grade_only=False):
+    """
+    Grades NBA props by working through models.
     """
     log("Starting NBA Grading...", "info")
+    if grade_only:
+        log("Running in GRADE-ONLY mode (Skipping odds fetch)", "warning")
     
     # List of NBA prop models to grade
     # (Module Name, Script Filename)
@@ -230,7 +357,7 @@ def run_nba_grading(force=False):
     
     for mod_name, filename in nba_models:
         try:
-            log(f"Checking {mod_name}...", "info")
+            log(f"Processing {mod_name}...", "info")
             
             # Dynamic import
             try:
@@ -241,92 +368,152 @@ def run_nba_grading(force=False):
                 sys.modules[mod_name] = mod
                 spec.loader.exec_module(mod)
             
-            # FORCE RELOAD to ensure fresh code/logic (crucial for long-running process)
+            # FORCE RELOAD to ensure fresh code/logic
             importlib.reload(mod)
 
-            # 1. Run Grading
-            updated = False
-            if hasattr(mod, 'grade_pending_picks'):
-                if hasattr(mod, 'TRACKING_FILE'):
-                    backup_file(mod.TRACKING_FILE)
+            # --- GRADE ONLY MODE ---
+            if grade_only:
+                # 1. Grade Pending
+                graded_count = 0
+                if hasattr(mod, 'grade_pending_picks'):
+                     try:
+                         # For props models, this might fetch scores (free/low cost usually)
+                         res = mod.grade_pending_picks()
+                         if isinstance(res, int): graded_count = res
+                     except Exception as e:
+                         log(f"Error grading {mod_name}: {e}", "error")
                 
-                # We can capture if it actually updated anything if grade_pending_picks returned a count,
-                # but currently it might just print. 
-                # Let's assume we want to rebuild if forced OR if we suspect changes.
-                try:
-                    # Some models return count, some don't.
-                    # We'll just run it.
-                    res = mod.grade_pending_picks()
-                    if isinstance(res, int) and res > 0: updated = True
-                except:
-                    pass
-            
-            # 2. Regenerate HTML ALWAYS to refresh date-dependent stats (TODAY/YESTERDAY)
-            if True:  # Always regenerate to ensure TODAY stats are fresh
-                if mod_name == 'nba_model_IMPROVED':
-                     # Main Model use update_pick_results()
-                     if hasattr(mod, 'update_pick_results'):
-                         try:
-                             # It returns count of updated picks
-                             res = mod.update_pick_results()
-                             if isinstance(res, int) and res > 0:
-                                 log(f"Updated {res} picks for {mod_name}", "success")
-                                 any_updates = True
-                             
-                             # ALWAYS regenerate tracking HTML if available
-                             if hasattr(mod, 'generate_tracking_html'):
-                                 mod.generate_tracking_html()
-                                 log(f"Regenerated tracking HTML for {mod_name}", "success")
-                                 any_updates = True
-                         except Exception as e:
-                             log(f"Error updating main NBA model: {e}", "error")
-                elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
-                    # Load fresh data
-                    t_data = mod.load_tracking_data()
-                    stats = mod.calculate_tracking_stats(t_data)
-                    
-                    # Generate HTML with EMPTY plays
+                # 2. Main Model Result Updates
+                if mod_name == 'nba_model_IMPROVED' and hasattr(mod, 'update_pick_results'):
                     try:
-                        # Determine stat type for display reconstruction
+                         res = mod.update_pick_results()
+                         if isinstance(res, int): graded_count += res
+                    except Exception as e:
+                         log(f"Error updating main model {mod_name}: {e}", "error")
+
+                if graded_count > 0:
+                    log(f"Graded {graded_count} picks for {mod_name}", "success")
+                    any_updates = True
+                elif force:
+                    any_updates = True
+
+                # 3. Regenerate HTML (Without fetching new odds)
+                try:
+                    if mod_name == 'nba_model_IMPROVED':
+                        if hasattr(mod, 'generate_tracking_html'):
+                            mod.generate_tracking_html()
+                            any_updates = True
+                        if hasattr(mod, 'save_html'):
+                            # Regenerate main output (header stats will update) with empty results
+                            # FIXED: Pass active plays instead of empty list
+                            tracking_data = mod.load_picks_tracking()
+                            active_results = retrieve_active_plays_game(tracking_data, "nba")
+                            mod.save_html(active_results) 
+                            log(f"Regenerated nba_model_output.html with {len(active_results)} active plays", "success")
+                    elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
+                        t_data = mod.load_tracking_data()
+                        stats = mod.calculate_tracking_stats(t_data)
+                        
                         stat_label = "PTS"
                         if 'assists' in mod_name: stat_label = "AST"
                         elif 'rebounds' in mod_name: stat_label = "REB"
                         elif '3pt' in mod_name: stat_label = "3PM"
                         
-                        # Reconstruct active plays
+                        # Reconstruct active plays from tracking (no new analyses)
                         active_plays = retrieve_active_plays(t_data, stat_label)
-                        
-                        # Prop models usually generate_html_output(over_plays, under_plays, ...)
-                        # We will assume all are OVER plays for now if bet_type isn't checked strictly, 
-                        # but retrieve_active_plays handles prop string.
-                        # We need to split into over/under lists?
-                        # auto_grader usually just passes them.
-                        # user's models usually put everything in over_plays list for display if they are "top plays".
-                        # But wait, generate_html_output takes (over_plays, under_plays, ...)
                         
                         over_plays = [p for p in active_plays if 'OVER' in p['prop']]
                         under_plays = [p for p in active_plays if 'UNDER' in p['prop']]
                         
-                        html = mod.generate_html_output(over_plays, under_plays, stats, t_data, {}, {})
+                        # Pass empty dictionaries/lists for analysis data
+                        # Required args: over_plays, under_plays, stats, tracking_data, defense_factors, player_stats
+                        def_factors = {}
+                        p_stats = {}
+                        
+                        # Try to get free stats if available safely
+                        if hasattr(mod, 'get_nba_player_points_stats'):
+                             try: p_stats = mod.get_nba_player_points_stats()
+                             except: pass
+                        
+                        html = mod.generate_html_output(over_plays, under_plays, stats, t_data, def_factors, p_stats)
                         mod.save_html(html)
-                        log(f"Regenerated HTML for {mod_name} with {len(active_plays)} active plays", "success")
+                        log(f"Regenerated HTML for {mod_name}", "success")
+                except Exception as e:
+                    log(f"HTML generation failed for {mod_name} (grade-only): {e}", "warning")
+
+            else:
+                # --- FULL MODE ---
+                # PREFER MAIN() to run full pipeline
+                if hasattr(mod, 'main'):
+                    try:
+                        mod.main()
+                        log(f"Executed full cycle for {mod_name}", "success")
                         any_updates = True
+                        continue 
                     except Exception as e:
-                        # Some might have diff signature
+                         log(f"Error running main() for {mod_name}: {e}", "error")
+
+                # Fallback Logic
+                updated = False
+                if hasattr(mod, 'grade_pending_picks'):
+                    if hasattr(mod, 'TRACKING_FILE'):
+                        backup_file(mod.TRACKING_FILE)
+                    try:
+                        res = mod.grade_pending_picks()
+                        if isinstance(res, int) and res > 0: updated = True
+                    except:
+                        pass
+                
+                # 2. Regenerate HTML
+                if True: 
+                    if mod_name == 'nba_model_IMPROVED':
+                         if hasattr(mod, 'update_pick_results'):
+                             try:
+                                 res = mod.update_pick_results()
+                                 if isinstance(res, int) and res > 0:
+                                     log(f"Updated {res} picks for {mod_name}", "success")
+                                     any_updates = True
+                                 
+                                 if hasattr(mod, 'generate_tracking_html'):
+                                     mod.generate_tracking_html()
+                                     log(f"Regenerated tracking HTML for {mod_name}", "success")
+                                     any_updates = True
+                             except Exception as e:
+                                 log(f"Error updating main NBA model: {e}", "error")
+                    elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
+                        t_data = mod.load_tracking_data()
+                        stats = mod.calculate_tracking_stats(t_data)
                         try:
-                             # Some models might not take defense/player stats args
-                             html = mod.generate_html_output([], [], stats, t_data) 
-                             mod.save_html(html)
-                             any_updates = True
-                        except:
-                            log(f"HTML generation failed for {mod_name}: {e}", "warning")
+                            stat_label = "PTS"
+                            if 'assists' in mod_name: stat_label = "AST"
+                            elif 'rebounds' in mod_name: stat_label = "REB"
+                            elif '3pt' in mod_name: stat_label = "3PM"
+                            
+                            active_plays = retrieve_active_plays(t_data, stat_label)
+                            
+                            over_plays = [p for p in active_plays if 'OVER' in p['prop']]
+                            under_plays = [p for p in active_plays if 'UNDER' in p['prop']]
+                            
+                            html = mod.generate_html_output(over_plays, under_plays, stats, t_data, {}, {})
+                            mod.save_html(html)
+                            log(f"Regenerated HTML for {mod_name}", "success")
+                            any_updates = True
+                        except Exception as e:
+                            try:
+                                 # FIXED: Pass active plays
+                                 tracking_data = mod.load_picks_tracking()
+                                 active_results = retrieve_active_plays_game(tracking_data, "nba")
+                                 html = mod.save_html(active_results) 
+                                 any_updates = True
+                            except:
+                                 pass
             
         except Exception as e:
             log(f"Error processing {mod_name}: {e}", "error")
 
     return any_updates
 
-def run_nfl_grading(force=False):
+def run_nfl_grading(force=False, grade_only=False):
     """
     Grades NFL props.
     """
@@ -345,7 +532,7 @@ def run_nfl_grading(force=False):
     
     for mod_name, filename in nfl_models:
         try:
-            log(f"Checking {mod_name}...", "info")
+            log(f"Processing {mod_name}...", "info")
             
             try:
                 mod = __import__(mod_name)
@@ -358,69 +545,137 @@ def run_nfl_grading(force=False):
             # FORCE RELOAD
             importlib.reload(mod)
             
-            updated = False
-            # 1. Grading
-            if mod_name == 'nfl_model_IMPROVED':
-                if hasattr(mod, 'grade_pending_picks'):
-                    try:
-                        res = mod.grade_pending_picks()
-                        if isinstance(res, int) and res > 0:
-                            log(f"Graded {res} picks for {mod_name}", "success")
-                            updated = True
-                        elif force:
-                            updated = True # Force HTML regen
-                    except Exception as e:
-                        log(f"Error grading NFL main model: {e}", "error")
-            elif hasattr(mod, 'grade_props_tracking_file') and hasattr(mod, 'TRACKING_FILE'):
-                stat_kind = None
-                if 'passing' in filename: stat_kind = 'passing_yards'
-                elif 'rushing' in filename: stat_kind = 'rushing_yards'
-                elif 'receiving' in filename: stat_kind = 'receiving_yards'
-                elif 'receptions' in filename: stat_kind = 'receptions'
-                elif 'atd' in filename: stat_kind = 'anytime_td'
+            if grade_only:
+                # --- GRADE ONLY MODE ---
+                graded = False
+                # 1. Grade Logic
+                if mod_name == 'nfl_model_IMPROVED':
+                    if hasattr(mod, 'grade_pending_picks'):
+                        try:
+                            res = mod.grade_pending_picks()
+                            if isinstance(res, int) and res > 0: graded = True
+                        except Exception as e:
+                            log(f"Error grading {mod_name}: {e}", "error")
                 
-                if stat_kind:
-                    backup_file(mod.TRACKING_FILE)
-                    from nfl.props_grader import grade_props_tracking_file
-                    updated_count = grade_props_tracking_file(mod.TRACKING_FILE, stat_kind=stat_kind)
-                    if updated_count > 0:
-                        log(f"Graded {updated_count} picks for {mod_name}", "success")
-                        updated = True
-            
-            # 2. Regenerate HTML
-            if True: # Always regen to restore pending plays
-                 if mod_name == 'nfl_model_IMPROVED':
-                     try:
-                         # For NFL main model, we just run main() to refresh odds and HTML
-                         # but we might want to avoid re-analysis if just grading.
-                         # However, nfl_model_IMPROVED analysis is fast.
-                         if hasattr(mod, 'main'):
-                             mod.main()
+                elif hasattr(mod, 'grade_props_tracking_file') and hasattr(mod, 'TRACKING_FILE'):
+                    # Call shared grader
+                    stat_kind = None
+                    if 'passing' in filename: stat_kind = 'passing_yards'
+                    elif 'rushing' in filename: stat_kind = 'rushing_yards'
+                    elif 'receiving' in filename: stat_kind = 'receiving_yards'
+                    elif 'receptions' in filename: stat_kind = 'receptions'
+                    elif 'atd' in filename: stat_kind = 'anytime_td'
+                    
+                    if stat_kind:
+                        # Ensure shared grader is importable
+                        try:
+                            from nfl.props_grader import grade_props_tracking_file
+                            updated_count = grade_props_tracking_file(mod.TRACKING_FILE, stat_kind=stat_kind)
+                            if updated_count > 0: graded = True
+                        except Exception as e:
+                             log(f"Error grading props for {mod_name}: {e}", "error")
+
+                if graded:
+                    log(f"Graded picks for {mod_name}", "success")
+                    any_updates = True
+                
+                # 2. Regen HTML (No new picks)
+                try:
+                    if mod_name == 'nfl_model_IMPROVED':
+                         if hasattr(mod, 'generate_picks_html') and hasattr(mod, 'calculate_tracking_stats') and hasattr(mod, 'load_picks_tracking'):
+                             t_data = mod.load_picks_tracking()
+                             stats = mod.calculate_tracking_stats(t_data)
+                             # Pass [] for analyses
+                             mod.generate_picks_html([], stats, None)
                              log(f"Regenerated HTML for {mod_name}", "success")
-                             any_updates = True
-                     except Exception as e:
-                         log(f"HTML gen failed for {mod_name}: {e}", "warning")
-                 elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
-                    try:
+                    elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
                         t_data = mod.load_tracking_data()
-                        # Load Stats Cache if available
                         stats_cache = {}
                         if hasattr(mod, 'PLAYER_STATS_CACHE') and os.path.exists(mod.PLAYER_STATS_CACHE):
-                            try:
-                                with open(mod.PLAYER_STATS_CACHE, 'r') as f:
-                                    stats_cache = json.load(f)
-                            except:
-                                pass
+                             try:
+                                 with open(mod.PLAYER_STATS_CACHE, 'r') as f:
+                                     stats_cache = json.load(f)
+                             except: pass
                         
-                        # Restore Active Plays from tracking
                         active_plays = retrieve_active_plays_nfl(t_data, stats_cache)
-                        
                         ts = mod.calculate_tracking_stats(t_data)
                         mod.generate_html_output(active_plays, ts, t_data)
                         log(f"Regenerated HTML for {mod_name}", "success")
+                except Exception as e:
+                    log(f"HTML generation failed for {mod_name}: {e}", "warning")
+
+            else:
+                # --- FULL MODE ---
+                if hasattr(mod, 'main'):
+                    try:
+                        mod.main()
+                        log(f"Executed matching cycle for {mod_name}", "success")
                         any_updates = True
+                        continue
                     except Exception as e:
-                        log(f"HTML gen failed for {mod_name}: {e}", "warning")
+                        log(f"Error running main() for {mod_name}: {e}", "error")
+
+                # Fallback Logic
+                updated = False
+                # 1. Grading
+                if mod_name == 'nfl_model_IMPROVED':
+                    if hasattr(mod, 'grade_pending_picks'):
+                        try:
+                            res = mod.grade_pending_picks()
+                            if isinstance(res, int) and res > 0:
+                                log(f"Graded {res} picks for {mod_name}", "success")
+                                updated = True
+                            elif force:
+                                updated = True 
+                        except Exception as e:
+                            log(f"Error grading NFL main model: {e}", "error")
+                elif hasattr(mod, 'grade_props_tracking_file') and hasattr(mod, 'TRACKING_FILE'):
+                    stat_kind = None
+                    if 'passing' in filename: stat_kind = 'passing_yards'
+                    elif 'rushing' in filename: stat_kind = 'rushing_yards'
+                    elif 'receiving' in filename: stat_kind = 'receiving_yards'
+                    elif 'receptions' in filename: stat_kind = 'receptions'
+                    elif 'atd' in filename: stat_kind = 'anytime_td'
+                    
+                    if stat_kind:
+                        backup_file(mod.TRACKING_FILE)
+                        from nfl.props_grader import grade_props_tracking_file
+                        updated_count = grade_props_tracking_file(mod.TRACKING_FILE, stat_kind=stat_kind)
+                        if updated_count > 0:
+                            log(f"Graded {updated_count} picks for {mod_name}", "success")
+                            updated = True
+                
+                # 2. Regenerate HTML
+                if True: 
+                     if mod_name == 'nfl_model_IMPROVED':
+                         try:
+                             if hasattr(mod, 'main'):
+                                 mod.main()
+                                 log(f"Regenerated HTML for {mod_name}", "success")
+                                 any_updates = True
+                         except Exception as e:
+                             log(f"HTML gen failed for {mod_name}: {e}", "warning")
+                     elif hasattr(mod, 'generate_html_output') and hasattr(mod, 'load_tracking_data') and hasattr(mod, 'calculate_tracking_stats'):
+                        try:
+                            t_data = mod.load_tracking_data()
+                            # Load Stats Cache if available
+                            stats_cache = {}
+                            if hasattr(mod, 'PLAYER_STATS_CACHE') and os.path.exists(mod.PLAYER_STATS_CACHE):
+                                try:
+                                    with open(mod.PLAYER_STATS_CACHE, 'r') as f:
+                                        stats_cache = json.load(f)
+                                except:
+                                    pass
+                            
+                            # Restore Active Plays from tracking
+                            active_plays = retrieve_active_plays_nfl(t_data, stats_cache)
+                            
+                            ts = mod.calculate_tracking_stats(t_data)
+                            mod.generate_html_output(active_plays, ts, t_data)
+                            log(f"Regenerated HTML for {mod_name}", "success")
+                            any_updates = True
+                        except Exception as e:
+                            log(f"HTML gen failed for {mod_name}: {e}", "warning")
 
         except Exception as e:
             log(f"Error processing {mod_name}: {e}", "error")
@@ -440,7 +695,7 @@ def trigger_git_push():
     else:
         log("auto_push.sh not found", "warning")
 
-def run_wnba_grading(force=False):
+def run_wnba_grading(force=False, grade_only=False):
     """
     Grades WNBA models (Main + Props).
     """
@@ -456,7 +711,7 @@ def run_wnba_grading(force=False):
     try:
         mod_name = 'wnba_model'
         filename = 'wnba_model.py'
-        log(f"Checking {mod_name}...", "info")
+        log(f"Processing {mod_name}...", "info")
         
         try:
             mod = __import__(mod_name)
@@ -468,29 +723,25 @@ def run_wnba_grading(force=False):
             
         # FORCE RELOAD
         importlib.reload(mod)
-            
-        # Verify functions exist
-        if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-            # WNBA model has hardcoded games in main(). 
-            # Ideally we'd separate prediction logic, but for now let's just re-run main() logic partially?
-            # Or just call the functions if we can replicate data.
-            # actually wnba_model.py main() does: predict -> track -> get_stats -> generate_html
-            # Let's just run the module's main() if we want to regenerate everything?
-            # Or better, let's just re-generate HTML with existing tracking data and empty results if strictly grading.
-            # But the HTML requires 'results' (predictions). 
-            # For simplicity, if force=True, we might just have to run the script or mock the results.
-            
-            # Since WNBA is offline/mock data mostly in this codebase (based on file content),
-            # let's just trigger its main execution method if accessible, or manually replicate:
-            
-            if force:
-                # We can't easy invoke main() without running the whole script which tracks mock picks.
-                # Let's just generate HTML with *empty* results list but valid stats, to check headers/tracking.
-                stats = mod.get_stats()
-                # generate_html(results, stats_tuple)
-                mod.generate_html([], stats)
-                log(f"Regenerated HTML for {mod_name}", "success")
-                any_updates = True
+
+        if grade_only:
+            # WNBA main often fetches just scores, but let's be safe
+            if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
+                 stats = mod.get_stats()
+                 mod.generate_html([], stats)
+                 any_updates = True
+        else:
+            if hasattr(mod, 'main'):
+                 mod.main()
+                 any_updates = True
+            else:
+                # Fallback
+                if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
+                    if force:
+                        stats = mod.get_stats()
+                        mod.generate_html([], stats)
+                        log(f"Regenerated HTML for {mod_name}", "success")
+                        any_updates = True
                 
     except Exception as e:
         log(f"Error processing WNBA Main: {e}", "error")
@@ -499,7 +750,7 @@ def run_wnba_grading(force=False):
     try:
         mod_name = 'wnba_props_model'
         filename = 'wnba_props_model.py'
-        log(f"Checking {mod_name}...", "info")
+        log(f"Processing {mod_name}...", "info")
         
         try:
             mod = __import__(mod_name)
@@ -511,21 +762,30 @@ def run_wnba_grading(force=False):
             
         # FORCE RELOAD
         importlib.reload(mod)
-            
-        if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-            if force:
-                 # get_stats returns 5 values now
+        
+        if grade_only:
+             if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
                  s1, s10, s20, today, yesterday = mod.get_stats()
                  mod.generate_html([], s1, s10, today, yesterday)
-                 log(f"Regenerated HTML for {mod_name}", "success")
                  any_updates = True
+        else:
+            if hasattr(mod, 'main'):
+                 mod.main()
+                 any_updates = True
+            elif hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
+                if force:
+                     # get_stats returns 5 values now
+                     s1, s10, s20, today, yesterday = mod.get_stats()
+                     mod.generate_html([], s1, s10, today, yesterday)
+                     log(f"Regenerated HTML for {mod_name}", "success")
+                     any_updates = True
 
     except Exception as e:
         log(f"Error processing WNBA Props: {e}", "error")
         
     return any_updates
 
-def run_ncaab_grading(force=False):
+def run_ncaab_grading(force=False, grade_only=False):
     """
     Grades NCAAB pending picks.
     """
@@ -537,7 +797,7 @@ def run_ncaab_grading(force=False):
     any_updates = False
     
     try:
-        log(f"Checking {mod_name}...", "info")
+        log(f"Processing {mod_name}...", "info")
         
         try:
             mod = __import__(mod_name)
@@ -549,32 +809,58 @@ def run_ncaab_grading(force=False):
             
         # FORCE RELOAD
         importlib.reload(mod)
-            
-        # Run grading
-        if hasattr(mod, 'update_pick_results'):
-            try:
-                res = mod.update_pick_results()
-                if isinstance(res, int) and res > 0:
-                    log(f"Updated {res} picks for {mod_name}", "success")
-                    any_updates = True
-            except Exception as e:
-                log(f"Error updating NCAAB model: {e}", "error")
-        
-        # ALWAYS regenerate HTML to refresh date-dependent stats
-        if hasattr(mod, 'generate_tracking_html'):
-            try:
-                mod.generate_tracking_html()
-                log(f"Regenerated HTML for {mod_name}", "success")
+
+        if grade_only:
+             graded = False
+             if hasattr(mod, 'update_pick_results'):
+                 try:
+                     res = mod.update_pick_results()
+                     if isinstance(res, int) and res > 0: graded = True
+                 except: pass
+             
+             if hasattr(mod, 'generate_tracking_html'):
+                 mod.generate_tracking_html()
+                 any_updates = True
+             
+             if hasattr(mod, 'save_html'):
+                 try:
+                     # FIXED: Pass active plays instead of empty list
+                     tracking_data = mod.load_picks_tracking()
+                     active_results = retrieve_active_plays_game(tracking_data, "ncaab")
+                     mod.save_html(active_results)
+                     log(f"Regenerated HTML output for {mod_name} with {len(active_results)} plays", "success")
+                 except Exception as e:
+                     log(f"Error regenerating HTML output for {mod_name}: {e}", "warning")
+        else:
+            if hasattr(mod, 'main'):
+                mod.main()
                 any_updates = True
-            except Exception as e:
-                log(f"HTML generation failed for {mod_name}: {e}", "warning")
+            else:
+                # Fallback
+                if hasattr(mod, 'update_pick_results'):
+                    try:
+                        res = mod.update_pick_results()
+                        if isinstance(res, int) and res > 0:
+                            log(f"Updated {res} picks for {mod_name}", "success")
+                            any_updates = True
+                    except Exception as e:
+                        log(f"Error updating NCAAB model: {e}", "error")
+                
+                # ALWAYS regenerate HTML to refresh date-dependent stats
+                if hasattr(mod, 'generate_tracking_html'):
+                    try:
+                        mod.generate_tracking_html()
+                        log(f"Regenerated HTML for {mod_name}", "success")
+                        any_updates = True
+                    except Exception as e:
+                        log(f"HTML generation failed for {mod_name}: {e}", "warning")
                 
     except Exception as e:
         log(f"Error processing {mod_name}: {e}", "error")
         
     return any_updates
 
-def run_soccer_grading(force=False):
+def run_soccer_grading(force=False, grade_only=False):
     """
     Grades Soccer pending picks and regenerates HTML with fresh data.
     """
@@ -608,11 +894,28 @@ def run_soccer_grading(force=False):
         else:
             log(f"{mod_name} has no update_pick_results function", "warning")
         
-        # Always run full model to get fresh games (Dec 20, 2024 fix)
-        if hasattr(mod, 'main'):
-            log("Running full soccer model for fresh games...", "info")
-            mod.main()
-            any_updates = True
+        if grade_only:
+             # Just regen HTML if possible
+             pass # Soccer model updates HTML inside update_pick_results usually or main.
+             # If main calls generate_html, we skip it here.
+             # But update_pick_results usually saves JSON. 
+             # We might need to manually trigger HTML gen if available.
+             if hasattr(mod, 'generate_tracking_html'):
+                 mod.generate_tracking_html()
+                 any_updates = True
+             
+             if hasattr(mod, 'generate_html'):
+                 try:
+                     mod.generate_html([])
+                     log(f"Regenerated HTML output for {mod_name}", "success")
+                 except Exception as e:
+                     log(f"Error regenerating HTML output for {mod_name}: {e}", "warning")
+        else:
+            # Always run full model to get fresh games (Dec 20, 2024 fix)
+            if hasattr(mod, 'main'):
+                log("Running full soccer model for fresh games...", "info")
+                mod.main()
+                any_updates = True
     
     except Exception as e:
         log(f"Error processing Soccer: {e}", "error")
@@ -626,17 +929,18 @@ def main():
     parser.add_argument('--loop', action='store_true', help='Run in a loop every 15 minutes')
     parser.add_argument('--interval', type=int, default=900, help='Interval in seconds (default: 900s = 15m)')
     parser.add_argument('--force', action='store_true', help='Force regeneration of all HTML files')
+    parser.add_argument('--grade-only', action='store_true', help='Only grade pending picks and regenerate HTML (No new odds)')
     args = parser.parse_args()
     
     log("Auto-Grader initialized", "info")
     
     if args.loop:
         while True:
-            updates_nba = run_nba_grading(force=args.force)
-            updates_nfl = run_nfl_grading(force=args.force)
-            updates_wnba = run_wnba_grading(force=args.force)
-            updates_ncaab = run_ncaab_grading(force=args.force)
-            updates_soccer = run_soccer_grading(force=args.force)
+            updates_nba = run_nba_grading(force=args.force, grade_only=args.grade_only)
+            updates_nfl = run_nfl_grading(force=args.force, grade_only=args.grade_only)
+            updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
+            updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
+            updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
             
             if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
                 # Regenerate Best Plays aggregator
@@ -659,11 +963,11 @@ def main():
             args.force = False 
     else:
         # Run once
-        updates_nba = run_nba_grading(force=args.force)
-        updates_nfl = run_nfl_grading(force=args.force)
-        updates_wnba = run_wnba_grading(force=args.force)
-        updates_ncaab = run_ncaab_grading(force=args.force)
-        updates_soccer = run_soccer_grading(force=args.force)
+        updates_nba = run_nba_grading(force=args.force, grade_only=args.grade_only)
+        updates_nfl = run_nfl_grading(force=args.force, grade_only=args.grade_only)
+        updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
+        updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
+        updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
         
         if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
             # Regenerate Best Plays aggregator

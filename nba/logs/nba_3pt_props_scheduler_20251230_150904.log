@@ -1,0 +1,457 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Tue Dec 30 15:09:04 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 5 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[92m✓ Using cached player 3-pointers stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Using cached 3-pointers factors[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 5 upcoming games[0m
+[96m  Filtered to 5 upcoming games[0m
+[96m  Game 1/5: Philadelphia 76ers @ Memphis Grizzlies[0m
+[96m  Game 2/5: Boston Celtics @ Utah Jazz[0m
+[96m  Game 3/5: Detroit Pistons @ Los Angeles Lakers[0m
+[96m  Game 4/5: Sacramento Kings @ Los Angeles Clippers[0m
+[96m  Game 5/5: New York Knicks @ San Antonio Spurs[0m
+[92m✓ Fetched 37 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 37 player props with REAL stats...[0m
+[92m✓ Found 2 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 2 top UNDER plays (A.I. Score >= 7.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 68 props (score below 7.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Sam Hauser               [0m | [92mOVER 1.5 3PT   [0m | Boston Celtics            vs Utah Jazz                 | [1mA.I.: 9.80[0m | Rating: 3.6 ⭐
+  [96m 2. Lauri Markkanen          [0m | [92mOVER 2.5 3PT   [0m | Utah Jazz                 vs Boston Celtics            | [1mA.I.: 7.70[0m | Rating: 3.4 ⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Keyonte George           [0m | [91mUNDER 3.5 3PT  [0m | Utah Jazz                 vs Boston Celtics            | [1mA.I.: 7.62[0m | Rating: 3.3 ⭐
+  [96m 2. Brice Sensabaugh         [0m | [91mUNDER 2.5 3PT  [0m | Utah Jazz                 vs Boston Celtics            | [1mA.I.: 7.54[0m | Rating: 2.8 
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Tue Dec 30 15:10:35 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   American Betting League/abl_cron.log
+	modified:   American Betting League/update_log.txt
+	modified:   auto_grader.py
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   nba/nba_3pt_props_model.py
+	modified:   nba/nba_3pt_props_tracking.json.backup_grader
+	modified:   nba/nba_assists_props_model.py
+	modified:   nba/nba_assists_props_tracking.json.backup_grader
+	modified:   nba/nba_model_IMPROVED.py
+	modified:   nba/nba_player_prop_model.py
+	modified:   nba/nba_player_props.py
+	modified:   nba/nba_player_props_final.py
+	modified:   nba/nba_player_props_fixed.py
+	modified:   nba/nba_player_props_v2.py
+	modified:   nba/nba_points_props_model.py
+	modified:   nba/nba_points_props_tracking.json.backup_grader
+	modified:   nba/nba_props_all_books.py
+	modified:   nba/nba_rebounds_props_model.py
+	modified:   nba/nba_rebounds_props_tracking.json.backup_grader
+	modified:   ncaa/logs/launchd_output.log
+	modified:   ncaa/ncaab_model_2ndFINAL.py
+	modified:   nfl/.cache/sleeper_players.json
+	modified:   nfl/.cache/stats/nfl_stats_2025_16.json
+	modified:   nfl/atd_model_tracking.json.backup_grader
+	modified:   nfl/nfl_model_IMPROVED.py
+	modified:   nfl/nfl_passing_yards_props_model.py
+	modified:   nfl/nfl_receptions_props_model.py
+	modified:   nfl/nfl_rushing_yards_props_model.py
+	modified:   nfl/nfl_rushing_yards_props_tracking.json.backup_grader
+	modified:   nfl/props_grader.py
+	modified:   soccer/soccer_model_IMPROVED.py
+	modified:   wnba/wnba_model.py
+	modified:   wnba/wnba_model_output.html
+	modified:   wnba/wnba_model_tracking.json
+	modified:   wnba/wnba_props_output.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	autograder.log
+	debug_grader.py
+	fix_best_plays.py
+	nba/analyze_nba.py
+	nba/debug_dates.py
+	nba/logs/nba_3pt_props_20251223_050004.log
+	nba/logs/nba_3pt_props_20251224_050004.log
+	nba/logs/nba_3pt_props_20251225_050031.log
+	nba/logs/nba_3pt_props_20251226_050005.log
+	nba/logs/nba_3pt_props_20251227_050001.log
+	nba/logs/nba_3pt_props_20251228_050000.log
+	nba/logs/nba_3pt_props_20251229_050004.log
+	nba/logs/nba_3pt_props_20251230_050004.log
+	nba/logs/nba_3pt_props_scheduler_20251223_100001.log
+	nba/logs/nba_3pt_props_scheduler_20251223_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251223_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251223_181516.log
+	nba/logs/nba_3pt_props_scheduler_20251224_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251224_100000.log
+	nba/logs/nba_3pt_props_scheduler_20251224_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251224_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251225_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251225_100000.log
+	nba/logs/nba_3pt_props_scheduler_20251225_150000.log
+	nba/logs/nba_3pt_props_scheduler_20251225_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251226_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251226_052102.log
+	nba/logs/nba_3pt_props_scheduler_20251226_100002.log
+	nba/logs/nba_3pt_props_scheduler_20251226_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251226_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251227_025001.log
+	nba/logs/nba_3pt_props_scheduler_20251227_100002.log
+	nba/logs/nba_3pt_props_scheduler_20251227_150004.log
+	nba/logs/nba_3pt_props_scheduler_20251227_155307.log
+	nba/logs/nba_3pt_props_scheduler_20251227_180005.log
+	nba/logs/nba_3pt_props_scheduler_20251228_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251228_100002.log
+	nba/logs/nba_3pt_props_scheduler_20251228_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251228_180004.log
+	nba/logs/nba_3pt_props_scheduler_20251229_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251229_100003.log
+	nba/logs/nba_3pt_props_scheduler_20251229_134716.log
+	nba/logs/nba_3pt_props_scheduler_20251229_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251229_180004.log
+	nba/logs/nba_3pt_props_scheduler_20251230_025004.log
+	nba/logs/nba_3pt_props_scheduler_20251230_100003.log
+	nba/logs/nba_3pt_props_scheduler_20251230_150005.log
+	nba/logs/nba_3pt_props_scheduler_20251230_150904.log
+	nba/logs/nba_assists_props_20251223_070005.log
+	nba/logs/nba_assists_props_20251224_070004.log
+	nba/logs/nba_assists_props_20251225_070004.log
+	nba/logs/nba_assists_props_20251226_070005.log
+	nba/logs/nba_assists_props_20251227_070005.log
+	nba/logs/nba_assists_props_20251228_070004.log
+	nba/logs/nba_assists_props_20251229_070002.log
+	nba/logs/nba_assists_props_20251230_070005.log
+	nba/logs/nba_assists_props_scheduler_20251223_100502.log
+	nba/logs/nba_assists_props_scheduler_20251223_150504.log
+	nba/logs/nba_assists_props_scheduler_20251223_180504.log
+	nba/logs/nba_assists_props_scheduler_20251223_181516.log
+	nba/logs/nba_assists_props_scheduler_20251224_024002.log
+	nba/logs/nba_assists_props_scheduler_20251224_100505.log
+	nba/logs/nba_assists_props_scheduler_20251224_150505.log
+	nba/logs/nba_assists_props_scheduler_20251224_180501.log
+	nba/logs/nba_assists_props_scheduler_20251225_024005.log
+	nba/logs/nba_assists_props_scheduler_20251225_100504.log
+	nba/logs/nba_assists_props_scheduler_20251225_150505.log
+	nba/logs/nba_assists_props_scheduler_20251225_180505.log
+	nba/logs/nba_assists_props_scheduler_20251226_024005.log
+	nba/logs/nba_assists_props_scheduler_20251226_052102.log
+	nba/logs/nba_assists_props_scheduler_20251226_100500.log
+	nba/logs/nba_assists_props_scheduler_20251226_150505.log
+	nba/logs/nba_assists_props_scheduler_20251226_180504.log
+	nba/logs/nba_assists_props_scheduler_20251227_024004.log
+	nba/logs/nba_assists_props_scheduler_20251227_100505.log
+	nba/logs/nba_assists_props_scheduler_20251227_150505.log
+	nba/logs/nba_assists_props_scheduler_20251227_155307.log
+	nba/logs/nba_assists_props_scheduler_20251227_180505.log
+	nba/logs/nba_assists_props_scheduler_20251228_024005.log
+	nba/logs/nba_assists_props_scheduler_20251228_100505.log
+	nba/logs/nba_assists_props_scheduler_20251228_150505.log
+	nba/logs/nba_assists_props_scheduler_20251228_180505.log
+	nba/logs/nba_assists_props_scheduler_20251229_024004.log
+	nba/logs/nba_assists_props_scheduler_20251229_100505.log
+	nba/logs/nba_assists_props_scheduler_20251229_134716.log
+	nba/logs/nba_assists_props_scheduler_20251229_150505.log
+	nba/logs/nba_assists_props_scheduler_20251229_180502.log
+	nba/logs/nba_assists_props_scheduler_20251230_024005.log
+	nba/logs/nba_assists_props_scheduler_20251230_100505.log
+	nba/logs/nba_assists_props_scheduler_20251230_150505.log
+	nba/logs/nba_assists_props_scheduler_20251230_150905.log
+	nba/logs/nba_main_model_scheduler_20251223_102004.log
+	nba/logs/nba_main_model_scheduler_20251223_152005.log
+	nba/logs/nba_main_model_scheduler_20251223_181516.log
+	nba/logs/nba_main_model_scheduler_20251223_182005.log
+	nba/logs/nba_main_model_scheduler_20251224_031004.log
+	nba/logs/nba_main_model_scheduler_20251224_102005.log
+	nba/logs/nba_main_model_scheduler_20251224_152004.log
+	nba/logs/nba_main_model_scheduler_20251224_182005.log
+	nba/logs/nba_main_model_scheduler_20251225_031003.log
+	nba/logs/nba_main_model_scheduler_20251225_102003.log
+	nba/logs/nba_main_model_scheduler_20251225_152005.log
+	nba/logs/nba_main_model_scheduler_20251225_182004.log
+	nba/logs/nba_main_model_scheduler_20251226_031005.log
+	nba/logs/nba_main_model_scheduler_20251226_052102.log
+	nba/logs/nba_main_model_scheduler_20251226_102003.log
+	nba/logs/nba_main_model_scheduler_20251226_152005.log
+	nba/logs/nba_main_model_scheduler_20251226_182220.log
+	nba/logs/nba_main_model_scheduler_20251227_031003.log
+	nba/logs/nba_main_model_scheduler_20251227_102000.log
+	nba/logs/nba_main_model_scheduler_20251227_152004.log
+	nba/logs/nba_main_model_scheduler_20251227_155307.log
+	nba/logs/nba_main_model_scheduler_20251227_182005.log
+	nba/logs/nba_main_model_scheduler_20251228_031004.log
+	nba/logs/nba_main_model_scheduler_20251228_102005.log
+	nba/logs/nba_main_model_scheduler_20251228_152000.log
+	nba/logs/nba_main_model_scheduler_20251228_182005.log
+	nba/logs/nba_main_model_scheduler_20251229_031005.log
+	nba/logs/nba_main_model_scheduler_20251229_102001.log
+	nba/logs/nba_main_model_scheduler_20251229_134716.log
+	nba/logs/nba_main_model_scheduler_20251229_152005.log
+	nba/logs/nba_main_model_scheduler_20251229_182005.log
+	nba/logs/nba_main_model_scheduler_20251230_031005.log
+	nba/logs/nba_main_model_scheduler_20251230_102005.log
+	nba/logs/nba_main_model_scheduler_20251230_150905.log
+	nba/logs/nba_model_20251223_100001.log
+	nba/logs/nba_model_20251224_100000.log
+	nba/logs/nba_model_20251225_100000.log
+	nba/logs/nba_model_20251226_100002.log
+	nba/logs/nba_model_20251227_100002.log
+	nba/logs/nba_model_20251228_100002.log
+	nba/logs/nba_model_20251229_100003.log
+	nba/logs/nba_model_20251230_100003.log
+	nba/logs/nba_points_props_scheduler_20251223_100001.log
+	nba/logs/nba_points_props_scheduler_20251223_150005.log
+	nba/logs/nba_points_props_scheduler_20251223_180004.log
+	nba/logs/nba_points_props_scheduler_20251223_181518.log
+	nba/logs/nba_points_props_scheduler_20251224_023504.log
+	nba/logs/nba_points_props_scheduler_20251224_100000.log
+	nba/logs/nba_points_props_scheduler_20251224_150005.log
+	nba/logs/nba_points_props_scheduler_20251224_180005.log
+	nba/logs/nba_points_props_scheduler_20251225_023505.log
+	nba/logs/nba_points_props_scheduler_20251225_100000.log
+	nba/logs/nba_points_props_scheduler_20251225_150000.log
+	nba/logs/nba_points_props_scheduler_20251225_180005.log
+	nba/logs/nba_points_props_scheduler_20251226_023505.log
+	nba/logs/nba_points_props_scheduler_20251226_052102.log
+	nba/logs/nba_points_props_scheduler_20251226_100002.log
+	nba/logs/nba_points_props_scheduler_20251226_150005.log
+	nba/logs/nba_points_props_scheduler_20251226_180005.log
+	nba/logs/nba_points_props_scheduler_20251227_023505.log
+	nba/logs/nba_points_props_scheduler_20251227_100002.log
+	nba/logs/nba_points_props_scheduler_20251227_150004.log
+	nba/logs/nba_points_props_scheduler_20251227_155307.log
+	nba/logs/nba_points_props_scheduler_20251227_180005.log
+	nba/logs/nba_points_props_scheduler_20251228_023504.log
+	nba/logs/nba_points_props_scheduler_20251228_100002.log
+	nba/logs/nba_points_props_scheduler_20251228_150005.log
+	nba/logs/nba_points_props_scheduler_20251228_180004.log
+	nba/logs/nba_points_props_scheduler_20251229_023505.log
+	nba/logs/nba_points_props_scheduler_20251229_100003.log
+	nba/logs/nba_points_props_scheduler_20251229_134716.log
+	nba/logs/nba_points_props_scheduler_20251229_150005.log
+	nba/logs/nba_points_props_scheduler_20251229_180004.log
+	nba/logs/nba_points_props_scheduler_20251230_023504.log
+	nba/logs/nba_points_props_scheduler_20251230_100003.log
+	nba/logs/nba_points_props_scheduler_20251230_150005.log
+	nba/logs/nba_points_props_scheduler_20251230_150904.log
+	nba/logs/nba_rebounds_props_20251223_060004.log
+	nba/logs/nba_rebounds_props_20251224_060004.log
+	nba/logs/nba_rebounds_props_20251225_060005.log
+	nba/logs/nba_rebounds_props_20251226_060005.log
+	nba/logs/nba_rebounds_props_20251227_060003.log
+	nba/logs/nba_rebounds_props_20251228_060002.log
+	nba/logs/nba_rebounds_props_20251229_060005.log
+	nba/logs/nba_rebounds_props_20251230_060005.log
+	nba/logs/nba_rebounds_props_scheduler_20251223_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20251223_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20251223_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20251223_181516.log
+	nba/logs/nba_rebounds_props_scheduler_20251224_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251224_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20251224_151003.log
+	nba/logs/nba_rebounds_props_scheduler_20251224_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20251225_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251225_101003.log
+	nba/logs/nba_rebounds_props_scheduler_20251225_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20251225_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20251226_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251226_052101.log
+	nba/logs/nba_rebounds_props_scheduler_20251226_101003.log
+	nba/logs/nba_rebounds_props_scheduler_20251226_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20251226_181004.log
+	nba/logs/nba_rebounds_props_scheduler_20251227_024501.log
+	nba/logs/nba_rebounds_props_scheduler_20251227_101001.log
+	nba/logs/nba_rebounds_props_scheduler_20251227_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20251227_155307.log
+	nba/logs/nba_rebounds_props_scheduler_20251227_181004.log
+	nba/logs/nba_rebounds_props_scheduler_20251228_024504.log
+	nba/logs/nba_rebounds_props_scheduler_20251228_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20251228_151000.log
+	nba/logs/nba_rebounds_props_scheduler_20251228_181003.log
+	nba/logs/nba_rebounds_props_scheduler_20251229_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251229_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20251229_134716.log
+	nba/logs/nba_rebounds_props_scheduler_20251229_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20251229_181003.log
+	nba/logs/nba_rebounds_props_scheduler_20251230_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20251230_101005.log
+	nba/logs/nba_rebounds_props_scheduler_20251230_150904.log
+	ncaa/analyze_ncaab.py
+	ncaa/logs/ncaab_model_20251223_103005.log
+	ncaa/logs/ncaab_model_20251224_103005.log
+	ncaa/logs/ncaab_model_20251225_103004.log
+	ncaa/logs/ncaab_model_20251226_103003.log
+	ncaa/logs/ncaab_model_20251227_103005.log
+	ncaa/logs/ncaab_model_20251228_103005.log
+	ncaa/logs/ncaab_model_20251229_103005.log
+	ncaa/logs/ncaab_model_20251230_103005.log
+	nfl/.cache/stats/nfl_stats_2025_17.json
+	nfl/logs/nfl_main_model_scheduler_20251223_093005.log
+	nfl/logs/nfl_main_model_scheduler_20251223_181005.log
+	nfl/logs/nfl_main_model_scheduler_20251223_181516.log
+	nfl/logs/nfl_main_model_scheduler_20251224_031503.log
+	nfl/logs/nfl_main_model_scheduler_20251224_093004.log
+	nfl/logs/nfl_main_model_scheduler_20251224_181005.log
+	nfl/logs/nfl_main_model_scheduler_20251225_031504.log
+	nfl/logs/nfl_main_model_scheduler_20251225_093003.log
+	nfl/logs/nfl_main_model_scheduler_20251225_181005.log
+	nfl/logs/nfl_main_model_scheduler_20251226_031502.log
+	nfl/logs/nfl_main_model_scheduler_20251226_052101.log
+	nfl/logs/nfl_main_model_scheduler_20251226_093005.log
+	nfl/logs/nfl_main_model_scheduler_20251226_181004.log
+	nfl/logs/nfl_main_model_scheduler_20251227_031501.log
+	nfl/logs/nfl_main_model_scheduler_20251227_093003.log
+	nfl/logs/nfl_main_model_scheduler_20251227_155307.log
+	nfl/logs/nfl_main_model_scheduler_20251227_181004.log
+	nfl/logs/nfl_main_model_scheduler_20251228_031500.log
+	nfl/logs/nfl_main_model_scheduler_20251228_093003.log
+	nfl/logs/nfl_main_model_scheduler_20251228_181003.log
+	nfl/logs/nfl_main_model_scheduler_20251229_031505.log
+	nfl/logs/nfl_main_model_scheduler_20251229_093005.log
+	nfl/logs/nfl_main_model_scheduler_20251229_134716.log
+	nfl/logs/nfl_main_model_scheduler_20251229_181003.log
+	nfl/logs/nfl_main_model_scheduler_20251230_031505.log
+	nfl/logs/nfl_main_model_scheduler_20251230_093005.log
+	nfl/logs/nfl_main_model_scheduler_20251230_150905.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251223_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251223_181504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251224_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251224_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251224_181500.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251225_025505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251225_094505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251225_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251226_025505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251226_052102.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251226_094505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251226_181518.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251227_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251227_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251227_155307.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251227_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251228_025505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251228_094503.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251228_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251229_025501.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251229_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251229_134716.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251229_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251230_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251230_094505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20251230_150905.log
+	nfl/logs/nfl_receptions_props_scheduler_20251223_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251223_181518.log
+	nfl/logs/nfl_receptions_props_scheduler_20251223_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251224_030500.log
+	nfl/logs/nfl_receptions_props_scheduler_20251224_095502.log
+	nfl/logs/nfl_receptions_props_scheduler_20251224_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251225_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251225_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251225_182507.log
+	nfl/logs/nfl_receptions_props_scheduler_20251226_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251226_052102.log
+	nfl/logs/nfl_receptions_props_scheduler_20251226_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251226_183820.log
+	nfl/logs/nfl_receptions_props_scheduler_20251227_030501.log
+	nfl/logs/nfl_receptions_props_scheduler_20251227_095500.log
+	nfl/logs/nfl_receptions_props_scheduler_20251227_155307.log
+	nfl/logs/nfl_receptions_props_scheduler_20251227_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251228_030503.log
+	nfl/logs/nfl_receptions_props_scheduler_20251228_095504.log
+	nfl/logs/nfl_receptions_props_scheduler_20251228_182504.log
+	nfl/logs/nfl_receptions_props_scheduler_20251229_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251229_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251229_134716.log
+	nfl/logs/nfl_receptions_props_scheduler_20251229_182504.log
+	nfl/logs/nfl_receptions_props_scheduler_20251230_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251230_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20251230_150904.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251223_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251223_181516.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251223_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251224_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251224_095000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251224_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251225_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251225_095000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251225_182004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251226_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251226_052102.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251226_095003.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251226_182220.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251227_155307.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251227_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251228_030001.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251228_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251228_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251229_030001.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251229_095000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251229_134716.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251229_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251230_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251230_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20251230_150904.log
+	nfl/test_local.py
+	setup_aliases.sh
+	test_path.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Everything up-to-date
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Dec 30 15:10:40 EST 2025

@@ -1,0 +1,99 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Wed Dec 31 02:45:02 EST 2025
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 9 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+[96m  Fetching batch stats for 12/30/2025...[0m
+    [91mLOSS[0m: Brook Lopez had 6 rebounds (line: 5.5, bet: UNDER) | Profit: -1.00 units
+  Fetching team stats to verify completed games for 2025-12-31...
+
+[92m✓ Graded 1 picks[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 9 upcoming games[0m
+[96m  Filtered to 9 upcoming games[0m
+[96m  Game 1/9: Golden State Warriors @ Charlotte Hornets[0m
+[96m  Game 2/9: Minnesota Timberwolves @ Atlanta Hawks[0m
+[96m  Game 3/9: Orlando Magic @ Indiana Pacers[0m
+[96m  Game 4/9: Phoenix Suns @ Cleveland Cavaliers[0m
+[96m  Game 5/9: New Orleans Pelicans @ Chicago Bulls[0m
+[96m  Game 6/9: New York Knicks @ San Antonio Spurs[0m
+[96m  Game 7/9: Denver Nuggets @ Toronto Raptors[0m
+[96m  Game 8/9: Washington Wizards @ Milwaukee Bucks[0m
+[96m  Game 9/9: Portland Trail Blazers @ Oklahoma City Thunder[0m
+[92m✓ Fetched 113 player rebounds props (grouped)[0m
+
+[96mAnalyzing 113 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 5 props (no player stats found)[0m
+[93m  Skipped 212 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Yves Missi               [0m | [92mOVER 3.5 REB   [0m | New Orleans Pelicans      vs Chicago Bulls             | [1mA.I.: 10.00[0m | Rating: 3.9 ⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Peyton Watson            [0m | [91mUNDER 5.5 REB  [0m | Denver Nuggets            vs Toronto Raptors           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Isaac Okoro              [0m | [91mUNDER 3.5 REB  [0m | Chicago Bulls             vs New Orleans Pelicans      | [1mA.I.: 10.00[0m | Rating: 3.3 ⭐
+  [96m 3. Trae Young               [0m | [91mUNDER 2.5 REB  [0m | Atlanta Hawks             vs Minnesota Timberwolves    | [1mA.I.: 10.00[0m | Rating: 3.2 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Wed Dec 31 02:45:16 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main b682d16] Update model outputs - 2025-12-31 02:45:16
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 106 insertions(+), 24 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   0b887f0..b682d16  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Dec 31 02:45:17 EST 2025

@@ -21,6 +21,8 @@ OUTPUT_HTML = os.path.join(SCRIPT_DIR, "wnba_model_output.html")
 # Constants
 HOME_COURT_ADV = 3.2 
 KELLY_MULTIPLIER = 0.5 
+CONFIDENT_SPREAD_EDGE = 0.5
+CONFIDENT_TOTAL_EDGE = 2.0 
 
 class Colors:
     GREEN = "\033[92m"
@@ -568,7 +570,7 @@ def main():
             res['ATS Pick'] = f"✅ BET: {h_team['name']} {g['spread']}"
             
             # Track
-            if spread_edge > 1.0:
+            if spread_edge > CONFIDENT_SPREAD_EDGE:
                  new_picks.append({
                     'id': f"SPD_{g['home']}_{g['away']}_{datetime.now().strftime('%Y%m%d')}",
                     'type': 'Spread', 
@@ -582,7 +584,7 @@ def main():
             res['ATS Pick'] = f"✅ BET: {a_team['name']} +{-g['spread']}" # simplified
             
             # Track
-            if spread_edge > 1.0:
+            if spread_edge > CONFIDENT_SPREAD_EDGE:
                  new_picks.append({
                     'id': f"SPD_{g['home']}_{g['away']}_{datetime.now().strftime('%Y%m%d')}",
                     'type': 'Spread', 
@@ -596,10 +598,10 @@ def main():
         total_edge = total - g['total']
         res['total_edge'] = total_edge
         
-        if total_edge > 3.0:
+        if total_edge > CONFIDENT_TOTAL_EDGE:
             res['Total Pick'] = f"✅ BET: OVER {g['total']}"
             new_picks.append( {'id': f"TOT_{g['home']}_{g['away']}_{datetime.now().strftime('%Y%m%d')}", 'type': 'Total', 'selection': f"OVER {g['total']}"})
-        elif total_edge < -3.0:
+        elif total_edge < -CONFIDENT_TOTAL_EDGE:
             res['Total Pick'] = f"✅ BET: UNDER {g['total']}"
             new_picks.append( {'id': f"TOT_{g['home']}_{g['away']}_{datetime.now().strftime('%Y%m%d')}", 'type': 'Total', 'selection': f"UNDER {g['total']}"})
 

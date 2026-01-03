@@ -1,0 +1,37 @@
+============================================================
+Scheduler run: nfl_rushing_yards_props
+Time: Wed Dec 24 09:50:00 EST 2025
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_rushing_yards_props_model.py
+============================================================
+[1m🏈 NFL Rushing Props Model - Sharp +EV[0m
+
+[96m--- Grading Pending Picks ---[0m
+[93mGrading failed: Failed to download https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.parquet: 504 Server Error: Gateway Time-out for url: https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.parquet[0m
+  Found 16 upcoming games (filtered from 16)
+[96mFound 16 upcoming games. Fetching rushing props...[0m
+No odds found. Generating HTML with tracking data only.
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_rushing_yards_props.html
+✅ Completed: nfl_rushing_yards_props at Wed Dec 24 09:50:15 EST 2025
+
+📤 Auto-pushing model outputs to GitHub...
+[main b9c73e9] Update model outputs - 2025-12-24 09:50:15
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   65c3520..b9c73e9  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Dec 24 09:50:16 EST 2025

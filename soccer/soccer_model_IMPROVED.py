@@ -16,6 +16,8 @@ Key Features:
 import requests
 import json
 import os
+import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -40,9 +42,10 @@ OUTPUT_HTML = SCRIPT_DIR / "soccer_totals_output.html"  # Keep same filename for
 TRACKING_FILE = SCRIPT_DIR / "soccer_picks_tracking.json"
 
 # Sharp +EV thresholds
-SPREAD_THRESHOLD = 0.25  # 0.25 goal spread edge to display
-TOTAL_THRESHOLD = 0.30   # 0.30 goal total edge to display
-CONFIDENT_SPREAD_EDGE = 0.50  # 0.50+ goal edge to log (sharp)
+# Sharp +EV thresholds
+SPREAD_THRESHOLD = 0.40  # Matched to 0.40 to ensure value
+TOTAL_THRESHOLD = 0.40   # Matched to 0.40 to ensure value
+CONFIDENT_SPREAD_EDGE = 0.40  # 0.40+ goal edge to log (sharp)
 CONFIDENT_TOTAL_EDGE = 0.40   # 0.40+ goal edge to log (sharp) - unders focus
 
 # Home advantage in soccer (typically ~0.3-0.4 goals)
@@ -2092,6 +2095,25 @@ def main():
     generate_html(analyses, tracking_data)
     
     print("\n" + "=" * 80)
+    
+    # Auto-push to GitHub
+    push_to_git()
+
+def push_to_git():
+    """Run the auto_push.sh script to commit and push changes"""
+    print("\n📤 Pushing updates to GitHub...")
+    try:
+        # Assume auto_push.sh is in the parent directory (root of repo)
+        repo_root = SCRIPT_DIR.parent
+        push_script = repo_root / "auto_push.sh"
+        
+        if push_script.exists():
+            subprocess.run(["bash", str(push_script)], check=True, cwd=repo_root)
+            print("✅ Git push initiated successfully.")
+        else:
+            print(f"⚠️  auto_push.sh not found at {push_script}")
+    except Exception as e:
+        print(f"❌ Failed to push to Git: {e}")
 
 if __name__ == "__main__":
     main()

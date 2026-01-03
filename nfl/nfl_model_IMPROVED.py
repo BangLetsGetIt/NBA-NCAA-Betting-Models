@@ -38,12 +38,13 @@ TRACKING_HTML_FILE = SCRIPT_DIR / "nfl_tracking_dashboard.html"
 # ============================================================================
 
 # Display thresholds (minimum to show in HTML)
-SPREAD_THRESHOLD = 0.1      # Minimum edge to display
-TOTAL_THRESHOLD = 0.1       # Minimum edge to display
+# Display thresholds (minimum to show in HTML)
+SPREAD_THRESHOLD = 3.0      # Increased to 3.0 (Field Goal) to ensure value
+TOTAL_THRESHOLD = 3.0       # Increased to 3.0 to ensure value
 
-# STRICT thresholds for LOGGING picks (only high-confidence bets tracked)
-CONFIDENT_SPREAD_EDGE = 8.0   # Need 8+ point edge to log (sharp +EV focus)
-CONFIDENT_TOTAL_EDGE = 12.0   # Need 12+ point edge to log (sharp +EV focus)
+# STRICT thresholds for LOGGING picks (these are the bets we actually track)
+CONFIDENT_SPREAD_EDGE = 3.0   # Matches Display Threshold (Was 8.0)
+CONFIDENT_TOTAL_EDGE = 3.0    # Matches Display Threshold (Was 12.0)
 
 # Home field advantage (NFL average ~2.5-3.0 points)
 HOME_ADVANTAGE = 2.75
