@@ -1096,7 +1096,40 @@ def main():
             print(f"  #{i} [{p['confidence']:.0f}] {p['player']} {p['bet_type']} {p['line']}")
             print(f"      {p['model']} ({p['model_record']})")
     
+    # Auto-push to git
+    push_to_git()
+    
     return len(plays)
+
+
+def push_to_git():
+    """Push best_plays.html and tracking file to git"""
+    import subprocess
+    try:
+        print("\n🚀 Pushing to GitHub...")
+        timestamp = now_et().strftime('%Y-%m-%d %H:%M')
+        
+        # Add, commit, and push
+        subprocess.run(['git', 'add', 'best_plays.html', 'best_plays_tracking.json'], 
+                      cwd=SCRIPT_DIR, check=True, capture_output=True)
+        
+        result = subprocess.run(
+            ['git', 'commit', '-m', f'Update best plays - {timestamp}'],
+            cwd=SCRIPT_DIR, capture_output=True, text=True
+        )
+        
+        if result.returncode == 0:
+            subprocess.run(['git', 'push', 'origin', 'main'], 
+                          cwd=SCRIPT_DIR, check=True, capture_output=True)
+            print("✅ Pushed to GitHub successfully!")
+        elif 'nothing to commit' in result.stdout or 'nothing to commit' in result.stderr:
+            print("ℹ️  No changes to push")
+        else:
+            print(f"⚠️  Git commit issue: {result.stderr}")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  Git push failed: {e}")
+    except Exception as e:
+        print(f"⚠️  Git error: {e}")
 
 
 if __name__ == "__main__":
