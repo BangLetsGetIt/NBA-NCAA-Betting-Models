@@ -31,7 +31,7 @@ TRACKING_FILE = os.path.join(SCRIPT_DIR, "nfl_rushing_yards_props_tracking.json"
 MIN_EDGE_OVER = 5.0    # Must project 5+ yards OVER the line
 MIN_EDGE_UNDER = 6.0   # Must project 6+ yards UNDER the line (Unders are sweatier)
 MIN_CONSISTENCY = 0.5  # Player must be somewhat consistent
-MIN_AI_SCORE = 7.0     # 0-10 Scale
+MIN_AI_SCORE = 5.0     # 0-10 Scale (lowered to show more +EV plays)
 UNIT_SIZE = 100        # $100 units for ROI calc
 CURRENT_SEASON = "2025" # Adjust as needed
 

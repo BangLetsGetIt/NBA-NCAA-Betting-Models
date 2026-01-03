@@ -31,7 +31,7 @@ TRACKING_FILE = os.path.join(SCRIPT_DIR, "nfl_receiving_yards_props_tracking.jso
 MIN_EDGE_OVER = 10.0    # Lowered slightly for receiving yards vs passing
 MIN_EDGE_UNDER = 15.0   # Lowered slightly for receiving yards vs passing
 MIN_CONSISTENCY = 0.5   # Player must be somewhat consistent
-MIN_AI_SCORE = 7.0      # 0-10 Scale
+MIN_AI_SCORE = 5.0      # 0-10 Scale (lowered to show more +EV plays)
 UNIT_SIZE = 100         # $100 units for ROI calc
 CURRENT_SEASON = "2025" # Adjust as needed
 
@@ -1042,9 +1042,8 @@ def main():
     
     # 6. Auto-Track
     print(f"\n{Colors.CYAN}--- Tracking Picks ---{Colors.END}")
-    print(f"Auto-tracking plays with AI Score >= {9.7}") # Stricter auto-track
-    top_picks = [p for p in picks if p['ai_score'] >= 9.7]
-    track_new_picks(top_picks, props)
+    print(f"Auto-tracking plays with AI Score >= {MIN_AI_SCORE}")
+    track_new_picks(picks, props)  # Track all displayed plays
 
 if __name__ == "__main__":
     main()

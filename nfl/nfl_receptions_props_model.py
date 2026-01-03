@@ -31,7 +31,7 @@ TRACKING_FILE = os.path.join(SCRIPT_DIR, "nfl_receptions_props_tracking.json")
 MIN_EDGE_OVER = 1.0    # Must project 1.0+ catches OVER the line
 MIN_EDGE_UNDER = 1.0   # Must project 1.0+ catches UNDER the line
 MIN_CONSISTENCY = 0.5  # Player must be somewhat consistent
-MIN_AI_SCORE = 7.0     # 0-10 Scale
+MIN_AI_SCORE = 5.0     # 0-10 Scale (lowered to show more +EV plays)
 UNIT_SIZE = 100        # $100 units for ROI calc
 CURRENT_SEASON = "2025" # Adjust as needed
 
