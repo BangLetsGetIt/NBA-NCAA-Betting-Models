@@ -2765,11 +2765,13 @@
       "edge": 0.6,
       "ev": -10.34,
       "tracked_at": "2026-01-02T01:46:11.051505-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 0,
       "clv_status": "neutral",
-      "last_updated": "2026-01-02T18:00:26.520004-05:00"
+      "last_updated": "2026-01-02T18:00:26.520004-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-03T00:07:12.100185-05:00"
     },
     {
       "pick_id": "Cam Spencer_1.5_over_2026-01-03T03:40:00Z",
@@ -2934,10 +2936,12 @@
       "edge": 0.5,
       "ev": -2.2,
       "tracked_at": "2026-01-02T15:00:33.284024-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-01-03T00:07:12.100359-05:00"
     },
     {
       "pick_id": "Jeremiah Fears_1.5_under_2026-01-03T01:10:00Z",
@@ -2956,11 +2960,13 @@
       "edge": 0.5,
       "ev": -11.73,
       "tracked_at": "2026-01-02T15:00:33.284081-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 0,
       "clv_status": "neutral",
-      "last_updated": "2026-01-02T18:00:26.520098-05:00"
+      "last_updated": "2026-01-02T18:00:26.520098-05:00",
+      "profit_loss": 38,
+      "updated_at": "2026-01-03T00:07:12.100411-05:00"
     },
     {
       "pick_id": "Jordan Poole_3.5_under_2026-01-03T01:10:00Z",
@@ -3009,6 +3015,28 @@
       "actual_3pm": null,
       "clv_status": "negative",
       "last_updated": "2026-01-02T18:00:26.519960-05:00"
+    },
+    {
+      "pick_id": "Donte DiVincenzo_2.5_over_2026-01-03T22:10:00Z",
+      "player": "Donte DiVincenzo",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "team": "Minnesota Timberwolves",
+      "opponent": "Miami Heat",
+      "ai_score": 7.78,
+      "odds": -175,
+      "opening_odds": -175,
+      "latest_odds": -175,
+      "game_time": "2026-01-03T22:10:00Z",
+      "season_avg": 3.0,
+      "recent_avg": 3.1,
+      "edge": 0.5,
+      "ev": -7.68,
+      "tracked_at": "2026-01-03T00:07:17.745171-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null,
+      "clv_status": null
     }
   ]
 }
