@@ -1492,11 +1492,13 @@
       "edge": 2.1,
       "ev": 21.85,
       "tracked_at": "2026-01-04T02:20:02.995148-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 2,
       "clv_status": "negative",
-      "last_updated": "2026-01-04T07:00:13.996274-05:00"
+      "last_updated": "2026-01-04T07:00:13.996274-05:00",
+      "profit_loss": 74,
+      "updated_at": "2026-01-04T21:23:07.027837-05:00"
     },
     {
       "pick_id": "Tyler Herro_3.5_under_2026-01-04T23:10:00Z",
@@ -1515,10 +1517,11 @@
       "edge": 1.2,
       "ev": 33.64,
       "tracked_at": "2026-01-04T15:05:08.596193-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_ast": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     }
   ]
 }
