@@ -6406,7 +6406,7 @@
       "model_line": 233.0,
       "market_line": 224.0,
       "opening_line": 224.0,
-      "closing_line": 224.0,
+      "closing_line": 224.5,
       "edge": 9.0,
       "pick": "\u2705 BET: OVER 224.0",
       "units": 1,
@@ -6415,7 +6415,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     },
     {
       "pick_id": "Washington Wizards_New Orleans Pelicans_2026-01-10T00:10:00Z_spread",
@@ -6450,7 +6450,7 @@
       "model_line": 233.0,
       "market_line": 240.5,
       "opening_line": 240.5,
-      "closing_line": 240.5,
+      "closing_line": 242.0,
       "edge": -7.5,
       "pick": "\u2705 BET: UNDER 240.5",
       "units": 1,
@@ -6459,7 +6459,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "negative"
     },
     {
       "pick_id": "Orlando Magic_Philadelphia 76ers_2026-01-10T00:10:00Z_spread",
@@ -6472,7 +6472,7 @@
       "model_line": 10.2,
       "market_line": 2.0,
       "opening_line": 2.0,
-      "closing_line": 2.0,
+      "closing_line": 2.5,
       "edge": 12.2,
       "pick": "\u2705 BET: Orlando Magic +2.0",
       "units": 1,
@@ -6481,7 +6481,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "negative"
     },
     {
       "pick_id": "Memphis Grizzlies_Oklahoma City Thunder_2026-01-10T01:10:00Z_spread",
@@ -6604,16 +6604,16 @@
       "model_line": -0.9,
       "market_line": 6.0,
       "opening_line": 6.0,
-      "closing_line": 6.0,
+      "closing_line": 6.5,
       "edge": 5.1,
       "pick": "\u2705 BET: Portland Trail Blazers +6.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
-      "clv_status": null
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 103,
+      "actual_away_score": 102,
+      "clv_status": "negative"
     },
     {
       "pick_id": "Portland Trail Blazers_Houston Rockets_2026-01-10T03:10:00Z_total",
@@ -6630,11 +6630,11 @@
       "edge": 14.7,
       "pick": "\u2705 BET: OVER 220.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 103,
+      "actual_away_score": 102,
       "clv_status": null
     },
     {
@@ -6670,7 +6670,7 @@
       "model_line": 239.5,
       "market_line": 232.0,
       "opening_line": 232.0,
-      "closing_line": 232.0,
+      "closing_line": 232.5,
       "edge": 7.5,
       "pick": "\u2705 BET: OVER 232.0",
       "units": 1,
@@ -6679,14 +6679,14 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     }
   ],
   "summary": {
     "total_picks": 320,
-    "wins": 164,
-    "losses": 139,
+    "wins": 165,
+    "losses": 140,
     "pushes": 2,
-    "pending": 15
+    "pending": 13
   }
 }
