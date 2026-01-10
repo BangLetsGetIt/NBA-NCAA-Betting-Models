@@ -4193,11 +4193,13 @@
       "edge": 0.8,
       "ev": -1.0,
       "tracked_at": "2026-01-08T23:46:14.117965-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 0,
       "clv_status": "negative",
-      "last_updated": "2026-01-09T15:00:48.153645-05:00"
+      "last_updated": "2026-01-09T15:00:48.153645-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-09T22:28:11.992616-05:00"
     },
     {
       "pick_id": "Nickeil Alexander-Walker_2.5_over_2026-01-10T02:10:00Z",
@@ -4238,11 +4240,13 @@
       "edge": 0.5,
       "ev": -17.75,
       "tracked_at": "2026-01-08T23:46:14.117991-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 0,
       "clv_status": "negative",
-      "last_updated": "2026-01-09T15:00:48.153695-05:00"
+      "last_updated": "2026-01-09T15:00:48.153695-05:00",
+      "profit_loss": 40,
+      "updated_at": "2026-01-09T22:28:11.992689-05:00"
     },
     {
       "pick_id": "Brandon Ingram_2.5_under_2026-01-10T00:10:00Z",
@@ -4261,11 +4265,12 @@
       "edge": 0.8,
       "ev": -13.73,
       "tracked_at": "2026-01-08T23:46:14.118005-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
       "clv_status": "negative",
-      "last_updated": "2026-01-09T05:14:25.458401-05:00"
+      "last_updated": "2026-01-09T05:14:25.458401-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Jordan Poole_3.5_under_2026-01-10T00:10:00Z",
@@ -4328,10 +4333,11 @@
       "edge": 0.9,
       "ev": -21.42,
       "tracked_at": "2026-01-09T02:50:09.424923-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Isaiah Joe_3.5_under_2026-01-10T01:10:00Z",
@@ -4484,10 +4490,12 @@
       "edge": 0.8,
       "ev": -13.24,
       "tracked_at": "2026-01-09T18:28:14.868673-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 0,
+      "clv_status": null,
+      "profit_loss": 51,
+      "updated_at": "2026-01-09T22:28:11.992747-05:00"
     }
   ]
 }
