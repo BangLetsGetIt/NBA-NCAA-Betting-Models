@@ -1735,11 +1735,13 @@
       "edge": 1.9,
       "ev": 28.33,
       "tracked_at": "2026-01-08T23:46:06.949701-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 6,
       "clv_status": "positive",
-      "last_updated": "2026-01-09T18:27:56.080529-05:00"
+      "last_updated": "2026-01-09T18:27:56.080529-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-09T23:32:18.097047-05:00"
     },
     {
       "pick_id": "Steven Adams_2.5_under_2026-01-10T03:10:00Z",
@@ -1781,11 +1783,13 @@
       "edge": 2.0,
       "ev": 15.16,
       "tracked_at": "2026-01-09T07:15:07.006844-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 10,
       "clv_status": "positive",
-      "last_updated": "2026-01-09T10:17:14.197286-05:00"
+      "last_updated": "2026-01-09T10:17:14.197286-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-09T23:32:18.609323-05:00"
     },
     {
       "pick_id": "Kyshawn George_3.5_over_2026-01-10T00:10:00Z",
@@ -1828,10 +1832,12 @@
       "edge": 1.1,
       "ev": 23.85,
       "tracked_at": "2026-01-09T18:27:56.080454-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 3,
+      "clv_status": null,
+      "profit_loss": 76,
+      "updated_at": "2026-01-09T23:32:18.845632-05:00"
     },
     {
       "pick_id": "Isaiah Joe_2.5_under_2026-01-10T01:10:00Z",
@@ -1850,10 +1856,12 @@
       "edge": 1.1,
       "ev": 5.9,
       "tracked_at": "2026-01-09T18:27:56.080539-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 0,
+      "clv_status": null,
+      "profit_loss": 51,
+      "updated_at": "2026-01-09T23:32:19.280027-05:00"
     }
   ]
 }
