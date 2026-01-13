@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Analytics Dashboard | Quiet Wins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-green: #00ff88;
+            --accent-red: #ff4466;
+            --accent-blue: #4488ff;
+            --accent-purple: #8844ff;
+            --accent-gold: #ffaa00;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a3a 50%, var(--bg-primary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card.profit .value {
+            color: var(--accent-green);
+        }
+        
+        .stat-card.loss .value {
+            color: var(--accent-red);
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .table-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+        }
+        
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .win { color: var(--accent-green); }
+        .loss { color: var(--accent-red); }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge.hot {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
+        }
+        
+        .badge.cold {
+            background: rgba(255, 68, 102, 0.15);
+            color: var(--accent-red);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        .canvas-container {
+            position: relative;
+            height: 280px;
+        }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .model-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .model-item .name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .model-item .record {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .model-item .profit {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Comprehensive performance analysis across all models • Last updated: January 13, 2026 at 04:46 PM</p>
+        </header>
+        
+        <!-- Overview Cards -->
+        <div class="overview-grid">
+            <div class="stat-card">
+                <div class="value">1702-1485-11</div>
+                <div class="label">Overall Record</div>
+            </div>
+            <div class="stat-card loss">
+                <div class="value">-909u</div>
+                <div class="label">Net Profit (Units)</div>
+            </div>
+            <div class="stat-card loss">
+                <div class="value">-0.3%</div>
+                <div class="label">ROI</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">53.4%</div>
+                <div class="label">Win Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">15</div>
+                <div class="label">Active Models</div>
+            </div>
+        </div>
+        
+        <!-- Charts Row 1 -->
+        <div class="charts-grid">
+            <div class="chart-card full-width">
+                <h3>📈 Cumulative Profit Over Time</h3>
+                <div class="canvas-container">
+                    <canvas id="cumulativeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hot/Cold Tables -->
+        <div class="tables-grid">
+            <div class="table-card">
+                <h3>🔥 Hot Teams (Last 14 Days)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-card">
+                <h3>❄️ Cold Teams (Last 14 Days)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Charts Row 2 -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📅 Daily Performance (14 Days)</h3>
+                <div class="canvas-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🏆 League Performance</h3>
+                <div class="canvas-container">
+                    <canvas id="leagueChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>📊 Prop Type Analysis</h3>
+                <div class="canvas-container">
+                    <canvas id="propsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🎯 Edge vs Win Rate</h3>
+                <div class="canvas-container">
+                    <canvas id="edgeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Model Breakdown -->
+        <div class="chart-card" style="margin-bottom: 30px;">
+            <h3>🤖 Model Breakdown</h3>
+            <div class="model-grid">
+                <div class="model-item">
+                    <div class="name">NBA Main</div>
+                    <div class="record">112-94</div>
+                    <div class="profit win">+776u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Points</div>
+                    <div class="record">245-206</div>
+                    <div class="profit win">+843u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Rebounds</div>
+                    <div class="record">113-86</div>
+                    <div class="profit loss">-236u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Assists</div>
+                    <div class="record">38-39</div>
+                    <div class="profit loss">-1407u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA 3PT</div>
+                    <div class="record">122-60</div>
+                    <div class="profit win">+1282u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Main</div>
+                    <div class="record">4-5</div>
+                    <div class="profit loss">-136u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Passing</div>
+                    <div class="record">10-14</div>
+                    <div class="profit loss">-527u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Rushing</div>
+                    <div class="record">20-15</div>
+                    <div class="profit win">+230u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Receiving</div>
+                    <div class="record">12-17</div>
+                    <div class="profit loss">-651u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Receptions</div>
+                    <div class="record">2-4</div>
+                    <div class="profit loss">-250u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL ATD</div>
+                    <div class="record">8-22</div>
+                    <div class="profit loss">-1270u</div>
+                </div><div class="model-item">
+                    <div class="name">NCAAB Main</div>
+                    <div class="record">974-879</div>
+                    <div class="profit win">+1015u</div>
+                </div><div class="model-item">
+                    <div class="name">NCAAB Rebounds</div>
+                    <div class="record">0-0</div>
+                    <div class="profit win">+0u</div>
+                </div><div class="model-item">
+                    <div class="name">Soccer</div>
+                    <div class="record">42-44</div>
+                    <div class="profit loss">-578u</div>
+                </div><div class="model-item">
+                    <div class="name">MLB</div>
+                    <div class="record">0-0</div>
+                    <div class="profit win">+0u</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Quiet Wins Analytics • Auto-generated from 15 tracking files • 3198 total graded picks</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Chart.js defaults
+        Chart.defaults.color = '#a0a0b0';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+        
+        // Cumulative Profit Chart
+        new Chart(document.getElementById('cumulativeChart'), {
+            type: 'line',
+            data: {
+                labels: ["2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-11", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-12", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13", "2026-01-13"],
+                datasets: [{
+                    label: 'Cumulative Profit (Units)',
+                    data: [-1567.0, -1667.0, -1767.0, -1710.0, -1810.0, -1727.0, -1637.0, -1557.0, -1500.0, -1448.0, -1548.0, -1648.0, -1565.0, -1485.0, -1585.0, -1685.0, -1609.0, -1709.0, -1635.0, -1735.0, -1835.0, -1752.0, -1852.0, -1776.0, -1692.0, -1592.0, -1487.0, -1407.0, -1312.0, -1412.0, -1512.0, -1446.0, -1546.0, -1646.0, -1746.0, -1846.0, -1756.0, -1673.0, -1590.0, -1504.0, -1409.0, -1333.0, -1276.0, -1226.0, -1146.0, -1056.0, -1156.0, -1256.0, -1180.0, -1280.0, -1223.0, -1157.0, -1083.0, -1015.0, -971.0, -1071.0, -988.0, -908.0, -828.0, -773.0],
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 10 }
+                    }
+                }
+            }
+        });
+        
+        // Daily Performance Chart
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'bar',
+            data: {
+                labels: ["2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13"],
+                datasets: [{
+                    label: 'Profit',
+                    data: [-166, -140, 442, -52, 431, -441, -422, 45, 342, 332, 318, -890, 79, 983],
+                    backgroundColor: [-166, -140, 442, -52, 431, -441, -422, 45, 342, 332, 318, -890, 79, 983].map(v => v >= 0 ? 'rgba(0, 255, 136, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 7 }
+                    }
+                }
+            }
+        });
+        
+        // League Performance Chart
+        new Chart(document.getElementById('leagueChart'), {
+            type: 'bar',
+            data: {
+                labels: ["La Liga", "Premier League", "Ligue 1", "Bundesliga", "Serie A", "Unknown"],
+                datasets: [{
+                    label: 'Profit (Units)',
+                    data: [219.0, 1.0, -254.0, -263.0, -281.0, -331.0],
+                    backgroundColor: [219.0, 1.0, -254.0, -263.0, -281.0, -331.0].map(v => v >= 0 ? 'rgba(68, 136, 255, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Props Analysis Chart
+        new Chart(document.getElementById('propsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["total", "Spread", "UNDER", "TOTAL", "Rushing Yards", "Total", "Unknown", "OVER", "Receptions", "AWAY", "Passing Yards", "HOME", "Receiving Yards", "SPREAD", "Anytime TD", "spread"],
+                datasets: [{
+                    data: [2901.0, 670.0, 619.0, 493.0, 230.0, 106.0, 15.0, -126.0, -250, -518.0, -527.0, -553.0, -651.0, -1071.0, -1270, -1886.0].map(Math.abs),
+                    backgroundColor: [
+                        'rgba(0, 255, 136, 0.7)',
+                        'rgba(68, 136, 255, 0.7)',
+                        'rgba(136, 68, 255, 0.7)',
+                        'rgba(255, 170, 0, 0.7)',
+                        'rgba(255, 68, 102, 0.7)',
+                        'rgba(0, 200, 200, 0.7)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { boxWidth: 12, padding: 10 }
+                    }
+                }
+            }
+        });
+        
+        // Edge Analysis Chart
+        new Chart(document.getElementById('edgeChart'), {
+            type: 'bar',
+            data: {
+                labels: ["0-1", "1-2", "2-3", "3+"],
+                datasets: [{
+                    label: 'Win Rate %',
+                    data: [53.6, 56.7, 58.6, 52.9],
+                    backgroundColor: 'rgba(136, 68, 255, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
