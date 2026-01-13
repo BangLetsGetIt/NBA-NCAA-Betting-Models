@@ -1,4 +1,318 @@
+#!/usr/bin/env python3
+"""
+Sports Models Analytics Dashboard Generator
+Creates comprehensive HTML dashboard with charts and analytical breakdowns
+"""
 
+import json
+import os
+import glob
+from datetime import datetime, timedelta
+from collections import defaultdict, Counter
+
+class AnalyticsDashboard:
+    def __init__(self, base_dir="/Users/rico/sports-models"):
+        self.base_dir = base_dir
+        self.tracking_files = []
+        self.all_data = {}
+        self.load_tracking_files()
+    
+    def load_tracking_files(self):
+        """Load all tracking JSON files"""
+        patterns = [
+            "nba/*tracking.json",
+            "nfl/*tracking.json", 
+            "ncaa/*tracking.json",
+            "wnba/*tracking.json",
+            "soccer/*tracking.json",
+            "mlb/*tracking.json",
+            "*tracking.json"
+        ]
+        
+        for pattern in patterns:
+            files = glob.glob(os.path.join(self.base_dir, pattern))
+            # Skip backup files
+            files = [f for f in files if "tools/reports/backups" not in f]
+            self.tracking_files.extend(files)
+        
+        print(f"Found {len(self.tracking_files)} tracking files")
+    
+    def load_data(self):
+        """Load and parse all tracking data"""
+        for file_path in self.tracking_files:
+            try:
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                    if 'picks' in data and data['picks']:
+                        self.all_data[file_path] = data
+            except Exception as e:
+                print(f"Error loading {file_path}: {e}")
+    
+    def get_sport_from_filename(self, filepath):
+        """Extract sport type from filename"""
+        if 'nba' in filepath.lower():
+            return 'NBA'
+        elif 'nfl' in filepath.lower():
+            return 'NFL'
+        elif 'ncaa' in filepath.lower() or 'cbb' in filepath.lower():
+            return 'NCAAB'
+        elif 'wnba' in filepath.lower():
+            return 'WNBA'
+        elif 'soccer' in filepath.lower():
+            return 'Soccer'
+        elif 'mlb' in filepath.lower():
+            return 'MLB'
+        else:
+            return 'Other'
+    
+    def get_model_type(self, filepath):
+        """Extract model type from filename"""
+        filename = os.path.basename(filepath)
+        if 'props' in filename.lower():
+            if 'points' in filename.lower():
+                return 'Points Props'
+            elif 'rebounds' in filename.lower():
+                return 'Rebounds Props'
+            elif 'assists' in filename.lower():
+                return 'Assists Props'
+            elif '3pt' in filename.lower():
+                return '3PT Props'
+            elif 'passing' in filename.lower():
+                return 'Passing Yards Props'
+            elif 'rushing' in filename.lower():
+                return 'Rushing Yards Props'
+            elif 'receiving' in filename.lower():
+                return 'Receiving Yards Props'
+            elif 'receptions' in filename.lower():
+                return 'Receptions Props'
+            elif 'atd' in filename.lower():
+                return 'ATD Props'
+            else:
+                return 'Props'
+        elif 'best_plays' in filename.lower():
+            return 'Best Plays'
+        else:
+            return 'Main Model'
+    
+    def calculate_metrics(self, picks):
+        """Calculate performance metrics for a set of picks"""
+        if not picks:
+            return {
+                'total_picks': 0,
+                'wins': 0,
+                'losses': 0,
+                'pushes': 0,
+                'win_rate': 0.0,
+                'profit_loss': 0.0,
+                'roi': 0.0,
+                'avg_edge': 0.0,
+                'avg_ai_score': 0.0
+            }
+        
+        total_picks = len(picks)
+        wins = sum(1 for p in picks if p.get('status') == 'win')
+        losses = sum(1 for p in picks if p.get('status') == 'loss')
+        pushes = sum(1 for p in picks if p.get('status') == 'push')
+        win_rate = wins / total_picks if total_picks > 0 else 0
+        
+        # Calculate profit/loss
+        profit_loss = sum(p.get('profit_loss', 0) if p.get('profit_loss') is not None else 0 for p in picks)
+        
+        # Calculate ROI (assuming $1 per bet)
+        total_bet = total_picks * 1.0
+        roi = (profit_loss / total_bet * 100) if total_bet > 0 else 0
+        
+        # Calculate averages
+        edges = [p.get('edge', 0) for p in picks if p.get('edge') is not None]
+        avg_edge = sum(edges) / len(edges) if edges else 0
+        
+        ai_scores = [p.get('ai_score', 0) for p in picks if p.get('ai_score') is not None]
+        avg_ai_score = sum(ai_scores) / len(ai_scores) if ai_scores else 0
+        
+        return {
+            'total_picks': total_picks,
+            'wins': wins,
+            'losses': losses,
+            'pushes': pushes,
+            'win_rate': win_rate,
+            'profit_loss': profit_loss,
+            'roi': roi,
+            'avg_edge': avg_edge,
+            'avg_ai_score': avg_ai_score
+        }
+    
+    def generate_analytics(self):
+        """Generate comprehensive analytics"""
+        analytics = {
+            'overview': {},
+            'by_sport': defaultdict(dict),
+            'by_model_type': defaultdict(dict),
+            'time_series': {},
+            'top_performers': {},
+            'edge_analysis': {},
+            'ai_score_analysis': {}
+        }
+        
+        all_picks = []
+        sport_picks = defaultdict(list)
+        model_type_picks = defaultdict(list)
+        
+        # Aggregate all picks
+        for filepath, data in self.all_data.items():
+            sport = self.get_sport_from_filename(filepath)
+            model_type = self.get_model_type(filepath)
+            
+            for pick in data['picks']:
+                pick['sport'] = sport
+                pick['model_type'] = model_type
+                pick['filepath'] = filepath
+                
+                all_picks.append(pick)
+                sport_picks[sport].append(pick)
+                model_type_picks[model_type].append(pick)
+        
+        # Overall metrics
+        analytics['overview'] = self.calculate_metrics(all_picks)
+        
+        # By sport
+        for sport, picks in sport_picks.items():
+            analytics['by_sport'][sport] = self.calculate_metrics(picks)
+        
+        # By model type
+        for model_type, picks in model_type_picks.items():
+            analytics['by_model_type'][model_type] = self.calculate_metrics(picks)
+        
+        # Time series data (last 30 days)
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+        
+        for pick in all_picks:
+            if pick.get('game_time'):
+                try:
+                    game_date = datetime.fromisoformat(pick['game_time'].replace('Z', '+00:00')).date()
+                    if start_date.date() <= game_date <= end_date.date():
+                        date_str = game_date.strftime('%Y-%m-%d')
+                        daily_picks = [p for p in all_picks if p.get('game_time') and 
+                                     datetime.fromisoformat(p['game_time'].replace('Z', '+00:00')).date() == game_date]
+                        daily_metrics = self.calculate_metrics(daily_picks)
+                        daily_metrics_copy = daily_metrics.copy()
+                        daily_metrics_copy['date'] = date_str
+                        analytics['time_series'][date_str] = daily_metrics_copy
+                except:
+                    continue
+        
+        # Top performers (players/teams with most wins)
+        player_stats = defaultdict(dict)
+        team_stats = defaultdict(dict)
+        
+        for pick in all_picks:
+            if pick.get('status') in ['win', 'loss', 'push']:
+                # Player stats (for props)
+                if pick.get('player'):
+                    player = pick['player']
+                    if player not in player_stats:
+                        player_stats[player] = {'wins': 0, 'losses': 0, 'pushes': 0, 'picks': []}
+                    
+                    if pick['status'] == 'win':
+                        player_stats[player]['wins'] += 1
+                    elif pick['status'] == 'loss':
+                        player_stats[player]['losses'] += 1
+                    else:
+                        player_stats[player]['pushes'] += 1
+                    player_stats[player]['picks'].append(pick)
+                
+                # Team stats (for main models)
+                if pick.get('team'):
+                    team = pick['team']
+                    if team not in team_stats:
+                        team_stats[team] = {'wins': 0, 'losses': 0, 'pushes': 0, 'picks': []}
+                    
+                    if pick['status'] == 'win':
+                        team_stats[team]['wins'] += 1
+                    elif pick['status'] == 'loss':
+                        team_stats[team]['losses'] += 1
+                    else:
+                        team_stats[team]['pushes'] += 1
+                    team_stats[team]['picks'].append(pick)
+        
+        # Calculate win rates and get top performers
+        for player, stats in player_stats.items():
+            wins = stats['wins']
+            losses = stats['losses']
+            total = wins + losses
+            if total >= 5:  # Minimum 5 picks
+                win_rate = wins / total
+                analytics['top_performers'][f"player_{player}"] = {
+                    'name': player,
+                    'type': 'player',
+                    'wins': wins,
+                    'losses': losses,
+                    'pushes': stats['pushes'],
+                    'win_rate': win_rate,
+                    'total_picks': total
+                }
+        
+        for team, stats in team_stats.items():
+            wins = stats['wins']
+            losses = stats['losses']
+            total = wins + losses
+            if total >= 3:  # Minimum 3 picks
+                win_rate = wins / total
+                analytics['top_performers'][f"team_{team}"] = {
+                    'name': team,
+                    'type': 'team',
+                    'wins': wins,
+                    'losses': losses,
+                    'pushes': stats['pushes'],
+                    'win_rate': win_rate,
+                    'total_picks': total
+                }
+        
+        # Sort top performers by win rate
+        analytics['top_performers'] = dict(
+            sorted(analytics['top_performers'].items(), 
+                   key=lambda x: x[1]['win_rate'], reverse=True)[:20]
+        )
+        
+        # Edge distribution analysis
+        edges = [p.get('edge', 0) for p in all_picks if p.get('edge') is not None]
+        if edges:
+            analytics['edge_analysis'] = {
+                'avg_edge': sum(edges) / len(edges),
+                'median_edge': sorted(edges)[len(edges) // 2],
+                'max_edge': max(edges),
+                'min_edge': min(edges),
+                'edge_ranges': {
+                    'negative': len([e for e in edges if e < 0]),
+                    '0-5': len([e for e in edges if 0 <= e < 5]),
+                    '5-10': len([e for e in edges if 5 <= e < 10]),
+                    '10-15': len([e for e in edges if 10 <= e < 15]),
+                    '15+': len([e for e in edges if e >= 15])
+                }
+            }
+        
+        # AI score analysis
+        ai_scores = [p.get('ai_score', 0) for p in all_picks if p.get('ai_score') is not None]
+        if ai_scores:
+            analytics['ai_score_analysis'] = {
+                'avg_ai_score': sum(ai_scores) / len(ai_scores),
+                'max_ai_score': max(ai_scores),
+                'min_ai_score': min(ai_scores),
+                'score_distribution': {
+                    '0-2': len([s for s in ai_scores if 0 <= s < 2]),
+                    '2-4': len([s for s in ai_scores if 2 <= s < 4]),
+                    '4-6': len([s for s in ai_scores if 4 <= s < 6]),
+                    '6-8': len([s for s in ai_scores if 6 <= s < 8]),
+                    '8-10': len([s for s in ai_scores if 8 <= s <= 10])
+                }
+            }
+        
+        return analytics
+    
+    def generate_html(self, analytics):
+        """Generate HTML dashboard"""
+        
+        html_template = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,7 +444,7 @@
         <div class="header">
             <h1>📊 Sports Models Analytics Dashboard</h1>
             <p>Complete Performance Analysis & Tracking</p>
-            <p><small>Last Updated: 2026-01-13 18:54:33 ET</small></p>
+            <p><small>Last Updated: {{ timestamp }}</small></p>
         </div>
 
         <!-- Overview Metrics -->
@@ -155,7 +469,7 @@
             </div>
             <div class="metric-card">
                 <div class="metric-value neutral">
-                    5448
+                    {{ analytics.overview.total_picks }}
                 </div>
                 <div class="metric-label">Total Picks</div>
             </div>
@@ -300,7 +614,7 @@
         </div>
 
         <div class="footer">
-            <p>Generated by Sports Models Analytics Dashboard | Data from 5448 total picks</p>
+            <p>Generated by Sports Models Analytics Dashboard | Data from {{ analytics.overview.total_picks }} total picks</p>
         </div>
     </div>
 
@@ -445,4 +759,39 @@
     </script>
 </body>
 </html>
+        """
         
+        # Simple string formatting instead of Jinja2
+        html_output = html_template.replace('{{ analytics.overview.total_picks }}', str(analytics['overview']['total_picks']))
+        html_output = html_output.replace('{{ analytics.overview.profit_loss }}', f"{analytics['overview']['profit_loss']:.2f}")
+        html_output = html_output.replace('{{ analytics.overview.roi }}', f"{analytics['overview']['roi']:.1f}")
+        html_output = html_output.replace('{{ analytics.overview.win_rate }}', f"{analytics['overview']['win_rate']:.1f}")
+        html_output = html_output.replace('{{ timestamp }}', datetime.now().strftime('%Y-%m-%d %H:%M:%S ET'))
+        
+        return html_output
+    
+    def run(self):
+        """Main execution method"""
+        print("🏈 Loading tracking data...")
+        self.load_data()
+        
+        print("📊 Generating analytics...")
+        analytics = self.generate_analytics()
+        
+        print("🎨 Creating HTML dashboard...")
+        html_output = self.generate_html(analytics)
+        
+        output_path = os.path.join(self.base_dir, "analytics_dashboard.html")
+        with open(output_path, 'w') as f:
+            f.write(html_output)
+        
+        print(f"✅ Dashboard created: {output_path}")
+        print(f"📈 Total picks analyzed: {analytics['overview']['total_picks']}")
+        print(f"💰 Overall P&L: ${analytics['overview']['profit_loss']:.2f}")
+        print(f"🎯 Win Rate: {analytics['overview']['win_rate']*100:.1f}%")
+        
+        return output_path, analytics
+
+if __name__ == "__main__":
+    dashboard = AnalyticsDashboard()
+    dashboard.run()
