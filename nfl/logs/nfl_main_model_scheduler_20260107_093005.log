@@ -1,0 +1,139 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Wed Jan  7 09:30:05 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   No pending picks to grade
+
+📡 Fetching current NFL odds...
+Fetched 6 games, filtered to 6 upcoming.
+✅ Found 6 games
+
+🔍 Analyzing games...
+
+Los Angeles Rams @ Carolina Panthers
+  🕐 2026-01-10T21:30:00Z
+  📊 Ratings: Carolina Panthers (36.2) vs Los Angeles Rams (55.6)
+  📈 Predicted: Carolina Panthers 11.7, Los Angeles Rams 28.3
+  SPREAD (⭐ LOGGED):
+    Market: Carolina Panthers +10.5
+    Model:  -16.6
+    Edge:   -27.1
+    ✅ SHARP BET: Los Angeles Rams -10.5
+  TOTAL (⭐ LOGGED):
+    Market: 46.5
+    Model:  40.0
+    Edge:   -6.5
+    ✅ SHARP BET: UNDER 46.5
+
+Green Bay Packers @ Chicago Bears
+  🕐 2026-01-11T01:00:00Z
+  📊 Ratings: Chicago Bears (49.2) vs Green Bay Packers (64.5)
+  📈 Predicted: Chicago Bears 16.4, Green Bay Packers 28.9
+  SPREAD (⭐ LOGGED):
+    Market: Chicago Bears +1.0
+    Model:  -12.5
+    Edge:   -13.5
+    ✅ SHARP BET: Green Bay Packers -1.0
+
+Buffalo Bills @ Jacksonville Jaguars
+  🕐 2026-01-11T18:00:00Z
+  📊 Ratings: Jacksonville Jaguars (52.4) vs Buffalo Bills (72.5)
+  📈 Predicted: Jacksonville Jaguars 15.4, Buffalo Bills 32.8
+  SPREAD (⭐ LOGGED):
+    Market: Jacksonville Jaguars +1.0
+    Model:  -17.4
+    Edge:   -18.4
+    ✅ SHARP BET: Buffalo Bills -1.0
+  TOTAL (⭐ LOGGED):
+    Market: 52.5
+    Model:  48.2
+    Edge:   -4.3
+    ✅ SHARP BET: UNDER 52.5
+
+San Francisco 49ers @ Philadelphia Eagles
+  🕐 2026-01-11T21:30:00Z
+  📊 Ratings: Philadelphia Eagles (69.8) vs San Francisco 49ers (67.3)
+  📈 Predicted: Philadelphia Eagles 28.2, San Francisco 49ers 23.0
+  SPREAD (⭐ LOGGED):
+    Market: Philadelphia Eagles -4.5
+    Model:  5.2
+    Edge:   +9.7
+    ✅ SHARP BET: Philadelphia Eagles -4.5
+  TOTAL (⭐ LOGGED):
+    Market: 44.5
+    Model:  51.3
+    Edge:   +6.8
+    ✅ SHARP BET: OVER 44.5
+
+Los Angeles Chargers @ New England Patriots
+  🕐 2026-01-12T01:00:00Z
+  📊 Ratings: New England Patriots (42.3) vs Los Angeles Chargers (64.0)
+  📈 Predicted: New England Patriots 12.3, Los Angeles Chargers 31.3
+  SPREAD (⭐ LOGGED):
+    Market: New England Patriots -4.0
+    Model:  -19.0
+    Edge:   -15.0
+    ✅ SHARP BET: Los Angeles Chargers +4.0
+
+Houston Texans @ Pittsburgh Steelers
+  🕐 2026-01-13T01:00:00Z
+  📊 Ratings: Pittsburgh Steelers (64.8) vs Houston Texans (66.7)
+  📈 Predicted: Pittsburgh Steelers 25.3, Houston Texans 24.6
+  TOTAL (⭐ LOGGED):
+    Market: 39.0
+    Model:  49.9
+    Edge:   +10.9
+    ✅ SHARP BET: OVER 39.0
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 6
+Bets Logged:    9 (high-confidence +EV only)
+Total Tracked:  91
+Completed:      91
+Pending:        0
+Win Rate:       49.5%
+ROI:            -5.5%
+Total Profit:   $-505.00
+============================================================
+✅ Completed: nfl_main_model at Wed Jan  7 09:30:06 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 2ec7c93] Update model outputs - 2026-01-07 09:30:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 18 insertions(+), 18 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   c82fb2c..2ec7c93  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Jan  7 09:30:07 EST 2026

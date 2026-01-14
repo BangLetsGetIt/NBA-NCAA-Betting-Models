@@ -1,0 +1,77 @@
+==========================================
+NBA Rebounds Props Model Run: Thu Jan  8 06:00:04 EST 2026
+==========================================
+Running NBA Rebounds Props model...
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 9 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)
+[96m  Fetching batch stats for 12/30/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-01...
+[96m  Fetching batch stats for 01/01/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[92m✓ Using cached player rebounding stats (less than 6 hours old)[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Using cached rebounding factors[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 4 upcoming games[0m
+[96m  Filtered to 4 upcoming games[0m
+[96m  Game 1/4: Indiana Pacers @ Charlotte Hornets[0m
+[96m  Game 2/4: Miami Heat @ Chicago Bulls[0m
+[96m  Game 3/4: Cleveland Cavaliers @ Minnesota Timberwolves[0m
+[96m  Game 4/4: Dallas Mavericks @ Utah Jazz[0m
+[92m✓ Fetched 53 player rebounds props (grouped)[0m
+
+[96mAnalyzing 53 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 1 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 5 props (no player stats found)[0m
+[93m  Skipped 94 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+[93m✓ Updated odds for 1 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Kel'el Ware              [0m | [92mOVER 9.5 REB   [0m | Miami Heat                vs Chicago Bulls             | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Matas Buzelis            [0m | [91mUNDER 6.5 REB  [0m | Chicago Bulls             vs Miami Heat                | [1mA.I.: 10.00[0m | Rating: 4.6 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...

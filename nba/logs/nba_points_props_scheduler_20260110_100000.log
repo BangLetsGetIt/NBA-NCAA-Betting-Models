@@ -1,0 +1,127 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Sat Jan 10 10:00:00 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 26 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+[93m  Error fetching batch stats for 2025-12-16: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+
+[96mProcessing 1 picks for 2026-01-09...[0m
+[96m  Fetching batch stats for 01/09/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-09...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 506 players[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Fetched defense factors for 30 teams[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[96m  Filtered to 6 upcoming games[0m
+[96m  Game 1/6: Minnesota Timberwolves @ Cleveland Cavaliers[0m
+[96m  Game 2/6: Miami Heat @ Indiana Pacers[0m
+[96m  Game 3/6: Los Angeles Clippers @ Detroit Pistons[0m
+[96m  Game 4/6: San Antonio Spurs @ Boston Celtics[0m
+[96m  Game 5/6: Dallas Mavericks @ Chicago Bulls[0m
+[96m  Game 6/6: Charlotte Hornets @ Utah Jazz[0m
+[92m✓ Fetched 140 total player props[0m
+
+[96mAnalyzing 140 player props with REAL stats...[0m
+[92m✓ Found 10 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 6 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 4 props (no player stats found)[0m
+[93m  Skipped 238 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 4 new picks[0m
+[93m✓ Updated odds for 2 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. De'Andre Hunter          [0m | [92mOVER 11.5 PTS  [0m | Cleveland Cavaliers vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Jaylon Tyson             [0m | [92mOVER 7.5 PTS   [0m | Cleveland Cavaliers vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Sam Merrill              [0m | [92mOVER 11.5 PTS  [0m | Cleveland Cavaliers vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Kel'el Ware              [0m | [92mOVER 10.5 PTS  [0m | Miami Heat vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Pelle Larsson            [0m | [92mOVER 7.5 PTS   [0m | Miami Heat vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Norman Powell            [0m | [92mOVER 21.5 PTS  [0m | Miami Heat vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Kawhi Leonard            [0m | [92mOVER 26.5 PTS  [0m | Los Angeles Clippers vs Detroit Pistons | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. James Harden             [0m | [92mOVER 22.5 PTS  [0m | Los Angeles Clippers vs Detroit Pistons | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Jaylen Brown             [0m | [92mOVER 28.5 PTS  [0m | Boston Celtics vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Victor Wembanyama        [0m | [92mOVER 20.5 PTS  [0m | San Antonio Spurs vs Boston Celtics | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Aaron Nesmith            [0m | [91mUNDER 16.5 PTS [0m | Indiana Pacers vs Miami Heat | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Daniel Gafford           [0m | [91mUNDER 10.5 PTS [0m | Dallas Mavericks vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Naji Marshall            [0m | [91mUNDER 16.5 PTS [0m | Dallas Mavericks vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Keyonte George           [0m | [91mUNDER 26.5 PTS [0m | Utah Jazz vs Charlotte Hornets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Brice Sensabaugh         [0m | [91mUNDER 14.5 PTS [0m | Utah Jazz vs Charlotte Hornets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Kyle Filipowski          [0m | [91mUNDER 13.5 PTS [0m | Utah Jazz vs Charlotte Hornets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Sat Jan 10 10:43:34 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 5d5d33d] Update model outputs - 2026-01-10 10:43:34
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 398 insertions(+), 86 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   91bab62..5d5d33d  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sat Jan 10 10:43:37 EST 2026

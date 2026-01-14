@@ -1,0 +1,408 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Thu Jan  8 10:00:00 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 18 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+[93m  Error fetching batch stats for 2025-12-16: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=12%2F16%2F2025&DateTo=12%2F16%2F2025&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250dc440>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2025-12-16&DateTo=2025-12-16&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x124defd90>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+[93m  Error fetching batch stats for 2025-12-23: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=12%2F23%2F2025&DateTo=12%2F23%2F2025&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e4690>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2025-12-23&DateTo=2025-12-23&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e4b90>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2025-12-23 yet[0m
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+[93m  Error fetching batch stats for 2026-01-03: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F03%2F2026&DateTo=01%2F03%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e5090>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-03&DateTo=2026-01-03&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e5590>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-03 yet[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[91m✗ Error fetching NBA stats: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e5950>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connection.py", line 753, in connect
+    self.sock = sock = self._new_conn()
+                       ~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x1250e5950>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/urllib3/util/retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e5950>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/rico/sports-models/nba/nba_points_props_model.py", line 587, in get_nba_player_points_stats
+    season_stats = leaguedashplayerstats.LeagueDashPlayerStats(
+        season=CURRENT_SEASON,
+    ...<2 lines>...
+        timeout=30
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/nba_api/stats/endpoints/leaguedashplayerstats.py", line 194, in __init__
+    self.get_request()
+    ~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/nba_api/stats/endpoints/leaguedashplayerstats.py", line 197, in get_request
+    self.nba_response = NBAStatsHTTP().send_api_request(
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        endpoint=self.endpoint,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        timeout=self.timeout,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/nba_api/library/http.py", line 160, in send_api_request
+    response = self.get_session().get(
+        url=base_url,
+    ...<3 lines>...
+        timeout=timeout,
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/requests/adapters.py", line 519, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1250e5950>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  Loading from cache as fallback...[0m
+
+[96mFetching opponent defense factors...[0m
+[93m⚠ Could not fetch defense factors: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Opponent&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x124def9d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+
+[96mFetching player points prop odds...[0m
+[91m✗ Error fetching props: HTTPSConnectionPool(host='api.the-odds-api.com', port=443): Max retries exceeded with url: /v4/sports/basketball_nba/events?apiKey=cf796adc9ac20a6df2247368d40fe0a0 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x124def610>: Failed to resolve 'api.the-odds-api.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Thu Jan  8 10:00:01 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   American Betting League/abl_cron.log
+	modified:   American Betting League/update_log.txt
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   ncaa/logs/launchd_output.log
+	modified:   nfl/.cache/sleeper_players.json
+	modified:   wnba/wnba_model_output.html
+	modified:   wnba/wnba_props_output.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	nba/logs/nba_3pt_props_20260103_050005.log
+	nba/logs/nba_3pt_props_20260104_050004.log
+	nba/logs/nba_3pt_props_20260105_050005.log
+	nba/logs/nba_3pt_props_20260106_050005.log
+	nba/logs/nba_3pt_props_20260107_050001.log
+	nba/logs/nba_3pt_props_20260108_050004.log
+	nba/logs/nba_3pt_props_scheduler_20260103_025005.log
+	nba/logs/nba_3pt_props_scheduler_20260103_100001.log
+	nba/logs/nba_3pt_props_scheduler_20260103_150007.log
+	nba/logs/nba_3pt_props_scheduler_20260103_180004.log
+	nba/logs/nba_3pt_props_scheduler_20260104_025004.log
+	nba/logs/nba_3pt_props_scheduler_20260104_100002.log
+	nba/logs/nba_3pt_props_scheduler_20260104_150005.log
+	nba/logs/nba_3pt_props_scheduler_20260104_180005.log
+	nba/logs/nba_3pt_props_scheduler_20260105_025004.log
+	nba/logs/nba_3pt_props_scheduler_20260105_100003.log
+	nba/logs/nba_3pt_props_scheduler_20260105_150005.log
+	nba/logs/nba_3pt_props_scheduler_20260105_180005.log
+	nba/logs/nba_3pt_props_scheduler_20260106_025005.log
+	nba/logs/nba_3pt_props_scheduler_20260106_100001.log
+	nba/logs/nba_3pt_props_scheduler_20260106_150004.log
+	nba/logs/nba_3pt_props_scheduler_20260106_180004.log
+	nba/logs/nba_3pt_props_scheduler_20260107_025004.log
+	nba/logs/nba_3pt_props_scheduler_20260107_100002.log
+	nba/logs/nba_3pt_props_scheduler_20260107_150004.log
+	nba/logs/nba_3pt_props_scheduler_20260107_180004.log
+	nba/logs/nba_3pt_props_scheduler_20260108_025000.log
+	nba/logs/nba_3pt_props_scheduler_20260108_100000.log
+	nba/logs/nba_assists_props_20260103_070002.log
+	nba/logs/nba_assists_props_20260104_070005.log
+	nba/logs/nba_assists_props_20260105_070002.log
+	nba/logs/nba_assists_props_20260106_070005.log
+	nba/logs/nba_assists_props_20260107_070005.log
+	nba/logs/nba_assists_props_20260108_071242.log
+	nba/logs/nba_assists_props_scheduler_20260103_024005.log
+	nba/logs/nba_assists_props_scheduler_20260103_100504.log
+	nba/logs/nba_assists_props_scheduler_20260103_150504.log
+	nba/logs/nba_assists_props_scheduler_20260103_180505.log
+	nba/logs/nba_assists_props_scheduler_20260104_024004.log
+	nba/logs/nba_assists_props_scheduler_20260104_100505.log
+	nba/logs/nba_assists_props_scheduler_20260104_150505.log
+	nba/logs/nba_assists_props_scheduler_20260104_180502.log
+	nba/logs/nba_assists_props_scheduler_20260105_024005.log
+	nba/logs/nba_assists_props_scheduler_20260105_100503.log
+	nba/logs/nba_assists_props_scheduler_20260105_150505.log
+	nba/logs/nba_assists_props_scheduler_20260105_180503.log
+	nba/logs/nba_assists_props_scheduler_20260106_024001.log
+	nba/logs/nba_assists_props_scheduler_20260106_100503.log
+	nba/logs/nba_assists_props_scheduler_20260106_150505.log
+	nba/logs/nba_assists_props_scheduler_20260106_180503.log
+	nba/logs/nba_assists_props_scheduler_20260107_024004.log
+	nba/logs/nba_assists_props_scheduler_20260107_100501.log
+	nba/logs/nba_assists_props_scheduler_20260107_150504.log
+	nba/logs/nba_assists_props_scheduler_20260107_180504.log
+	nba/logs/nba_assists_props_scheduler_20260108_024004.log
+	nba/logs/nba_main_model_scheduler_20260103_031002.log
+	nba/logs/nba_main_model_scheduler_20260103_102004.log
+	nba/logs/nba_main_model_scheduler_20260103_152005.log
+	nba/logs/nba_main_model_scheduler_20260103_182004.log
+	nba/logs/nba_main_model_scheduler_20260104_031005.log
+	nba/logs/nba_main_model_scheduler_20260104_102004.log
+	nba/logs/nba_main_model_scheduler_20260104_152004.log
+	nba/logs/nba_main_model_scheduler_20260104_182000.log
+	nba/logs/nba_main_model_scheduler_20260105_031004.log
+	nba/logs/nba_main_model_scheduler_20260105_102004.log
+	nba/logs/nba_main_model_scheduler_20260105_152002.log
+	nba/logs/nba_main_model_scheduler_20260105_182005.log
+	nba/logs/nba_main_model_scheduler_20260106_031003.log
+	nba/logs/nba_main_model_scheduler_20260106_102001.log
+	nba/logs/nba_main_model_scheduler_20260106_152004.log
+	nba/logs/nba_main_model_scheduler_20260106_182004.log
+	nba/logs/nba_main_model_scheduler_20260107_031005.log
+	nba/logs/nba_main_model_scheduler_20260107_102003.log
+	nba/logs/nba_main_model_scheduler_20260107_152003.log
+	nba/logs/nba_main_model_scheduler_20260107_182004.log
+	nba/logs/nba_main_model_scheduler_20260108_031724.log
+	nba/logs/nba_model_20260103_100001.log
+	nba/logs/nba_model_20260104_100002.log
+	nba/logs/nba_model_20260105_100003.log
+	nba/logs/nba_model_20260106_100001.log
+	nba/logs/nba_model_20260107_100002.log
+	nba/logs/nba_model_20260108_100000.log
+	nba/logs/nba_points_props_scheduler_20260103_023504.log
+	nba/logs/nba_points_props_scheduler_20260103_100001.log
+	nba/logs/nba_points_props_scheduler_20260103_150006.log
+	nba/logs/nba_points_props_scheduler_20260103_180004.log
+	nba/logs/nba_points_props_scheduler_20260104_023505.log
+	nba/logs/nba_points_props_scheduler_20260104_100002.log
+	nba/logs/nba_points_props_scheduler_20260104_150005.log
+	nba/logs/nba_points_props_scheduler_20260104_180005.log
+	nba/logs/nba_points_props_scheduler_20260105_023504.log
+	nba/logs/nba_points_props_scheduler_20260105_100003.log
+	nba/logs/nba_points_props_scheduler_20260105_150005.log
+	nba/logs/nba_points_props_scheduler_20260105_180005.log
+	nba/logs/nba_points_props_scheduler_20260106_023503.log
+	nba/logs/nba_points_props_scheduler_20260106_100001.log
+	nba/logs/nba_points_props_scheduler_20260106_150004.log
+	nba/logs/nba_points_props_scheduler_20260106_180004.log
+	nba/logs/nba_points_props_scheduler_20260107_023505.log
+	nba/logs/nba_points_props_scheduler_20260107_100002.log
+	nba/logs/nba_points_props_scheduler_20260107_150004.log
+	nba/logs/nba_points_props_scheduler_20260107_180004.log
+	nba/logs/nba_points_props_scheduler_20260108_023505.log
+	nba/logs/nba_points_props_scheduler_20260108_100000.log
+	nba/logs/nba_rebounds_props_20260103_060004.log
+	nba/logs/nba_rebounds_props_20260104_060001.log
+	nba/logs/nba_rebounds_props_20260105_060004.log
+	nba/logs/nba_rebounds_props_20260106_060002.log
+	nba/logs/nba_rebounds_props_20260107_060005.log
+	nba/logs/nba_rebounds_props_20260108_060004.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_101002.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_024504.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_101005.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_181000.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_101001.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20260107_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260107_101000.log
+	nba/logs/nba_rebounds_props_scheduler_20260107_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260107_181004.log
+	nba/logs/nba_rebounds_props_scheduler_20260108_024501.log
+	ncaa/logs/ncaab_model_20260103_103005.log
+	ncaa/logs/ncaab_model_20260104_103005.log
+	ncaa/logs/ncaab_model_20260105_103005.log
+	ncaa/logs/ncaab_model_20260106_103000.log
+	ncaa/logs/ncaab_model_20260107_103004.log
+	nfl/.cache/stats/nfl_stats_2025_18.json
+	nfl/logs/nfl_main_model_scheduler_20260103_031505.log
+	nfl/logs/nfl_main_model_scheduler_20260103_093005.log
+	nfl/logs/nfl_main_model_scheduler_20260103_181005.log
+	nfl/logs/nfl_main_model_scheduler_20260104_031503.log
+	nfl/logs/nfl_main_model_scheduler_20260104_093004.log
+	nfl/logs/nfl_main_model_scheduler_20260104_181005.log
+	nfl/logs/nfl_main_model_scheduler_20260105_031502.log
+	nfl/logs/nfl_main_model_scheduler_20260105_093005.log
+	nfl/logs/nfl_main_model_scheduler_20260105_181000.log
+	nfl/logs/nfl_main_model_scheduler_20260106_031502.log
+	nfl/logs/nfl_main_model_scheduler_20260106_093004.log
+	nfl/logs/nfl_main_model_scheduler_20260106_181005.log
+	nfl/logs/nfl_main_model_scheduler_20260107_031505.log
+	nfl/logs/nfl_main_model_scheduler_20260107_093005.log
+	nfl/logs/nfl_main_model_scheduler_20260107_181004.log
+	nfl/logs/nfl_main_model_scheduler_20260108_031724.log
+	nfl/logs/nfl_main_model_scheduler_20260108_093223.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_025500.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_094505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_181502.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_025503.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_181504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260106_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260106_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260106_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260107_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260107_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260107_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260108_025502.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260108_095803.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_182504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_030503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_095503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_030504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_095504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260106_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260106_095501.log
+	nfl/logs/nfl_receptions_props_scheduler_20260106_182504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260107_030503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260107_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260107_182503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260108_031724.log
+	nfl/logs/nfl_receptions_props_scheduler_20260108_095803.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_182004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_030001.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_182000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_095005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260106_030003.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260106_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260106_182004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260107_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260107_095005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260107_182004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260108_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260108_095803.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+fatal: unable to access 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git/': Could not resolve host: github.com
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Thu Jan  8 10:00:01 EST 2026

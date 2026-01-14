@@ -1,0 +1,264 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Tue Jan  6 15:00:04 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 17 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[96m  Filtered to 6 upcoming games[0m
+[96m  Game 1/6: Cleveland Cavaliers @ Indiana Pacers[0m
+[96m  Game 2/6: Orlando Magic @ Washington Wizards[0m
+[96m  Game 3/6: Los Angeles Lakers @ New Orleans Pelicans[0m
+[96m  Game 4/6: San Antonio Spurs @ Memphis Grizzlies[0m
+[96m  Game 5/6: Miami Heat @ Minnesota Timberwolves[0m
+[96m  Game 6/6: Dallas Mavericks @ Sacramento Kings[0m
+[92m✓ Fetched 162 total player props[0m
+
+[96mAnalyzing 162 player props with REAL stats...[0m
+[92m✓ Found 7 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 9 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 4 props (no player stats found)[0m
+[93m  Skipped 284 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 3 new picks[0m
+[93m✓ Updated odds for 2 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Marvin Bagley III        [0m | [92mOVER 8.5 PTS   [0m | Washington Wizards vs Orlando Magic | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Jordan Poole             [0m | [92mOVER 14.5 PTS  [0m | New Orleans Pelicans vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Victor Wembanyama        [0m | [92mOVER 20.5 PTS  [0m | San Antonio Spurs vs Memphis Grizzlies | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Tyler Herro              [0m | [92mOVER 16.5 PTS  [0m | Miami Heat vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Norman Powell            [0m | [92mOVER 22.5 PTS  [0m | Miami Heat vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Pelle Larsson            [0m | [92mOVER 7.5 PTS   [0m | Miami Heat vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Klay Thompson            [0m | [92mOVER 9.5 PTS   [0m | Dallas Mavericks vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Jarrett Allen            [0m | [91mUNDER 15.5 PTS [0m | Cleveland Cavaliers vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Evan Mobley              [0m | [91mUNDER 19.5 PTS [0m | Cleveland Cavaliers vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Darius Garland           [0m | [91mUNDER 24.5 PTS [0m | Cleveland Cavaliers vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Aaron Nesmith            [0m | [91mUNDER 17.5 PTS [0m | Indiana Pacers vs Cleveland Cavaliers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Desmond Bane             [0m | [91mUNDER 22.5 PTS [0m | Orlando Magic vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Paolo Banchero           [0m | [91mUNDER 25.5 PTS [0m | Orlando Magic vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Jake LaRavia             [0m | [91mUNDER 13.5 PTS [0m | Los Angeles Lakers vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Cam Spencer              [0m | [91mUNDER 14.5 PTS [0m | Memphis Grizzlies vs San Antonio Spurs | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Anthony Davis            [0m | [91mUNDER 25.5 PTS [0m | Dallas Mavericks vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Tue Jan  6 15:00:57 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   American Betting League/abl_cron.log
+	modified:   American Betting League/update_log.txt
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   ncaa/logs/launchd_output.log
+	modified:   nfl/.cache/sleeper_players.json
+	modified:   wnba/wnba_model_output.html
+	modified:   wnba/wnba_props_output.html
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	nba/logs/nba_3pt_props_20260103_050005.log
+	nba/logs/nba_3pt_props_20260104_050004.log
+	nba/logs/nba_3pt_props_20260105_050005.log
+	nba/logs/nba_3pt_props_20260106_050005.log
+	nba/logs/nba_3pt_props_scheduler_20260103_025005.log
+	nba/logs/nba_3pt_props_scheduler_20260103_100001.log
+	nba/logs/nba_3pt_props_scheduler_20260103_150007.log
+	nba/logs/nba_3pt_props_scheduler_20260103_180004.log
+	nba/logs/nba_3pt_props_scheduler_20260104_025004.log
+	nba/logs/nba_3pt_props_scheduler_20260104_100002.log
+	nba/logs/nba_3pt_props_scheduler_20260104_150005.log
+	nba/logs/nba_3pt_props_scheduler_20260104_180005.log
+	nba/logs/nba_3pt_props_scheduler_20260105_025004.log
+	nba/logs/nba_3pt_props_scheduler_20260105_100003.log
+	nba/logs/nba_3pt_props_scheduler_20260105_150005.log
+	nba/logs/nba_3pt_props_scheduler_20260105_180005.log
+	nba/logs/nba_3pt_props_scheduler_20260106_025005.log
+	nba/logs/nba_3pt_props_scheduler_20260106_100001.log
+	nba/logs/nba_3pt_props_scheduler_20260106_150004.log
+	nba/logs/nba_assists_props_20260103_070002.log
+	nba/logs/nba_assists_props_20260104_070005.log
+	nba/logs/nba_assists_props_20260105_070002.log
+	nba/logs/nba_assists_props_20260106_070005.log
+	nba/logs/nba_assists_props_scheduler_20260103_024005.log
+	nba/logs/nba_assists_props_scheduler_20260103_100504.log
+	nba/logs/nba_assists_props_scheduler_20260103_150504.log
+	nba/logs/nba_assists_props_scheduler_20260103_180505.log
+	nba/logs/nba_assists_props_scheduler_20260104_024004.log
+	nba/logs/nba_assists_props_scheduler_20260104_100505.log
+	nba/logs/nba_assists_props_scheduler_20260104_150505.log
+	nba/logs/nba_assists_props_scheduler_20260104_180502.log
+	nba/logs/nba_assists_props_scheduler_20260105_024005.log
+	nba/logs/nba_assists_props_scheduler_20260105_100503.log
+	nba/logs/nba_assists_props_scheduler_20260105_150505.log
+	nba/logs/nba_assists_props_scheduler_20260105_180503.log
+	nba/logs/nba_assists_props_scheduler_20260106_024001.log
+	nba/logs/nba_assists_props_scheduler_20260106_100503.log
+	nba/logs/nba_main_model_scheduler_20260103_031002.log
+	nba/logs/nba_main_model_scheduler_20260103_102004.log
+	nba/logs/nba_main_model_scheduler_20260103_152005.log
+	nba/logs/nba_main_model_scheduler_20260103_182004.log
+	nba/logs/nba_main_model_scheduler_20260104_031005.log
+	nba/logs/nba_main_model_scheduler_20260104_102004.log
+	nba/logs/nba_main_model_scheduler_20260104_152004.log
+	nba/logs/nba_main_model_scheduler_20260104_182000.log
+	nba/logs/nba_main_model_scheduler_20260105_031004.log
+	nba/logs/nba_main_model_scheduler_20260105_102004.log
+	nba/logs/nba_main_model_scheduler_20260105_152002.log
+	nba/logs/nba_main_model_scheduler_20260105_182005.log
+	nba/logs/nba_main_model_scheduler_20260106_031003.log
+	nba/logs/nba_main_model_scheduler_20260106_102001.log
+	nba/logs/nba_model_20260103_100001.log
+	nba/logs/nba_model_20260104_100002.log
+	nba/logs/nba_model_20260105_100003.log
+	nba/logs/nba_model_20260106_100001.log
+	nba/logs/nba_points_props_scheduler_20260103_023504.log
+	nba/logs/nba_points_props_scheduler_20260103_100001.log
+	nba/logs/nba_points_props_scheduler_20260103_150006.log
+	nba/logs/nba_points_props_scheduler_20260103_180004.log
+	nba/logs/nba_points_props_scheduler_20260104_023505.log
+	nba/logs/nba_points_props_scheduler_20260104_100002.log
+	nba/logs/nba_points_props_scheduler_20260104_150005.log
+	nba/logs/nba_points_props_scheduler_20260104_180005.log
+	nba/logs/nba_points_props_scheduler_20260105_023504.log
+	nba/logs/nba_points_props_scheduler_20260105_100003.log
+	nba/logs/nba_points_props_scheduler_20260105_150005.log
+	nba/logs/nba_points_props_scheduler_20260105_180005.log
+	nba/logs/nba_points_props_scheduler_20260106_023503.log
+	nba/logs/nba_points_props_scheduler_20260106_100001.log
+	nba/logs/nba_points_props_scheduler_20260106_150004.log
+	nba/logs/nba_rebounds_props_20260103_060004.log
+	nba/logs/nba_rebounds_props_20260104_060001.log
+	nba/logs/nba_rebounds_props_20260105_060004.log
+	nba/logs/nba_rebounds_props_20260106_060002.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_101004.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_151005.log
+	nba/logs/nba_rebounds_props_scheduler_20260103_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_101002.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260104_181005.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_024504.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_101005.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260105_181000.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260106_101001.log
+	ncaa/logs/ncaab_model_20260103_103005.log
+	ncaa/logs/ncaab_model_20260104_103005.log
+	ncaa/logs/ncaab_model_20260105_103005.log
+	ncaa/logs/ncaab_model_20260106_103000.log
+	nfl/.cache/stats/nfl_stats_2025_18.json
+	nfl/logs/nfl_main_model_scheduler_20260103_031505.log
+	nfl/logs/nfl_main_model_scheduler_20260103_093005.log
+	nfl/logs/nfl_main_model_scheduler_20260103_181005.log
+	nfl/logs/nfl_main_model_scheduler_20260104_031503.log
+	nfl/logs/nfl_main_model_scheduler_20260104_093004.log
+	nfl/logs/nfl_main_model_scheduler_20260104_181005.log
+	nfl/logs/nfl_main_model_scheduler_20260105_031502.log
+	nfl/logs/nfl_main_model_scheduler_20260105_093005.log
+	nfl/logs/nfl_main_model_scheduler_20260105_181000.log
+	nfl/logs/nfl_main_model_scheduler_20260106_031502.log
+	nfl/logs/nfl_main_model_scheduler_20260106_093004.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_025500.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260103_181505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_094505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260104_181502.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_025503.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_094504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260105_181504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260106_025504.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260106_094504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_095505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260103_182504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_030503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_095503.log
+	nfl/logs/nfl_receptions_props_scheduler_20260104_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_030504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_095504.log
+	nfl/logs/nfl_receptions_props_scheduler_20260105_182505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260106_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260106_095501.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260103_182004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_030001.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_095004.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260104_182000.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_095005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260105_182005.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260106_030003.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260106_095004.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 549f563a93c6a05859880be20e7b4eec3aeada79 but expected bc8118f98793a8680de35d99f946cbddfdd5d193)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Tue Jan  6 15:00:59 EST 2026

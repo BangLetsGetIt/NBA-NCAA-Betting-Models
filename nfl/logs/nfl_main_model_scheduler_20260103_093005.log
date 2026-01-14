@@ -1,0 +1,28 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sat Jan  3 09:30:05 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 5 pending picks...
+
+🏈 Fetching completed NFL scores...
+   Found 0 completed games
+
+📡 Fetching current NFL odds...
+Error fetching odds: HTTPSConnectionPool(host='api.the-odds-api.com', port=443): Read timed out. (read timeout=10)
+❌ No games found or API error
+✅ Completed: nfl_main_model at Sat Jan  3 09:30:16 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+No changes to commit
+✅ Auto-push succeeded at Sat Jan  3 09:30:16 EST 2026

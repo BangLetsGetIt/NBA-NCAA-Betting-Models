@@ -1,0 +1,163 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Mon Jan 12 02:35:08 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 39 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+[93m  Error fetching batch stats for 2026-01-03: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+[93m  ⚠️  No stats found for 2026-01-03 yet[0m
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+[93m  Error fetching batch stats for 2026-01-08: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+[93m  ⚠️  No stats found for 2026-01-08 yet[0m
+
+[96mProcessing 1 picks for 2026-01-09...[0m
+[96m  Fetching batch stats for 01/09/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-09...
+
+[96mProcessing 3 picks for 2026-01-10...[0m
+[96m  Fetching batch stats for 01/10/2026...[0m
+[93m  Error fetching batch stats for 2026-01-10: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)[0m
+  Fetching team stats to verify completed games for 2026-01-10...
+[93m  ⚠️  No stats found for 2026-01-10 yet[0m
+
+[96mProcessing 21 picks for 2026-01-11...[0m
+[96m  Fetching batch stats for 01/11/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-11...
+    [91mLOSS[0m: Jalen Brunson had 26 points (line: 27.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Ajay Mitchell had 16 points (line: 11.5, bet: OVER) | Profit: 0.83 units
+    [91mLOSS[0m: Chet Holmgren had 16 points (line: 16.5, bet: OVER) | Profit: -1.00 units
+[93m  ⚠️  Player Norman Powell has no stats but game is final -> Marking as DNP/Void[0m
+    [92mWIN[0m: Andrew Wiggins had 23 points (line: 11.5, bet: OVER) | Profit: 0.76 units
+    [91mLOSS[0m: Kevin Porter Jr. had 10 points (line: 16.5, bet: OVER) | Profit: -1.00 units
+    [91mLOSS[0m: Ryan Rollins had 2 points (line: 14.5, bet: OVER) | Profit: -1.00 units
+    [91mLOSS[0m: Dillon Brooks had 16 points (line: 19.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Tyrese Maxey had 38 points (line: 27.5, bet: OVER) | Profit: 0.83 units
+    [92mWIN[0m: Keldon Johnson had 15 points (line: 12.5, bet: OVER) | Profit: 0.84 units
+    [92mWIN[0m: Victor Wembanyama had 29 points (line: 21.5, bet: OVER) | Profit: 1.00 units
+    [92mWIN[0m: Josh Hart had 18 points (line: 9.5, bet: OVER) | Profit: 0.80 units
+    [91mLOSS[0m: Jordan Clarkson had 3 points (line: 7.5, bet: OVER) | Profit: -1.00 units
+    [91mLOSS[0m: Jrue Holiday had 8 points (line: 9.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Quentin Grimes had 13 points (line: 9.5, bet: OVER) | Profit: 0.76 units
+[93m  ⚠️  Player Moe Wagner has no stats but game is final -> Marking as DNP/Void[0m
+    [92mWIN[0m: Andrew Wiggins had 23 points (line: 12.5, bet: OVER) | Profit: 1.05 units
+    [92mWIN[0m: Tyler Herro had 19 points (line: 18.5, bet: OVER) | Profit: 0.80 units
+[93m  ⚠️  Player Norman Powell has no stats but game is final -> Marking as DNP/Void[0m
+    [91mLOSS[0m: Brandin Podziemski had 3 points (line: 9.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Nickeil Alexander-Walker had 24 points (line: 18.5, bet: OVER) | Profit: 0.90 units
+
+[92m✓ Graded 21 picks[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 508 players[0m
+
+[96mFetching opponent defense factors...[0m
+[93m⚠ Could not fetch defense factors: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 6 upcoming games[0m
+[96m  Filtered to 6 upcoming games[0m
+[96m  Game 1/6: Utah Jazz @ Cleveland Cavaliers[0m
+[96m  Game 2/6: Boston Celtics @ Indiana Pacers[0m
+[96m  Game 3/6: Philadelphia 76ers @ Toronto Raptors[0m
+[96m  Game 4/6: Brooklyn Nets @ Dallas Mavericks[0m
+[96m  Game 5/6: Los Angeles Lakers @ Sacramento Kings[0m
+[96m  Game 6/6: Charlotte Hornets @ Los Angeles Clippers[0m
+[92m✓ Fetched 126 total player props[0m
+
+[96mAnalyzing 126 player props with REAL stats...[0m
+[92m✓ Found 10 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 9 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 6 props (no player stats found)[0m
+[93m  Skipped 200 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 10 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Lauri Markkanen          [0m | [92mOVER 26.5 PTS  [0m | Utah Jazz vs Cleveland Cavaliers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Sam Merrill              [0m | [92mOVER 11.5 PTS  [0m | Cleveland Cavaliers vs Utah Jazz | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jaylon Tyson             [0m | [92mOVER 10.5 PTS  [0m | Cleveland Cavaliers vs Utah Jazz | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. VJ Edgecombe             [0m | [92mOVER 14.5 PTS  [0m | Philadelphia 76ers vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Tyrese Maxey             [0m | [92mOVER 27.5 PTS  [0m | Philadelphia 76ers vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Sandro Mamukelashvili    [0m | [92mOVER 8.5 PTS   [0m | Toronto Raptors vs Philadelphia 76ers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Quentin Grimes           [0m | [92mOVER 10.5 PTS  [0m | Philadelphia 76ers vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Cam Thomas               [0m | [92mOVER 14.5 PTS  [0m | Brooklyn Nets vs Dallas Mavericks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. LaMelo Ball              [0m | [92mOVER 18.5 PTS  [0m | Charlotte Hornets vs Los Angeles Clippers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Collin Sexton            [0m | [92mOVER 12.5 PTS  [0m | Charlotte Hornets vs Los Angeles Clippers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Derrick White            [0m | [91mUNDER 24.5 PTS [0m | Boston Celtics vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Sam Hauser               [0m | [91mUNDER 11.5 PTS [0m | Boston Celtics vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Aaron Nesmith            [0m | [91mUNDER 16.5 PTS [0m | Indiana Pacers vs Boston Celtics | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Payton Pritchard         [0m | [91mUNDER 22.5 PTS [0m | Boston Celtics vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Neemias Queta            [0m | [91mUNDER 11.5 PTS [0m | Boston Celtics vs Indiana Pacers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Naji Marshall            [0m | [91mUNDER 15.5 PTS [0m | Dallas Mavericks vs Brooklyn Nets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Cooper Flagg             [0m | [91mUNDER 21.5 PTS [0m | Dallas Mavericks vs Brooklyn Nets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Daniel Gafford           [0m | [91mUNDER 10.5 PTS [0m | Dallas Mavericks vs Brooklyn Nets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Malik Monk               [0m | [91mUNDER 13.5 PTS [0m | Sacramento Kings vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Mon Jan 12 04:25:40 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 9db2ff7] Update model outputs - 2026-01-12 04:25:40
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 1662 insertions(+), 138 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   9790a21..9db2ff7  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Jan 12 04:25:41 EST 2026

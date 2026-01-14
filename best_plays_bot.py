@@ -11,6 +11,7 @@ Output: best_plays.html
 
 import json
 import os
+import subprocess
 from datetime import datetime, timedelta
 from collections import defaultdict
 import pytz
@@ -1103,6 +1104,28 @@ def generate_html(plays, fire_record=None, breakdown=None):
     return html
 
 
+def regenerate_analytics_dashboard():
+    """Regenerate the analytics dashboard after updating tracking data."""
+    try:
+        print("\n📊 Regenerating Analytics Dashboard...")
+        dashboard_script = os.path.join(SCRIPT_DIR, "tools", "analytics_dashboard.py")
+        if os.path.exists(dashboard_script):
+            result = subprocess.run(
+                ['python3', dashboard_script],
+                cwd=SCRIPT_DIR,
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                print("✅ Analytics Dashboard updated!")
+            else:
+                print(f"⚠️  Dashboard generation issue: {result.stderr[:200]}")
+        else:
+            print("ℹ️  Analytics dashboard script not found, skipping...")
+    except Exception as e:
+        print(f"⚠️  Dashboard error: {e}")
+
+
 def main():
     print("🎯 Best Plays Aggregator")
     print("=" * 50)
@@ -1148,6 +1171,9 @@ def main():
             print(f"  #{i} [{p['confidence']:.0f}] {p['player']} {p['bet_type']} {p['line']}")
             print(f"      {p['model']} ({p['model_record']})")
     
+    # Regenerate analytics dashboard
+    regenerate_analytics_dashboard()
+    
     # Auto-push to git
     push_to_git()
     
@@ -1155,14 +1181,13 @@ def main():
 
 
 def push_to_git():
-    """Push best_plays.html and tracking file to git"""
-    import subprocess
+    """Push best_plays.html, tracking file, and analytics dashboard to git"""
     try:
         print("\n🚀 Pushing to GitHub...")
         timestamp = now_et().strftime('%Y-%m-%d %H:%M')
         
-        # Add, commit, and push
-        subprocess.run(['git', 'add', 'best_plays.html', 'best_plays_tracking.json'], 
+        # Add, commit, and push (including analytics dashboard)
+        subprocess.run(['git', 'add', 'best_plays.html', 'best_plays_tracking.json', 'analytics_dashboard.html'], 
                       cwd=SCRIPT_DIR, check=True, capture_output=True)
         
         result = subprocess.run(

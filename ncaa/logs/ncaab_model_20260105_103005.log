@@ -1,0 +1,455 @@
+==========================================
+NCAA Model Run: Mon Jan  5 10:30:05 EST 2026
+==========================================
+Running NCAA Basketball model (IMPROVED)...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 11 pending picks...[0m
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 179 completed games[0m
+[92m✓ Updated: ✅ BET: Oregon St Beavers +6.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: OVER 143.5 -> WIN[0m
+[92m✓ Updated: ✅ BET: Washington Huskies +7.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: Seattle Redhawks +9.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: Loyola Marymount Lions +23.5 -> LOSS[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2506[0m
+[92m✅ Updated 5 picks[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[93m⚠️  Cache expired or missing. Fetching fresh stats from Sports-Reference...[0m
+Fetching NCAA basketball stats for 2025 season...
+Columns found: [' 0_Rk', ' 1_School', ' 2_Conf', ' 3_ 3', ' 4_W', ' 5_L', ' 6_Pts', ' 7_Opp', ' 8_MOV', ' 9_ 9', ' 10_SOS', ' 11_ 11', 'SRS_OSRS', 'SRS_DSRS', 'SRS_SRS', 'Adjusted_ORtg', 'Adjusted_DRtg', 'Adjusted_NRtg']
+
+Sample data:
+   0_Rk  1_School  2_Conf  ...  Adjusted_ORtg Adjusted_DRtg Adjusted_NRtg
+0     1      Duke     ACC  ...         131.42         86.60         44.82
+1     2    Auburn     SEC  ...         129.16         88.83         40.33
+2     3   Houston  Big 12  ...         125.20         82.34         42.86
+
+[3 rows x 18 columns]
+
+✓ Successfully fetched stats for 364 teams
+[92m✓ Stats cached to /Users/rico/sports-models/ncaa/ncaab_stats_cache.json[0m
+
+[1m[96mSTEP 3: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched 19 games from The Odds API[0m
+[92m✓ 19 games in the next 7 days[0m
+
+[1m[96mSTEP 4: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2507[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Columbia Lions +1.5 (Edge: +6.9)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2508[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 169.5 (Edge: -30.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2509[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 161.5 (Edge: -18.0)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2510[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Nebraska Cornhuskers +2.5 (Edge: +7.2)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2511[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Brown Bears +9.5 (Edge: -11.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2512[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 164.5 (Edge: -26.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2513[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Dartmouth Big Green +7.5 (Edge: +12.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2514[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 144.5 (Edge: -10.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2515[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 144.5 (Edge: -8.8)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2516[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: OVER 142.5 (Edge: +13.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2517[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 144.5 (Edge: -9.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2518[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Prairie View Panthers +7.5 (Edge: +6.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2519[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 163.5 (Edge: -32.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2520[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Texas Southern Tigers +4.5 (Edge: +8.6)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2521[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 145.5 (Edge: -13.7)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2522[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 145.5 (Edge: -7.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2523[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Stephen F. Austin Lumberjacks +10.5 (Edge: +18.2)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2524[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 142.5 (Edge: -6.9)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2525[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Northwestern St Demons +8.5 (Edge: +9.9)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2526[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 136.5 (Edge: -6.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2527[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: East Texas A&M Lions +8.5 (Edge: +14.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2528[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 150.5 (Edge: -20.1)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2529[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: OVER 132.5 (Edge: +14.2)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 2530[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: USC Trojans +10.5 (Edge: +14.6)[0m
+
+[1m[92m✅ Analyzed 19 games with complete odds[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Columbia Lions @ Cornell Big Red ━━━[0m
+[96m🕐 01/05 05:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +5.4 | Edge: +6.9
+  [92m✅ BET: Columbia Lions +1.5[0m
+  [96mHIGH confidence (+6.9 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 169.5 | Model: 139.2 | Edge: -30.3
+  [92m✅ BET: UNDER 169.5[0m
+  [96mHIGH confidence (30.3 edge)[0m
+
+[35m📈 Columbia Lions 66.9, Cornell Big Red 72.3[0m
+
+[1m[96m━━━ GAME 2: Alabama St Hornets @ Arkansas-Pine Bluff Golden Lions ━━━[0m
+[96m🕐 01/05 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: -3.2 | Edge: -1.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 143.5 | Edge: -18.0
+  [92m✅ BET: UNDER 161.5[0m
+  [96mHIGH confidence (18.0 edge)[0m
+
+[35m📈 Alabama St Hornets 73.3, Arkansas-Pine Bluff Golden Lions 70.2[0m
+
+[1m[96m━━━ GAME 3: Nebraska Cornhuskers @ Ohio State Buckeyes ━━━[0m
+[96m🕐 01/05 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +4.7 | Edge: +7.2
+  [92m✅ BET: Nebraska Cornhuskers +2.5[0m
+  [96mHIGH confidence (+7.2 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 155.5 | Model: 157.4 | Edge: +1.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.9)[0m
+
+[35m📈 Nebraska Cornhuskers 76.3, Ohio State Buckeyes 81.0[0m
+
+[1m[96m━━━ GAME 4: Yale Bulldogs @ Brown Bears ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +9.5 | Model: -1.9 | Edge: -11.4
+  [92m✅ BET: Brown Bears +9.5[0m
+  [96mHIGH confidence (-11.4 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 142.5 | Edge: -3.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.0)[0m
+
+[35m📈 Yale Bulldogs 72.2, Brown Bears 70.3[0m
+
+[1m[96m━━━ GAME 5: William & Mary Tribe @ Charleston Cougars ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: -0.2 | Edge: +1.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 164.5 | Model: 138.2 | Edge: -26.3
+  [92m✅ BET: UNDER 164.5[0m
+  [96mHIGH confidence (26.3 edge)[0m
+
+[35m📈 William & Mary Tribe 69.2, Charleston Cougars 69.0[0m
+
+[1m[96m━━━ GAME 6: Dartmouth Big Green @ Harvard Crimson ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +4.6 | Edge: +12.1
+  [92m✅ BET: Dartmouth Big Green +7.5[0m
+  [96mHIGH confidence (+12.1 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 134.4 | Edge: -10.1
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (10.1 edge)[0m
+
+[35m📈 Dartmouth Big Green 64.9, Harvard Crimson 69.5[0m
+
+[1m[96m━━━ GAME 7: Milwaukee Panthers @ Green Bay Phoenix ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +2.7 | Edge: +1.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 135.7 | Edge: -8.8
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (8.8 edge)[0m
+
+[35m📈 Milwaukee Panthers 66.5, Green Bay Phoenix 69.2[0m
+
+[1m[96m━━━ GAME 8: Lamar Cardinals @ SE Louisiana Lions ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +3.9 | Edge: +2.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 135.5 | Model: 134.5 | Edge: -1.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.0)[0m
+
+[35m📈 Lamar Cardinals 65.3, SE Louisiana Lions 69.2[0m
+
+[1m[96m━━━ GAME 9: Oregon Ducks @ Rutgers Scarlet Knights ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +5.5 | Model: +4.0 | Edge: -1.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 156.0 | Edge: +13.5
+  [92m✅ BET: OVER 142.5[0m
+  [96mHIGH confidence (13.5 edge)[0m
+
+[35m📈 Oregon Ducks 76.0, Rutgers Scarlet Knights 80.0[0m
+
+[1m[96m━━━ GAME 10: Pennsylvania Quakers @ Princeton Tigers ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +2.4 | Edge: +4.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 135.1 | Edge: -9.4
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (9.4 edge)[0m
+
+[35m📈 Pennsylvania Quakers 66.3, Princeton Tigers 68.8[0m
+
+[1m[96m━━━ GAME 11: Prairie View Panthers @ Southern Jaguars ━━━[0m
+[96m🕐 01/05 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: -1.1 | Edge: +6.4
+  [92m✅ BET: Prairie View Panthers +7.5[0m
+  [96mHIGH confidence (+6.4 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 163.5 | Model: 131.2 | Edge: -32.3
+  [92m✅ BET: UNDER 163.5[0m
+  [96mHIGH confidence (32.3 edge)[0m
+
+[35m📈 Prairie View Panthers 66.1, Southern Jaguars 65.0[0m
+
+[1m[96m━━━ GAME 12: Texas Southern Tigers @ Grambling St Tigers ━━━[0m
+[96m🕐 01/05 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +4.1 | Edge: +8.6
+  [92m✅ BET: Texas Southern Tigers +4.5[0m
+  [96mHIGH confidence (+8.6 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 131.8 | Edge: -13.7
+  [92m✅ BET: UNDER 145.5[0m
+  [96mHIGH confidence (13.7 edge)[0m
+
+[35m📈 Texas Southern Tigers 63.8, Grambling St Tigers 67.9[0m
+
+[1m[96m━━━ GAME 13: Incarnate Word Cardinals @ UT Rio Grande Valley Vaqueros ━━━[0m
+[96m🕐 01/05 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +0.6 | Edge: -0.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 138.1 | Edge: -7.4
+  [92m✅ BET: UNDER 145.5[0m
+  [96mHIGH confidence (7.4 edge)[0m
+
+[35m📈 Incarnate Word Cardinals 68.8, UT Rio Grande Valley Vaqueros 69.4[0m
+
+[1m[96m━━━ GAME 14: Stephen F. Austin Lumberjacks @ McNeese Cowboys ━━━[0m
+[96m🕐 01/05 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -10.5 | Model: +7.7 | Edge: +18.2
+  [92m✅ BET: Stephen F. Austin Lumberjacks +10.5[0m
+  [96mHIGH confidence (+18.2 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 135.6 | Edge: -6.9
+  [92m✅ BET: UNDER 142.5[0m
+  [96mMEDIUM confidence (6.9 edge)[0m
+
+[35m📈 Stephen F. Austin Lumberjacks 64.0, McNeese Cowboys 71.7[0m
+
+[1m[96m━━━ GAME 15: Northwestern St Demons @ Nicholls St Colonels ━━━[0m
+[96m🕐 01/05 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +1.4 | Edge: +9.9
+  [92m✅ BET: Northwestern St Demons +8.5[0m
+  [96mHIGH confidence (+9.9 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 147.5 | Edge: +3.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.0)[0m
+
+[35m📈 Northwestern St Demons 73.1, Nicholls St Colonels 74.5[0m
+
+[1m[96m━━━ GAME 16: Alabama A&M Bulldogs @ Miss Valley St Delta Devils ━━━[0m
+[96m🕐 01/05 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +10.5 | Model: +5.9 | Edge: -4.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.6)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 136.5 | Model: 130.1 | Edge: -6.4
+  [92m✅ BET: UNDER 136.5[0m
+  [96mMEDIUM confidence (6.4 edge)[0m
+
+[35m📈 Alabama A&M Bulldogs 62.1, Miss Valley St Delta Devils 68.0[0m
+
+[1m[96m━━━ GAME 17: East Texas A&M Lions @ New Orleans Privateers ━━━[0m
+[96m🕐 01/05 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +5.6 | Edge: +14.1
+  [92m✅ BET: East Texas A&M Lions +8.5[0m
+  [96mHIGH confidence (+14.1 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 130.4 | Edge: -20.1
+  [92m✅ BET: UNDER 150.5[0m
+  [96mHIGH confidence (20.1 edge)[0m
+
+[35m📈 East Texas A&M Lions 62.4, New Orleans Privateers 68.0[0m
+
+[1m[96m━━━ GAME 18: Texas A&M-CC Islanders @ Houston Christian Huskies ━━━[0m
+[96m🕐 01/05 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: +0.5 | Edge: -3.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.0)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 132.5 | Model: 146.7 | Edge: +14.2
+  [92m✅ BET: OVER 132.5[0m
+  [96mHIGH confidence (14.2 edge)[0m
+
+[35m📈 Texas A&M-CC Islanders 73.1, Houston Christian Huskies 73.6[0m
+
+[1m[96m━━━ GAME 19: USC Trojans @ Michigan St Spartans ━━━[0m
+[96m🕐 01/05 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -10.5 | Model: +4.1 | Edge: +14.6
+  [92m✅ BET: USC Trojans +10.5[0m
+  [96mHIGH confidence (+14.6 edge)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 150.0 | Edge: -0.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.5)[0m
+
+[35m📈 USC Trojans 73.0, Michigan St Spartans 77.1[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 5: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 2530[0m
+[92mRecord: 1299-1197-4[0m
+[92mWin Rate: 52.0%[0m
+[91mProfit: -14.91 units[0m
+[91mROI: -0.6%[0m
+[1m====================================================================================================[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 8d76c81] Update model outputs - 2026-01-05 10:30:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 1579 insertions(+), 181 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   5506e9f..8d76c81  main -> main
+✅ Successfully pushed to GitHub!

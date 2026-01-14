@@ -1,0 +1,101 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Tue Jan 13 15:31:32 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 15 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+[96m  Fetching batch stats for 12/30/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-01...
+[96m  Fetching batch stats for 01/01/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-13...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[96m  Fetching season rebounding stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL rebounding stats for 508 players[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Fetched rebounding factors for 30 teams[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 7 upcoming games[0m
+[96m  Filtered to 7 upcoming games[0m
+[96m  Game 1/7: Phoenix Suns @ Miami Heat[0m
+[96m  Game 2/7: Chicago Bulls @ Houston Rockets[0m
+[96m  Game 3/7: Denver Nuggets @ New Orleans Pelicans[0m
+[96m  Game 4/7: Minnesota Timberwolves @ Milwaukee Bucks[0m
+[96m  Game 5/7: San Antonio Spurs @ Oklahoma City Thunder[0m
+[96m  Game 6/7: Atlanta Hawks @ Los Angeles Lakers[0m
+[96m  Game 7/7: Portland Trail Blazers @ Golden State Warriors[0m
+[92m✓ Fetched 90 player rebounds props (grouped)[0m
+
+[96mAnalyzing 90 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 173 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Julius Randle            [0m | [91mUNDER 8.5 REB  [0m | Minnesota Timberwolves    vs Milwaukee Bucks           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Naz Reid                 [0m | [91mUNDER 8.5 REB  [0m | Minnesota Timberwolves    vs Milwaukee Bucks           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jaden McDaniels          [0m | [91mUNDER 5.5 REB  [0m | Minnesota Timberwolves    vs Milwaukee Bucks           | [1mA.I.: 10.00[0m | Rating: 4.1 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Tue Jan 13 15:32:41 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main df57704] Update model outputs - 2026-01-13 15:32:41
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 212 insertions(+), 6 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   e8bddea..df57704  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Jan 13 15:32:42 EST 2026

@@ -1,0 +1,97 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Mon Jan  5 02:45:04 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 7 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+[96m  Fetching batch stats for 12/30/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-01...
+[96m  Fetching batch stats for 01/01/2026...[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[96m  Fetching season rebounding stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL rebounding stats for 506 players[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Fetched rebounding factors for 30 teams[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/8: New York Knicks @ Detroit Pistons[0m
+[96m  Game 2/8: Atlanta Hawks @ Toronto Raptors[0m
+[96m  Game 3/8: Chicago Bulls @ Boston Celtics[0m
+[96m  Game 4/8: Charlotte Hornets @ Oklahoma City Thunder[0m
+[96m  Game 5/8: Phoenix Suns @ Houston Rockets[0m
+[96m  Game 6/8: Denver Nuggets @ Philadelphia 76ers[0m
+[96m  Game 7/8: Golden State Warriors @ Los Angeles Clippers[0m
+[96m  Game 8/8: Utah Jazz @ Portland Trail Blazers[0m
+[92m✓ Fetched 90 player rebounds props (grouped)[0m
+
+[96mAnalyzing 90 player props with REAL stats...[0m
+[92m✓ Found 1 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 5 props (no player stats found)[0m
+[93m  Skipped 169 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Mitchell Robinson        [0m | [92mOVER 7.5 REB   [0m | New York Knicks           vs Detroit Pistons           | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Mon Jan  5 02:45:30 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main ecfc60d] Update model outputs - 2026-01-05 02:45:30
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 89 insertions(+), 7 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   9c00f4a..ecfc60d  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Jan  5 02:45:31 EST 2026

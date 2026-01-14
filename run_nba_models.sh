@@ -134,9 +134,10 @@ echo -e "${YELLOW}📁 Generated Files:${NC}"
 echo "  • NBA: nba/nba_model_output.html"
 echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo "  • Rebounds: nba/nba_rebounds_props.html"
-echo "  • Assists: nba/nba_assists_props.html"
-echo "  • 3PT: nba/nba_3pt_props.html"
-echo "  • Points: nba/nba_points_props.html"
+    echo "  • Assists: nba/nba_assists_props.html"
+    echo "  • 3PT: nba/nba_3pt_props.html"
+    echo "  • Points: nba/nba_points_props.html"
+    echo "  • Analytics: analytics_dashboard.html"
 echo ""
 
 if [ $SUCCESS_COUNT -gt 0 ]; then
@@ -148,10 +149,27 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
     fi
     echo ""
     
+# Generate Analytics Dashboard
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}📊 Generating Analytics Dashboard...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    cd "$SCRIPT_DIR"
+    if [ -f "generate_analytics_dashboard.py" ]; then
+        if python3 generate_analytics_dashboard.py 2>&1; then
+            echo -e "${GREEN}✅ Analytics dashboard generated successfully!${NC}"
+            echo -e "${YELLOW}📁 Generated: analytics_dashboard.html${NC}"
+        else
+            echo -e "${RED}❌ Analytics dashboard generation failed${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  generate_analytics_dashboard.py not found. Skipping analytics.${NC}"
+    fi
+    
     # Auto-push to GitHub - push successful outputs even if some models failed
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BLUE}📤 Pushing updates to GitHub...${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     
     cd "$SCRIPT_DIR"
     if [ -f "auto_push.sh" ]; then
@@ -163,6 +181,9 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
             echo ""
             echo -e "${YELLOW}⚠️  Push to GitHub had issues. You may want to push manually.${NC}"
         fi
+    else
+        echo -e "${YELLOW}⚠️  auto_push.sh not found. Skipping GitHub push.${NC}"
+    fi
     else
         echo -e "${YELLOW}⚠️  auto_push.sh not found. Skipping GitHub push.${NC}"
     fi

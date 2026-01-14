@@ -1,0 +1,135 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Tue Jan 13 18:00:02 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 31 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+
+[96mProcessing 1 picks for 2026-01-09...[0m
+[96m  Fetching batch stats for 01/09/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-09...
+
+[96mProcessing 3 picks for 2026-01-10...[0m
+[96m  Fetching batch stats for 01/10/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-10...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 9 upcoming games[0m
+[96m  Filtered to 9 upcoming games[0m
+[96m  Game 1/9: Phoenix Suns @ Miami Heat[0m
+[96m  Game 2/9: Chicago Bulls @ Houston Rockets[0m
+[96m  Game 3/9: Denver Nuggets @ New Orleans Pelicans[0m
+[96m  Game 4/9: Minnesota Timberwolves @ Milwaukee Bucks[0m
+[96m  Game 5/9: San Antonio Spurs @ Oklahoma City Thunder[0m
+[96m  Game 6/9: Atlanta Hawks @ Los Angeles Lakers[0m
+[96m  Game 7/9: Portland Trail Blazers @ Golden State Warriors[0m
+[96m  Game 8/9: Cleveland Cavaliers @ Philadelphia 76ers[0m
+[96m  Game 9/9: Toronto Raptors @ Indiana Pacers[0m
+[92m✓ Fetched 170 total player props[0m
+
+[96mAnalyzing 170 player props with REAL stats...[0m
+[92m✓ Found 10 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 10 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 6 props (no player stats found)[0m
+[93m  Skipped 276 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 3 new picks[0m
+[93m✓ Updated odds for 3 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Norman Powell            [0m | [92mOVER 20.5 PTS  [0m | Miami Heat vs Phoenix Suns | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Kel'el Ware              [0m | [92mOVER 7.5 PTS   [0m | Miami Heat vs Phoenix Suns | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Andrew Wiggins           [0m | [92mOVER 13.5 PTS  [0m | Miami Heat vs Phoenix Suns | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Kevin Durant             [0m | [92mOVER 25.5 PTS  [0m | Houston Rockets vs Chicago Bulls | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Jordan Poole             [0m | [92mOVER 12.5 PTS  [0m | New Orleans Pelicans vs Denver Nuggets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Trey Murphy III          [0m | [92mOVER 20.5 PTS  [0m | New Orleans Pelicans vs Denver Nuggets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Saddiq Bey               [0m | [92mOVER 11.5 PTS  [0m | New Orleans Pelicans vs Denver Nuggets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Ryan Rollins             [0m | [92mOVER 14.5 PTS  [0m | Milwaukee Bucks vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Myles Turner             [0m | [92mOVER 10.5 PTS  [0m | Milwaukee Bucks vs Minnesota Timberwolves | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. De'Aaron Fox             [0m | [92mOVER 17.5 PTS  [0m | San Antonio Spurs vs Oklahoma City Thunder | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Jalen Pickett            [0m | [91mUNDER 10.5 PTS [0m | Denver Nuggets vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Aaron Gordon             [0m | [91mUNDER 20.5 PTS [0m | Denver Nuggets vs New Orleans Pelicans | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Jaden McDaniels          [0m | [91mUNDER 16.5 PTS [0m | Minnesota Timberwolves vs Milwaukee Bucks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Julius Randle            [0m | [91mUNDER 23.5 PTS [0m | Minnesota Timberwolves vs Milwaukee Bucks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Donte DiVincenzo         [0m | [91mUNDER 16.5 PTS [0m | Minnesota Timberwolves vs Milwaukee Bucks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Naz Reid                 [0m | [91mUNDER 19.5 PTS [0m | Minnesota Timberwolves vs Milwaukee Bucks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Mike Conley              [0m | [91mUNDER 7.5 PTS  [0m | Minnesota Timberwolves vs Milwaukee Bucks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Deandre Ayton            [0m | [91mUNDER 15.5 PTS [0m | Los Angeles Lakers vs Atlanta Hawks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Marcus Smart             [0m | [91mUNDER 11.5 PTS [0m | Los Angeles Lakers vs Atlanta Hawks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Shaedon Sharpe           [0m | [91mUNDER 25.5 PTS [0m | Portland Trail Blazers vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Tue Jan 13 18:00:14 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 86a2d65] Update model outputs - 2026-01-13 18:00:14
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 364 insertions(+), 150 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   65d9c3a..86a2d65  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Tue Jan 13 18:00:15 EST 2026

@@ -1,0 +1,206 @@
+==========================================
+NBA Model Run: Fri Jan  9 10:00:03 EST 2026
+==========================================
+Running NBA model...
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 13 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[92m✓ Found 15 completed games (Free API)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[93mNo picks were updated (games may not be complete yet)[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[93m⚠ Attempt 1/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=60)[0m
+[93m   Retrying in 2 seconds...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+[96m🔄 Fetching team schedules...[0m
+[92m✓ Fetched schedules for 1 teams[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 10 total games[0m
+[92m✓ Filtered to 10 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[91m❌ Missing stats for Brooklyn Nets or Los Angeles Clippers[0m
+[91m❌ Missing stats for Brooklyn Nets or Los Angeles Clippers[0m
+[91m❌ Skipping Los Angeles Clippers @ Brooklyn Nets - missing model data[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 228.5 (Edge: +7.6)[0m
+
+[1m[92m✅ Analyzed 9 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mHouston Rockets @ Portland Trail Blazers[0m
+  🕐 01/09/26 10:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  [92m🔥 HOT: Portland Trail Blazers - Strong performer: 5-1 (83%) | +3.90u over 6 picks[0m
+  📊 Spread: Market +6.5 | Model -0.9
+  🎯 Total: Market 220.5 | Model 235.2
+  [92m✅ BET: Portland Trail Blazers +6.5[0m
+     [96mModel projects Portland Trail Blazers to lose by only 0.9, covering +6.5.[0m
+  [92m✅ BET: OVER 220.5[0m
+     [96mModel projects 235 total points, bet the OVER[0m
+  📈 Predicted: Houston Rockets 118, Portland Trail Blazers 117
+
+[1m[96mPhiladelphia 76ers @ Orlando Magic[0m
+  🕐 01/09/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.8 ⭐⭐ (PREMIUM PLAY)[0m
+  [92m🔥 HOT: Orlando Magic - Strong performer: 5-2 (71%) | +2.71u over 7 picks[0m
+  📊 Spread: Market +3.5 | Model +10.2
+  🎯 Total: Market 226.0 | Model 231.2
+  [92m✅ BET: Orlando Magic +3.5[0m
+     [96mModel projects Orlando Magic to win outright, easily covering +3.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Philadelphia 76ers 110, Orlando Magic 121
+
+[1m[96mOklahoma City Thunder @ Memphis Grizzlies[0m
+  🕐 01/09/26 08:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.4 ⭐⭐ (STRONG PLAY)[0m
+  [93m⚠️ CAUTION: Memphis Grizzlies - Below average: 4-7 (36%) | -3.70u over 11 picks[0m
+  📊 Spread: Market +5.0 | Model +1.6
+  🎯 Total: Market 229.5 | Model 241.6
+  [92m✅ BET: Memphis Grizzlies +5.0[0m
+     [96mModel projects Memphis Grizzlies to win outright, easily covering +5.0.[0m
+  [92m✅ BET: OVER 229.5[0m
+     [96mModel projects 242 total points, bet the OVER[0m
+  📈 Predicted: Oklahoma City Thunder 120, Memphis Grizzlies 122
+
+[1m[96mToronto Raptors @ Boston Celtics[0m
+  🕐 01/09/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.0 ⭐⭐ (STRONG PLAY)[0m
+  [92m🔥 HOT: Boston Celtics - Strong performer: 6-1 (86%) | +4.90u over 7 picks[0m
+  📊 Spread: Market -9.0 | Model +17.1
+  🎯 Total: Market 223.5 | Model 233.0
+  [92m✅ BET: Boston Celtics -9.0[0m
+     [96mModel projects Boston Celtics to win by 17.1, covering -9.0.[0m
+  [92m✅ BET: OVER 223.5[0m
+     [96mModel projects 233 total points, bet the OVER[0m
+  📈 Predicted: Toronto Raptors 108, Boston Celtics 125
+
+[1m[96mMilwaukee Bucks @ Los Angeles Lakers[0m
+  🕐 01/09/26 10:40 PM EST
+  [96m[1m🎯 A.I. Rating: 3.8 ⭐ (GOOD PLAY)[0m
+  [91m🚫 COLD: Los Angeles Lakers - Poor performer: 1-3 (25%) | -2.39u over 4 picks[0m
+  📊 Spread: Market -3.0 | Model +8.7
+  🎯 Total: Market 230.0 | Model 239.5
+  [92m✅ BET: Los Angeles Lakers -3.0[0m
+     [96mModel projects Los Angeles Lakers to win by 8.7, covering -3.0.[0m
+  [92m✅ BET: OVER 230.0[0m
+     [96mModel projects 240 total points, bet the OVER[0m
+  📈 Predicted: Milwaukee Bucks 115, Los Angeles Lakers 124
+
+[1m[96mNew Orleans Pelicans @ Washington Wizards[0m
+  🕐 01/09/26 07:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.8 ⭐ (GOOD PLAY)[0m
+  [96mℹ️ LIMITED: Washington Wizards - Limited data: 1-1 (50%) | -0.10u (2 picks)[0m
+  📊 Spread: Market +2.5 | Model +3.9
+  🎯 Total: Market 242.0 | Model 233.0
+  [92m✅ BET: Washington Wizards +2.5[0m
+     [96mModel projects Washington Wizards to win outright, easily covering +2.5.[0m
+  [92m✅ BET: UNDER 242.0[0m
+     [96mModel projects 233 total points, bet the UNDER[0m
+  📈 Predicted: New Orleans Pelicans 115, Washington Wizards 118
+
+[1m[96mAtlanta Hawks @ Denver Nuggets[0m
+  🕐 01/09/26 09:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.6 ⭐ (GOOD PLAY)[0m
+  [92m🔥 HOT: Denver Nuggets - Strong performer: 3-1 (75%) | +1.90u over 4 picks[0m
+  📊 Spread: Market -1.0 | Model +8.6
+  🎯 Total: Market 234.5 | Model 242.0
+  [92m✅ BET: Denver Nuggets -1.0[0m
+     [96mModel projects Denver Nuggets to win by 8.6, covering -1.0.[0m
+  [92m✅ BET: OVER 234.5[0m
+     [96mModel projects 242 total points, bet the OVER[0m
+  📈 Predicted: Atlanta Hawks 117, Denver Nuggets 125
+
+[1m[96mNew York Knicks @ Phoenix Suns[0m
+  🕐 01/09/26 09:10 PM EST
+  [96m[1m🎯 A.I. Rating: 3.5 ⭐ (GOOD PLAY)[0m
+  📊 Spread: Market +1.0 | Model +1.6
+  🎯 Total: Market 228.5 | Model 236.1
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+2.6)[0m
+  [92m✅ BET: OVER 228.5[0m
+     [96mModel projects 236 total points, bet the OVER[0m
+  📈 Predicted: New York Knicks 117, Phoenix Suns 119
+
+[1m[96mSacramento Kings @ Golden State Warriors[0m
+  🕐 01/09/26 10:10 PM EST
+  [93m[1m🎯 A.I. Rating: 3.4 ⭐ (STANDARD PLAY)[0m
+  [93m📉 NEUTRAL-: Sacramento Kings - Slightly below average: 4-5 (44%) | -1.50u over 9 picks[0m
+  📊 Spread: Market -14.5 | Model +7.3
+  🎯 Total: Market 231.0 | Model 233.4
+  [92m✅ BET: Sacramento Kings +14.5[0m
+     [96mModel projects Golden State Warriors to win by only 7.3, not enough to cover -14.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Sacramento Kings 113, Golden State Warriors 120
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 321[0m
+[92mRecord: 165-140-2[0m
+[92mWin Rate: 54.1%[0m
+[92mProfit: +10.16 units[0m
+[92mROI: +3.0%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 3443c30] Update model outputs - 2026-01-09 10:41:53
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 35 insertions(+), 3 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   e26c2c6..3443c30  main -> main
+✅ Successfully pushed to GitHub!

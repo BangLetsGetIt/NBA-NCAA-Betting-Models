@@ -2003,11 +2003,13 @@
       "edge": 3.2,
       "ev": 40.0,
       "tracked_at": "2026-01-13T02:43:27.170786-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 3,
       "clv_status": "positive",
-      "last_updated": "2026-01-13T18:05:10.549631-05:00"
+      "last_updated": "2026-01-13T18:05:10.549631-05:00",
+      "profit_loss": 100,
+      "updated_at": "2026-01-13T23:26:35.028783-05:00"
     },
     {
       "pick_id": "Marcus Smart_4.5_under_2026-01-14T03:40:00Z",
@@ -2048,10 +2050,12 @@
       "edge": 1.5,
       "ev": 20.0,
       "tracked_at": "2026-01-13T18:05:10.549532-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 5,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-01-13T23:26:35.148460-05:00"
     }
   ]
 }
