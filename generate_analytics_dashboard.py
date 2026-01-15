@@ -388,10 +388,20 @@ class SportsAnalytics:
                 'win_rate': 0
             }
         
-        # Sort by date_logged or game_date to get most recent first
-        sorted_picks = sorted(completed_picks, 
-                            key=lambda x: x.get('date_logged', x.get('game_date', '')), 
-                            reverse=True)
+        # Sort by updated_at or tracked_at to get most recent first
+        def get_sort_date(pick):
+            # Try updated_at first (when pick was graded)
+            date_str = pick.get('updated_at', '')
+            if date_str:
+                return date_str
+            # Fall back to tracked_at (when pick was made)
+            date_str = pick.get('tracked_at', '')
+            if date_str:
+                return date_str
+            # Finally try game_time
+            return pick.get('game_time', '')
+        
+        sorted_picks = sorted(completed_picks, key=get_sort_date, reverse=True)
         
         recent_picks = sorted_picks[:count]
         
