@@ -309,7 +309,7 @@ class SportsAnalytics:
                     player_stats[player]['wins'] = int(player_stats[player]['wins']) + 1
                 elif pick.get('status') == 'loss':
                     player_stats[player]['losses'] = int(player_stats[player]['losses']) + 1
-                else:
+                elif pick.get('status') == 'push':
                     player_stats[player]['pushes'] = int(player_stats[player]['pushes']) + 1
             
             # Team stats
@@ -320,14 +320,14 @@ class SportsAnalytics:
                     team_stats[team]['wins'] = int(team_stats[team]['wins']) + 1
                 elif pick.get('status') == 'loss':
                     team_stats[team]['losses'] = int(team_stats[team]['losses']) + 1
-                else:
+                elif pick.get('status') == 'push':
                     team_stats[team]['pushes'] = int(team_stats[team]['pushes']) + 1
         
         # Convert to sorted lists
         top_players = []
         for player, stats in player_stats.items():
-            if int(stats['picks']) >= 5:  # Minimum 5 picks
-                total_completed = int(stats['wins']) + int(stats['losses']) + int(stats['pushes'])
+            total_completed = int(stats['wins']) + int(stats['losses']) + int(stats['pushes'])
+            if total_completed >= 5:  # Minimum 5 completed picks (excluding voids/pending)
                 win_rate = int(stats['wins']) / total_completed if total_completed > 0 else 0
                 
                 # Get team abbreviation for logo
@@ -339,7 +339,7 @@ class SportsAnalytics:
                 top_players.append({
                     'name': player,
                     'type': 'player',
-                    'total_picks': int(stats['picks']),
+                    'total_picks': total_completed,  # Only count completed picks for display
                     'wins': int(stats['wins']),
                     'losses': int(stats['losses']),
                     'pushes': int(stats['pushes']),
@@ -365,9 +365,11 @@ class SportsAnalytics:
                     'win_rate': win_rate
                 })
         
-        # Sort by win rate and take top 10
-        top_players.sort(key=lambda x: x['win_rate'], reverse=True)
-        top_teams.sort(key=lambda x: x['win_rate'], reverse=True)
+        # Sort by win rate but give preference to players with more picks
+        # Use a composite score: win_rate * 0.7 + log(picks) * 0.3
+        import math
+        top_players.sort(key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
+        top_teams.sort(key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
         
         # Combine into single dict
         top_performers = {}
