@@ -5457,11 +5457,13 @@
       "edge": 1.0,
       "ev": 11.18,
       "tracked_at": "2026-01-15T01:01:26.760910-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1,
       "clv_status": "negative",
-      "last_updated": "2026-01-15T18:01:10.526148-05:00"
+      "last_updated": "2026-01-15T18:01:10.526148-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-16T02:50:10.384823-05:00"
     },
     {
       "pick_id": "C.J. McCollum_1.5_over_2026-01-16T03:10:00Z",
@@ -5480,11 +5482,12 @@
       "edge": 1.1,
       "ev": 10.0,
       "tracked_at": "2026-01-15T01:01:26.760982-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
       "clv_status": "negative",
-      "last_updated": "2026-01-15T18:01:10.526301-05:00"
+      "last_updated": "2026-01-15T18:01:10.526301-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "A.J. Green_2.5_over_2026-01-16T01:10:00Z",
@@ -5552,11 +5555,13 @@
       "edge": 0.5,
       "ev": 0.18,
       "tracked_at": "2026-01-15T01:01:26.761106-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 2,
       "clv_status": "negative",
-      "last_updated": "2026-01-15T18:01:10.526378-05:00"
+      "last_updated": "2026-01-15T18:01:10.526378-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-16T02:50:10.385219-05:00"
     },
     {
       "pick_id": "Miles McBride_2.5_over_2026-01-16T03:10:00Z",
@@ -5575,11 +5580,13 @@
       "edge": 0.5,
       "ev": 21.7,
       "tracked_at": "2026-01-15T02:50:09.066324-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 6,
       "clv_status": "negative",
-      "last_updated": "2026-01-15T05:00:12.080809-05:00"
+      "last_updated": "2026-01-15T05:00:12.080809-05:00",
+      "profit_loss": 90,
+      "updated_at": "2026-01-16T02:50:10.385309-05:00"
     },
     {
       "pick_id": "Jalen Brunson_2.5_over_2026-01-16T03:10:00Z",
@@ -5598,10 +5605,11 @@
       "edge": 0.6,
       "ev": 10.57,
       "tracked_at": "2026-01-15T02:50:09.066474-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Brice Sensabaugh_2.5_under_2026-01-16T01:40:00Z",
@@ -5645,10 +5653,12 @@
       "edge": 1.0,
       "ev": 15.16,
       "tracked_at": "2026-01-15T18:01:10.526249-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-01-16T02:50:10.385489-05:00"
     },
     {
       "pick_id": "Trey Murphy III_2.5_over_2026-01-17T00:10:00Z",
@@ -5682,7 +5692,7 @@
       "ai_score": 10.0,
       "odds": -178,
       "opening_odds": -178,
-      "latest_odds": -178,
+      "latest_odds": -150,
       "game_time": "2026-01-17T00:10:00Z",
       "season_avg": 2.7,
       "recent_avg": 3.2,
@@ -5692,7 +5702,8 @@
       "status": "pending",
       "result": null,
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": "negative",
+      "last_updated": "2026-01-16T02:50:12.247667-05:00"
     }
   ]
 }
