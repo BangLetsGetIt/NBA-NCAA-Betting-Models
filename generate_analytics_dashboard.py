@@ -293,7 +293,7 @@ class SportsAnalytics:
         player_stats = defaultdict(lambda: {
             'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0, 
             'profit_loss': 0.0, 'sport': '', 'team': '', 
-            'props': defaultdict(int)
+            'props': defaultdict(lambda: {'win': 0, 'loss': 0, 'push': 0})
         })
         team_stats = defaultdict(lambda: {'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0})
         
@@ -322,7 +322,9 @@ class SportsAnalytics:
                 elif 'blocks' in file_path: prop_type = 'Blk'
                 
                 if prop_type:
-                    player_stats[player]['props'][prop_type] += 1
+                    status = pick.get('status', '').lower()
+                    if status in ['win', 'loss', 'push']:
+                        player_stats[player]['props'][prop_type][status] += 1
                 
                 # Store team information (use home team)
                 team = pick.get('home_team') or pick.get('team') or pick.get('away_team')
@@ -362,8 +364,13 @@ class SportsAnalytics:
                 # Format prop summary
                 prop_summary = ""
                 if stats['props']:
-                    sorted_props = sorted(stats['props'].items(), key=lambda x: x[1], reverse=True)
-                    prop_parts = [f"{count}x {ptype}" for ptype, count in sorted_props[:3]]
+                    # Sort by total picks for that prop type
+                    sorted_props = sorted(
+                        stats['props'].items(), 
+                        key=lambda x: (x[1]['win'] + x[1]['loss'] + x[1]['push']), 
+                        reverse=True
+                    )
+                    prop_parts = [f"{ptype} ({rec['win']}-{rec['loss']}-{rec['push']})" for ptype, rec in sorted_props[:3]]
                     prop_summary = ", ".join(prop_parts)
                 
                 top_players.append({
