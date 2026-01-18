@@ -395,35 +395,69 @@
                     </table>
                 </div>
                 <div>
-                    <h3>Teams</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Team</th>
-                                <th>Picks</th>
-                                <th>Fav/Dog Splits</th>
-                                <th>Win Rate</th>
-                                <th>Record</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for key, performer in analytics.top_performers.items() %}
-                            {% if performer.type == 'team' %}
-                            <tr>
-                                <td>{{ performer.name }}</td>
-                                <td>{{ performer.total_picks }}</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    {{ performer.record_split }}
-                                </td>
-                                <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
-                                    {{ "%.1f"|format(performer.win_rate * 100) }}%
-                                </td>
-                                <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div>
+                        <h3>Teams - Most Efficient (Win %)</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th>Picks</th>
+                                    <th>Fav/Dog Splits</th>
+                                    <th>Win Rate</th>
+                                    <th>Record</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, performer in analytics.top_performers.items() %}
+                                {% if 'team_eff_' in key %}
+                                <tr>
+                                    <td>{{ performer.name }}</td>
+                                    <td>{{ performer.total_picks }}</td>
+                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
+                                        {{ performer.record_split }}
+                                    </td>
+                                    <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
+                                        {{ "%.1f"|format(performer.win_rate * 100) }}%
+                                    </td>
+                                    <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h3>Teams - Most Profitable ($$$)</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th>Picks</th>
+                                    <th>Fav/Dog Splits</th>
+                                    <th>Profit</th>
+                                    <th>Record</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, performer in analytics.top_performers.items() %}
+                                {% if 'team_prof_' in key %}
+                                <tr>
+                                    <td>{{ performer.name }}</td>
+                                    <td>{{ performer.total_picks }}</td>
+                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
+                                        {{ performer.record_split }}
+                                    </td>
+                                    <td class="positive">
+                                        +{{ "%.2f"|format(performer.profit_loss / 100) }}u
+                                    </td>
+                                    <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

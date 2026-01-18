@@ -298,8 +298,10 @@ class SportsAnalytics:
         team_stats = defaultdict(lambda: {
             'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0,
             'fav': {'win': 0, 'loss': 0, 'push': 0},
-            'dog': {'win': 0, 'loss': 0, 'push': 0}
+            'dog': {'win': 0, 'loss': 0, 'push': 0},
+            'profit_loss': 0.0
         })
+        
         
         for pick in self.all_picks:
             if pick.get('status') not in ['win', 'loss', 'push']:
@@ -348,6 +350,7 @@ class SportsAnalytics:
                 if 'CHA' in team: team = 'Charlotte Hornets' # Example normalization if needed
                 
                 team_stats[team]['picks'] = int(team_stats[team]['picks']) + 1
+                team_stats[team]['profit_loss'] = float(team_stats[team]['profit_loss']) + float(pick.get('profit_loss', 0))
                 status = pick.get('status', '').lower()
                 
                 if status == 'win':
@@ -441,6 +444,7 @@ class SportsAnalytics:
                     'losses': int(stats['losses']),
                     'pushes': int(stats['pushes']),
                     'win_rate': win_rate,
+                    'profit_loss': float(stats['profit_loss']),
                     'record_split': record_split
                 })
         
@@ -448,14 +452,21 @@ class SportsAnalytics:
         # Use a composite score: win_rate * 0.7 + log(picks) * 0.3
         import math
         top_players.sort(key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
-        top_teams.sort(key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
+        
+        # Two lists for teams: Efficiency (Win Rate) and Profit
+        top_teams_efficiency = sorted(top_teams, key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
+        top_teams_profit = sorted(top_teams, key=lambda x: x['profit_loss'], reverse=True)
         
         # Combine into single dict
         top_performers = {}
         for i, player in enumerate(top_players[:15]):  # Increased to 15 for better selection
             top_performers[f'player_{i}'] = player
-        for i, team in enumerate(top_teams[:10]):
-            top_performers[f'team_{i}'] = team
+            
+        for i, team in enumerate(top_teams_efficiency[:10]):
+            top_performers[f'team_eff_{i}'] = team
+            
+        for i, team in enumerate(top_teams_profit[:10]):
+            top_performers[f'team_prof_{i}'] = team
             
         return top_performers
 
