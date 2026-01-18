@@ -124,7 +124,7 @@ def calculate_team_stats():
                     'sport': s['sport'],
                     'record': f"{s['wins']}-{s['losses']}-{s['pushes']}",
                     'win_rate': win_rate,
-                    'profit': s['profit'],
+                    'profit': s['profit'] / 100.0, # Normalize to units
                     'games': sorted(s['games'], key=lambda x: x['date'], reverse=True)[:5] # Last 5
                 })
 
