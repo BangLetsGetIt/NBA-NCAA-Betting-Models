@@ -2539,14 +2539,14 @@ def save_html(results):
     # Load tracking data for display
     tracking_data = load_picks_tracking()
     
-    # Load Auto Bet Teams
+    # Load Auto Bet Teams (Top 10 Most Profitable from nba_analysis_report)
     auto_bet_teams = set()
     try:
-        with open('/Users/rico/sports-models/auto_bet_teams.json', 'r') as f:
+        with open('/Users/rico/sports-models/nba/nba_auto_bet_teams.json', 'r') as f:
             abt_data = json.load(f)
-            for t, info in abt_data.items():
-                if info.get('sport') == 'NBA':
-                    auto_bet_teams.add(t)
+            # Keys are team names directly
+            auto_bet_teams = set(abt_data.keys())
+            print(f"Loaded {len(auto_bet_teams)} Auto-Bet teams: {', '.join(list(auto_bet_teams)[:5])}...")
     except Exception as e:
         print(f"Warning: Could not load Auto Bet Teams: {e}")
 
