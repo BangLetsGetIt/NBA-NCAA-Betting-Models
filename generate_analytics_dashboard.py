@@ -343,7 +343,10 @@ class SportsAnalytics:
                 elif pick.get('status') == 'push':
                     player_stats[player]['pushes'] = int(player_stats[player]['pushes']) + 1
             
-            # Team stats
+            # Team stats - ONLY track team bets (spread/total/ML), exclude player props
+            if pick.get('player'):
+                continue
+                
             team = pick.get('team') or pick.get('home_team') or pick.get('away_team')
             if team:
                 # normalize team name (sometimes handled differently in different files)
