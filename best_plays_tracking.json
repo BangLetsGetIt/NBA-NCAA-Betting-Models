@@ -19379,7 +19379,7 @@
       "recent_avg": 1.8,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "void",
       "tracked_at": "2026-01-17T12:24:17.967904-05:00"
     },
     {
@@ -19404,7 +19404,7 @@
       "recent_avg": 3.7,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967908-05:00"
     },
     {
@@ -19429,7 +19429,7 @@
       "recent_avg": 3.5,
       "season_record": "",
       "clv_status": "negative",
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967913-05:00"
     },
     {
@@ -19454,7 +19454,7 @@
       "recent_avg": 9.3,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967916-05:00"
     },
     {
@@ -19604,7 +19604,7 @@
       "recent_avg": 5.0,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967938-05:00"
     },
     {
@@ -19679,7 +19679,7 @@
       "recent_avg": 3.0,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "loss",
       "tracked_at": "2026-01-17T12:24:17.967949-05:00"
     },
     {
@@ -19754,7 +19754,7 @@
       "recent_avg": 3.6,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967959-05:00"
     },
     {
@@ -19779,7 +19779,7 @@
       "recent_avg": 6.9,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967964-05:00"
     },
     {
@@ -19804,8 +19804,58 @@
       "recent_avg": 1.9,
       "season_record": "",
       "clv_status": null,
-      "status": "pending",
+      "status": "win",
       "tracked_at": "2026-01-17T12:24:17.967967-05:00"
+    },
+    {
+      "model": "NFL Receiving Yards",
+      "sport": "NFL",
+      "category": "Props",
+      "player": "Puka Nacua",
+      "bet_type": "OVER",
+      "line": 99.5,
+      "odds": -115,
+      "edge": 20.3,
+      "ai_score": 10.0,
+      "game_time": "2026-01-18T18:30:00-05:00",
+      "game_time_str": "Sun 06:30 PM",
+      "matchup": "Los Angeles Rams @ Chicago Bears",
+      "source_pick_id": "Puka Nacua_OVER_2026-01-18",
+      "model_record": "12-17",
+      "model_win_rate": 41.37931034482759,
+      "confidence": 63.1,
+      "team": "LA",
+      "season_avg": 107.41,
+      "recent_avg": 128.0,
+      "season_record": "",
+      "clv_status": "neutral",
+      "status": "pending",
+      "tracked_at": "2026-01-17T23:09:34.150205-05:00"
+    },
+    {
+      "model": "NBA Points Props",
+      "sport": "NBA",
+      "category": "Props",
+      "player": "Franz Wagner",
+      "bet_type": "OVER",
+      "line": 17.5,
+      "odds": -125,
+      "edge": 5.0,
+      "ai_score": 10.0,
+      "game_time": "2026-01-18T12:10:00-05:00",
+      "game_time_str": "Sun 12:10 PM",
+      "matchup": "Memphis Grizzlies",
+      "source_pick_id": "Franz Wagner_17.5_over_2026-01-18T17:10:00Z",
+      "model_record": "280-237",
+      "model_win_rate": 54.15860735009671,
+      "confidence": 62.6,
+      "team": "Orlando Magic",
+      "season_avg": 22.5,
+      "recent_avg": 18.0,
+      "season_record": "",
+      "clv_status": null,
+      "status": "pending",
+      "tracked_at": "2026-01-17T23:09:34.150239-05:00"
     }
   ],
   "record": {
@@ -19820,9 +19870,9 @@
       "win_rate": 69.76744186046511
     },
     "value": {
-      "wins": 355,
-      "losses": 262,
-      "win_rate": 57.53646677471637
+      "wins": 362,
+      "losses": 263,
+      "win_rate": 57.92
     }
   }
 }
