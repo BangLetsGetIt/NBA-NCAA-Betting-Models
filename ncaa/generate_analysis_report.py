@@ -398,64 +398,162 @@ def generate_report():
     html += "</tbody></table></div></div>"
 
     # --- 4. TEAMS ---
-    team_stats = defaultdict(lambda: {'wins': 0, 'losses': 0, 'pushes': 0, 'profit': 0})
+    team_stats = defaultdict(lambda: {
+        'wins': 0, 'losses': 0, 'pushes': 0, 'profit': 0,
+        'fav_w': 0, 'fav_l': 0, 'fav_p': 0,
+        'dog_w': 0, 'dog_l': 0, 'dog_p': 0
+    })
+    
     for p in decided_picks:
         pick_text = p.get('pick_text', '').upper()
         home = p.get('home_team', '')
         away = p.get('away_team', '')
+        
+        # Determine which team was bet on
         bet_team = "Unknown"
         if home.upper() in pick_text: bet_team = home
         elif away.upper() in pick_text: bet_team = away
         else: continue
         
         s = team_stats[bet_team]
+        
+        # Update General
         if p['status'] == 'win': s['wins'] += 1
         elif p['status'] == 'loss': s['losses'] += 1
         elif p['status'] == 'push': s['pushes'] += 1
         s['profit'] += get_unit_profit(p)
+        
+        # Determine Fav/Dog Status based on pick text
+        # Look for "+" or "-" associated with the spread
+        # Examples: "Team +5.5", "Team -3.0", "Team PK"
+        is_dog = False
+        is_fav = False
+        
+        if "+" in pick_text:
+            is_dog = True
+        elif "-" in pick_text:
+            is_fav = True
+        # If 'PK' or neither, we skip the specific breakdown or assume one (optional)
+        
+        if is_dog:
+            if p['status'] == 'win': s['dog_w'] += 1
+            elif p['status'] == 'loss': s['dog_l'] += 1
+            elif p['status'] == 'push': s['dog_p'] += 1
+        elif is_fav:
+            if p['status'] == 'win': s['fav_w'] += 1
+            elif p['status'] == 'loss': s['fav_l'] += 1
+            elif p['status'] == 'push': s['fav_p'] += 1
         
     team_list = []
     for team, stats in team_stats.items():
         total = stats['wins'] + stats['losses'] + stats['pushes']
         if total >= 5:
             wr = stats['wins'] / (stats['wins'] + stats['losses']) * 100 if (stats['wins'] + stats['losses']) > 0 else 0
-            team_list.append({'team': team, 'record': f"{stats['wins']}-{stats['losses']}-{stats['pushes']}", 'wr': wr, 'profit': stats['profit']})
+            
+            # Format Split Records
+            fav_r = f"{stats['fav_w']}-{stats['fav_l']}-{stats['fav_p']}"
+            dog_r = f"{stats['dog_w']}-{stats['dog_l']}-{stats['dog_p']}"
+            
+            team_list.append({
+                'team': team, 
+                'record': f"{stats['wins']}-{stats['losses']}-{stats['pushes']}", 
+                'wr': wr, 
+                'profit': stats['profit'],
+                'fav_rec': fav_r,
+                'dog_rec': dog_r
+            })
+            
+            if team == 'Valparaiso Beacons':
+                pass
             
     best_teams = sorted(team_list, key=lambda x: x['profit'], reverse=True)[:20]
     worst_teams = sorted(team_list, key=lambda x: x['profit'])[:20]
+
+    # Helpers for totals
+    def calc_totals(teams):
+        w = sum(int(t['record'].split('-')[0]) for t in teams)
+        l = sum(int(t['record'].split('-')[1]) for t in teams)
+        p = sum(int(t['record'].split('-')[2]) for t in teams)
+        prof = sum(t['profit'] for t in teams)
+        return w, l, p, prof
+
+    bw, bl, bp, bprof = calc_totals(best_teams)
+    ww, wl, wp, wprof = calc_totals(worst_teams)
     
     html += '<div class="two-columns">'
     
     # Best Teams Column
-    html += """
+    html += f"""
         <div class="section">
             <h2 class="section-title">✅ Auto-Bet Teams (Top 20)</h2>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Combined Record</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);">{bw}-{bl}-{bp}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Total Profit</div>
+                    <div style="font-size: 1.1rem; font-weight: 700;" class="text-green">+{bprof:.2f}u</div>
+                </div>
+            </div>
             <div class="table-container">
             <table>
-                <thead><tr><th>Team</th><th>Record</th><th>Profit</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Record</th>
+                        <th>Snippet (Fav / Dog)</th>
+                        <th>Profit</th>
+                    </tr>
+                </thead>
                 <tbody>
     """
     for t in best_teams:
         html += f"""<tr>
             <td style="color:var(--accent-green); font-weight:600">{t['team']}</td>
             <td>{t['record']}</td>
+            <td style="font-size:0.8rem; color:var(--text-slate)">
+                Fav: {t['fav_rec']} <br>
+                Dog: {t['dog_rec']}
+            </td>
             <td class="text-green profit-value">+{t['profit']:.2f}u</td>
         </tr>"""
     html += "</tbody></table></div></div>"
     
     # Worst Teams Column
-    html += """
+    html += f"""
         <div class="section">
             <h2 class="section-title">❌ Do Not Bet (Bottom 20)</h2>
+            <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Combined Record</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);">{ww}-{wl}-{wp}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Total Profit</div>
+                    <div style="font-size: 1.1rem; font-weight: 700;" class="text-red">{wprof:.2f}u</div>
+                </div>
+            </div>
             <div class="table-container">
             <table>
-                <thead><tr><th>Team</th><th>Record</th><th>Profit</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Record</th>
+                        <th>Snippet (Fav / Dog)</th>
+                        <th>Profit</th>
+                    </tr>
+                </thead>
                 <tbody>
     """
     for t in worst_teams:
         html += f"""<tr>
             <td style="color:var(--text-slate);">{t['team']}</td>
             <td>{t['record']}</td>
+            <td style="font-size:0.8rem; color:var(--text-slate)">
+                Fav: {t['fav_rec']} <br>
+                Dog: {t['dog_rec']}
+            </td>
             <td class="text-red profit-value">{t['profit']:.2f}u</td>
         </tr>"""
     html += "</tbody></table></div></div></div>"
