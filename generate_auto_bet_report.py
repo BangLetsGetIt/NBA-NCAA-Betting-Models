@@ -11,6 +11,20 @@ JSON_OUTPUT_FILE = os.path.join(BASE_DIR, "auto_bet_teams.json")
 MIN_PICKS = 5
 MIN_WIN_RATE = 0.80
 
+# NBA Team Abbreviation Map for ESPN Logos
+NBA_TEAM_ABBR = {
+    'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN',
+    'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE',
+    'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN', 'Detroit Pistons': 'DET',
+    'Golden State Warriors': 'GSW', 'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND',
+    'LA Clippers': 'LAC', 'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL',
+    'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL',
+    'Minnesota Timberwolves': 'MIN', 'New Orleans Pelicans': 'NOP', 'New York Knicks': 'NYK',
+    'Oklahoma City Thunder': 'OKC', 'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI',
+    'Phoenix Suns': 'PHX', 'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC',
+    'San Antonio Spurs': 'SAS', 'Toronto Raptors': 'TOR', 'Utah Jazz': 'UTA', 'Washington Wizards': 'WAS'
+}
+
 def get_tracking_files():
     # Explicit list of known active tracking files or directories to avoid scanning backups
     active_dirs = [
@@ -156,11 +170,20 @@ def calculate_team_stats():
                         stats['total_line_val'] += line_val
                         stats['line_count'] += 1
 
+                    # Build score string - handle both NCAAB (actual_score) and NBA (actual_home_score/away_score)
+                    score_str = p.get('actual_score', '')
+                    if not score_str and (p.get('actual_home_score') or p.get('actual_away_score')):
+                        home = p.get('home_team', 'Home')
+                        away = p.get('away_team', 'Away')
+                        hs = p.get('actual_home_score', '?')
+                        as_ = p.get('actual_away_score', '?')
+                        score_str = f"{away} {as_}, {home} {hs}"
+                    
                     game_info = {
                         'date': game_date,
                         'opponent': opponent,
                         'result': status.upper(),
-                        'score': p.get('actual_score', ''),
+                        'score': score_str,
                         'line': line_str
                     }
                     stats['games'].append(game_info)
@@ -366,14 +389,25 @@ def generate_html(teams):
         profit_color = "txt-green" if team['profit'] > 0 else "txt-red"
         roi_color = "txt-green" if team['roi'] > 0 else "txt-red"
         
+        # Generate logo HTML based on sport
+        if team['sport'] == 'NBA' and team['name'] in NBA_TEAM_ABBR:
+            abbr = NBA_TEAM_ABBR[team['name']].lower()
+            logo_html = f'''<img src="https://a.espncdn.com/i/teamlogos/nba/500/{abbr}.png" 
+                              alt="{team['name']}" 
+                              style="width: 40px; height: 40px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"
+                              onerror="this.src='https://a.espncdn.com/i/teamlogos/nba/500/nba.png'">'''
+        else:
+            # Sport emoji fallback for non-NBA
+            sport_emoji = {'NCAAB': '🏀', 'NFL': '🏈', 'MLB': '⚾', 'Soccer': '⚽', 'WNBA': '🏀'}.get(team['sport'], '🎯')
+            logo_html = f'''<div style="width: 40px; height: 40px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                        {sport_emoji}
+                    </div>'''
+        
         html += f"""
         <div class="prop-card glow-gold">
             <div class="card-header">
                 <div class="header-left">
-                    <!-- Placeholder Logo based on Sport -->
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                        {team['sport'][0]}
-                    </div>
+                    {logo_html}
                     <div class="player-info">
                         <h2>{team['name']}</h2>
                         <div class="matchup-info">{team['sport']} • {team['record']} Overall</div>
