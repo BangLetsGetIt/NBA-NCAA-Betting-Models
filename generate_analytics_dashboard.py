@@ -45,6 +45,7 @@ class SportsAnalytics:
                         for pick in picks:
                             pick['sport'] = self.get_sport_from_file(file_path)
                             pick['model_type'] = self.get_model_type_from_file(file_path)
+                            pick['file_path'] = file_path
                         self.all_picks.extend(picks)
                 except Exception as e:
                     print(f"Error loading {file_path}: {e}")
@@ -274,7 +275,7 @@ class SportsAnalytics:
     
     def calculate_top_performers(self):
         """Calculate top performing players and teams"""
-# NBA team abbreviation mapping
+        # NBA team abbreviation mapping
         nba_team_mapping = {
             'Atlanta Hawks': 'atl', 'Boston Celtics': 'bos', 'Brooklyn Nets': 'bkn',
             'Charlotte Hornets': 'cha', 'Chicago Bulls': 'chi', 'Cleveland Cavaliers': 'cle',
@@ -288,7 +289,12 @@ class SportsAnalytics:
             'Toronto Raptors': 'tor', 'Utah Jazz': 'utah', 'Washington Wizards': 'was'
         }
         
-        player_stats = defaultdict(lambda: {'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0, 'profit_loss': 0.0, 'sport': '', 'team': ''})
+        # Initialize stats with props tracking
+        player_stats = defaultdict(lambda: {
+            'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0, 
+            'profit_loss': 0.0, 'sport': '', 'team': '', 
+            'props': defaultdict(int)
+        })
         team_stats = defaultdict(lambda: {'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0})
         
         for pick in self.all_picks:
@@ -301,6 +307,23 @@ class SportsAnalytics:
                 player_stats[player]['picks'] = int(player_stats[player]['picks']) + 1
                 player_stats[player]['sport'] = pick.get('sport', '')
                 player_stats[player]['profit_loss'] = float(player_stats[player]['profit_loss']) + float(pick.get('profit_loss', 0))
+                
+                # Determine prop type short code
+                prop_type = None
+                pick_str = str(pick)
+                file_path = pick.get('file_path', '').lower()
+                
+                if 'points' in file_path or 'Points' in pick_str: prop_type = 'Pts'
+                elif 'rebounds' in file_path or 'Rebounds' in pick_str: prop_type = 'Reb'
+                elif 'assists' in file_path or 'Assists' in pick_str: prop_type = 'Ast'
+                elif '3pt' in file_path or '3PT' in pick_str: prop_type = '3PT'
+                elif 'pra' in file_path or 'PRA' in pick_str: prop_type = 'PRA'
+                elif 'steals' in file_path: prop_type = 'Stl'
+                elif 'blocks' in file_path: prop_type = 'Blk'
+                
+                if prop_type:
+                    player_stats[player]['props'][prop_type] += 1
+                
                 # Store team information (use home team)
                 team = pick.get('home_team') or pick.get('team') or pick.get('away_team')
                 if team and not player_stats[player]['team']:  # Only set once
@@ -336,6 +359,13 @@ class SportsAnalytics:
                 if team_name in nba_team_mapping:
                     team_abbrev = nba_team_mapping[team_name]
                 
+                # Format prop summary
+                prop_summary = ""
+                if stats['props']:
+                    sorted_props = sorted(stats['props'].items(), key=lambda x: x[1], reverse=True)
+                    prop_parts = [f"{count}x {ptype}" for ptype, count in sorted_props[:3]]
+                    prop_summary = ", ".join(prop_parts)
+                
                 top_players.append({
                     'name': player,
                     'type': 'player',
@@ -347,7 +377,8 @@ class SportsAnalytics:
                     'profit_loss': float(stats['profit_loss']) / 100,  # Convert cents to units
                     'sport': stats['sport'],
                     'team_abbrev': team_abbrev,
-                    'team_name': team_name
+                    'team_name': team_name,
+                    'prop_summary': prop_summary
                 })
         
         top_teams = []
