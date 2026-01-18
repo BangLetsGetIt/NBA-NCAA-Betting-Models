@@ -295,7 +295,11 @@ class SportsAnalytics:
             'profit_loss': 0.0, 'sport': '', 'team': '', 
             'props': defaultdict(lambda: {'win': 0, 'loss': 0, 'push': 0})
         })
-        team_stats = defaultdict(lambda: {'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0})
+        team_stats = defaultdict(lambda: {
+            'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0,
+            'fav': {'win': 0, 'loss': 0, 'push': 0},
+            'dog': {'win': 0, 'loss': 0, 'push': 0}
+        })
         
         for pick in self.all_picks:
             if pick.get('status') not in ['win', 'loss', 'push']:
@@ -338,15 +342,35 @@ class SportsAnalytics:
                     player_stats[player]['pushes'] = int(player_stats[player]['pushes']) + 1
             
             # Team stats
-            team = pick.get('team')
+            team = pick.get('team') or pick.get('home_team') or pick.get('away_team')
             if team:
+                # normalize team name (sometimes handled differently in different files)
+                if 'CHA' in team: team = 'Charlotte Hornets' # Example normalization if needed
+                
                 team_stats[team]['picks'] = int(team_stats[team]['picks']) + 1
-                if pick.get('status') == 'win':
+                status = pick.get('status', '').lower()
+                
+                if status == 'win':
                     team_stats[team]['wins'] = int(team_stats[team]['wins']) + 1
-                elif pick.get('status') == 'loss':
+                elif status == 'loss':
                     team_stats[team]['losses'] = int(team_stats[team]['losses']) + 1
-                elif pick.get('status') == 'push':
+                elif status == 'push':
                     team_stats[team]['pushes'] = int(team_stats[team]['pushes']) + 1
+                    
+                # Analyze spread picks for Fav/Dog
+                pick_type = str(pick.get('pick_type', '')).lower()
+                if 'spread' in pick_type:
+                    pick_text = (pick.get('pick') or pick.get('pick_text') or '').upper()
+                    # Check for -X.X (Fav) or +X.X (Dog)
+                    import re
+                    # Look for number preceded by + or - at end of string or after team name
+                    match = re.search(r'([-+])\s*\d+\.?\d*', pick_text)
+                    if match:
+                        sign = match.group(1)
+                        if sign == '-':
+                            team_stats[team]['fav'][status] += 1
+                        elif sign == '+':
+                            team_stats[team]['dog'][status] += 1
         
         # Convert to sorted lists
         top_players = []
@@ -393,6 +417,22 @@ class SportsAnalytics:
             if int(stats['picks']) >= 5:  # Minimum 5 picks
                 total_completed = int(stats['wins']) + int(stats['losses']) + int(stats['pushes'])
                 win_rate = int(stats['wins']) / total_completed if total_completed > 0 else 0
+                
+                # Format fav/dog record
+                fav_rec = stats['fav']
+                dog_rec = stats['dog']
+                
+                fav_str = f"Fav: {fav_rec['win']}-{fav_rec['loss']}-{fav_rec['push']}"
+                dog_str = f"Dog: {dog_rec['win']}-{dog_rec['loss']}-{dog_rec['push']}"
+                
+                split_str = []
+                if fav_rec['win'] + fav_rec['loss'] + fav_rec['push'] > 0:
+                    split_str.append(fav_str)
+                if dog_rec['win'] + dog_rec['loss'] + dog_rec['push'] > 0:
+                    split_str.append(dog_str)
+                
+                record_split = " | ".join(split_str)
+                
                 top_teams.append({
                     'name': team,
                     'type': 'team',
@@ -400,7 +440,8 @@ class SportsAnalytics:
                     'wins': int(stats['wins']),
                     'losses': int(stats['losses']),
                     'pushes': int(stats['pushes']),
-                    'win_rate': win_rate
+                    'win_rate': win_rate,
+                    'record_split': record_split
                 })
         
         # Sort by win rate but give preference to players with more picks

@@ -401,6 +401,7 @@
                             <tr>
                                 <th>Team</th>
                                 <th>Picks</th>
+                                <th>Fav/Dog Splits</th>
                                 <th>Win Rate</th>
                                 <th>Record</th>
                             </tr>
@@ -411,6 +412,9 @@
                             <tr>
                                 <td>{{ performer.name }}</td>
                                 <td>{{ performer.total_picks }}</td>
+                                <td style="font-size: 0.85em; color: var(--text-secondary);">
+                                    {{ performer.record_split }}
+                                </td>
                                 <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
                                     {{ "%.1f"|format(performer.win_rate * 100) }}%
                                 </td>
