@@ -299,7 +299,6 @@ class SportsAnalytics:
             'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0,
             'fav': {'win': 0, 'loss': 0, 'push': 0},
             'dog': {'win': 0, 'loss': 0, 'push': 0},
-            'total': {'win': 0, 'loss': 0, 'push': 0},
             'profit_loss': 0.0
         })
         
@@ -346,6 +345,11 @@ class SportsAnalytics:
             
             # Team stats - ONLY track team bets (spread/total/ML), exclude player props
             if pick.get('player'):
+                continue
+            
+            # User Request: Only want SPREAD records for teams (ATS), exclude totals/moneyline
+            pick_type = str(pick.get('pick_type', '')).lower()
+            if 'spread' not in pick_type:
                 continue
                 
             team = pick.get('team') or pick.get('home_team') or pick.get('away_team')
@@ -430,19 +434,15 @@ class SportsAnalytics:
                 # Format fav/dog record
                 fav_rec = stats['fav']
                 dog_rec = stats['dog']
-                total_rec = stats['total']
                 
                 fav_str = f"Fav: {fav_rec['win']}-{fav_rec['loss']}-{fav_rec['push']}"
                 dog_str = f"Dog: {dog_rec['win']}-{dog_rec['loss']}-{dog_rec['push']}"
-                total_str = f"O/U: {total_rec['win']}-{total_rec['loss']}-{total_rec['push']}"
                 
                 split_str = []
                 if fav_rec['win'] + fav_rec['loss'] + fav_rec['push'] > 0:
                     split_str.append(fav_str)
                 if dog_rec['win'] + dog_rec['loss'] + dog_rec['push'] > 0:
                     split_str.append(dog_str)
-                if total_rec['win'] + total_rec['loss'] + total_rec['push'] > 0:
-                    split_str.append(total_str)
                 
                 record_split = " | ".join(split_str)
                 
