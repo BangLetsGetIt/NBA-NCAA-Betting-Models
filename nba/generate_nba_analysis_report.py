@@ -419,6 +419,35 @@ def generate_report():
             </tr>
         """
         
+        # New Breakdown for Totals (Overs vs Unders)
+        if name == 'Totals (Main)':
+            # Filter Overs / Unders
+            overs = [p for p in cat_picks if 'OVER' in (p.get('pick') or p.get('pick_text') or '').upper()]
+            unders = [p for p in cat_picks if 'UNDER' in (p.get('pick') or p.get('pick_text') or '').upper()]
+            
+            # Helper to generate sub-row
+            def add_sub_row(label, picks):
+                if not picks: return ""
+                sw = sum(1 for p in picks if p['status']=='win')
+                sl = sum(1 for p in picks if p['status']=='loss')
+                sp = sum(1 for p in picks if p['status']=='push')
+                sprofit = sum(get_unit_profit(p) for p in picks)
+                swr = (sw/(sw+sl)*100) if (sw+sl)>0 else 0
+                sclass = 'text-green' if sprofit > 0 else 'text-red'
+                ssign = "+" if sprofit > 0 else ""
+                
+                return f"""
+                <tr style="background-color: rgba(255,255,255,0.03); font-size: 0.85rem;">
+                    <td style="padding-left: 2.5rem; color: var(--text-slate);">↳ {label}</td>
+                    <td style="color: var(--text-slate);">{sw}-{sl}-{sp}</td>
+                    <td style="color: var(--text-slate);">{swr:.1f}%</td>
+                    <td class="{sclass}" style="font-weight:500;">{ssign}{sprofit:.2f}u</td>
+                </tr>
+                """
+            
+            html += add_sub_row("Overs", overs)
+            html += add_sub_row("Unders", unders)
+        
     html += "</tbody></table></div></div>"
 
     # --- 4. TEAMS (Main Model Only) ---
