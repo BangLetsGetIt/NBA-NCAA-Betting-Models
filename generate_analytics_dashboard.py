@@ -299,6 +299,7 @@ class SportsAnalytics:
             'picks': 0, 'wins': 0, 'losses': 0, 'pushes': 0,
             'fav': {'win': 0, 'loss': 0, 'push': 0},
             'dog': {'win': 0, 'loss': 0, 'push': 0},
+            'total': {'win': 0, 'loss': 0, 'push': 0},
             'profit_loss': 0.0
         })
         
@@ -377,6 +378,8 @@ class SportsAnalytics:
                             team_stats[team]['fav'][status] += 1
                         elif sign == '+':
                             team_stats[team]['dog'][status] += 1
+                elif 'total' in pick_type or 'over' in pick_type or 'under' in pick_type:
+                    team_stats[team]['total'][status] += 1
         
         # Convert to sorted lists
         top_players = []
@@ -427,15 +430,19 @@ class SportsAnalytics:
                 # Format fav/dog record
                 fav_rec = stats['fav']
                 dog_rec = stats['dog']
+                total_rec = stats['total']
                 
                 fav_str = f"Fav: {fav_rec['win']}-{fav_rec['loss']}-{fav_rec['push']}"
                 dog_str = f"Dog: {dog_rec['win']}-{dog_rec['loss']}-{dog_rec['push']}"
+                total_str = f"O/U: {total_rec['win']}-{total_rec['loss']}-{total_rec['push']}"
                 
                 split_str = []
                 if fav_rec['win'] + fav_rec['loss'] + fav_rec['push'] > 0:
                     split_str.append(fav_str)
                 if dog_rec['win'] + dog_rec['loss'] + dog_rec['push'] > 0:
                     split_str.append(dog_str)
+                if total_rec['win'] + total_rec['loss'] + total_rec['push'] > 0:
+                    split_str.append(total_str)
                 
                 record_split = " | ".join(split_str)
                 
