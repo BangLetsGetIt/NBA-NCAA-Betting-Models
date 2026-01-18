@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime
 
@@ -20,8 +21,7 @@ def get_tracking_files():
         if 'backups' in root or '.cache' in root or '.git' in root:
             continue
             
-        # Only process files in active directories (optional, but safer)
-        # Check if the root path contains one of the active_dirs
+        # Only process files in active directories
         rel_path = os.path.relpath(root, BASE_DIR)
         if rel_path != '.' and not any(d in rel_path.split(os.sep) for d in active_dirs):
             continue
@@ -35,7 +35,10 @@ def calculate_team_stats():
     team_stats = defaultdict(lambda: {
         'wins': 0, 'losses': 0, 'pushes': 0, 
         'profit': 0.0, 'games': [], 'sport': 'Unknown',
-        'processed_bets': set() # For deduplication
+        'processed_bets': set(),
+        'fav_wins': 0, 'fav_losses': 0, 'fav_pushes': 0,
+        'dog_wins': 0, 'dog_losses': 0, 'dog_pushes': 0,
+        'total_wagered': 0.0
     })
 
     for file_path in get_tracking_files():
@@ -44,7 +47,7 @@ def calculate_team_stats():
                 data = json.load(f)
                 picks = data.get('picks', [])
                 
-                # Determine sport
+                # ... sport determination ...
                 sport = 'Other'
                 if 'nba' in file_path.lower(): sport = 'NBA'
                 elif 'nfl' in file_path.lower(): sport = 'NFL'
@@ -69,22 +72,19 @@ def calculate_team_stats():
                     
                     if not bet_on_team:
                         continue
-                        
-                    # Filter out Totals / Props not related to specific Team performance
+
+                    # Filter out Totals / Props
                     if bet_on_team.upper() in ['OVER', 'UNDER', 'YES', 'NO']:
                         continue
 
-                    # Deduplication Key: Date + Team + Opponent
+                    # Deduplication
                     game_date = p.get('game_date') or p.get('game_time') or p.get('logged_at', '')[:10]
                     opponent = p.get('opponent') or (p['away_team'] if p.get('home_team') == bet_on_team else p.get('home_team', 'Unknown'))
                     
                     stats = team_stats[bet_on_team]
-                    
-                    # Create a unique key for this bet
                     unique_key = f"{game_date}_{bet_on_team}_{opponent}_{p.get('pick_type', '')}"
                     if unique_key in stats['processed_bets']:
                         continue
-                        
                     stats['processed_bets'].add(unique_key)
 
                     status = p.get('status', '').lower()
@@ -95,6 +95,34 @@ def calculate_team_stats():
                         else: continue
 
                     stats['sport'] = sport
+                    stats['total_wagered'] += 100.0 # Assuming 1 unit = 100 for ROI calc base
+
+                    # Extract Line and Determine Fav/Dog
+                    line_val = 0.0
+                    line_str = ""
+                    # Regex to find signed number at end of pick text: "Team Name -5.5" or "+3"
+                    match = re.search(r'([-+]\d+\.?\d*)$', pick_text.strip())
+                    if match:
+                        line_str = match.group(1)
+                        try:
+                            line_val = float(line_str)
+                        except:
+                            pass
+                    
+                    # Update Fav/Dog stats
+                    if line_val < 0:
+                        # Favorite
+                        if status == 'win': stats['fav_wins'] += 1
+                        elif status == 'loss': stats['fav_losses'] += 1
+                        elif status == 'push': stats['fav_pushes'] += 1
+                    else:
+                        # Underdog (or PK which we count as Dog here for simplicity usually, or logic splits)
+                        # Usually PK is near 0. If 0, assume dog? Or Handle PK explicit?
+                        # Let's count >= 0 as Dog
+                        if status == 'win': stats['dog_wins'] += 1
+                        elif status == 'loss': stats['dog_losses'] += 1
+                        elif status == 'push': stats['dog_pushes'] += 1
+
                     if status == 'win': stats['wins'] += 1
                     elif status == 'loss': stats['losses'] += 1
                     elif status == 'push': stats['pushes'] += 1
@@ -105,7 +133,8 @@ def calculate_team_stats():
                         'date': game_date,
                         'opponent': opponent,
                         'result': status.upper(),
-                        'score': p.get('actual_score', '')
+                        'score': p.get('actual_score', ''),
+                        'line': line_str
                     }
                     stats['games'].append(game_info)
 
@@ -118,19 +147,32 @@ def calculate_team_stats():
         total = s['wins'] + s['losses'] + s['pushes']
         if total >= MIN_PICKS:
             win_rate = s['wins'] / total
+            # ROI calculation
+            roi = (s['profit'] / s['total_wagered']) * 100 if s['total_wagered'] > 0 else 0.0
+
             if win_rate >= MIN_WIN_RATE:
                 final_list.append({
                     'name': team,
                     'sport': s['sport'],
                     'record': f"{s['wins']}-{s['losses']}-{s['pushes']}",
+                    'fav_record': f"{s['fav_wins']}-{s['fav_losses']}-{s['fav_pushes']}",
+                    'dog_record': f"{s['dog_wins']}-{s['dog_losses']}-{s['dog_pushes']}",
                     'win_rate': win_rate,
-                    'profit': s['profit'] / 100.0, # Normalize to units
-                    'games': sorted(s['games'], key=lambda x: x['date'], reverse=True)[:5] # Last 5
+                    'profit': s['profit'] / 100.0,
+                    'roi': roi,
+                    'games': sorted(s['games'], key=lambda x: x['date'], reverse=True)[:5]
                 })
 
-    # Sort by Win Rate desc, then Profit desc
     final_list.sort(key=lambda x: (x['win_rate'], x['profit']), reverse=True)
     return final_list[:20]
+
+def generate_html(teams):
+    # ... (Keep existing HTML header/CSS) ...
+    # BUT we need to update the card content loop in generate_html
+    # Since specific lines need to be replaced, I'll provide the Full generate_html function replacement or chunks.
+    # To be safe, I will replace the whole logic part.
+    pass # Managed by the tool call replacement
+
 
 def generate_html(teams):
     html = """<!DOCTYPE html>
@@ -225,7 +267,7 @@ def generate_html(teams):
 
         .stats-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr; /* Changed to 3 columns for Record, Fav, Dog */
             gap: 10px;
             background-color: var(--bg-main);
             padding: 10px;
@@ -289,10 +331,7 @@ def generate_html(teams):
     for team in teams:
         # Determine ROI Color
         profit_color = "txt-green" if team['profit'] > 0 else "txt-red"
-        
-        # Determine Trend (Last 5 Wins)
-        last_5_wins = sum(1 for g in team['games'] if g['result'] == 'WIN')
-        trend_text = f"{last_5_wins}-5 L5"
+        roi_color = "txt-green" if team['roi'] > 0 else "txt-red"
         
         html += f"""
         <div class="prop-card glow-gold">
@@ -327,12 +366,16 @@ def generate_html(teams):
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">{team['record']}</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">{trend_text}</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">{team['fav_record']}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">{team['dog_record']}</div>
                     </div>
                 </div>
 
@@ -347,7 +390,7 @@ def generate_html(teams):
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val {roi_color}">{team['roi']:.1f}%</span>
                     </div>
                 </div>
 
@@ -373,9 +416,10 @@ def generate_game_rows(games):
     rows = ""
     for g in games:
         res_class = "win-tag" if g['result'] == 'WIN' else "loss-tag"
+        line_display = f"({g['line']})" if g['line'] else ""
         rows += f"""
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs {g['opponent'][:20]}</span>
+            <span style="color: #b3b3b3;">vs {g['opponent'][:20]} {line_display}</span>
             <span class="{res_class}">{g['result']} ({g['score']})</span>
         </div>
         """

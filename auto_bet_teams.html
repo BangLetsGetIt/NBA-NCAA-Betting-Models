@@ -90,7 +90,7 @@
 
         .stats-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr; /* Changed to 3 columns for Record, Fav, Dog */
             gap: 10px;
             background-color: var(--bg-main);
             padding: 10px;
@@ -182,12 +182,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">6-0-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">5-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">6-0-0</div>
                     </div>
                 </div>
 
@@ -202,7 +206,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">45.5%</span>
                     </div>
                 </div>
 
@@ -210,27 +214,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Southern Jaguars</span>
+            <span style="color: #b3b3b3;">vs Southern Jaguars (+7.5)</span>
             <span class="win-tag">WIN (Prairie View Panthers 89, Southern Jaguars 85)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Texas A&M Aggies</span>
+            <span style="color: #b3b3b3;">vs Texas A&M Aggies (+30.5)</span>
             <span class="win-tag">WIN (Prairie View Panthers 82, Texas A&M Aggies 111)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs LSU Tigers</span>
+            <span style="color: #b3b3b3;">vs LSU Tigers (+29.5)</span>
             <span class="win-tag">WIN (Prairie View Panthers 90, LSU Tigers 104)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs North Texas Mean Gre</span>
+            <span style="color: #b3b3b3;">vs North Texas Mean Gre (+16.5)</span>
             <span class="win-tag">WIN (Prairie View Panthers 69, North Texas Mean Green 72)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Tenn-Martin Skyhawks</span>
+            <span style="color: #b3b3b3;">vs Tenn-Martin Skyhawks (+8.5)</span>
             <span class="win-tag">WIN (Prairie View Panthers 68, Tenn-Martin Skyhawks 69)</span>
         </div>
         
@@ -270,12 +274,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">7-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">7-1-0</div>
                     </div>
                 </div>
 
@@ -290,7 +298,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">34.1%</span>
                     </div>
                 </div>
 
@@ -298,27 +306,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Belmont Bruins</span>
+            <span style="color: #b3b3b3;">vs Belmont Bruins (+10.5)</span>
             <span class="win-tag">WIN (Valparaiso Beacons 74, Belmont Bruins 78)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Murray St Racers</span>
+            <span style="color: #b3b3b3;">vs Murray St Racers (+11.5)</span>
             <span class="loss-tag">LOSS (Valparaiso Beacons 79, Murray St Racers 92)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Illinois St Redbirds</span>
+            <span style="color: #b3b3b3;">vs Illinois St Redbirds (+6.5)</span>
             <span class="win-tag">WIN (Illinois St Redbirds 71, Valparaiso Beacons 77)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Southern Illinois Sa</span>
+            <span style="color: #b3b3b3;">vs Southern Illinois Sa (+8.5)</span>
             <span class="win-tag">WIN (Valparaiso Beacons 70, Southern Illinois Salukis 75)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northern Iowa Panthe</span>
+            <span style="color: #b3b3b3;">vs Northern Iowa Panthe (+11.5)</span>
             <span class="win-tag">WIN (Valparaiso Beacons 48, Northern Iowa Panthers 58)</span>
         </div>
         
@@ -358,12 +366,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">6-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">5-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">6-1-0</div>
                     </div>
                 </div>
 
@@ -378,7 +390,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">13.0%</span>
                     </div>
                 </div>
 
@@ -386,27 +398,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Murray St Racers</span>
+            <span style="color: #b3b3b3;">vs Murray St Racers (+12.5)</span>
             <span class="win-tag">WIN (Indiana St Sycamores 81, Murray St Racers 85)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Illinois St Redbirds</span>
+            <span style="color: #b3b3b3;">vs Illinois St Redbirds (+6.5)</span>
             <span class="win-tag">WIN (Illinois St Redbirds 89, Indiana St Sycamores 94)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Drake Bulldogs</span>
+            <span style="color: #b3b3b3;">vs Drake Bulldogs (+6.5)</span>
             <span class="win-tag">WIN (Indiana St Sycamores 72, Drake Bulldogs 74)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northern Iowa Panthe</span>
+            <span style="color: #b3b3b3;">vs Northern Iowa Panthe (+10.5)</span>
             <span class="win-tag">WIN (Indiana St Sycamores 66, Northern Iowa Panthers 75)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Belmont Bruins</span>
+            <span style="color: #b3b3b3;">vs Belmont Bruins (+8.5)</span>
             <span class="win-tag">WIN (Belmont Bruins 80, Indiana St Sycamores 81)</span>
         </div>
         
@@ -446,12 +458,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">15-3-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">5-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">15-3-0</div>
                     </div>
                 </div>
 
@@ -466,7 +482,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">39.1%</span>
                     </div>
                 </div>
 
@@ -474,27 +490,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Brooklyn Nets</span>
+            <span style="color: #b3b3b3;">vs Brooklyn Nets </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Utah Jazz</span>
+            <span style="color: #b3b3b3;">vs Utah Jazz </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Houston Rockets</span>
+            <span style="color: #b3b3b3;">vs Houston Rockets </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Dallas Mavericks</span>
+            <span style="color: #b3b3b3;">vs Dallas Mavericks </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Detroit Pistons</span>
+            <span style="color: #b3b3b3;">vs Detroit Pistons </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
@@ -534,12 +550,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">5-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">5-1-0</div>
                     </div>
                 </div>
 
@@ -554,7 +574,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">54.2%</span>
                     </div>
                 </div>
 
@@ -562,27 +582,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Philadelphia Eagles</span>
+            <span style="color: #b3b3b3;">vs Philadelphia Eagles </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs San Francisco 49ers</span>
+            <span style="color: #b3b3b3;">vs San Francisco 49ers </span>
             <span class="loss-tag">LOSS ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Opponent</span>
+            <span style="color: #b3b3b3;">vs Opponent </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs San Francisco 49ers</span>
+            <span style="color: #b3b3b3;">vs San Francisco 49ers </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Indianapolis Colts</span>
+            <span style="color: #b3b3b3;">vs Indianapolis Colts </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
@@ -622,12 +642,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">5-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">1-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -642,7 +666,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">45.5%</span>
                     </div>
                 </div>
 
@@ -650,27 +674,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Cornell Big Red</span>
+            <span style="color: #b3b3b3;">vs Cornell Big Red (+7.5)</span>
             <span class="win-tag">WIN (Dartmouth Big Green 102, Cornell Big Red 91)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Harvard Crimson</span>
+            <span style="color: #b3b3b3;">vs Harvard Crimson (+7.5)</span>
             <span class="win-tag">WIN (Dartmouth Big Green 76, Harvard Crimson 68)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Sacred Heart Pioneer</span>
+            <span style="color: #b3b3b3;">vs Sacred Heart Pioneer (+1.0)</span>
             <span class="loss-tag">LOSS (Dartmouth Big Green 63, Sacred Heart Pioneers 85)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Holy Cross Crusaders</span>
+            <span style="color: #b3b3b3;">vs Holy Cross Crusaders (-1.0)</span>
             <span class="win-tag">WIN (Dartmouth Big Green 89, Holy Cross Crusaders 64)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Colorado State Rams</span>
+            <span style="color: #b3b3b3;">vs Colorado State Rams (+21.5)</span>
             <span class="win-tag">WIN (Dartmouth Big Green 55, Colorado State Rams 76)</span>
         </div>
         
@@ -710,12 +734,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">5-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">5-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">5-1-0</div>
                     </div>
                 </div>
 
@@ -730,7 +758,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">28.8%</span>
                     </div>
                 </div>
 
@@ -738,27 +766,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Yale Bulldogs</span>
+            <span style="color: #b3b3b3;">vs Yale Bulldogs (+9.5)</span>
             <span class="win-tag">WIN (Yale Bulldogs 60, Princeton Tigers 76)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Temple Owls</span>
+            <span style="color: #b3b3b3;">vs Temple Owls (+11.5)</span>
             <span class="win-tag">WIN (Princeton Tigers 61, Temple Owls 65)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Loyola (Chi) Rambler</span>
+            <span style="color: #b3b3b3;">vs Loyola (Chi) Rambler (+5.5)</span>
             <span class="win-tag">WIN (Princeton Tigers 68, Loyola (Chi) Ramblers 73)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Vermont Catamounts</span>
+            <span style="color: #b3b3b3;">vs Vermont Catamounts (+5.5)</span>
             <span class="win-tag">WIN (Vermont Catamounts 79, Princeton Tigers 74)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Temple Owls</span>
+            <span style="color: #b3b3b3;">vs Temple Owls (+7.5)</span>
             <span class="win-tag">WIN (Temple Owls 79, Princeton Tigers 75)</span>
         </div>
         
@@ -798,12 +826,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">13-3-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">3-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">13-3-0</div>
                     </div>
                 </div>
 
@@ -818,7 +850,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">49.2%</span>
                     </div>
                 </div>
 
@@ -826,27 +858,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Phoenix Suns</span>
+            <span style="color: #b3b3b3;">vs Phoenix Suns </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Sacramento Kings</span>
+            <span style="color: #b3b3b3;">vs Sacramento Kings </span>
             <span class="loss-tag">LOSS ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Portland Trail Blaze</span>
+            <span style="color: #b3b3b3;">vs Portland Trail Blaze </span>
             <span class="loss-tag">LOSS ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Phoenix Suns</span>
+            <span style="color: #b3b3b3;">vs Phoenix Suns </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Los Angeles Clippers</span>
+            <span style="color: #b3b3b3;">vs Los Angeles Clippers </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
@@ -886,12 +918,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">1-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">3-1-0</div>
                     </div>
                 </div>
 
@@ -906,7 +942,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">54.6%</span>
                     </div>
                 </div>
 
@@ -914,27 +950,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Florida Gulf Coast E</span>
+            <span style="color: #b3b3b3;">vs Florida Gulf Coast E (+10.5)</span>
             <span class="loss-tag">LOSS (West Georgia Wolves 72, Florida Gulf Coast Eagles 90)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Georgia Bulldogs</span>
+            <span style="color: #b3b3b3;">vs Georgia Bulldogs (+35.5)</span>
             <span class="win-tag">WIN (West Georgia Wolves 74, Georgia Bulldogs 103)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Troy Trojans</span>
+            <span style="color: #b3b3b3;">vs Troy Trojans (+17.5)</span>
             <span class="win-tag">WIN (West Georgia Wolves 93, Troy Trojans 89)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Georgia Tech Yellow </span>
+            <span style="color: #b3b3b3;">vs Georgia Tech Yellow  (+16.5)</span>
             <span class="win-tag">WIN (West Georgia Wolves 66, Georgia Tech Yellow Jackets 82)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs South Carolina Upsta</span>
+            <span style="color: #b3b3b3;">vs South Carolina Upsta (-4.5)</span>
             <span class="win-tag">WIN (South Carolina Upstate Spartans 64, West Georgia Wolves 72)</span>
         </div>
         
@@ -974,12 +1010,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -994,7 +1034,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">54.6%</span>
                     </div>
                 </div>
 
@@ -1002,27 +1042,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs SMU Mustangs</span>
+            <span style="color: #b3b3b3;">vs SMU Mustangs (+20.5)</span>
             <span class="loss-tag">LOSS (CSU Fullerton Titans 63, SMU Mustangs 110)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Oklahoma St Cowboys</span>
+            <span style="color: #b3b3b3;">vs Oklahoma St Cowboys (+20.0)</span>
             <span class="win-tag">WIN (CSU Fullerton Titans 89, Oklahoma St Cowboys 94)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Hawai'i Rainbow Warr</span>
+            <span style="color: #b3b3b3;">vs Hawai'i Rainbow Warr (+15.5)</span>
             <span class="win-tag">WIN (CSU Fullerton Titans 59, Hawai'i Rainbow Warriors 69)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs N Colorado Bears</span>
+            <span style="color: #b3b3b3;">vs N Colorado Bears (+9.5)</span>
             <span class="win-tag">WIN (N Colorado Bears 97, CSU Fullerton Titans 93)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs St. Thomas (MN) Tomm</span>
+            <span style="color: #b3b3b3;">vs St. Thomas (MN) Tomm (+10.5)</span>
             <span class="win-tag">WIN (St. Thomas (MN) Tommies 80, CSU Fullerton Titans 88)</span>
         </div>
         
@@ -1062,12 +1102,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1082,7 +1126,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">39.2%</span>
                     </div>
                 </div>
 
@@ -1090,27 +1134,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Indiana Pacers</span>
+            <span style="color: #b3b3b3;">vs Indiana Pacers </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Phoenix Suns</span>
+            <span style="color: #b3b3b3;">vs Phoenix Suns </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Los Angeles Clippers</span>
+            <span style="color: #b3b3b3;">vs Los Angeles Clippers </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Chicago Bulls</span>
+            <span style="color: #b3b3b3;">vs Chicago Bulls </span>
             <span class="win-tag">WIN ()</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Los Angeles Clippers</span>
+            <span style="color: #b3b3b3;">vs Los Angeles Clippers </span>
             <span class="loss-tag">LOSS ()</span>
         </div>
         
@@ -1150,12 +1194,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1170,7 +1218,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">36.4%</span>
                     </div>
                 </div>
 
@@ -1178,27 +1226,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UConn Huskies</span>
+            <span style="color: #b3b3b3;">vs UConn Huskies (+19.5)</span>
             <span class="win-tag">WIN (DePaul Blue Demons 60, UConn Huskies 72)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Villanova Wildcats</span>
+            <span style="color: #b3b3b3;">vs Villanova Wildcats (+13.5)</span>
             <span class="win-tag">WIN (DePaul Blue Demons 66, Villanova Wildcats 71)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UConn Huskies</span>
+            <span style="color: #b3b3b3;">vs UConn Huskies (+14.5)</span>
             <span class="loss-tag">LOSS (UConn Huskies 72, DePaul Blue Demons 54)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs St. John's Red Storm</span>
+            <span style="color: #b3b3b3;">vs St. John's Red Storm (+19.5)</span>
             <span class="win-tag">WIN (DePaul Blue Demons 66, St. John's Red Storm 79)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northwestern Wildcat</span>
+            <span style="color: #b3b3b3;">vs Northwestern Wildcat (+5.5)</span>
             <span class="win-tag">WIN (Northwestern Wildcats 81, DePaul Blue Demons 79)</span>
         </div>
         
@@ -1238,12 +1286,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1258,7 +1310,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">36.4%</span>
                     </div>
                 </div>
 
@@ -1266,27 +1318,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs BYU Cougars</span>
+            <span style="color: #b3b3b3;">vs BYU Cougars (+13.0)</span>
             <span class="win-tag">WIN (TCU Horned Frogs 70, BYU Cougars 76)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Arizona Wildcats</span>
+            <span style="color: #b3b3b3;">vs Arizona Wildcats (+7.5)</span>
             <span class="loss-tag">LOSS (Arizona Wildcats 86, TCU Horned Frogs 73)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Kansas Jayhawks</span>
+            <span style="color: #b3b3b3;">vs Kansas Jayhawks (+7.5)</span>
             <span class="win-tag">WIN (TCU Horned Frogs 100, Kansas Jayhawks 104)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Wisconsin Badgers</span>
+            <span style="color: #b3b3b3;">vs Wisconsin Badgers (+6.5)</span>
             <span class="win-tag">WIN (Wisconsin Badgers 63, TCU Horned Frogs 74)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Michigan Wolverines</span>
+            <span style="color: #b3b3b3;">vs Michigan Wolverines (+8.5)</span>
             <span class="win-tag">WIN (Michigan Wolverines 67, TCU Horned Frogs 63)</span>
         </div>
         
@@ -1326,12 +1378,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1346,7 +1402,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">36.4%</span>
                     </div>
                 </div>
 
@@ -1354,27 +1410,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Virginia Tech Hokies</span>
+            <span style="color: #b3b3b3;">vs Virginia Tech Hokies (+6.5)</span>
             <span class="loss-tag">LOSS (Notre Dame Fighting Irish 76, Virginia Tech Hokies 89)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs California Golden Be</span>
+            <span style="color: #b3b3b3;">vs California Golden Be (+3.5)</span>
             <span class="win-tag">WIN (Notre Dame Fighting Irish 71, California Golden Bears 72)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Stanford Cardinal</span>
+            <span style="color: #b3b3b3;">vs Stanford Cardinal (+4.5)</span>
             <span class="win-tag">WIN (Notre Dame Fighting Irish 47, Stanford Cardinal 40)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Missouri Tigers</span>
+            <span style="color: #b3b3b3;">vs Missouri Tigers (+1.5)</span>
             <span class="win-tag">WIN (Missouri Tigers 71, Notre Dame Fighting Irish 76)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Ohio State Buckeyes</span>
+            <span style="color: #b3b3b3;">vs Ohio State Buckeyes (+9.5)</span>
             <span class="win-tag">WIN (Notre Dame Fighting Irish 63, Ohio State Buckeyes 64)</span>
         </div>
         
@@ -1414,12 +1470,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1434,7 +1494,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">36.4%</span>
                     </div>
                 </div>
 
@@ -1442,27 +1502,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs IUPUI Jaguars</span>
+            <span style="color: #b3b3b3;">vs IUPUI Jaguars (+1.5)</span>
             <span class="win-tag">WIN (Detroit Mercy Titans 80, IUPUI Jaguars 77)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northern Kentucky No</span>
+            <span style="color: #b3b3b3;">vs Northern Kentucky No (+10.5)</span>
             <span class="loss-tag">LOSS (Detroit Mercy Titans 71, Northern Kentucky Norse 96)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Youngstown St Pengui</span>
+            <span style="color: #b3b3b3;">vs Youngstown St Pengui (+8.5)</span>
             <span class="win-tag">WIN (Detroit Mercy Titans 73, Youngstown St Penguins 68)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs DePaul Blue Demons</span>
+            <span style="color: #b3b3b3;">vs DePaul Blue Demons (+20.5)</span>
             <span class="win-tag">WIN (Detroit Mercy Titans 75, DePaul Blue Demons 95)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Michigan State Spart</span>
+            <span style="color: #b3b3b3;">vs Michigan State Spart (+30.5)</span>
             <span class="win-tag">WIN (Detroit Mercy Titans 56, Michigan State Spartans 84)</span>
         </div>
         
@@ -1502,12 +1562,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1522,7 +1586,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">34.6%</span>
                     </div>
                 </div>
 
@@ -1530,27 +1594,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs American Eagles</span>
+            <span style="color: #b3b3b3;">vs American Eagles (+8.0)</span>
             <span class="win-tag">WIN (Holy Cross Crusaders 84, American Eagles 73)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Harvard Crimson</span>
+            <span style="color: #b3b3b3;">vs Harvard Crimson (+9.5)</span>
             <span class="loss-tag">LOSS (Holy Cross Crusaders 53, Harvard Crimson 81)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northeastern Huskies</span>
+            <span style="color: #b3b3b3;">vs Northeastern Huskies (+7.5)</span>
             <span class="win-tag">WIN (Northeastern Huskies 59, Holy Cross Crusaders 76)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Siena Saints</span>
+            <span style="color: #b3b3b3;">vs Siena Saints (+8.5)</span>
             <span class="win-tag">WIN (Siena Saints 73, Holy Cross Crusaders 69)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Hampton Pirates</span>
+            <span style="color: #b3b3b3;">vs Hampton Pirates (+5.5)</span>
             <span class="win-tag">WIN (Hampton Pirates 61, Holy Cross Crusaders 67)</span>
         </div>
         
@@ -1590,12 +1654,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1610,7 +1678,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-green">34.6%</span>
                     </div>
                 </div>
 
@@ -1618,27 +1686,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Boston College Eagle</span>
+            <span style="color: #b3b3b3;">vs Boston College Eagle (+13.5)</span>
             <span class="win-tag">WIN (Le Moyne Dolphins 64, Boston College Eagles 72)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs St. Bonaventure Bonn</span>
+            <span style="color: #b3b3b3;">vs St. Bonaventure Bonn (+16.5)</span>
             <span class="win-tag">WIN (Le Moyne Dolphins 81, St. Bonaventure Bonnies 92)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Texas Longhorns</span>
+            <span style="color: #b3b3b3;">vs Texas Longhorns (+26.5)</span>
             <span class="loss-tag">LOSS (Le Moyne Dolphins 53, Texas Longhorns 95)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Monmouth Hawks</span>
+            <span style="color: #b3b3b3;">vs Monmouth Hawks (+5.5)</span>
             <span class="win-tag">WIN (Monmouth Hawks 79, Le Moyne Dolphins 83)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Niagara Purple Eagle</span>
+            <span style="color: #b3b3b3;">vs Niagara Purple Eagle (+1.5)</span>
             <span class="win-tag">WIN (Niagara Purple Eagles 68, Le Moyne Dolphins 74)</span>
         </div>
         
@@ -1678,12 +1746,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">1-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">3-1-0</div>
                     </div>
                 </div>
 
@@ -1698,7 +1770,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-red">-1.8%</span>
                     </div>
                 </div>
 
@@ -1706,27 +1778,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UAB Blazers</span>
+            <span style="color: #b3b3b3;">vs UAB Blazers (+3.5)</span>
             <span class="win-tag">WIN (Florida Atlantic Owls 76, UAB Blazers 71)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UCF Knights</span>
+            <span style="color: #b3b3b3;">vs UCF Knights (+8.5)</span>
             <span class="win-tag">WIN (Florida Atlantic Owls 80, UCF Knights 85)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Saint Mary's Gaels</span>
+            <span style="color: #b3b3b3;">vs Saint Mary's Gaels (+13.5)</span>
             <span class="win-tag">WIN (Florida Atlantic Owls 75, Saint Mary's Gaels 88)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs George Mason Patriot</span>
+            <span style="color: #b3b3b3;">vs George Mason Patriot (+4.5)</span>
             <span class="loss-tag">LOSS (George Mason Patriots 74, Florida Atlantic Owls 65)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Loyola Marymount Lio</span>
+            <span style="color: #b3b3b3;">vs Loyola Marymount Lio (-3.5)</span>
             <span class="win-tag">WIN (Loyola Marymount Lions 65, Florida Atlantic Owls 76)</span>
         </div>
         
@@ -1766,12 +1838,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1786,7 +1862,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-red">-1.8%</span>
                     </div>
                 </div>
 
@@ -1794,27 +1870,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs William & Mary Tribe</span>
+            <span style="color: #b3b3b3;">vs William & Mary Tribe (+12.5)</span>
             <span class="win-tag">WIN (North Carolina A&T Aggies 89, William & Mary Tribe 97)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Stony Brook Seawolve</span>
+            <span style="color: #b3b3b3;">vs Stony Brook Seawolve (+5.5)</span>
             <span class="win-tag">WIN (North Carolina A&T Aggies 80, Stony Brook Seawolves 81)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UNC Wilmington Seaha</span>
+            <span style="color: #b3b3b3;">vs UNC Wilmington Seaha (+9.5)</span>
             <span class="win-tag">WIN (UNC Wilmington Seahawks 87, North Carolina A&T Aggies 78)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs UNC Greensboro Spart</span>
+            <span style="color: #b3b3b3;">vs UNC Greensboro Spart (+5.0)</span>
             <span class="win-tag">WIN (North Carolina A&T Aggies 71, UNC Greensboro Spartans 65)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Davidson Wildcats</span>
+            <span style="color: #b3b3b3;">vs Davidson Wildcats (+14.5)</span>
             <span class="loss-tag">LOSS (North Carolina A&T Aggies 74, Davidson Wildcats 90)</span>
         </div>
         
@@ -1854,12 +1930,16 @@
                 <!-- STATS GRID -->
                 <div class="stats-row">
                     <div class="stat-item">
-                        <div class="stat-title">Current Record</div>
+                        <div class="stat-title">Overall</div>
                         <div class="stat-val">4-1-0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-title">Recent Form</div>
-                        <div class="stat-val">4-5 L5</div>
+                        <div class="stat-title">As Fav</div>
+                        <div class="stat-val">0-0-0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-title">As Dog</div>
+                        <div class="stat-val">4-1-0</div>
                     </div>
                 </div>
 
@@ -1874,7 +1954,7 @@
                     </div>
                     <div class="metric-item">
                         <span class="metric-lbl">ROI</span>
-                        <span class="metric-val txt-green">High</span>
+                        <span class="metric-val txt-red">-1.8%</span>
                     </div>
                 </div>
 
@@ -1882,27 +1962,27 @@
                     <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Illinois Fighting Il</span>
+            <span style="color: #b3b3b3;">vs Illinois Fighting Il (+15.5)</span>
             <span class="win-tag">WIN (Minnesota Golden Gophers 67, Illinois Fighting Illini 77)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Iowa Hawkeyes</span>
+            <span style="color: #b3b3b3;">vs Iowa Hawkeyes (+5.5)</span>
             <span class="win-tag">WIN (Iowa Hawkeyes 67, Minnesota Golden Gophers 70)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Northwestern Wildcat</span>
+            <span style="color: #b3b3b3;">vs Northwestern Wildcat (+5.5)</span>
             <span class="win-tag">WIN (Minnesota Golden Gophers 84, Northwestern Wildcats 78)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Indiana Hoosiers</span>
+            <span style="color: #b3b3b3;">vs Indiana Hoosiers (+8.5)</span>
             <span class="win-tag">WIN (Indiana Hoosiers 64, Minnesota Golden Gophers 73)</span>
         </div>
         
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs Santa Clara Broncos</span>
+            <span style="color: #b3b3b3;">vs Santa Clara Broncos (+5.5)</span>
             <span class="loss-tag">LOSS (Santa Clara Broncos 86, Minnesota Golden Gophers 75)</span>
         </div>
         
