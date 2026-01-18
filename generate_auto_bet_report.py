@@ -7,6 +7,7 @@ from datetime import datetime
 # Configuration
 BASE_DIR = "/Users/rico/sports-models"
 OUTPUT_FILE = os.path.join(BASE_DIR, "auto_bet_teams.html")
+JSON_OUTPUT_FILE = os.path.join(BASE_DIR, "auto_bet_teams.json")
 MIN_PICKS = 5
 MIN_WIN_RATE = 0.80
 
@@ -38,7 +39,8 @@ def calculate_team_stats():
         'processed_bets': set(),
         'fav_wins': 0, 'fav_losses': 0, 'fav_pushes': 0,
         'dog_wins': 0, 'dog_losses': 0, 'dog_pushes': 0,
-        'total_wagered': 0.0
+        'total_wagered': 0.0,
+        'total_line_val': 0.0, 'line_count': 0
     })
 
     for file_path in get_tracking_files():
@@ -127,8 +129,19 @@ def calculate_team_stats():
                     elif status == 'loss': stats['losses'] += 1
                     elif status == 'push': stats['pushes'] += 1
                     
-                    stats['profit'] += p.get('profit_loss', 0.0)
+                    # Fix: Handle both 'profit_loss' and 'profit' keys
+                    # Some files use profit, some profit_loss. Both are usually in cents.
+                    pick_profit = p.get('profit_loss')
+                    if pick_profit is None:
+                        pick_profit = p.get('profit', 0.0)
                     
+                    stats['profit'] += pick_profit
+                    
+                    # Track Line for Average Odds
+                    if line_val != 0:
+                        stats['total_line_val'] += line_val
+                        stats['line_count'] += 1
+
                     game_info = {
                         'date': game_date,
                         'opponent': opponent,
@@ -149,6 +162,11 @@ def calculate_team_stats():
             win_rate = s['wins'] / total
             # ROI calculation
             roi = (s['profit'] / s['total_wagered']) * 100 if s['total_wagered'] > 0 else 0.0
+            
+            # Calculate Average Line
+            avg_line = -110 # Default
+            if s['line_count'] > 0:
+                avg_line = s['total_line_val'] / s['line_count']
 
             if win_rate >= MIN_WIN_RATE:
                 final_list.append({
@@ -160,6 +178,7 @@ def calculate_team_stats():
                     'win_rate': win_rate,
                     'profit': s['profit'] / 100.0,
                     'roi': roi,
+                    'avg_line': avg_line,
                     'games': sorted(s['games'], key=lambda x: x['date'], reverse=True)[:5]
                 })
 
@@ -426,6 +445,22 @@ def generate_game_rows(games):
     return rows
 
 
+def save_teams_to_json(teams):
+    auto_bet_list = {}
+    for team in teams:
+         # Use Team Name as Key, and store relevant metadata if needed
+         # Simple dictionary lookup is fastest
+         auto_bet_list[team['name']] = {
+             "sport": team['sport'], 
+             "win_rate": team['win_rate'],
+             "record": team['record']
+         }
+    
+    with open(JSON_OUTPUT_FILE, 'w') as f:
+        json.dump(auto_bet_list, f, indent=4)
+    print(f"Auto Bet JSON saved: {JSON_OUTPUT_FILE}")
+
 if __name__ == "__main__":
     teams = calculate_team_stats()
+    save_teams_to_json(teams)
     generate_html(teams)

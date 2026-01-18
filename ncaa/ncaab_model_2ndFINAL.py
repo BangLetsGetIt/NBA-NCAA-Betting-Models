@@ -1059,6 +1059,38 @@ def save_csv(results):
     except IOError as e:
         print(f"{Colors.RED}Error saving CSV: {e}{Colors.END}")
 
+def get_auto_bet_teams():
+    """
+    Identify top 20 profitable teams (Auto-Bets) from centralized JSON.
+    Returns a set of team names.
+    """
+    json_path = "/Users/rico/sports-models/auto_bet_teams.json"
+    try:
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+                # Filter for only this sport (NCAAB) if possible, but the JSON has all. 
+                # The model uses team names to match, so it's fine if we return all. 
+                # But safer to filter by "NCAAB" if the JSON separates them.
+                # The JSON structure is { "Team Name": { "sport": "NCAAB", ... } }
+                
+                auto_bet_set = set()
+                for team, info in data.items():
+                    if info.get('sport') == 'NCAAB':
+                        auto_bet_set.add(team)
+                
+                return {
+                    'auto_bet': auto_bet_set,
+                    'do_not_bet': set() # We don't have this in the new JSON yet
+                }
+        else:
+             print(f"Warning: {json_path} not found.")
+             return {'auto_bet': set(), 'do_not_bet': set()}
+        
+    except Exception as e:
+        print(f"Warning: Could not load Auto-Bet teams from JSON: {e}")
+        return {'auto_bet': set(), 'do_not_bet': set()}
+
 def save_html(results):
     """Generate beautiful HTML output"""
     et = pytz.timezone('US/Eastern')
@@ -1067,6 +1099,11 @@ def save_html(results):
     # Load tracking data for display
     tracking_data = load_picks_tracking()
     stats = calculate_tracking_stats(tracking_data)
+    
+    # Get Auto-Bet and Do-Not-Bet Teams
+    team_tags = get_auto_bet_teams()
+    auto_bet_teams = team_tags.get('auto_bet', set())
+    do_not_bet_teams = team_tags.get('do_not_bet', set())
     
     # Calculate recent performance breakdown (last 100, 50, 20)
     completed_picks = [p for p in tracking_data.get('picks', []) if p.get('status') != 'pending']
@@ -1089,7 +1126,7 @@ def save_html(results):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAAB Model Picks • CourtSide Analytics</title>
+    <title>CourtSide Analytics NCAA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1319,8 +1356,8 @@ def save_html(results):
     <div class="container">
         <header>
             <div>
-                <h1>CourtSide Analytics CBB Picks</h1>
-                <div class="header-sub">Generated: {{ timestamp }}</div>
+                <h1>CourtSide Analytics NCAA</h1>
+                <div class="header-sub">Daily AI Model Picks • {{ timestamp }}</div>
             </div>
             <div style="text-align: right;">
                 <div class="metric-title">SEASON RECORD</div>
@@ -1342,6 +1379,18 @@ def save_html(results):
                     <div class="matchup-info">
                         <h2>{{ r.Matchup }}</h2>
                         <div class="matchup-sub">{{ r.home_team }} Home Game</div>
+                        {% if r.home_team in auto_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-green">🔥 AUTO-BET: {{ r.home_team }}</span></div>
+                        {% endif %}
+                        {% if r.away_team in auto_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-green">🔥 AUTO-BET: {{ r.away_team }}</span></div>
+                        {% endif %}
+                        {% if r.home_team in do_not_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-red">❌ DO NOT BET: {{ r.home_team }}</span></div>
+                        {% endif %}
+                        {% if r.away_team in do_not_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-red">❌ DO NOT BET: {{ r.away_team }}</span></div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="game-time-badge">{{ r.GameTime }}</div>
@@ -1352,7 +1401,7 @@ def save_html(results):
                 {% if '✅' in r['ATS Pick'] %}
                 <div class="main-pick green">{{ r['ATS Pick'].replace('✅ BET: ', '') }}</div>
                 {% else %}
-                <div class="main-pick">{{ r['Market Spread'] }}</div>
+                <div class="main-pick">{{ r.home_team }} {{ r['Market Spread'] }}</div>
                 {% endif %}
                 
                 <div class="model-context">
@@ -1533,6 +1582,8 @@ def save_html(results):
         last_20=last_20,
         last_50=last_50,
         season_stats=season_stats,
+        auto_bet_teams=auto_bet_teams,
+        do_not_bet_teams=do_not_bet_teams,
         format_date=format_date
     )
     

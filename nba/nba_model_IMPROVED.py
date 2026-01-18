@@ -2539,6 +2539,17 @@ def save_html(results):
     # Load tracking data for display
     tracking_data = load_picks_tracking()
     
+    # Load Auto Bet Teams
+    auto_bet_teams = set()
+    try:
+        with open('/Users/rico/sports-models/auto_bet_teams.json', 'r') as f:
+            abt_data = json.load(f)
+            for t, info in abt_data.items():
+                if info.get('sport') == 'NBA':
+                    auto_bet_teams.add(t)
+    except Exception as e:
+        print(f"Warning: Could not load Auto Bet Teams: {e}")
+
     # Get pending picks - ensure pending picks only show upcoming games (not past ones waiting for update)
     # We can filter out stale pending picks if needed, but usually we want to see everything marked as pending
     pending_picks = [p for p in tracking_data.get('picks', []) if p.get('status', '').lower() == 'pending']
@@ -3012,6 +3023,12 @@ def save_html(results):
                     <div class="matchup-info">
                         <h2>{{ r.Matchup }}</h2>
                         <div class="matchup-sub">{{ r.home_team }} Home Game</div>
+                        {% if r.home_team in auto_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-green">🔥 AUTO-BET: {{ r.home_team }}</span></div>
+                        {% endif %}
+                        {% if r.away_team in auto_bet_teams %}
+                             <div style="margin-top:4px"><span class="tag tag-green">🔥 AUTO-BET: {{ r.away_team }}</span></div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="game-time-badge">{{ r.GameTime }}</div>
@@ -3259,7 +3276,8 @@ def save_html(results):
         last_50=last_50,
         pending_picks=pending_picks,
         completed_picks=completed_picks,
-        format_date=format_date_helper
+        format_date=format_date_helper,
+        auto_bet_teams=auto_bet_teams
     )
 
     with open(HTML_FILE, 'w', encoding='utf-8') as f:
