@@ -432,7 +432,8 @@ def generate_report():
     })
     
     for p in main_model_picks:
-        pick_text = p.get('pick_text', '').upper()
+        # FIX: JSON key is 'pick', but some legacy might be 'pick_text'
+        pick_text = (p.get('pick') or p.get('pick_text') or '').upper()
         home = p.get('home_team', '')
         away = p.get('away_team', '')
         
