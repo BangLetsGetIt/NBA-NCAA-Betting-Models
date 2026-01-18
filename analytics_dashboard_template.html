@@ -227,6 +227,33 @@
             color: white;
         }
 
+        .badge-auto-bet {
+            background: #FFD700;
+            color: #000000;
+            margin-left: 8px;
+            font-size: 0.7em;
+            vertical-align: middle;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -411,7 +438,12 @@
                                 {% for key, performer in analytics.top_performers.items() %}
                                 {% if 'team_eff_' in key %}
                                 <tr>
-                                    <td>{{ performer.name }}</td>
+                                    <td>
+                                        {{ performer.name }}
+                                        {% if performer.win_rate >= 0.8 %}
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ performer.total_picks }}</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         {{ performer.record_split }}
@@ -649,7 +681,7 @@
                 tension: 0.4
                 }, {
             label: 'Win Rate %',
-                data: [{% for date in analytics.time_series.keys() | sort %} { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } {% if not loop.last %}, {% endif %} {% endfor %}],
+                data: [{% for date in analytics.time_series.keys() | sort %} {{ "%.1f" | format(analytics.time_series[date].win_rate * 100) }} {% if not loop.last %}, {% endif %} {% endfor %}],
         borderColor: 'rgba(40, 167, 69, 1)',
             backgroundColor: 'rgba(40, 167, 69, 0.1)',
                 tension: 0.4,

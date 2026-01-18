@@ -227,6 +227,33 @@
             color: white;
         }
 
+        .badge-auto-bet {
+            background: #FFD700;
+            color: #000000;
+            margin-left: 8px;
+            font-size: 0.7em;
+            vertical-align: middle;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -272,7 +299,7 @@
         <div class="header">
             <h1>📊 Sports Models Analytics Dashboard</h1>
             <p>Complete Performance Analysis & Tracking</p>
-            <p><small>Last Updated: 2026-01-18 03:51:22 ET</small></p>
+            <p><small>Last Updated: 2026-01-18 04:35:03 ET</small></p>
         </div>
 
         <!-- Overview Metrics -->
@@ -809,7 +836,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Toronto Raptors</td>
+                                    <td>
+                                        Toronto Raptors
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>6</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 6-0-0
@@ -823,7 +855,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Marquette Golden Eagles</td>
+                                    <td>
+                                        Marquette Golden Eagles
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>6</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Fav: 1-0-0 | Dog: 5-0-0
@@ -837,7 +874,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Virginia Tech Hokies</td>
+                                    <td>
+                                        Virginia Tech Hokies
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>7</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 6-1-0
@@ -851,7 +893,12 @@
                                 
                                 
                                 <tr>
-                                    <td>NC State Wolfpack</td>
+                                    <td>
+                                        NC State Wolfpack
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>6</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 5-1-0
@@ -865,7 +912,12 @@
                                 
                                 
                                 <tr>
-                                    <td>UConn Huskies</td>
+                                    <td>
+                                        UConn Huskies
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>6</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 5-1-0
@@ -879,7 +931,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Marshall Thundering Herd</td>
+                                    <td>
+                                        Marshall Thundering Herd
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>6</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 5-1-0
@@ -893,7 +950,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Northern Iowa Panthers</td>
+                                    <td>
+                                        Northern Iowa Panthers
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>5</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 4-1-0
@@ -907,7 +969,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Ole Miss Rebels</td>
+                                    <td>
+                                        Ole Miss Rebels
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>5</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 4-1-0
@@ -921,7 +988,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Illinois Fighting Illini</td>
+                                    <td>
+                                        Illinois Fighting Illini
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>5</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 4-1-0
@@ -935,7 +1007,12 @@
                                 
                                 
                                 <tr>
-                                    <td>Cal Baptist Lancers</td>
+                                    <td>
+                                        Cal Baptist Lancers
+                                        
+                                        <span class="badge badge-auto-bet">AUTO BET</span>
+                                        
+                                    </td>
                                     <td>5</td>
                                     <td style="font-size: 0.85em; color: var(--text-secondary);">
                                         Dog: 4-1-0
@@ -2249,7 +2326,7 @@
                 tension: 0.4
                 }, {
             label: 'Win Rate %',
-                data: [ { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } ,   { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } }  ],
+                data: [ 50.0 ,   61.1 ,   60.2 ,   59.2 ,   59.4 ,   57.4 ,   58.4 ,   56.0 ,   54.4 ,   54.1 ,   54.4 ,   54.6 ,   54.3 ,   54.5 ,   54.6 ,   54.3 ,   53.9 ,   53.9 ,   54.2 ,   54.6 ,   53.8 ,   54.0 ,   53.6 ,   53.7 ,   53.7 ,   53.7 ,   53.4 ,   53.4 ,   53.3 ,   53.2 ,   53.3 ,   53.3 ,   53.2 ,   53.1 ,   53.0 ,   52.9 ,   52.6 ,   52.5 ,   52.5 ,   52.3 ,   52.3 ,   52.3 ,   52.3 ,   52.3 ,   52.4 ,   52.2 ,   52.1 ,   52.0 ,   51.9 ,   51.8 ,   52.0 ,   52.2 ,   52.0 ,   52.0 ,   52.2 ,   52.3 ,   52.3 ,   52.4 ,   52.4 ,   52.3 ,   52.2 ,   52.1 ,   52.3 ,   52.3 ,   52.6 ,   52.6  ],
         borderColor: 'rgba(40, 167, 69, 1)',
             backgroundColor: 'rgba(40, 167, 69, 0.1)',
                 tension: 0.4,
