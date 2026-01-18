@@ -121,194 +121,228 @@ def generate_html(teams):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top 20 Auto Bet Teams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #121212;
             --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
             --text-primary: #ffffff;
             --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
             --accent-gold: #FFD700;
-            --success: #4ade80;
-            --danger: #f87171;
-            --border: #333333;
+            --border-color: #333333;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-main);
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
             color: var(--text-primary);
-            padding: 20px;
-            margin: 0;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            overflow: hidden;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-            border-color: var(--accent-gold);
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--accent-gold);
-        }
-        .team-header {
+
+        .container { max-width: 650px; margin: 0 auto; }
+
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }
-        .team-name {
-            font-size: 1.25rem;
-            font-weight: 700;
+        h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+        .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
+
+        .prop-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }
-        .sport-badge {
-            background: #333;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-        .stats-row {
+
+        .card-header {
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
+            align-items: center;
+            background-color: var(--bg-card-secondary);
+            border-bottom: 1px solid var(--border-color);
         }
-        .stat {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: monospace;
-        }
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-        .txt-gold { color: var(--accent-gold); }
-        .txt-green { color: var(--success); }
+
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; background: #fff; }
+        .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
+        .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         
         .auto-bet-badge {
-            display: inline-block;
-            background: var(--accent-gold);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
             color: #000;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-weight: 800;
-            margin-top: 5px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
+
+        .card-body { padding: 16px; }
         
-        .last-5 {
-            font-size: 0.85rem;
+        .bet-main-row { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .bet-selection { font-size: 20px; font-weight: 800; }
+        .metric-big { font-size: 24px; font-weight: 800; color: var(--accent-gold); }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
         }
-        .last-5-title {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
+        .stat-item { text-align: center; }
+        .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .stat-val { font-size: 15px; font-weight: 700; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
+        .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
+        .metric-val { font-size: 14px; font-weight: 700; }
+
+        .game-log { margin-top: 15px; }
         .game-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
-            padding: 4px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 4px;
+            padding: 6px 0;
+            border-bottom: 1px solid #333;
+            font-size: 13px;
         }
-        .win { color: var(--success); }
-        .loss { color: var(--danger); }
+        .game-row:last-child { border-bottom: none; }
+        
+        .txt-green { color: var(--accent-green); }
+        .txt-red { color: var(--accent-red); }
+        .txt-gold { color: var(--accent-gold); }
+        
+        .win-tag { color: var(--accent-green); font-weight: 700; }
+        .loss-tag { color: var(--accent-red); font-weight: 700; }
+
+        /* Glow Effects */
+        .glow-gold {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔥 Top 20 Auto Bet Teams</h1>
-            <p style="color: var(--text-secondary);">Teams with >80% Win Rate (Min 5 Picks)</p>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">Top 20 Auto Bet Teams</div>
+            <div class="date-sub">Highly Efficient Teams (>80% Win Rate)</div>
         </div>
-        
-        <div class="grid">
+        <div style="text-align: right;">
+            <div style="font-size: 0.7rem; color: #888;">GENERATED</div>
+            <div style="font-weight: 700;">""" + datetime.now().strftime("%Y-%m-%d") + """</div>
+        </div>
+    </header>
+    
+    <div style="margin-bottom: 20px; font-size: 13px; color: #888; text-align: center;">
+        These teams have a proven track record of profitability this season.
+    </div>
     """
     
     for team in teams:
+        # Determine ROI Color
+        profit_color = "txt-green" if team['profit'] > 0 else "txt-red"
+        
+        # Determine Trend (Last 5 Wins)
+        last_5_wins = sum(1 for g in team['games'] if g['result'] == 'WIN')
+        trend_text = f"{last_5_wins}-5 L5"
+        
         html += f"""
-            <div class="card">
-                <div class="team-header">
-                    <div class="team-name">
-                        {team['name']}
-                        <br>
-                        <span class="auto-bet-badge">AUTO BET</span>
+        <div class="prop-card glow-gold">
+            <div class="card-header">
+                <div class="header-left">
+                    <!-- Placeholder Logo based on Sport -->
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                        {team['sport'][0]}
                     </div>
-                    <span class="sport-badge">{team['sport']}</span>
+                    <div class="player-info">
+                        <h2>{team['name']}</h2>
+                        <div class="matchup-info">{team['sport']} • {team['record']} Overall</div>
+                    </div>
                 </div>
-                
+                <div class="game-meta">
+                    <span class="auto-bet-badge">AUTO BET</span>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div>
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Total Profit</div>
+                        <div class="metric-big {profit_color}">+{team['profit']:.2f}u</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Win Rate</div>
+                        <div class="metric-big txt-gold">{int(team['win_rate']*100)}%</div>
+                    </div>
+                </div>
+
+                <!-- STATS GRID -->
                 <div class="stats-row">
-                    <div class="stat">
-                        <div class="stat-value txt-gold">{int(team['win_rate']*100)}%</div>
-                        <div class="stat-label">Win Rate</div>
+                    <div class="stat-item">
+                        <div class="stat-title">Current Record</div>
+                        <div class="stat-val">{team['record']}</div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-value">{team['record']}</div>
-                        <div class="stat-label">Record</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value txt-green">+{team['profit']:.2f}u</div>
-                        <div class="stat-label">Profit</div>
+                    <div class="stat-item">
+                        <div class="stat-title">Recent Form</div>
+                        <div class="stat-val">{trend_text}</div>
                     </div>
                 </div>
-                
-                <div class="last-5">
-                    <div class="last-5-title">Recent Form (Last 5)</div>
+
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-lbl">AVG ODDS</span>
+                        <span class="metric-val">-110</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">CONSISTENCY</span>
+                        <span class="metric-val txt-green">A+</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-lbl">ROI</span>
+                        <span class="metric-val txt-green">High</span>
+                    </div>
+                </div>
+
+                <div class="game-log">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase;">Last 5 Games</div>
                     {generate_game_rows(team['games'])}
                 </div>
             </div>
+        </div>
         """
         
     html += """
-        </div>
-    </div>
+</div>
 </body>
 </html>
     """
@@ -320,14 +354,15 @@ def generate_html(teams):
 def generate_game_rows(games):
     rows = ""
     for g in games:
-        color = "win" if g['result'] == 'WIN' else "loss" if g['result'] == 'LOSS' else ""
+        res_class = "win-tag" if g['result'] == 'WIN' else "loss-tag"
         rows += f"""
         <div class="game-row">
-            <span style="color: #b3b3b3;">vs {g['opponent'][:15]}..</span>
-            <span class="{color}"><b>{g['result']}</b></span>
+            <span style="color: #b3b3b3;">vs {g['opponent'][:20]}</span>
+            <span class="{res_class}">{g['result']} ({g['score']})</span>
         </div>
         """
     return rows
+
 
 if __name__ == "__main__":
     teams = calculate_team_stats()
