@@ -662,6 +662,59 @@ def update_pick_results():
 
     return updated_count
 
+def get_nba_team_rankings():
+    """
+    Returns sets of Top 10 (most profitable) and Bottom 10 (least profitable) teams 
+    based on historical performance in the tracking file.
+    """
+    try:
+        tracking_data = load_picks_tracking()
+        picks = tracking_data.get('picks', [])
+        
+        team_profit = defaultdict(float)
+        
+        # helper for unit profit
+        def get_unit_profit(pick):
+            status = pick.get('status', '').lower()
+            raw_profit = pick.get('profit_loss', 0) # tracking file uses profit_loss
+            
+            # If profit logic is missing, infer standard -110 / -100
+            if raw_profit == 0:
+                if status == 'win': raw_profit = 91.0 
+                elif status == 'loss': raw_profit = -100.0
+                
+            return float(raw_profit)
+            
+        for p in picks:
+            if p.get('status', '').lower() not in ['win', 'loss', 'push']:
+                continue
+                
+            pick_text = (p.get('pick') or p.get('pick_text') or '').upper()
+            home = p.get('home_team', '')
+            away = p.get('away_team', '')
+            
+            # Determine which team was bet on using string matching
+            bet_team = None
+            if home.upper() in pick_text: bet_team = home
+            elif away.upper() in pick_text: bet_team = away
+            
+            if bet_team:
+                team_profit[bet_team] += get_unit_profit(p)
+                
+        # Convert to list and sort
+        sorted_teams = sorted(team_profit.items(), key=lambda x: x[1], reverse=True)
+        
+        if not sorted_teams:
+            return set(), set()
+            
+        top_10 = {t[0] for t in sorted_teams[:10]}
+        bottom_10 = {t[0] for t in sorted_teams[-10:]}
+        
+        return top_10, bottom_10
+    except Exception as e:
+        print(f"Error calculating team rankings: {e}")
+        return set(), set()
+
 def calculate_tracking_stats(tracking_data):
     """Calculate tracking statistics"""
     stats = {
@@ -2178,8 +2231,12 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
     team_performance = get_team_historical_performance()
     
     # Load historical edge performance for A.I. Rating calculation
+    # Load historical edge performance for A.I. Rating calculation
     tracking_data = load_picks_tracking()
     historical_edge_performance = get_historical_performance_by_edge(tracking_data)
+    
+    # NEW: Get Top 10 / Bottom 10 teams for Auto-Bet/Fade tags
+    top_10_teams, bottom_10_teams = get_nba_team_rankings()
     
     # Track if we need to save updated CLV data
     clv_updated = False
@@ -2300,8 +2357,22 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                     picked_team = away_team
 
             team_indicator = None
+            is_auto_bet = False
+            is_fade_team = False
+            
             if picked_team:
                 team_indicator = get_team_performance_indicator(picked_team, team_performance)
+                
+                # Normalize picked_team name for matching
+                norm_picked = picked_team
+                
+                # Check Auto-Bet (Top 10)
+                if norm_picked in top_10_teams:
+                    is_auto_bet = True
+                    
+                # Check Fade Team (Bottom 10)
+                if norm_picked in bottom_10_teams:
+                    is_fade_team = True
 
             result = {
                 "Matchup": f"{away_team} @ {home_team}",
@@ -2320,7 +2391,9 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 "commence_time": commence_time,
                 "spread_edge": spread_edge,
                 "total_edge": total_edge,
-                "team_indicator": team_indicator
+                "team_indicator": team_indicator,
+                "is_auto_bet": is_auto_bet,
+                "is_fade_team": is_fade_team
             }
             
             # Calculate A.I. Rating (supplements edge-based approach)
@@ -3001,6 +3074,14 @@ def save_html(results):
 
             <!-- TAGS -->
             <div class="tags-row">
+                {% if r.is_auto_bet %}
+                <div class="tag tag-green">✅ Auto-Bet (Top 10)</div>
+                {% endif %}
+                
+                {% if r.is_fade_team %}
+                <div class="tag tag-red">📉 Fade This Team (Bottom 10)</div>
+                {% endif %}
+
                 {% if r.team_indicator %}
                 <div class="tag tag-blue">{{ r.team_indicator.emoji }} {{ r.team_indicator.message }}</div>
                 {% endif %}
