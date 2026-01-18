@@ -60,7 +60,8 @@ def calculate_team_stats():
 
                 for p in picks:
                     bet_on_team = None
-                    pick_text = p.get('pick_text', '')
+                    # Handle both 'pick_text' (NCAAB) and 'pick' (NBA) fields
+                    pick_text = p.get('pick_text') or p.get('pick', '')
                     
                     if 'team' in p:
                         bet_on_team = p['team']
@@ -110,6 +111,19 @@ def calculate_team_stats():
                             line_val = float(line_str)
                         except:
                             pass
+                    
+                    # Fallback: use market_line if available and line_val is still 0
+                    # market_line is typically from team's perspective for spread bets
+                    if line_val == 0.0 and p.get('pick_type', '').lower() == 'spread':
+                        ml = p.get('market_line', 0)
+                        if ml != 0:
+                            # market_line is usually the home team's spread
+                            # If bet_on_team is home, use market_line directly
+                            # If bet_on_team is away, flip the sign
+                            if bet_on_team == p.get('home_team'):
+                                line_val = float(ml)
+                            else:
+                                line_val = -float(ml)  # Away team gets opposite spread
                     
                     # Update Fav/Dog stats
                     if line_val < 0:
