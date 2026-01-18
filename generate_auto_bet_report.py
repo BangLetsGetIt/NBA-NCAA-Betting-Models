@@ -10,8 +10,22 @@ MIN_PICKS = 5
 MIN_WIN_RATE = 0.80
 
 def get_tracking_files():
+    # Explicit list of known active tracking files or directories to avoid scanning backups
+    active_dirs = [
+        'nba', 'ncaa', 'nfl', 'mlb', 'wnba', 'soccer'
+    ]
     files = []
     for root, _, filenames in os.walk(BASE_DIR):
+        # Skip backup and hidden directories
+        if 'backups' in root or '.cache' in root or '.git' in root:
+            continue
+            
+        # Only process files in active directories (optional, but safer)
+        # Check if the root path contains one of the active_dirs
+        rel_path = os.path.relpath(root, BASE_DIR)
+        if rel_path != '.' and not any(d in rel_path.split(os.sep) for d in active_dirs):
+            continue
+
         for f in filenames:
             if f.endswith('_tracking.json'):
                 files.append(os.path.join(root, f))
@@ -20,7 +34,8 @@ def get_tracking_files():
 def calculate_team_stats():
     team_stats = defaultdict(lambda: {
         'wins': 0, 'losses': 0, 'pushes': 0, 
-        'profit': 0.0, 'games': [], 'sport': 'Unknown'
+        'profit': 0.0, 'games': [], 'sport': 'Unknown',
+        'processed_bets': set() # For deduplication
     })
 
     for file_path in get_tracking_files():
@@ -29,7 +44,7 @@ def calculate_team_stats():
                 data = json.load(f)
                 picks = data.get('picks', [])
                 
-                # Determine sport from file path or content roughly
+                # Determine sport
                 sport = 'Other'
                 if 'nba' in file_path.lower(): sport = 'NBA'
                 elif 'nfl' in file_path.lower(): sport = 'NFL'
@@ -39,32 +54,38 @@ def calculate_team_stats():
                 elif 'wnba' in file_path.lower(): sport = 'WNBA'
 
                 for p in picks:
-                    # We are looking for TEAM performance, usually spread/ml/totals
-                    # Only include if pick text implies betting ON the team or it's a team-based prop
-                    # For simplicity, we aggregate by 'Team' name found in pick.
-                    
-                    # Some files have 'home_team', 'away_team', others have 'team', 'opponent'
-                    # We need to know who the bet was ON.
-                    
                     bet_on_team = None
                     pick_text = p.get('pick_text', '')
                     
-                    # Logic to determine team:
                     if 'team' in p:
                         bet_on_team = p['team']
                     elif 'home_team' in p and 'away_team' in p:
-                        # Try to find team name in pick_text
                         if p['home_team'] in pick_text:
                             bet_on_team = p['home_team']
                         elif p['away_team'] in pick_text:
                             bet_on_team = p['away_team']
-                        elif 'OVER' in pick_text or 'UNDER' in pick_text:
-                            # Total - maybe assign to both? Or skip for "Team" auto bet?
-                            # Usually Auto Bet implies backing a team. Let's skip totals for now unless requested.
+                        else:
                             continue
                     
                     if not bet_on_team:
                         continue
+                        
+                    # Filter out Totals / Props not related to specific Team performance
+                    if bet_on_team.upper() in ['OVER', 'UNDER', 'YES', 'NO']:
+                        continue
+
+                    # Deduplication Key: Date + Team + Opponent
+                    game_date = p.get('game_date') or p.get('game_time') or p.get('logged_at', '')[:10]
+                    opponent = p.get('opponent') or (p['away_team'] if p.get('home_team') == bet_on_team else p.get('home_team', 'Unknown'))
+                    
+                    stats = team_stats[bet_on_team]
+                    
+                    # Create a unique key for this bet
+                    unique_key = f"{game_date}_{bet_on_team}_{opponent}_{p.get('pick_type', '')}"
+                    if unique_key in stats['processed_bets']:
+                        continue
+                        
+                    stats['processed_bets'].add(unique_key)
 
                     status = p.get('status', '').lower()
                     if status not in ['win', 'loss', 'push']:
@@ -73,7 +94,6 @@ def calculate_team_stats():
                         elif p.get('result') == 'PUSH': status = 'push'
                         else: continue
 
-                    stats = team_stats[bet_on_team]
                     stats['sport'] = sport
                     if status == 'win': stats['wins'] += 1
                     elif status == 'loss': stats['losses'] += 1
@@ -81,17 +101,15 @@ def calculate_team_stats():
                     
                     stats['profit'] += p.get('profit_loss', 0.0)
                     
-                    # Keep last 5 games for display
                     game_info = {
-                        'date': p.get('game_date') or p.get('game_time') or p.get('logged_at', '')[:10],
-                        'opponent': p.get('opponent') or (p['away_team'] if p.get('home_team') == bet_on_team else p.get('home_team', 'Unknown')),
+                        'date': game_date,
+                        'opponent': opponent,
                         'result': status.upper(),
                         'score': p.get('actual_score', '')
                     }
                     stats['games'].append(game_info)
 
         except Exception as e:
-            # print(f"Error reading {file_path}: {e}")
             pass
 
     # Filter and Sort
