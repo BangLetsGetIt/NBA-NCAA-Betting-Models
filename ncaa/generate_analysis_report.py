@@ -520,18 +520,50 @@ def generate_report():
         </tr>"""
     html += "</tbody></table></div></div>"
     
-    # Worst Teams Column
+    # Worst Teams Column (Fade Logic)
+    # We invert the record and profit for these teams
+    fade_teams = []
+    for t in worst_teams:
+        # Parse current record
+        rec_parts = t['record'].split('-')
+        w = int(rec_parts[0])
+        l = int(rec_parts[1])
+        p = int(rec_parts[2])
+        
+        # Invert for Fade
+        fade_w = l
+        fade_l = w
+        # Push remains push
+        
+        # Recalculate Profit: (Wins * 0.91) - (Losses * 1.00)
+        # Note: We use 0.9091 (1/1.1) or just 0.91? The get_unit_profit uses 0.91.
+        fade_profit = (fade_w * 0.91) - (fade_l * 1.0)
+        
+        fade_teams.append({
+            'team': t['team'],
+            'record': f"{fade_w}-{fade_l}-{p}",
+            'profit': fade_profit,
+            'fav_rec': t['fav_rec'], # These are snippets, maybe complex to invert display, keeping as reference
+            'dog_rec': t['dog_rec']
+        })
+        
+    # Calc totals for Fade
+    fw = sum(int(t['record'].split('-')[0]) for t in fade_teams)
+    fl = sum(int(t['record'].split('-')[1]) for t in fade_teams)
+    fp = sum(int(t['record'].split('-')[2]) for t in fade_teams)
+    fprof = sum(t['profit'] for t in fade_teams)
+
     html += f"""
         <div class="section">
-            <h2 class="section-title">❌ Do Not Bet (Bottom 20)</h2>
-            <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="section-title">📉 Fade This Team (Bottom 20)</h2>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Combined Record</div>
-                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);">{ww}-{wl}-{wp}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Fade Record</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-white);">{fw}-{fl}-{fp}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Total Profit</div>
-                    <div style="font-size: 1.1rem; font-weight: 700;" class="text-red">{wprof:.2f}u</div>
+                    <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Fade Profit</div>
+                    <div style="font-size: 1.1rem; font-weight: 700;" class="text-green">+{fprof:.2f}u</div>
                 </div>
             </div>
             <div class="table-container">
@@ -539,22 +571,22 @@ def generate_report():
                 <thead>
                     <tr>
                         <th>Team</th>
-                        <th>Record</th>
+                        <th>Record (If Faded)</th>
                         <th>Snippet (Fav / Dog)</th>
                         <th>Profit</th>
                     </tr>
                 </thead>
                 <tbody>
     """
-    for t in worst_teams:
+    for t in fade_teams:
         html += f"""<tr>
-            <td style="color:var(--text-slate);">{t['team']}</td>
+            <td style="color:var(--accent-red); font-weight:600">{t['team']}</td>
             <td>{t['record']}</td>
             <td style="font-size:0.8rem; color:var(--text-slate)">
                 Fav: {t['fav_rec']} <br>
                 Dog: {t['dog_rec']}
             </td>
-            <td class="text-red profit-value">{t['profit']:.2f}u</td>
+            <td class="text-green profit-value">+{t['profit']:.2f}u</td>
         </tr>"""
     html += "</tbody></table></div></div></div>"
     
