@@ -588,7 +588,7 @@
                                 <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
                                 <td
                                     class="{{ 'positive' if performer.profit_loss > 0 else 'negative' if performer.profit_loss < 0 else 'neutral' }}">
-                                    ${{ "%.2f"|format(performer.profit_loss) }}
+                                    {{ "%.2f"|format(performer.profit_loss) }} units
                                 </td>
                             </tr>
                             {% endif %}
@@ -630,7 +630,7 @@
                                     <td>{{ player.wins }}-{{ player.losses }}-{{ player.pushes }}</td>
                                     <td
                                         class="{{ 'positive' if player.profit_loss > 0 else 'negative' if player.profit_loss < 0 else 'neutral' }}">
-                                        ${{ "%.2f"|format(player.profit_loss) }}
+                                        {{ "%.2f"|format(player.profit_loss) }} units
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -678,7 +678,7 @@
                 tension: 0.4
                 }, {
             label: 'Win Rate %',
-                data: [{% for date in analytics.time_series.keys() | sort %} {{ "%.1f" | format(analytics.time_series[date].win_rate * 100) }} {% if not loop.last %}, {% endif %} {% endfor %}],
+                data: [{% for date in analytics.time_series.keys() | sort %} { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } {% if not loop.last %}, {% endif %} {% endfor %}],
         borderColor: 'rgba(40, 167, 69, 1)',
             backgroundColor: 'rgba(40, 167, 69, 0.1)',
                 tension: 0.4,
