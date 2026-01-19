@@ -5921,11 +5921,12 @@
       "edge": 1.5,
       "ev": 21.85,
       "tracked_at": "2026-01-17T23:36:01.940864-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_reb": null,
       "clv_status": "negative",
-      "last_updated": "2026-01-18T15:10:32.429346-05:00"
+      "last_updated": "2026-01-18T15:10:32.429346-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Steven Adams_6.5_over_2026-01-19T00:10:00Z",
@@ -5944,11 +5945,13 @@
       "edge": 2.1,
       "ev": 20.0,
       "tracked_at": "2026-01-17T23:36:01.940882-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_reb": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_reb": 10,
       "clv_status": "negative",
-      "last_updated": "2026-01-18T10:10:34.379013-05:00"
+      "last_updated": "2026-01-18T10:10:34.379013-05:00",
+      "profit_loss": 71,
+      "updated_at": "2026-01-18T22:45:21.178384-05:00"
     },
     {
       "pick_id": "Steven Adams_7.5_over_2026-01-19T00:10:00Z",
@@ -5967,11 +5970,13 @@
       "edge": 1.1,
       "ev": 36.67,
       "tracked_at": "2026-01-18T15:10:32.429231-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_reb": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_reb": 10,
       "clv_status": "positive",
-      "last_updated": "2026-01-18T18:10:42.065534-05:00"
+      "last_updated": "2026-01-18T18:10:42.065534-05:00",
+      "profit_loss": 95,
+      "updated_at": "2026-01-18T22:45:21.178486-05:00"
     },
     {
       "pick_id": "Danny Wolf_6.5_under_2026-01-19T00:10:00Z",
@@ -5990,11 +5995,35 @@
       "edge": 2.2,
       "ev": 13.75,
       "tracked_at": "2026-01-18T15:10:32.429405-05:00",
+      "status": "win",
+      "result": "WIN",
+      "actual_reb": 3,
+      "clv_status": "negative",
+      "last_updated": "2026-01-18T18:10:42.065633-05:00",
+      "profit_loss": 62,
+      "updated_at": "2026-01-18T22:45:21.178532-05:00"
+    },
+    {
+      "pick_id": "Onyeka Okongwu_9.5_under_2026-01-19T18:10:00Z",
+      "player": "Onyeka Okongwu",
+      "prop_line": 9.5,
+      "bet_type": "under",
+      "team": "Atlanta Hawks",
+      "opponent": "Milwaukee Bucks",
+      "ai_score": 10.0,
+      "odds": -140,
+      "opening_odds": -140,
+      "latest_odds": -140,
+      "game_time": "2026-01-19T18:10:00Z",
+      "season_avg": 7.9,
+      "recent_avg": 8.1,
+      "edge": 1.6,
+      "ev": 20.0,
+      "tracked_at": "2026-01-18T22:45:23.600435-05:00",
       "status": "pending",
       "result": null,
       "actual_reb": null,
-      "clv_status": "negative",
-      "last_updated": "2026-01-18T18:10:42.065633-05:00"
+      "clv_status": null
     }
   ]
 }
