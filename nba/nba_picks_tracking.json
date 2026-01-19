@@ -8368,11 +8368,11 @@
       "edge": 8.4,
       "pick": "\u2705 BET: Sacramento Kings -1.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 110,
+      "actual_away_score": 117,
       "clv_status": "positive"
     },
     {
@@ -8390,11 +8390,11 @@
       "edge": 11.3,
       "pick": "\u2705 BET: Los Angeles Lakers -2.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 110,
+      "actual_away_score": 93,
       "clv_status": "negative"
     },
     {
@@ -8412,11 +8412,11 @@
       "edge": 7.7,
       "pick": "\u2705 BET: OVER 226.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 110,
+      "actual_away_score": 93,
       "clv_status": "negative"
     },
     {
@@ -8430,7 +8430,7 @@
       "model_line": 244.9,
       "market_line": 232.5,
       "opening_line": 232.5,
-      "closing_line": 232.5,
+      "closing_line": 231.5,
       "edge": 12.4,
       "pick": "\u2705 BET: OVER 232.5",
       "units": 1,
@@ -8439,7 +8439,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "negative"
     },
     {
       "pick_id": "Cleveland Cavaliers_Oklahoma City Thunder_2026-01-19T19:40:00Z_spread",
@@ -8496,7 +8496,7 @@
       "model_line": 10.6,
       "market_line": -16.0,
       "opening_line": -16.0,
-      "closing_line": -16.0,
+      "closing_line": -16.5,
       "edge": -5.4,
       "pick": "\u2705 BET: Utah Jazz +16.0",
       "units": 1,
@@ -8505,7 +8505,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     },
     {
       "pick_id": "Philadelphia 76ers_Indiana Pacers_2026-01-20T00:10:00Z_spread",
@@ -8540,7 +8540,7 @@
       "model_line": 238.2,
       "market_line": 228.5,
       "opening_line": 228.5,
-      "closing_line": 228.5,
+      "closing_line": 228.0,
       "edge": 9.7,
       "pick": "\u2705 BET: OVER 228.5",
       "units": 1,
@@ -8549,7 +8549,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "negative"
     },
     {
       "pick_id": "Brooklyn Nets_Phoenix Suns_2026-01-20T00:40:00Z_spread",
@@ -8562,7 +8562,7 @@
       "model_line": 0.2,
       "market_line": 7.0,
       "opening_line": 7.0,
-      "closing_line": 7.0,
+      "closing_line": 7.5,
       "edge": 7.2,
       "pick": "\u2705 BET: Brooklyn Nets +7.0",
       "units": 1,
@@ -8571,7 +8571,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "negative"
     },
     {
       "pick_id": "Brooklyn Nets_Phoenix Suns_2026-01-20T00:40:00Z_total",
@@ -8642,9 +8642,9 @@
   ],
   "summary": {
     "total_picks": 409,
-    "wins": 209,
-    "losses": 183,
+    "wins": 210,
+    "losses": 185,
     "pushes": 3,
-    "pending": 14
+    "pending": 11
   }
 }
