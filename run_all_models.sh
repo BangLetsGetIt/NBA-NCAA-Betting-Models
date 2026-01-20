@@ -167,6 +167,21 @@ else
     echo ""
 fi
 
+# Generate NCAAB Analysis Report
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 Generating NCAAB Analysis Report...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR/ncaa"
+if python3 generate_analysis_report.py 2>&1; then
+    echo -e "${GREEN}✅ NCAAB Analysis Report generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  NCAAB Analysis Report generation failed${NC}"
+    echo ""
+fi
+cd "$SCRIPT_DIR"
+
 # Only push to GitHub if at least one model succeeded
 if [ $SUCCESS_COUNT -gt 0 ]; then
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
