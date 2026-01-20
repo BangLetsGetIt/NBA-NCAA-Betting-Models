@@ -137,11 +137,38 @@ echo "  • Points: nba/nba_points_props.html"
 echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo ""
 
-if [ $FAIL_COUNT -eq 0 ]; then
-    echo -e "${GREEN}🎉 All models completed successfully!${NC}"
+
+# Always generate reports, even if some models failed
+# Reports will use whatever data is available from successful models
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 Generating Auto-Bet Teams Report...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 generate_auto_bet_report.py 2>&1; then
+    echo -e "${GREEN}✅ Auto-Bet Teams Report generated successfully${NC}"
     echo ""
-    
-    # Auto-push to GitHub
+else
+    echo -e "${YELLOW}⚠️  Auto-Bet Teams Report generation failed${NC}"
+    echo ""
+fi
+
+# Generate Best Plays Report
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🔥 Generating Best Plays Report...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 best_plays_bot.py 2>&1; then
+    echo -e "${GREEN}✅ Best Plays Report generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Best Plays Report generation failed${NC}"
+    echo ""
+fi
+
+# Only push to GitHub if at least one model succeeded
+if [ $SUCCESS_COUNT -gt 0 ]; then
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BLUE}📤 Pushing updates to GitHub...${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -160,11 +187,21 @@ if [ $FAIL_COUNT -eq 0 ]; then
         echo -e "${YELLOW}⚠️  auto_push.sh not found. Skipping GitHub push.${NC}"
     fi
     
-    exit 0
+    if [ $FAIL_COUNT -eq 0 ]; then
+        echo ""
+        echo -e "${GREEN}🎉 All models completed successfully and pushed to GitHub!${NC}"
+        exit 0
+    else
+        echo ""
+        echo -e "${YELLOW}⚠️  Some models failed, but successful models were pushed to GitHub.${NC}"
+        echo -e "${YELLOW}⚠️  Check errors above for failed models.${NC}"
+        exit 1
+    fi
 else
-    echo -e "${YELLOW}⚠️  Some models failed. Check errors above.${NC}"
-    echo -e "${YELLOW}⚠️  Successful models still generated outputs.${NC}"
-    echo -e "${YELLOW}⚠️  Skipping GitHub push due to failures.${NC}"
+    echo ""
+    echo -e "${RED}❌ All models failed. Skipping GitHub push.${NC}"
+    echo -e "${RED}❌ Check errors above and try again.${NC}"
     exit 1
 fi
+
 
