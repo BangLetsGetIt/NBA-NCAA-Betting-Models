@@ -196,6 +196,20 @@ else
 fi
 cd "$SCRIPT_DIR"
 
+# Generate Comprehensive Analytics Dashboard (FINAL - aggregates all data)
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 Generating Comprehensive Analytics Dashboard...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 generate_analytics_dashboard.py 2>&1; then
+    echo -e "${GREEN}✅ Comprehensive Analytics Dashboard generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Comprehensive Analytics Dashboard generation failed${NC}"
+    echo ""
+fi
+
 # Only push to GitHub if at least one model succeeded
 if [ $SUCCESS_COUNT -gt 0 ]; then
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
