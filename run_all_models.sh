@@ -137,6 +137,20 @@ echo "  • Points: nba/nba_points_props.html"
 echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo ""
 
+# Grade pending picks to ensure fresh data for reports
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}⚖️  Grading Pending Picks...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 auto_grader.py --grade-only 2>&1; then
+    echo -e "${GREEN}✅ Auto-grader completed successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Auto-grader had issues (non-critical)${NC}"
+    echo ""
+fi
+
 
 # Always generate reports, even if some models failed
 # Reports will use whatever data is available from successful models
