@@ -6440,11 +6440,13 @@
       "edge": 0.9,
       "ev": 20.0,
       "tracked_at": "2026-01-20T01:25:46.237962-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 4,
       "clv_status": "positive",
-      "last_updated": "2026-01-20T18:03:25.270719-05:00"
+      "last_updated": "2026-01-20T18:03:25.270719-05:00",
+      "profit_loss": 71,
+      "updated_at": "2026-01-21T02:50:20.591728-05:00"
     },
     {
       "pick_id": "Norman Powell_2.5_over_2026-01-21T03:10:00Z",
@@ -6463,11 +6465,13 @@
       "edge": 0.5,
       "ev": 12.57,
       "tracked_at": "2026-01-20T01:25:46.238050-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 4,
       "clv_status": "positive",
-      "last_updated": "2026-01-20T15:00:55.645134-05:00"
+      "last_updated": "2026-01-20T15:00:55.645134-05:00",
+      "profit_loss": 64,
+      "updated_at": "2026-01-21T02:50:20.592908-05:00"
     },
     {
       "pick_id": "Tari Eason_1.5_over_2026-01-21T01:10:00Z",
@@ -6486,11 +6490,13 @@
       "edge": 0.6,
       "ev": 9.0,
       "tracked_at": "2026-01-20T01:25:46.238088-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 0,
       "clv_status": "positive",
-      "last_updated": "2026-01-20T18:03:25.270920-05:00"
+      "last_updated": "2026-01-20T18:03:25.270920-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-21T02:50:20.592667-05:00"
     },
     {
       "pick_id": "Dorian Finney-Smith_1.5_under_2026-01-21T01:10:00Z",
@@ -6509,11 +6515,13 @@
       "edge": 0.8,
       "ev": -12.48,
       "tracked_at": "2026-01-20T01:25:46.238122-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 0,
       "clv_status": "negative",
-      "last_updated": "2026-01-20T18:03:25.270990-05:00"
+      "last_updated": "2026-01-20T18:03:25.270990-05:00",
+      "profit_loss": 43,
+      "updated_at": "2026-01-21T02:50:20.592753-05:00"
     },
     {
       "pick_id": "Brice Sensabaugh_2.5_under_2026-01-21T02:10:00Z",
@@ -6532,11 +6540,12 @@
       "edge": 0.9,
       "ev": 0.4,
       "tracked_at": "2026-01-20T01:25:46.238160-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
       "clv_status": "positive",
-      "last_updated": "2026-01-20T15:00:55.645368-05:00"
+      "last_updated": "2026-01-20T15:00:55.645368-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Pelle Larsson_1.5_under_2026-01-21T03:10:00Z",
@@ -6555,11 +6564,57 @@
       "edge": 0.6,
       "ev": -8.62,
       "tracked_at": "2026-01-20T05:00:06.857702-05:00",
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 0,
+      "clv_status": "neutral",
+      "last_updated": "2026-01-20T18:03:25.271054-05:00",
+      "profit_loss": 41,
+      "updated_at": "2026-01-21T02:50:20.592965-05:00"
+    },
+    {
+      "pick_id": "Miles McBride_2.5_over_2026-01-22T00:40:00Z",
+      "player": "Miles McBride",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "team": "New York Knicks",
+      "opponent": "Brooklyn Nets",
+      "ai_score": 8.8,
+      "odds": 115,
+      "opening_odds": 115,
+      "latest_odds": 115,
+      "game_time": "2026-01-22T00:40:00Z",
+      "season_avg": 3.0,
+      "recent_avg": 3.6,
+      "edge": 0.5,
+      "ev": 37.06,
+      "tracked_at": "2026-01-21T02:50:27.472621-05:00",
       "status": "pending",
       "result": null,
       "actual_3pm": null,
-      "clv_status": "neutral",
-      "last_updated": "2026-01-20T18:03:25.271054-05:00"
+      "clv_status": null
+    },
+    {
+      "pick_id": "Jordan Poole_1.5_over_2026-01-22T01:10:00Z",
+      "player": "Jordan Poole",
+      "prop_line": 1.5,
+      "bet_type": "over",
+      "team": "New Orleans Pelicans",
+      "opponent": "Detroit Pistons",
+      "ai_score": 10.0,
+      "odds": -195,
+      "opening_odds": -195,
+      "latest_odds": -195,
+      "game_time": "2026-01-22T01:10:00Z",
+      "season_avg": 2.7,
+      "recent_avg": 2.9,
+      "edge": 1.2,
+      "ev": 5.9,
+      "tracked_at": "2026-01-21T02:50:27.472797-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null,
+      "clv_status": null
     }
   ]
 }
