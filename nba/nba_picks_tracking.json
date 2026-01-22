@@ -8896,11 +8896,11 @@
       "edge": 8.7,
       "pick": "\u2705 BET: Memphis Grizzlies -2.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 122,
+      "actual_away_score": 124,
       "clv_status": "negative"
     },
     {
@@ -8918,11 +8918,11 @@
       "edge": 9.1,
       "pick": "\u2705 BET: OVER 237.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 122,
+      "actual_away_score": 124,
       "clv_status": null
     },
     {
@@ -9100,13 +9100,35 @@
       "actual_home_score": null,
       "actual_away_score": null,
       "clv_status": "positive"
+    },
+    {
+      "pick_id": "Washington Wizards_Denver Nuggets_2026-01-23T00:10:00Z_spread",
+      "date_logged": "2026-01-21T23:02:25.959721",
+      "game_date": "2026-01-23T00:10:00Z",
+      "home_team": "Washington Wizards",
+      "away_team": "Denver Nuggets",
+      "matchup": "Denver Nuggets @ Washington Wizards",
+      "pick_type": "Spread",
+      "model_line": -11.0,
+      "market_line": 5.5,
+      "opening_line": 5.5,
+      "closing_line": 5.5,
+      "edge": -5.5,
+      "pick": "\u2705 BET: Denver Nuggets -5.5",
+      "units": 1,
+      "status": "Pending",
+      "result": null,
+      "profit_loss": 0,
+      "actual_home_score": null,
+      "actual_away_score": null,
+      "clv_status": null
     }
   ],
   "summary": {
-    "total_picks": 430,
-    "wins": 218,
-    "losses": 199,
+    "total_picks": 431,
+    "wins": 219,
+    "losses": 200,
     "pushes": 3,
-    "pending": 10
+    "pending": 9
   }
 }
