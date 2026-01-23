@@ -466,8 +466,8 @@ def generate_report():
             if team == 'Valparaiso Beacons':
                 pass
             
-    best_teams = sorted(team_list, key=lambda x: x['profit'], reverse=True)[:20]
-    worst_teams = sorted(team_list, key=lambda x: x['profit'])[:20]
+    best_teams = sorted(team_list, key=lambda x: x['profit'], reverse=True)[:50]
+    worst_teams = sorted(team_list, key=lambda x: x['profit'])[:50]
 
     # Helpers for totals
     def calc_totals(teams):
@@ -485,7 +485,7 @@ def generate_report():
     # Best Teams Column
     html += f"""
         <div class="section">
-            <h2 class="section-title">✅ Auto-Bet Teams (Top 20)</h2>
+            <h2 class="section-title">✅ Auto-Bet Teams (Top 50)</h2>
             <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Combined Record</div>
@@ -555,7 +555,7 @@ def generate_report():
 
     html += f"""
         <div class="section">
-            <h2 class="section-title">📉 Fade This Team (Bottom 20)</h2>
+            <h2 class="section-title">📉 Fade This Team (Bottom 50)</h2>
             <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-size: 0.75rem; color: var(--text-slate); text-transform: uppercase; font-weight: 600;">Fade Record</div>

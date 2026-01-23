@@ -1,0 +1,243 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Thu Jan 22 18:43:22 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 6 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[93m  ⚠️  Error fetching for 01/22/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F22%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114bef230>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m  ⚠️  Error fetching for 01/21/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F21%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fec690>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m  ⚠️  Error fetching for 01/20/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F20%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fecf50>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[92m✓ Found 0 completed games (Free API)[0m
+[93m⚠️  No completed games found.[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[93m⚠ Attempt 1/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fee0d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 2 seconds...[0m
+[93m⚠ Attempt 2/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fee850>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 5 seconds...[0m
+[91m✗ Error fetching stats after 3 attempts: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fef250>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m⚠ Falling back to cached stats (may be stale)[0m
+[92m✓ Using cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[93m⚠ Attempt 1/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=Home&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fef4d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 2 seconds...[0m
+[93m⚠ Attempt 2/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=Home&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x114fef9d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 5 seconds...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched odds for 12 total games[0m
+[92m✓ Filtered to 12 games in next 2 days[0m
+
+[1m[96mSTEP 6: Processing Games & Generating Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 227.5 (Edge: +10.1)[0m
+[91m❌ Missing stats for Los Angeles Clippers or Los Angeles Lakers[0m
+[91m❌ Missing stats for Los Angeles Clippers or Los Angeles Lakers[0m
+[91m❌ Skipping Los Angeles Lakers @ Los Angeles Clippers - missing model data[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 218.5 (Edge: +21.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Atlanta Hawks +2.5 (Edge: +9.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 231.5 (Edge: +12.8)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: Boston Celtics -8.0 (Edge: -7.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m📝 LOGGED PICK: ✅ BET: OVER 215.5 (Edge: +17.5)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✓ Updated CLV data for existing picks[0m
+
+[1m[92m✅ Analyzed 11 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m==========================================================================================[0m
+[1m[93m🏀 NBA MODEL PREDICTIONS 🏀[0m
+[1m==========================================================================================[0m
+
+[1m[96mHouston Rockets @ Detroit Pistons[0m
+  🕐 01/23/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market -3.0 | Model +0.9
+  🎯 Total: Market 218.5 | Model 239.9
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-2.1)[0m
+  [92m✅ BET: OVER 218.5[0m
+     [96mModel projects 240 total points, bet the OVER[0m
+  📈 Predicted: Houston Rockets 120, Detroit Pistons 120
+
+[1m[96mHouston Rockets @ Philadelphia 76ers[0m
+  🕐 01/22/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  📊 Spread: Market +2.0 | Model -6.6
+  🎯 Total: Market 221.0 | Model 238.9
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-4.6)[0m
+  [92m✅ BET: OVER 221.0[0m
+     [96mModel projects 239 total points, bet the OVER[0m
+  📈 Predicted: Houston Rockets 123, Philadelphia 76ers 116
+
+[1m[96mBoston Celtics @ Brooklyn Nets[0m
+  🕐 01/23/26 07:40 PM EST
+  [92m[1m🎯 A.I. Rating: 4.9 ⭐⭐ (PREMIUM PLAY)[0m
+  [92m🔥 HOT: Boston Celtics - Strong performer: 8-3 (73%) | +4.70u over 11 picks[0m
+  📊 Spread: Market +8.0 | Model -15.4
+  🎯 Total: Market 215.5 | Model 233.0
+  [92m✅ BET: Boston Celtics -8.0[0m
+     [96mModel projects Brooklyn Nets to lose by 15.4, Boston Celtics covers -8.0.[0m
+  [92m✅ BET: OVER 215.5[0m
+     [96mModel projects 233 total points, bet the OVER[0m
+  📈 Predicted: Boston Celtics 124, Brooklyn Nets 109
+
+[1m[96mPhoenix Suns @ Atlanta Hawks[0m
+  🕐 01/23/26 07:40 PM EST
+  [92m[1m🎯 A.I. Rating: 4.6 ⭐⭐ (PREMIUM PLAY)[0m
+  [96mℹ️ LIMITED: Atlanta Hawks - Limited data: 0-1 (0%) | -1.10u (1 pick)[0m
+  📊 Spread: Market +2.5 | Model +7.0
+  🎯 Total: Market 231.5 | Model 244.3
+  [92m✅ BET: Atlanta Hawks +2.5[0m
+     [96mModel projects Atlanta Hawks to win outright, easily covering +2.5.[0m
+  [92m✅ BET: OVER 231.5[0m
+     [96mModel projects 244 total points, bet the OVER[0m
+  📈 Predicted: Phoenix Suns 119, Atlanta Hawks 126
+
+[1m[96mSan Antonio Spurs @ Utah Jazz[0m
+  🕐 01/22/26 09:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.3 ⭐⭐ (STRONG PLAY)[0m
+  [92m🔥 HOT: Utah Jazz - Strong performer: 3-1 (75%) | +1.90u over 4 picks[0m
+  📊 Spread: Market +13.0 | Model -1.2
+  🎯 Total: Market 236.5 | Model 238.7
+  [92m✅ BET: Utah Jazz +13.0[0m
+     [96mModel projects Utah Jazz to lose by only 1.2, covering +13.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: San Antonio Spurs 120, Utah Jazz 119
+
+[1m[96mCharlotte Hornets @ Orlando Magic[0m
+  🕐 01/22/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.2 ⭐⭐ (STRONG PLAY)[0m
+  [92m✅ GOOD: Orlando Magic - Good record: 6-3 (67%) | +2.61u over 9 picks[0m
+  📊 Spread: Market -4.0 | Model +14.9
+  🎯 Total: Market 225.0 | Model 227.4
+  [92m✅ BET: Orlando Magic -4.0[0m
+     [96mModel projects Orlando Magic to win by 14.9, covering -4.0.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Charlotte Hornets 106, Orlando Magic 121
+
+[1m[96mDenver Nuggets @ Washington Wizards[0m
+  🕐 01/22/26 07:10 PM EST
+  [92m[1m🎯 A.I. Rating: 4.0 ⭐⭐ (STRONG PLAY)[0m
+  📊 Spread: Market +6.0 | Model -11.0
+  🎯 Total: Market 227.5 | Model 237.6
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (-5.0)[0m
+  [92m✅ BET: OVER 227.5[0m
+     [96mModel projects 238 total points, bet the OVER[0m
+  📈 Predicted: Denver Nuggets 124, Washington Wizards 113
+
+[1m[96mGolden State Warriors @ Dallas Mavericks[0m
+  🕐 01/22/26 07:40 PM EST
+  [93m[1m🎯 A.I. Rating: 3.4 ⭐ (STANDARD PLAY)[0m
+  [92m🔥 HOT: Dallas Mavericks - Strong performer: 10-3 (77%) | +6.80u over 13 picks[0m
+  📊 Spread: Market +6.5 | Model +0.3
+  🎯 Total: Market 235.0 | Model 236.1
+  [92m✅ BET: Dallas Mavericks +6.5[0m
+     [96mModel projects Dallas Mavericks to win outright, easily covering +6.5.[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Golden State Warriors 118, Dallas Mavericks 118
+
+[1m[96mSacramento Kings @ Cleveland Cavaliers[0m
+  🕐 01/23/26 07:40 PM EST
+  [93m[1m🎯 A.I. Rating: 3.2 ⭐ (STANDARD PLAY)[0m
+  📊 Spread: Market -11.5 | Model +13.7
+  🎯 Total: Market 234.5 | Model 240.1
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+2.2)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Sacramento Kings 113, Cleveland Cavaliers 127
+
+[1m[96mChicago Bulls @ Minnesota Timberwolves[0m
+  🕐 01/22/26 08:10 PM EST
+  [93m[1m🎯 A.I. Rating: 2.7  (MARGINAL PLAY)[0m
+  📊 Spread: Market -9.5 | Model +11.3
+  🎯 Total: Market 239.0 | Model 241.7
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.8)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Chicago Bulls 115, Minnesota Timberwolves 126
+
+[1m[96mMiami Heat @ Portland Trail Blazers[0m
+  🕐 01/22/26 10:10 PM EST
+  [93m[1m🎯 A.I. Rating: 2.5  (MARGINAL PLAY)[0m
+  📊 Spread: Market -2.0 | Model +3.4
+  🎯 Total: Market 236.0 | Model 235.0
+  [93m⚠️ NO BET - Too close to call[0m
+     [96mEdge too small (+1.4)[0m
+  [93m⚠️ NO BET - Too close to call[0m
+  📈 Predicted: Miami Heat 116, Portland Trail Blazers 119
+
+[92m✓ CSV saved: /Users/rico/sports-models/nba/nba_model_output.csv[0m
+Loaded 10 Auto-Bet teams: Dallas Mavericks, Orlando Magic, New York Knicks, Brooklyn Nets, Portland Trail Blazers...
+[92m✓ HTML saved: /Users/rico/sports-models/nba/nba_model_output.html[0m
+
+[1m[96mSTEP 7: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m==========================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m==========================================================================================[0m
+[92mTotal Tracked Bets: 432[0m
+[92mRecord: 219-204-3[0m
+[92mWin Rate: 51.8%[0m
+[91mProfit: -6.24 units[0m
+[91mROI: -1.3%[0m
+[1m==========================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+✅ Completed: nba_main_model at Thu Jan 22 18:53:56 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main a2cfa122] Update model outputs - 2026-01-22 18:53:56
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 475 insertions(+), 69 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ac44bcc6..a2cfa122  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Thu Jan 22 18:53:57 EST 2026

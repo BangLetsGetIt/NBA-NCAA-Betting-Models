@@ -1,0 +1,76 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Thu Jan 22 15:23:42 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 6 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[93m  ⚠️  Error fetching for 01/22/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F22%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109bef230>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m  ⚠️  Error fetching for 01/21/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F21%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eec690>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m  ⚠️  Error fetching for 01/20/2026: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/scoreboardv2?DayOffset=0&GameDate=01%2F20%2F2026&LeagueID=00 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eecf50>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[92m✓ Found 0 completed games (Free API)[0m
+[93m⚠️  No completed games found.[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[93m⚠ Attempt 1/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eee0d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 2 seconds...[0m
+[93m⚠ Attempt 2/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eee850>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 5 seconds...[0m
+[91m✗ Error fetching stats after 3 attempts: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eef250>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m⚠ Falling back to cached stats (may be stale)[0m
+[92m✓ Using cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[93m⚠ Attempt 1/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=Home&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eef4d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 2 seconds...[0m
+[93m⚠ Attempt 2/3 failed: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=Home&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eef9d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m   Retrying in 5 seconds...[0m
+[93m⚠ Could not fetch splits after 3 attempts: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=Home&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2024-25&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eefed0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+[93m⚠ Falling back to cached splits (may be stale)[0m
+[92m✓ Using cached splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[91m✗ Error fetching odds: HTTPSConnectionPool(host='api.the-odds-api.com', port=443): Max retries exceeded with url: /v4/sports/basketball_nba/odds/?apiKey=cf796adc9ac20a6df2247368d40fe0a0&regions=us%2Cus2&markets=h2h%2Cspreads%2Ctotals&oddsFormat=american&dateFormat=iso (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x109eeccd0>: Failed to resolve 'api.the-odds-api.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+
+[93m⚠️  No games found from The Odds API.[0m
+
+✅ Completed: nba_main_model at Thu Jan 22 15:46:45 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 3eb6a58b] Update model outputs - 2026-01-22 15:46:45
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+fatal: unable to access 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git/': Could not resolve host: github.com
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Thu Jan 22 15:46:45 EST 2026

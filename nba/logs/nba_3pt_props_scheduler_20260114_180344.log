@@ -1,0 +1,156 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Wed Jan 14 18:03:44 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 11 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)
+[96m  Fetching batch stats for 01/08/2026...[0m
+[93m  Error fetching batch stats for 2026-01-08: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)[0m
+  Fetching team stats to verify completed games for 2026-01-14...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[92m✓ Using cached player 3-pointers stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Using cached 3-pointers factors[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Cleveland Cavaliers @ Philadelphia 76ers[0m
+[96m  Game 2/10: Toronto Raptors @ Indiana Pacers[0m
+[96m  Game 3/10: Brooklyn Nets @ New Orleans Pelicans[0m
+[96m  Game 4/10: Utah Jazz @ Chicago Bulls[0m
+[96m  Game 5/10: Denver Nuggets @ Dallas Mavericks[0m
+[96m  Game 6/10: New York Knicks @ Sacramento Kings[0m
+[96m  Game 7/10: Washington Wizards @ Los Angeles Clippers[0m
+[96m  Game 8/10: Memphis Grizzlies @ Orlando Magic[0m
+[96m  Game 9/10: Phoenix Suns @ Detroit Pistons[0m
+[96m  Game 10/10: Boston Celtics @ Miami Heat[0m
+[92m✓ Fetched 62 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 62 player props with REAL stats...[0m
+[92m✓ Found 6 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 2 top UNDER plays (A.I. Score >= 7.5)[0m
+[93m  Skipped 1 props (no player stats found)[0m
+[93m  Skipped 114 props (score below 7.5 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+[93m✓ Updated odds for 7 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Miles McBride            [0m | [92mOVER 2.5 3PT   [0m | New York Knicks           vs Sacramento Kings          | [1mA.I.: 9.30[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Jamal Murray             [0m | [92mOVER 2.5 3PT   [0m | Denver Nuggets            vs Dallas Mavericks          | [1mA.I.: 10.00[0m | Rating: 4.6 ⭐⭐
+  [96m 3. Jalen Brunson            [0m | [92mOVER 2.5 3PT   [0m | New York Knicks           vs Sacramento Kings          | [1mA.I.: 9.02[0m | Rating: 4.4 ⭐⭐
+  [96m 4. Sam Merrill              [0m | [92mOVER 2.5 3PT   [0m | Cleveland Cavaliers       vs Philadelphia 76ers        | [1mA.I.: 10.00[0m | Rating: 3.8 ⭐
+  [96m 5. Trey Murphy III          [0m | [92mOVER 2.5 3PT   [0m | New Orleans Pelicans      vs Brooklyn Nets             | [1mA.I.: 8.52[0m | Rating: 3.2 ⭐
+  [96m 6. Carlton Carrington       [0m | [92mOVER 1.5 3PT   [0m | Washington Wizards        vs Los Angeles Clippers      | [1mA.I.: 8.60[0m | Rating: 2.9 
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Keyonte George           [0m | [91mUNDER 3.5 3PT  [0m | Utah Jazz                 vs Chicago Bulls             | [1mA.I.: 7.61[0m | Rating: 3.5 ⭐
+  [96m 2. Brook Lopez              [0m | [91mUNDER 2.5 3PT  [0m | Los Angeles Clippers      vs Washington Wizards        | [1mA.I.: 7.54[0m | Rating: 2.7 
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Wed Jan 14 18:10:58 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   American Betting League/abl_cron.log
+	modified:   American Betting League/update_log.txt
+	modified:   nba/logs/3pt_props_error.log
+	modified:   nba/logs/3pt_props_output.log
+	modified:   nba/logs/assists_props_error.log
+	modified:   nba/logs/assists_props_output.log
+	modified:   nba/logs/launchd_output.log
+	modified:   nba/logs/rebounds_props_error.log
+	modified:   nba/logs/rebounds_props_output.log
+	modified:   ncaa/logs/launchd_output.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	nba/logs/nba_3pt_props_20260114_050004.log
+	nba/logs/nba_3pt_props_scheduler_20260113_234137.log
+	nba/logs/nba_3pt_props_scheduler_20260114_025005.log
+	nba/logs/nba_3pt_props_scheduler_20260114_100005.log
+	nba/logs/nba_3pt_props_scheduler_20260114_150000.log
+	nba/logs/nba_3pt_props_scheduler_20260114_180344.log
+	nba/logs/nba_assists_props_20260114_070004.log
+	nba/logs/nba_assists_props_scheduler_20260113_234137.log
+	nba/logs/nba_assists_props_scheduler_20260114_024005.log
+	nba/logs/nba_assists_props_scheduler_20260114_100502.log
+	nba/logs/nba_assists_props_scheduler_20260114_150503.log
+	nba/logs/nba_assists_props_scheduler_20260114_180506.log
+	nba/logs/nba_main_model_scheduler_20260113_234137.log
+	nba/logs/nba_main_model_scheduler_20260114_031001.log
+	nba/logs/nba_main_model_scheduler_20260114_102001.log
+	nba/logs/nba_main_model_scheduler_20260114_152000.log
+	nba/logs/nba_model_20260114_100005.log
+	nba/logs/nba_points_props_scheduler_20260113_234137.log
+	nba/logs/nba_points_props_scheduler_20260114_023505.log
+	nba/logs/nba_points_props_scheduler_20260114_100005.log
+	nba/logs/nba_points_props_scheduler_20260114_150000.log
+	nba/logs/nba_points_props_scheduler_20260114_180344.log
+	nba/logs/nba_rebounds_props_20260114_060003.log
+	nba/logs/nba_rebounds_props_scheduler_20260113_234137.log
+	nba/logs/nba_rebounds_props_scheduler_20260114_024505.log
+	nba/logs/nba_rebounds_props_scheduler_20260114_101000.log
+	nba/logs/nba_rebounds_props_scheduler_20260114_151004.log
+	nba/logs/nba_rebounds_props_scheduler_20260114_181026.log
+	ncaa/logs/ncaab_model_20260114_103001.log
+	nfl/logs/nfl_main_model_scheduler_20260113_234137.log
+	nfl/logs/nfl_main_model_scheduler_20260114_031503.log
+	nfl/logs/nfl_main_model_scheduler_20260114_093002.log
+	nfl/logs/nfl_main_model_scheduler_20260114_181026.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260113_234137.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260114_025505.log
+	nfl/logs/nfl_passing_yards_props_scheduler_20260114_094505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260113_234137.log
+	nfl/logs/nfl_receptions_props_scheduler_20260114_030505.log
+	nfl/logs/nfl_receptions_props_scheduler_20260114_095505.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260113_234137.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260114_030002.log
+	nfl/logs/nfl_rushing_yards_props_scheduler_20260114_095003.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 0be0f2cfce3d73871b3ce73447398a5f64f51ee0 but expected 3c8f7d86e49f231696d1b87275f8e09667f02ed3)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Wed Jan 14 18:10:59 EST 2026

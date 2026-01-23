@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.rico.sportsmodels.auto_grader</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/local/bin/python3</string>
+      <string>/Users/rico/sports-models/auto_grader.py</string>
+      <string>--loop</string>
+      <string>--interval</string>
+      <string>900</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/rico/sports-models</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/com.rico.sportsmodels.auto_grader.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/com.rico.sportsmodels.auto_grader.err.log</string>
+  </dict>
+</plist>

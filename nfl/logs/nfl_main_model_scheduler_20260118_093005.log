@@ -1,0 +1,98 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Jan 18 09:30:05 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 1 pending picks...
+
+🏈 Fetching completed NFL scores...
+   Found 2 completed games
+   No picks matched completed games
+
+📡 Fetching current NFL odds...
+Fetched 2 games, filtered to 2 upcoming.
+✅ Found 2 games
+
+🔍 Analyzing games...
+
+Houston Texans @ New England Patriots
+  🕐 2026-01-18T20:00:00Z
+  📊 Ratings: New England Patriots (42.3) vs Houston Texans (66.7)
+  📈 Predicted: New England Patriots 11.3, Houston Texans 33.0
+  SPREAD (⭐ LOGGED):
+    Market: New England Patriots -3.5
+    Model:  -21.7
+    Edge:   -18.2
+    ✅ SHARP BET: Houston Texans +3.5
+  TOTAL (⭐ LOGGED):
+    Market: 40.5
+    Model:  44.2
+    Edge:   +3.7
+    ✅ SHARP BET: OVER 40.5
+
+Los Angeles Rams @ Chicago Bears
+  🕐 2026-01-18T23:30:00Z
+  📊 Ratings: Chicago Bears (49.2) vs Los Angeles Rams (55.6)
+  📈 Predicted: Chicago Bears 19.8, Los Angeles Rams 23.4
+  SPREAD (⭐ LOGGED):
+    Market: Chicago Bears +4.0
+    Model:  -3.6
+    Edge:   -7.6
+    ✅ SHARP BET: Los Angeles Rams -4.0
+  TOTAL (⭐ LOGGED):
+    Market: 48.5
+    Model:  43.2
+    Edge:   -5.3
+    ✅ SHARP BET: UNDER 48.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 2
+Bets Logged:    4 (high-confidence +EV only)
+Total Tracked:  98
+Completed:      97
+Pending:        1
+Win Rate:       52.6%
+ROI:            +0.4%
+Total Profit:   $+41.00
+============================================================
+✅ Completed: nfl_main_model at Sun Jan 18 09:30:07 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 3f40ac1] Update model outputs - 2026-01-18 09:30:07
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ce6935f..3f40ac1  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Jan 18 09:30:08 EST 2026

@@ -1,0 +1,187 @@
+==========================================
+NCAA Model Run: Sat Jan 17 23:47:26 EST 2026
+==========================================
+Running NCAA Basketball model (IMPROVED)...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 2 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Cleaning Up Stale Picks (>7 days old)[0m
+[93mRemoved stale pick (too old to verify): Jackson State Tigers @ Houston Cougars (2025-12-10)[0m
+[93mRemoved stale pick (too old to verify): Binghamton @ Pittsburgh (2025-12-17)[0m
+[93mRemoved stale pick (too old to verify): Seattle Redhawks @ Washington Huskies (2025-12-19)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3284[0m
+[92m✓ Removed 3 stale picks[0m
+
+[1m[96mSTEP 2: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 22 pending picks...[0m
+[96mPending pick date range:[0m
+  Oldest: 2025-12-11
+  Newest: 2026-01-19
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 212 completed games[0m
+[96mFound 212 completed games from API[0m
+[93m⚠️  No match found: Fresno State Bulldogs @ CSU Northridge Matadors (2025-12-11)[0m
+[93m⚠️  No match found: Mercer @ UCF (2025-12-18)[0m
+[93m⚠️  No match found: Seattle Redhawks @ Washington Huskies (2025-12-20)[0m
+[93m⚠️  No match found: Gonzaga Bulldogs @ Seattle Redhawks (2026-01-18)[0m
+[93m⚠️  No match found: N Colorado Bears @ Sacramento St Hornets (2026-01-18)[0m
+[93m⚠️  No match found: Kansas St Wildcats @ Oklahoma St Cowboys (2026-01-18)[0m
+[93m⚠️  No match found: Kansas St Wildcats @ Oklahoma St Cowboys (2026-01-18)[0m
+[93m⚠️  No match found: Florida Atlantic Owls @ Temple Owls (2026-01-18)[0m
+[93m⚠️  No match found: Penn State Nittany Lions @ Maryland Terrapins (2026-01-18)[0m
+[93m⚠️  No match found: American Eagles @ Army Knights (2026-01-18)[0m
+[93m⚠️  No match found: Milwaukee Panthers @ Fort Wayne Mastodons (2026-01-18)[0m
+[93m⚠️  No match found: Oakland Golden Grizzlies @ Green Bay Phoenix (2026-01-18)[0m
+[93m⚠️  No match found: Wichita St Shockers @ South Florida Bulls (2026-01-18)[0m
+[93m⚠️  No match found: Wichita St Shockers @ South Florida Bulls (2026-01-18)[0m
+[93m⚠️  No match found: Tulsa Golden Hurricane @ UAB Blazers (2026-01-18)[0m
+[93m⚠️  No match found: Tulsa Golden Hurricane @ UAB Blazers (2026-01-18)[0m
+[93m⚠️  No match found: North Texas Mean Green @ Tulane Green Wave (2026-01-18)[0m
+[93m⚠️  No match found: UTSA Roadrunners @ Memphis Tigers (2026-01-18)[0m
+[93m⚠️  No match found: Arizona St Sun Devils @ Houston Cougars (2026-01-18)[0m
+[93m⚠️  No match found: Arizona St Sun Devils @ Houston Cougars (2026-01-18)[0m
+[93m⚠️  No match found: Washington St Cougars @ San Francisco Dons (2026-01-19)[0m
+[93m⚠️  No match found: Washington St Cougars @ San Francisco Dons (2026-01-19)[0m
+
+[93mNo picks were updated[0m
+[93mThis could mean:[0m
+  1. Games haven't completed yet
+  2. Team name mismatches between pick and API
+  3. Games are outside the daysFrom window
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 3: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 0h)[0m
+
+[1m[96mSTEP 4: Fetching Live Odds (Next 2 Days)[0m
+[92m✓ Fetched 15 games from The Odds API[0m
+[92m✓ 12 games in the next 2 days[0m
+
+[1m[96mSTEP 5: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3285[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Temple +1.5 (Edge: +4.4)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3286[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 151.5 (Edge: -7.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3287[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: OVER 147.5 (Edge: +11.9)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3288[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Army +5.5 (Edge: +8.3)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3289[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 145.5 (Edge: -13.6)[0m
+
+[1m[92m✅ Analyzed 3 games with complete odds[0m
+
+[93m📊 All picks sorted by A.I. Rating (quality/confidence first)[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: American @ Army ━━━[0m
+[96m🕐 01/18 01:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.8 ⭐⭐ (PREMIUM PLAY)[0m
+[92m✅ GOOD: Army - Good record: 4-2 (67%) | +1.64u over 6 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: +5.5 | Model: +2.8 | Edge: +8.3
+  [92m✅ BET: Army +5.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Army by +2.8 (Market: +5.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 131.9 | Edge: -13.6
+  [92m✅ BET: UNDER 145.5[0m
+  [96mHIGH confidence (13.6 edge)[0m
+
+[35m📈 American 64.5, Army 67.4[0m
+
+[1m[96m━━━ GAME 2: Penn State @ Maryland ━━━[0m
+[96m🕐 01/18 12:00 PM[0m
+[92m[1m🎯 A.I. Rating: 4.2 ⭐⭐ (STRONG PLAY)[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +2.6 | Edge: +0.1
+  [91m❌ NO BET[0m
+  [96mEdge (+0.1) not significant.[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 147.5 | Model: 159.4 | Edge: +11.9
+  [92m✅ BET: OVER 147.5[0m
+  [96mHIGH confidence (11.9 edge)[0m
+
+[35m📈 Penn State 78.4, Maryland 81.0[0m
+
+[1m[96m━━━ GAME 3: Florida Atlantic @ Temple ━━━[0m
+[96m🕐 01/18 12:00 PM[0m
+[96m[1m🎯 A.I. Rating: 3.5 ⭐ (GOOD PLAY)[0m
+[92m✅ GOOD: Temple - Good record: 2-1 (67%) | +0.82u over 3 picks[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +2.9 | Edge: +4.4
+  [92m✅ BET: Temple +1.5[0m
+  [96mMODEL PREDICTS OUTRIGHT WIN: Temple by +2.9 (Market: +1.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 144.2 | Edge: -7.3
+  [92m✅ BET: UNDER 151.5[0m
+  [96mMEDIUM confidence (7.3 edge)[0m
+
+[35m📈 Florida Atlantic 70.7, Temple 73.5[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 6: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 3289[0m
+[92mRecord: 1716-1541-5[0m
+[92mWin Rate: 52.7%[0m
+[92mProfit: +20.56 units[0m
+[92mROI: +0.6%[0m
+[1m====================================================================================================[0m
+
+[96mUpdating unified dashboard...[0m
+[92m✓ Dashboard updated[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📤 Pushing updates to GitHub...
+[main 632b885] Update model outputs - 2026-01-17 23:47:28
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 4 files changed, 626 insertions(+), 1151 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   705cc78..632b885  main -> main
+✅ Successfully pushed to GitHub!

@@ -47,6 +47,11 @@ if [ $? -eq 0 ]; then
     echo "✅ Model completed successfully!" | tee -a "$LOG_FILE"
     echo "==========================================" | tee -a "$LOG_FILE"
 
+    # Generate Deep Dive Analysis Report
+    echo "" | tee -a "$LOG_FILE"
+    echo "📊 Updating Analysis Dashboard..." | tee -a "$LOG_FILE"
+    python3 generate_nba_analysis_report.py 2>&1 | tee -a "$LOG_FILE"
+
     # Auto-push to GitHub
     echo "" | tee -a "$LOG_FILE"
     echo "📤 Pushing updates to GitHub..." | tee -a "$LOG_FILE"

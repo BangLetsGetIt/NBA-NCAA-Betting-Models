@@ -30,7 +30,10 @@ from nba_api.stats.static import players
 import pandas as pd  # noqa: F401
 
 # Load environment variables
-load_dotenv()
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Load .env from parent directory (root of project)
+dotenv_path = os.path.join(os.path.dirname(SCRIPT_DIR), '.env')
+load_dotenv(dotenv_path)
 
 # =============================================================================
 # Configuration
@@ -1048,7 +1051,7 @@ def get_player_props(player_stats=None):
             odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
             odds_params = {
                 "apiKey": API_KEY,
-                "regions": "us,us2",
+                "regions": "us",
                 "markets": "player_threes",
                 "oddsFormat": "american",
             }
@@ -1515,16 +1518,16 @@ def calculate_player_stats(player_name, tracking_data):
         return {'season_record': '0-0', 'player_roi': 0.0}
     
     picks = tracking_data.get('picks', [])
-    player_picks = [p for p in picks if p.get('player') == player_name and p.get('result') in ['win', 'loss']]
+    player_picks = [p for p in picks if p.get('player') == player_name and p.get('status', '').lower() in ['win', 'loss']]
     
     if not player_picks:
         return {'season_record': '0-0', 'player_roi': 0.0}
     
-    wins = sum(1 for p in player_picks if p.get('result') == 'win')
+    wins = sum(1 for p in player_picks if p.get('status', '').lower() == 'win')
     losses = len(player_picks) - wins
     
     total_profit = sum(p.get('profit_loss', 0) for p in player_picks)
-    player_roi = (total_profit / len(player_picks)) * 100 if player_picks else 0
+    player_roi = (total_profit / len(player_picks)) if player_picks else 0
     
     return {
         'season_record': f'{wins}-{losses}',
@@ -1933,6 +1936,22 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
 """
 
 
+
+    # Load top performers for fire emoji
+    top_performers = set()
+    try:
+        import json
+        import os
+        analytics_path = '/Users/rico/sports-models/analytics_data.json'
+        if os.path.exists(analytics_path):
+            with open(analytics_path, 'r') as f:
+                data = json.load(f)
+                if 'top_performers' in data:
+                    for k, v in data['top_performers'].items():
+                        top_performers.add(v.get('name'))
+    except Exception as e:
+        print(f"Error loading top performers: {e}")
+
     # Generate OVER plays cards
     over_html = ""
     if over_plays:
@@ -2017,13 +2036,18 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             elif play.get('ai_score', 0) >= 9.0:
                 glow_class = "glow-blue"
 
+            # Add Fire Emoji if Top Performer
+            player_display_name = play.get('player', '')
+            if player_display_name in top_performers:
+                player_display_name += " 🔥"
+
             over_html += f'''
         <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
                     <div class="player-info">
-                        <h2>{play.get('player', '')}</h2>
+                        <h2>{player_display_name}</h2>
                         <div class="matchup-info">{matchup_display}</div>
                     </div>
                 </div>
@@ -2160,13 +2184,18 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             elif play.get('ai_score', 0) >= 9.0:
                 glow_class = "glow-blue"
 
+            # Add Fire Emoji if Top Performer
+            player_display_name = play.get('player', '')
+            if player_display_name in top_performers:
+                player_display_name += " 🔥"
+
             under_html += f'''
         <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
                     <div class="player-info">
-                        <h2>{play.get('player', '')}</h2>
+                        <h2>{player_display_name}</h2>
                         <div class="matchup-info">{matchup_display}</div>
                     </div>
                 </div>

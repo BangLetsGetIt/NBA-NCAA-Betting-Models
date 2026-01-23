@@ -1,0 +1,83 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Wed Jan 14 18:05:06 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 3 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2026-01-14...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player assists stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Using cached assists factors[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Cleveland Cavaliers @ Philadelphia 76ers[0m
+[96m  Game 2/10: Toronto Raptors @ Indiana Pacers[0m
+[91m✗ Error fetching props: HTTPSConnectionPool(host='api.the-odds-api.com', port=443): Read timed out. (read timeout=15)[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Wed Jan 14 18:10:33 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 3c8f7d8] Update model outputs - 2026-01-14 18:10:33
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 1 insertion(+), 123 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   82f15f6..3c8f7d8  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Wed Jan 14 18:10:34 EST 2026

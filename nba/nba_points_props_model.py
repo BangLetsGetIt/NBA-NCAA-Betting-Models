@@ -22,7 +22,10 @@ from nba_api.stats.endpoints import leaguedashplayerstats, leaguedashteamstats, 
 from nba_api.stats.static import players
 
 # Load environment variables
-load_dotenv()
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Load .env from parent directory (root of project)
+dotenv_path = os.path.join(os.path.dirname(SCRIPT_DIR), '.env')
+load_dotenv(dotenv_path)
 
 # Configuration
 API_KEY = os.getenv('ODDS_API_KEY')
@@ -1051,7 +1054,7 @@ def get_player_props(player_stats=None):
             odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
             odds_params = {
                 'apiKey': API_KEY,
-                'regions': 'us,us2',
+                'regions': 'us',
                 'markets': 'player_points',
                 'oddsFormat': 'american'
             }
@@ -2007,7 +2010,21 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     player_stats_lookup = player_stats or {}
     defense_lookup = defense_factors or {}
     
-
+    # Load top performers for fire emoji
+    top_performers = set()
+    try:
+        import json
+        import os
+        analytics_path = '/Users/rico/sports-models/analytics_data.json'
+        if os.path.exists(analytics_path):
+            with open(analytics_path, 'r') as f:
+                data = json.load(f)
+                if 'top_performers' in data:
+                    for k, v in data['top_performers'].items():
+                        top_performers.add(v.get('name'))
+    except Exception as e:
+        print(f"Error loading top performers: {e}")
+    
     # Generate OVER plays cards
     over_html = ""
     if over_plays:
@@ -2124,13 +2141,18 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             elif play.get('ai_score', 0) >= 9.0:
                 glow_class = "glow-blue"
 
+            # Add Fire Emoji if Top Performer
+            player_display_name = play.get('player', '')
+            if player_display_name in top_performers:
+                player_display_name += " 🔥"
+
             over_html += f"""
         <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
                     <div class="player-info">
-                        <h2>{play.get('player', '')}</h2>
+                        <h2>{player_display_name}</h2>
                         <div class="matchup-info">{matchup_display}</div>
                     </div>
                 </div>
@@ -2301,13 +2323,18 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
             elif play.get('ai_score', 0) >= 9.0:
                 glow_class = "glow-blue"
 
+            # Add Fire Emoji if Top Performer
+            player_display_name = play.get('player', '')
+            if player_display_name in top_performers:
+                player_display_name += " 🔥"
+
             under_html += f"""
         <div class="prop-card {glow_class}">
             <div class="card-header">
                 <div class="header-left">
                     <img src="{logo_url}" alt="{play.get('team', '')} Logo" class="team-logo">
                     <div class="player-info">
-                        <h2>{play.get('player', '')}</h2>
+                        <h2>{player_display_name}</h2>
                         <div class="matchup-info">{matchup_display}</div>
                     </div>
                 </div>

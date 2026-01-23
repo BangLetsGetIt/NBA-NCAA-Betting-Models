@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Agent System State",
+    "description": "A snapshot of the betting system's current health and active portfolio.",
+    "type": "object",
+    "properties": {
+        "last_updated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the last state check."
+        },
+        "system_health": {
+            "type": "object",
+            "properties": {
+                "auto_grader_status": {
+                    "type": "string",
+                    "enum": [
+                        "running",
+                        "stopped",
+                        "error"
+                    ]
+                },
+                "api_connection": {
+                    "type": "boolean",
+                    "description": "Can we reach The Odds API?"
+                },
+                "disk_usage_warning": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "active_portfolio": {
+            "type": "object",
+            "properties": {
+                "total_start_count": {
+                    "type": "integer"
+                },
+                "total_risk_units": {
+                    "type": "number"
+                },
+                "breakdown_by_sport": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "recent_alerts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "string"
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "INFO",
+                            "WARNING",
+                            "CRITICAL"
+                        ]
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

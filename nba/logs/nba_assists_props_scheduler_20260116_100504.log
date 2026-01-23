@@ -1,0 +1,72 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Fri Jan 16 10:05:04 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 1 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player assists stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 7 upcoming games[0m
+[96m  Filtered to 7 upcoming games[0m
+[96m  Game 1/7: Cleveland Cavaliers @ Philadelphia 76ers[0m
+[96m  Game 2/7: New Orleans Pelicans @ Indiana Pacers[0m
+[96m  Game 3/7: Chicago Bulls @ Brooklyn Nets[0m
+[96m  Game 4/7: Los Angeles Clippers @ Toronto Raptors[0m
+[96m  Game 5/7: Minnesota Timberwolves @ Houston Rockets[0m
+[96m  Game 6/7: Washington Wizards @ Sacramento Kings[0m
+[96m  Game 7/7: Orlando Magic @ Memphis Grizzlies[0m
+[92m✓ Fetched 55 player assists props (grouped)[0m
+
+[96mAnalyzing 55 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 106 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Fri Jan 16 10:05:08 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+No changes to commit
+✅ Auto-push succeeded at Fri Jan 16 10:05:09 EST 2026

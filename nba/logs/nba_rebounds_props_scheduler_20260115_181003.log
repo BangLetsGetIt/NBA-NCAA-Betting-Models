@@ -1,0 +1,105 @@
+============================================================
+Scheduler run: nba_rebounds_props
+Time: Thu Jan 15 18:10:03 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_rebounds_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA REBOUNDS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 13 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-30...
+[96m  Fetching batch stats for 12/30/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-01...
+[96m  Fetching batch stats for 01/01/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-15...
+[96m  Fetching batch stats for 01/15/2026...[0m
+    [92mWIN[0m: Franz Wagner had 9 rebounds (line: 4.5, bet: OVER) | Profit: 1.10 units
+[93m  ⚠️  Player Moe Wagner has no stats but game is final -> Marking as DNP/Void[0m
+
+[92m✓ Graded 2 picks[0m
+
+[96mFetching REAL NBA player rebounding statistics...[0m
+[96m  Fetching season rebounding stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL rebounding stats for 509 players[0m
+
+[96mFetching opponent rebounding factors...[0m
+[92m✓ Fetched rebounding factors for 30 teams[0m
+
+[96mFetching player rebounds prop odds...[0m
+[96m  Found 11 upcoming games[0m
+[96m  Filtered to 11 upcoming games[0m
+[96m  Game 1/10: Phoenix Suns @ Detroit Pistons[0m
+[96m  Game 2/10: Boston Celtics @ Miami Heat[0m
+[96m  Game 3/10: Oklahoma City Thunder @ Houston Rockets[0m
+[96m  Game 4/10: Milwaukee Bucks @ San Antonio Spurs[0m
+[96m  Game 5/10: Utah Jazz @ Dallas Mavericks[0m
+[96m  Game 6/10: Atlanta Hawks @ Portland Trail Blazers[0m
+[96m  Game 7/10: New York Knicks @ Golden State Warriors[0m
+[96m  Game 8/10: Charlotte Hornets @ Los Angeles Lakers[0m
+[96m  Game 9/10: Cleveland Cavaliers @ Philadelphia 76ers[0m
+[96m  Game 10/10: New Orleans Pelicans @ Indiana Pacers[0m
+[92m✓ Fetched 117 player rebounds props (grouped)[0m
+
+[96mAnalyzing 117 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 1 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 5 props (no player stats found)[0m
+[93m  Skipped 223 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Klay Thompson            [0m | [91mUNDER 3.5 REB  [0m | Dallas Mavericks          vs Utah Jazz                 | [1mA.I.: 10.00[0m | Rating: 3.2 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_rebounds_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_rebounds_props at Thu Jan 15 18:10:41 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 0777625] Update model outputs - 2026-01-15 18:10:41
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 69 insertions(+), 45 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   22d7ee1..0777625  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Thu Jan 15 18:10:42 EST 2026

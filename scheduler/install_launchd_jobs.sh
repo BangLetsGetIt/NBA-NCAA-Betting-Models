@@ -44,7 +44,7 @@ done
 
 echo ""
 echo "✅ Installed + loaded jobs:"
-launchctl list | grep -E "com\\.rico\\.sportsmodels\\." || true
+launchctl list | grep -E "com\\.rico\\.sportsmodels\\.|com\\.ricosoloco\\.ncaabmodel" || true
 
 echo ""
 echo "Tip: logs are written under:"

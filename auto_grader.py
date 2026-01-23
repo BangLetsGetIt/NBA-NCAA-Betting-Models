@@ -29,6 +29,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'nfl'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'soccer'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'wnba'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ncaa'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'ufc'))
 
 # ANSI Colors
 class Colors:
@@ -924,6 +925,59 @@ def run_soccer_grading(force=False, grade_only=False):
     
     return any_updates
 
+def run_ufc_grading(force=False, grade_only=False):
+    """
+    Grades UFC pending picks and regenerates dashboard.
+    """
+    log("Starting UFC Grading...", "info")
+    
+    mod_name = 'ufc_model_runner'
+    filename = 'ufc_model_runner.py'
+    
+    any_updates = False
+    
+    try:
+        log(f"Processing {mod_name}...", "info")
+        
+        try:
+            mod = __import__(mod_name)
+        except ImportError:
+            spec = importlib.util.spec_from_file_location(mod_name, os.path.join("ufc", filename))
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules[mod_name] = mod
+            spec.loader.exec_module(mod)
+            
+        # FORCE RELOAD
+        importlib.reload(mod)
+        
+        # Instantiate Runner
+        if hasattr(mod, 'UFCModelRunner'):
+            runner = mod.UFCModelRunner()
+            
+            # Grade Picks
+            graded = runner.grade_pending_picks()
+            if graded > 0:
+                log(f"Graded {graded} UFC picks", "success")
+                any_updates = True
+                
+            # Regenerate Dashboard
+            if graded > 0 or force:
+                runner.generate_dashboard()
+                log("Regenerated UFC Dashboard", "success")
+                any_updates = True
+                
+            # If not grade_only, check for new picks?
+            # UFC usually requires explicit run due to API costs or event schedule
+            # But if we want auto-scan:
+            if not grade_only:
+                # runner.run_daily_scan() # Optional: enabling this might consume API credits
+                pass
+                
+    except Exception as e:
+        log(f"Error processing UFC: {e}", "error")
+        
+    return any_updates
+
 def main():
     parser = argparse.ArgumentParser(description='Auto-Grader for Sports Models')
     parser.add_argument('--loop', action='store_true', help='Run in a loop every 15 minutes')
@@ -941,8 +995,9 @@ def main():
             updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
             updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
             updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
+            updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
             
-            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
+            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer or updates_ufc:
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
@@ -968,8 +1023,9 @@ def main():
         updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
         updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
         updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
+        updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
         
-        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer:
+        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer or updates_ufc:
             # Regenerate Best Plays aggregator
             try:
                 import best_plays_bot

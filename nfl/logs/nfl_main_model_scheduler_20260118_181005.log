@@ -1,0 +1,83 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Jan 18 18:10:05 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   Checking 1 pending picks...
+
+🏈 Fetching completed NFL scores...
+   Found 2 completed games
+   No picks matched completed games
+
+📡 Fetching current NFL odds...
+Fetched 2 games, filtered to 1 upcoming.
+✅ Found 1 games
+
+🔍 Analyzing games...
+
+Los Angeles Rams @ Chicago Bears
+  🕐 2026-01-18T23:30:00Z
+  📊 Ratings: Chicago Bears (49.2) vs Los Angeles Rams (55.6)
+  📈 Predicted: Chicago Bears 19.8, Los Angeles Rams 23.4
+  SPREAD (⭐ LOGGED):
+    Market: Chicago Bears +4.0
+    Model:  -3.6
+    Edge:   -7.6
+    ✅ SHARP BET: Los Angeles Rams -4.0
+  TOTAL (⭐ LOGGED):
+    Market: 49.0
+    Model:  43.2
+    Edge:   -5.8
+    ✅ SHARP BET: UNDER 49.0
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 1
+Bets Logged:    2 (high-confidence +EV only)
+Total Tracked:  98
+Completed:      97
+Pending:        1
+Win Rate:       52.6%
+ROI:            +0.4%
+Total Profit:   $+41.00
+============================================================
+✅ Completed: nfl_main_model at Sun Jan 18 18:10:06 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 943cfbd] Update model outputs - 2026-01-18 18:10:06
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 6 insertions(+), 94 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   e403723..943cfbd  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Jan 18 18:10:07 EST 2026

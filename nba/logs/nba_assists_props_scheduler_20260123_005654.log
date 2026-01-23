@@ -1,0 +1,95 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Fri Jan 23 00:56:54 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 5 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2026-01-22...
+  Fetching team stats to verify completed games for 2026-01-23...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player assists stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Using cached assists factors[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/8: Houston Rockets @ Detroit Pistons[0m
+[96m  Game 2/8: Phoenix Suns @ Atlanta Hawks[0m
+[96m  Game 3/8: Boston Celtics @ Brooklyn Nets[0m
+[96m  Game 4/8: Sacramento Kings @ Cleveland Cavaliers[0m
+[96m  Game 5/8: Denver Nuggets @ Milwaukee Bucks[0m
+[96m  Game 6/8: New Orleans Pelicans @ Memphis Grizzlies[0m
+[96m  Game 7/8: Indiana Pacers @ Oklahoma City Thunder[0m
+[96m  Game 8/8: Toronto Raptors @ Portland Trail Blazers[0m
+[92m✓ Fetched 67 player assists props (grouped)[0m
+
+[96mAnalyzing 67 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 3 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 127 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Shai Gilgeous-Alexander  [0m | [91mUNDER 7.5 AST  [0m | Oklahoma City Thunder     vs Indiana Pacers            | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Isaiah Joe               [0m | [91mUNDER 2.5 AST  [0m | Oklahoma City Thunder     vs Indiana Pacers            | [1mA.I.: 10.00[0m | Rating: 4.4 ⭐⭐
+  [96m 3. Jaylin Williams          [0m | [91mUNDER 4.5 AST  [0m | Oklahoma City Thunder     vs Indiana Pacers            | [1mA.I.: 10.00[0m | Rating: 3.6 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Fri Jan 23 00:57:16 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 33224418] Update model outputs - 2026-01-23 00:57:16
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ea6af92a..33224418  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Jan 23 00:57:18 EST 2026

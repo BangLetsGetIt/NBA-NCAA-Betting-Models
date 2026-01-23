@@ -1,0 +1,76 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Thu Jan 22 02:40:04 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 4 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2026-01-22...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[92m✓ Using cached player assists stats (less than 6 hours old)[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Using cached assists factors[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/8: Charlotte Hornets @ Orlando Magic[0m
+[96m  Game 2/8: Denver Nuggets @ Washington Wizards[0m
+[96m  Game 3/8: Houston Rockets @ Philadelphia 76ers[0m
+[96m  Game 4/8: Golden State Warriors @ Dallas Mavericks[0m
+[96m  Game 5/8: Chicago Bulls @ Minnesota Timberwolves[0m
+[96m  Game 6/8: San Antonio Spurs @ Utah Jazz[0m
+[96m  Game 7/8: Los Angeles Lakers @ Los Angeles Clippers[0m
+[96m  Game 8/8: Miami Heat @ Portland Trail Blazers[0m
+[92m✓ Fetched 68 player assists props (grouped)[0m
+
+[96mAnalyzing 68 player props with REAL stats...[0m
+[92m✓ Found 2 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 3 props (no player stats found)[0m
+[93m  Skipped 128 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Josh Giddey              [0m | [92mOVER 6.5 AST   [0m | Chicago Bulls             vs Minnesota Timberwolves    | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Davion Mitchell          [0m | [92mOVER 5.5 AST   [0m | Portland Trail Blazers    vs Miami Heat                | [1mA.I.: 10.00[0m | Rating: 4.4 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Thu Jan 22 02:40:07 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+No changes to commit
+✅ Auto-push succeeded at Thu Jan 22 02:40:07 EST 2026

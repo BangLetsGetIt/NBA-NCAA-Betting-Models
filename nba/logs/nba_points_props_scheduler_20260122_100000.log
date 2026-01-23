@@ -1,0 +1,116 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Thu Jan 22 10:00:00 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 43 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+[93m  Error fetching batch stats for 2025-12-16: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=12%2F16%2F2025&DateTo=12%2F16%2F2025&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2dcad0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2025-12-16&DateTo=2025-12-16&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e8190>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+[93m  Error fetching batch stats for 2025-12-23: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=12%2F23%2F2025&DateTo=12%2F23%2F2025&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e8a50>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2025-12-23&DateTo=2025-12-23&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e8f50>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2025-12-23 yet[0m
+
+[96mProcessing 1 picks for 2026-01-03...[0m
+[96m  Fetching batch stats for 01/03/2026...[0m
+[93m  Error fetching batch stats for 2026-01-03: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F03%2F2026&DateTo=01%2F03%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9450>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-03...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-03&DateTo=2026-01-03&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9950>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-03 yet[0m
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+[93m  Error fetching batch stats for 2026-01-08: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F08%2F2026&DateTo=01%2F08%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9d10>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-08&DateTo=2026-01-08&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2ea0d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-08 yet[0m
+
+[96mProcessing 1 picks for 2026-01-09...[0m
+[96m  Fetching batch stats for 01/09/2026...[0m
+[93m  Error fetching batch stats for 2026-01-09: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F09%2F2026&DateTo=01%2F09%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10bfb7ed0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-09...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-09&DateTo=2026-01-09&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10bfb79d0>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-09 yet[0m
+
+[96mProcessing 3 picks for 2026-01-10...[0m
+[96m  Fetching batch stats for 01/10/2026...[0m
+[93m  Error fetching batch stats for 2026-01-10: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F10%2F2026&DateTo=01%2F10%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10bfb7750>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-10...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-10&DateTo=2026-01-10&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9d10>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-10 yet[0m
+
+[96mProcessing 1 picks for 2026-01-16...[0m
+[96m  Fetching batch stats for 01/16/2026...[0m
+[93m  Error fetching batch stats for 2026-01-16: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=01%2F16%2F2026&DateTo=01%2F16%2F2026&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision=&Weight= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9810>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+  Fetching team stats to verify completed games for 2026-01-16...
+  Error fetching completed teams: HTTPSConnectionPool(host='stats.nba.com', port=443): Max retries exceeded with url: /stats/leaguedashteamstats?Conference=&DateFrom=2026-01-16&DateTo=2026-01-16&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2025-26&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=&TwoWay=&VsConference=&VsDivision= (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9590>: Failed to resolve 'stats.nba.com' ([Errno 8] nodename nor servname provided, or not known)"))
+[93m  ⚠️  No stats found for 2026-01-16 yet[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[91m✗ Error fetching props: HTTPSConnectionPool(host='api.the-odds-api.com', port=443): Max retries exceeded with url: /v4/sports/basketball_nba/events?apiKey=cf796adc9ac20a6df2247368d40fe0a0 (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x10c2e9090>: Failed to resolve 'api.the-odds-api.com' ([Errno 8] nodename nor servname provided, or not known)"))[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Thu Jan 22 10:00:01 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+fatal: Unable to create '/Users/rico/sports-models/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+fatal: unable to access 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git/': Could not resolve host: github.com
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Thu Jan 22 10:00:01 EST 2026
