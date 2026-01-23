@@ -51,8 +51,8 @@ def main():
             print(f"⚠ Fighter not found in DB: {name}")
             continue
             
-        # Check if already has stats
-        if 'slpm' in f_obj:
+        # Check if already has stats AND history
+        if 'slpm' in f_obj and 'history' in f_obj:
             # print(f"✓ Stats present for {name}")
             continue
             

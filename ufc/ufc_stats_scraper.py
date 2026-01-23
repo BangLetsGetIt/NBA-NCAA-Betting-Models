@@ -132,6 +132,38 @@ class UFCStatsScraper:
             stats['td_def'] = get_stat("TD Def.")
             stats['sub_avg'] = float(get_stat("Sub. Avg.") or 0)
             
+            # Scrape History Table
+            history = []
+            table = soup.find('table', class_='b-fight-details__table')
+            if table:
+                rows = table.find_all('tr')
+                # Skip header
+                for row in rows[1:]:
+                    cols = row.find_all('td')
+                    if len(cols) < 5: continue
+                    
+                    # Col 0: Result (Win/Loss)
+                    result_text = cols[0].get_text().strip()
+                    temp_res = "loss"
+                    if "win" in result_text.lower(): temp_res = "win"
+                    elif "draw" in result_text.lower(): temp_res = "draw"
+                    elif "nc" in result_text.lower(): temp_res = "nc"
+                    
+                    # Col 1: Opponent
+                    opp_tags = cols[1].find_all('a')
+                    opponent = opp_tags[0].get_text().strip() if opp_tags else "Unknown"
+                    
+                    # Col 2: Event (Date?) - actually usually Event Name is here, Date in next line? 
+                    # Col 7: Method
+                    method = cols[7].get_text().strip()
+                    
+                    history.append({
+                        "result": temp_res,
+                        "opponent": opponent,
+                        "method": method
+                    })
+            
+            stats['history'] = history
             return stats
             
         except Exception as e:

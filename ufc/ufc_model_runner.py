@@ -324,6 +324,34 @@ class UFCModelRunner:
                 fights_history = json.load(f)
 
         def get_recent_form(fighter_name):
+            # 1. Try specific fighter history first (Most Accurate)
+            f_data = fighters_db.get(fighter_name)
+            if f_data and 'history' in f_data and f_data['history']:
+                history = f_data['history'] # Already sorted Newest -> Oldest usually
+                recent = history[:10]
+                
+                wins = 0
+                losses = 0
+                ko = 0
+                sub = 0
+                
+                for f in recent:
+                     res = f.get('result', 'loss')
+                     if res == 'win':
+                         wins += 1
+                         method = f.get('method', '').lower()
+                         if 'ko' in method or 'tko' in method: ko += 1
+                         elif 'sub' in method: sub += 1
+                     elif res == 'loss':
+                         losses += 1
+                         
+                detail_p = []
+                if ko > 0: detail_p.append(f"{ko} KO")
+                if sub > 0: detail_p.append(f"{sub} Sub")
+                detail_str = f"({', '.join(detail_p)})" if detail_p else ""
+                return f"{wins}-{losses} {detail_str}".strip()
+
+            # 2. Fallback to global history
             # Find all fights
             my_fights = []
             for fight in fights_history:
