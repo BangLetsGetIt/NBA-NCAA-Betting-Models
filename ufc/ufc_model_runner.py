@@ -115,10 +115,13 @@ class UFCModelRunner:
                     "edge_pct": round(edge * 100, 2),
                     "recommended_bet_size_unit": 1, # Placeholder
                     "status": "pending",
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
+                    "game_time": event.get('commence_time') 
                 }
                 picks.append(pick)
-                print(f"💰 Found Value: {bet_on} ({odds}) over {pick['opponent']}. Edge: {pick['edge_pct']}%")
+                # Parse date for log
+                game_date = event.get('commence_time', '')[:10]
+                print(f"💰 Found Value ({game_date}): {bet_on} ({odds}) over {pick['opponent']}. Edge: {pick['edge_pct']}%")
         
         # Save picks
         if picks:
@@ -315,8 +318,8 @@ class UFCModelRunner:
 
         formatted_picks = []
         for p in picks:
-            # Format date
-            ts = p.get('timestamp', '')
+            # Format date from game_time if available, else timestamp
+            ts = p.get('game_time') or p.get('timestamp', '')
             date_str = ts[:10] if ts else 'N/A'
             
             # Odds display

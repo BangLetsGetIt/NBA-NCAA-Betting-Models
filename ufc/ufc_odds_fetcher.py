@@ -25,7 +25,8 @@ class UFCOddsFetcher:
         params = {
             "apiKey": self.API_KEY,
             "regions": "us",
-            "markets": "h2h", # Head to head (Moneyline)
+            "markets": "h2h",
+            "bookmakers": "hardrockbet,fanDuel,draftKings", # Prioritize Hard Rock
             "oddsFormat": "american"
         }
         
