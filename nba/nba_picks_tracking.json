@@ -9138,11 +9138,11 @@
       "edge": 5.3,
       "pick": "\u2705 BET: Dallas Mavericks +5.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 123,
+      "actual_away_score": 115,
       "clv_status": "negative"
     },
     {
@@ -9200,7 +9200,7 @@
       "model_line": 244.3,
       "market_line": 231.5,
       "opening_line": 231.5,
-      "closing_line": 232.0,
+      "closing_line": 232.5,
       "edge": 12.8,
       "pick": "\u2705 BET: OVER 231.5",
       "units": 1,
@@ -9222,7 +9222,7 @@
       "model_line": -15.4,
       "market_line": 8.0,
       "opening_line": 8.0,
-      "closing_line": 8.0,
+      "closing_line": 8.5,
       "edge": -7.4,
       "pick": "\u2705 BET: Boston Celtics -8.0",
       "units": 1,
@@ -9231,7 +9231,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     },
     {
       "pick_id": "Brooklyn Nets_Boston Celtics_2026-01-24T00:40:00Z_total",
@@ -9258,9 +9258,9 @@
   ],
   "summary": {
     "total_picks": 437,
-    "wins": 221,
+    "wins": 222,
     "losses": 205,
     "pushes": 3,
-    "pending": 8
+    "pending": 7
   }
 }
