@@ -97,12 +97,43 @@ class UFCStatsScraper:
             return {}
             
         try:
+            # print(f"Scraping details from {url}...")
             response = self.session.get(url)
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # This part needs to be tailored to the specific detailed page structure
-            # For now returning placeholder, will implement if 'all fighters' list isn't enough
-            pass 
+            # The stats are usually in lists with class 'b-list__box-list'
+            # There are usually 3 columns/lists.
+            
+            stats = {}
+            
+            # Career Stats Section
+            # Look for specific labels
+            
+            def get_stat(label):
+                # Find the text, then get the sibling or next value
+                # Using text matching is robust
+                elements = soup.find_all(string=re.compile(label))
+                for el in elements:
+                    parent = el.parent
+                    # The value is usually in the next sibling or appended text
+                    # Structure: <i ...>Label:</i> Value
+                    full_text = parent.get_text().strip()
+                    value = full_text.replace(label, "").replace(":", "").strip()
+                    return value
+                return "0"
+
+            stats['slpm'] = float(get_stat("SLpM") or 0)
+            stats['str_acc'] = get_stat("Str. Acc.")
+            stats['sapm'] = float(get_stat("SApM") or 0)
+            stats['str_def'] = get_stat("Str. Def")
+            
+            stats['td_avg'] = float(get_stat("TD Avg.") or 0)
+            stats['td_acc'] = get_stat("TD Acc.")
+            stats['td_def'] = get_stat("TD Def.")
+            stats['sub_avg'] = float(get_stat("Sub. Avg.") or 0)
+            
+            return stats
+            
         except Exception as e:
             print(f"Error scraping details for {url}: {e}")
             return {}

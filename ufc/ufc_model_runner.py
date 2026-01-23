@@ -316,6 +316,56 @@ class UFCModelRunner:
                     full_name = f"{f_obj.get('first_name', '')} {f_obj.get('last_name', '')}".strip()
                     fighters_db[full_name] = f_obj
 
+        # Load historical fights for Recent Form calculation
+        history_file = os.path.join(self.data_dir, "historical_fights.json")
+        fights_history = []
+        if os.path.exists(history_file):
+            with open(history_file, 'r') as f:
+                fights_history = json.load(f)
+
+        def get_recent_form(fighter_name):
+            # Find all fights
+            my_fights = []
+            for fight in fights_history:
+                f1 = fight.get('fighter_1', '')
+                f2 = fight.get('fighter_2', '')
+                if fighter_name in f1 or fighter_name in f2:
+                    my_fights.append(fight)
+            
+            # Assuming chronological order in file (scraper appending), take LAST 5
+            recent = my_fights[-5:]
+            if not recent: return "N/A"
+            
+            wins = 0
+            losses = 0
+            ko = 0
+            sub = 0
+            
+            for f in recent:
+                result = 'loss'
+                if fighter_name in f.get('fighter_1', ''):
+                    outcome = f.get('fighter_1_outcome', '')
+                else:
+                    outcome = f.get('fighter_2_outcome', '')
+                    
+                if outcome == 'win':
+                    wins += 1
+                    method = f.get('method', '').lower()
+                    if 'ko' in method or 'tko' in method:
+                        ko += 1
+                    elif 'sub' in method:
+                        sub += 1
+                elif outcome == 'loss':
+                    losses += 1
+            
+            # Format: 4-1 (2 KO, 1 Sub)
+            detail_p = []
+            if ko > 0: detail_p.append(f"{ko} KO")
+            if sub > 0: detail_p.append(f"{sub} Sub")
+            
+            detail_str = f"({', '.join(detail_p)})" if detail_p else ""
+            return f"{wins}-{losses} {detail_str}".strip()
+
         formatted_picks = []
         for p in picks:
             # Format date from game_time if available, else timestamp
@@ -368,7 +418,9 @@ class UFCModelRunner:
             
             td_avg_display = f"{f_stats.get('td_avg', 0):.2f}"
             reach_display = f_stats.get('reach', 'N/A')
-            weight_class = "Catchweight" # Placeholder or inferred from matchup
+            weight_class = f_stats.get('weight', "Catchweight") 
+            
+            recent_form = get_recent_form(fighter_name)
             
             formatted_picks.append({
                 'date': date_str,
@@ -387,7 +439,10 @@ class UFCModelRunner:
                 'str_diff_display': str_diff_display,
                 'td_avg_display': td_avg_display,
                 'reach_display': reach_display,
-                'weight_class': weight_class
+                'td_avg_display': td_avg_display,
+                'reach_display': reach_display,
+                'weight_class': weight_class,
+                'recent_form': recent_form
             })
             
         context = {
