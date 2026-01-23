@@ -320,7 +320,11 @@ class UFCModelRunner:
         for p in picks:
             # Format date from game_time if available, else timestamp
             ts = p.get('game_time') or p.get('timestamp', '')
-            date_str = ts[:10] if ts else 'N/A'
+            try:
+                dt_ts = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                date_str = dt_ts.strftime("%a, %b %d") # Sat, Jan 24
+            except:
+                date_str = ts[:10] if ts else 'N/A'
             
             # Odds display
             odds_val = p.get('odds', -110)
