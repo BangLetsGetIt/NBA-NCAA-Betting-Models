@@ -110,16 +110,27 @@ class UFCStatsScraper:
             # Look for specific labels
             
             def get_stat(label):
-                # Find the text, then get the sibling or next value
-                # Using text matching is robust
+                # Structure: <li ...> <i ...>Label:</i> Value </li>
+                # Find the text node "Label:", its parent is <i>
+                # The value is the text node following <i>
                 elements = soup.find_all(string=re.compile(label))
                 for el in elements:
+                    # check if it's inside the standard label class to be safe, or just take first
                     parent = el.parent
-                    # The value is usually in the next sibling or appended text
-                    # Structure: <i ...>Label:</i> Value
-                    full_text = parent.get_text().strip()
-                    value = full_text.replace(label, "").replace(":", "").strip()
-                    return value
+                    if parent.name == 'i':
+                         # navigate to li
+                         li = parent.parent
+                         if li.name == 'li':
+                             # get text of the whole li
+                             full_text = li.get_text().strip()
+                             # clean it: "SLpM: 3.50" -> 3.50
+                             # remove all whitespace/newlines from label
+                             clean_label = label.replace(" ", "").replace("\n", "") 
+                             # actually simple split by ':' might work
+                             if ':' in full_text:
+                                 return full_text.split(':')[-1].strip()
+                             # Fallback, just next sibling text
+                             return parent.next_sibling.strip() if parent.next_sibling else "0"
                 return "0"
 
             stats['slpm'] = float(get_stat("SLpM") or 0)

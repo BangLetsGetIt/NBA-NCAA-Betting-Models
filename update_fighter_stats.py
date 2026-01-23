@@ -51,10 +51,9 @@ def main():
             print(f"⚠ Fighter not found in DB: {name}")
             continue
             
-        # Check if already has stats AND history
-        if 'slpm' in f_obj and 'history' in f_obj:
-            # print(f"✓ Stats present for {name}")
-            continue
+        # Stats check removed to force update for repair
+        # if 'slpm' in f_obj and 'history' in f_obj:
+        #    continue
             
         # Scrape
         url = f_obj.get('link')
