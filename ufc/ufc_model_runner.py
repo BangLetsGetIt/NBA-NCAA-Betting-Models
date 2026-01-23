@@ -332,8 +332,8 @@ class UFCModelRunner:
                 if fighter_name in f1 or fighter_name in f2:
                     my_fights.append(fight)
             
-            # Assuming chronological order in file (scraper appending), take LAST 5
-            recent = my_fights[-5:]
+            # Assuming chronological order in file (scraper appending), take LAST 10
+            recent = my_fights[-10:]
             if not recent: return "N/A"
             
             wins = 0
