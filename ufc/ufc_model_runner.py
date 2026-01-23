@@ -302,6 +302,17 @@ class UFCModelRunner:
         # Sort picks by date (newest first)
         picks.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
         
+        # Load fighter stats for enrichment
+        fighters_db = {}
+        fighters_db_path = os.path.join(self.data_dir, "fighters_db.json")
+        if os.path.exists(fighters_db_path):
+            with open(fighters_db_path, 'r') as f:
+                fighters_list = json.load(f)
+                # Convert list to dict for lookup: "First Last" -> stats
+                for f_obj in fighters_list:
+                    full_name = f"{f_obj.get('first_name', '')} {f_obj.get('last_name', '')}".strip()
+                    fighters_db[full_name] = f_obj
+
         formatted_picks = []
         for p in picks:
             # Format date
@@ -309,29 +320,74 @@ class UFCModelRunner:
             date_str = ts[:10] if ts else 'N/A'
             
             # Odds display
-            odds_val = p.get('odds')
+            odds_val = p.get('odds', -110)
             if odds_val > 0: odds_str = f"+{odds_val}"
             else: odds_str = str(odds_val)
             
             status_class = 'pending'
             if p.get('status') == 'won': status_class = 'win'
-            elif p.get('status') == 'lost': status_class = 'loss'
+            elif p.get('status') == 'lost': status_class = 'lost'
+            
+            # Implied Probability
+            if odds_val > 0:
+                implied_prob = 100 / (odds_val + 100)
+            else:
+                implied_prob = abs(odds_val) / (abs(odds_val) + 100)
+            implied_prob_pct = round(implied_prob * 100, 1)
+
+            # Kelly Suggestion (Simple fractional)
+            kelly = 0
+            edge = p.get('edge_pct', 0) / 100.0
+            if edge > 0:
+                decimal_odds = (odds_val / 100) + 1 if odds_val > 0 else (100 / abs(odds_val)) + 1
+                b = decimal_odds - 1
+                q = 1 - (p.get('model_prob', 0))
+                p_win = p.get('model_prob', 0)
+                kelly = (b * p_win - q) / b
+                kelly = max(0, kelly) * 0.5 # Quarter kelly safety
+            kelly_units = round(kelly * 10, 2) # Arbitrary scale for display
+            if kelly_units < 0.1: kelly_units = 0.5 # Minimum unit
+
+            # Fetch Fighter Stats
+            fighter_name = p.get('fighter')
+            f_stats = fighters_db.get(fighter_name, {})
+            
+            # Stats Display
+            str_diff = 0
+            str_diff_display = "N/A"
+            if 'slpm' in f_stats:
+                str_diff = f_stats.get('slpm', 0) 
+                str_diff_display = f"{str_diff:.2f}"
+            
+            td_avg_display = f"{f_stats.get('td_avg', 0):.2f}"
+            reach_display = f_stats.get('reach', 'N/A')
+            weight_class = "Catchweight" # Placeholder or inferred from matchup
             
             formatted_picks.append({
                 'date': date_str,
-                'fighter': p.get('fighter'),
+                'fighter': fighter_name,
                 'opponent': p.get('opponent'),
                 'model_prob': round(p.get('model_prob', 0) * 100, 1),
                 'edge': p.get('edge_pct'),
+                'edge_pct': p.get('edge_pct'),
                 'odds': odds_str,
+                'odds_val': odds_val,
                 'status': p.get('status', 'pending').upper(),
-                'status_class': status_class
+                'status_class': status_class,
+                'implied_prob': implied_prob_pct,
+                'kelly_suggestion': kelly_units,
+                'str_diff': str_diff,
+                'str_diff_display': str_diff_display,
+                'td_avg_display': td_avg_display,
+                'reach_display': reach_display,
+                'weight_class': weight_class
             })
             
         context = {
             'total_picks': total_picks,
             'wins': wins,
             'losses': losses,
+            'pending_count': pending,
             'win_rate': round(win_rate, 1),
             'profit_units': round(profit, 2),
             'roi': round(roi, 1),
@@ -341,6 +397,10 @@ class UFCModelRunner:
         
         # Render
         try:
+            # Need colors for verify?
+            # actually kelly_suggestion above had a bug with colors.strip which isn't imported potentially here or is local class.
+            # Fixed plain assignment:
+            
             with open(self.dashboard_template, 'r') as f:
                 template_str = f.read()
                 
