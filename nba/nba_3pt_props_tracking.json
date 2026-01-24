@@ -7082,11 +7082,13 @@
       "edge": 0.6,
       "ev": 13.21,
       "tracked_at": "2026-01-22T22:22:32.692526-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 2,
       "clv_status": "positive",
-      "last_updated": "2026-01-23T00:59:39.530605-05:00"
+      "last_updated": "2026-01-23T00:59:39.530605-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-23T23:51:59.860771-05:00"
     },
     {
       "pick_id": "Jordan Poole_1.5_over_2026-01-24T01:10:00Z",
@@ -7320,6 +7322,28 @@
       "actual_3pm": null,
       "clv_status": "positive",
       "last_updated": "2026-01-23T21:14:07.924237-05:00"
+    },
+    {
+      "pick_id": "Klay Thompson_2.5_over_2026-01-25T01:40:00Z",
+      "player": "Klay Thompson",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "team": "Dallas Mavericks",
+      "opponent": "Los Angeles Lakers",
+      "ai_score": 9.3,
+      "odds": -110,
+      "opening_odds": -110,
+      "latest_odds": -110,
+      "game_time": "2026-01-25T01:40:00Z",
+      "season_avg": 3.0,
+      "recent_avg": 3.8,
+      "edge": 0.5,
+      "ev": 30.3,
+      "tracked_at": "2026-01-23T23:52:01.972647-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_3pm": null,
+      "clv_status": null
     }
   ]
 }
