@@ -12,6 +12,56 @@ import pytz
 import pandas as pd
 import numpy as np
 from collections import defaultdict
+import math
+
+# Standard Deviation for College Basketball Margins (approx 10.5 pts)
+STD_DEV_SPREAD = 10.5
+STD_DEV_TOTAL = 10.5
+
+def calculate_ev(model_val, market_val, line_type='spread', price=-110):
+    """
+    Calculate Expected Value based on Model Probability vs Implied Probability.
+    Uses Normal Distribution CDF.
+    """
+    # 1. Calculate Implied Probability from Odds
+    if price < 0:
+        implied_prob = -price / (-price + 100)
+    else:
+        implied_prob = 100 / (price + 100)
+        
+    # 2. Calculate Model Win Probability (Z-Score)
+    # Z = (Line - Prediction) / StdDev
+    # For Spread: If Model says +5 and Market is +2, we cover if result > +2.
+    # Actually simpler: If Model > Market (Edge > 0), Prob is CDF(Edge/StdDev) + 0.5?
+    # Let's use the explicit difference.
+    
+    std_dev = STD_DEV_TOTAL if line_type == 'total' else STD_DEV_SPREAD
+    
+    # Edge is Model - Market. 
+    # If Edge is +3, what is prob we cover? 
+    # Approx 61% for 3pt edge with 10.5 std dev.
+    
+    edge = abs(model_val - market_val)
+    
+    # Z-Score approximation for "Probability of winning given x points of edge"
+    # This assumes the edge is the mean of the distribution of margins relative to the line.
+    z_score = edge / std_dev
+    
+    # CDF using error function
+    model_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2)))
+    
+    # 3. Calculate EV
+    # EV = (Prob_Win * Profit) - (Prob_Loss * Risk)
+    # Unit bet of 1.
+    
+    if price < 0:
+        profit = 100 / -price
+    else:
+        profit = price / 100
+        
+    ev = (model_prob * profit) - ((1 - model_prob) * 1)
+    
+    return ev * 100, model_prob * 100  # Return as percentage (e.g., 5.4% EV)
 try:
     from fetch_ncaab_stats import fetch_sports_reference_stats
 except ImportError:
@@ -52,7 +102,7 @@ PICKS_TRACKING_FILE = os.path.join(SCRIPT_DIR, "ncaab_picks_tracking.json")
 TRACKING_HTML_FILE = os.path.join(SCRIPT_DIR, "ncaab_tracking_dashboard.html")
 
 # --- Model Parameters (Tuned for College Basketball) ---
-HOME_COURT_ADVANTAGE = 2.8  # Reduced from 3.2 - slightly more neutral
+HOME_COURT_ADVANTAGE = 3.1  # Increased from 2.8 - standard CBB advantage
 SPREAD_THRESHOLD = 6.0    # Lowered from 10.0 - capturing more value
 TOTAL_THRESHOLD = 6.0   # Keep at 6.0 - totals are profitable (+25u)
 
@@ -919,7 +969,7 @@ def predict_game(home_team, away_team, home_stats, away_stats):
     # Regress extreme totals (<130 or >160) 15% toward league average (typically ~145)
     league_avg_total = 145.0
     if total < 130.0 or total > 160.0:
-        regression_factor = 0.15
+        regression_factor = 0.10 # Reduced from 0.15 to allow more extreme totals
         total = total * (1 - regression_factor) + league_avg_total * regression_factor
         # Adjust individual scores proportionally to maintain spread
         if total != (home_points + away_points):
@@ -942,6 +992,13 @@ def determine_spread_pick(home_team, away_team, edge, market_line):
     if abs_edge < SPREAD_THRESHOLD:
         return "❌ NO BET", f"Edge too small ({edge:+.1f})"
     
+    # Calculate EV
+    ev_val, win_prob = calculate_ev(0, edge, 'spread', -110) # edge is model-market
+    
+    # Check Positive EV
+    if ev_val <= 0:
+        return "❌ NO BET", f"Negative EV ({ev_val:.1f}%)"
+    
     # Check maximum edge cap - very large edges likely indicate model errors
     if abs_edge > MAX_SPREAD_EDGE:
         return "❌ NO BET", f"⚠️ SKIPPED: Edge too large ({abs_edge:.1f} > {MAX_SPREAD_EDGE:.1f}) - likely model error"
@@ -953,7 +1010,7 @@ def determine_spread_pick(home_team, away_team, edge, market_line):
         # We bet the AWAY team to cover their line (which is -market_line)
         pick_team = away_team
         pick_line = -market_line # e.g., if market_line is -20.5, this becomes +20.5
-        confidence = "HIGH" if abs_edge >= 5 else "MEDIUM"
+        confidence = "HIGH" if ev_val >= 5 else "MEDIUM"
         
         # Format line with a +
         pick_line_str = f"+{pick_line}" if pick_line > 0 else f"{pick_line}"
@@ -964,11 +1021,11 @@ def determine_spread_pick(home_team, away_team, edge, market_line):
         # We bet the HOME team to cover their line (which is market_line)
         pick_team = home_team
         pick_line_str = f"{market_line:+.1f}" # e.g., -20.5
-        confidence = "HIGH" if abs_edge >= 5 else "MEDIUM"
+        confidence = "HIGH" if ev_val >= 5 else "MEDIUM"
     
     return (
         f"✅ BET: {pick_team} {pick_line_str}",
-        f"{confidence} confidence ({edge:+.1f} edge)"
+        f"{confidence} confidence (EV: +{ev_val:.1f}% | Win: {win_prob:.1f}%)"
     )
 
 def determine_total_pick(edge, market_line):
@@ -978,6 +1035,13 @@ def determine_total_pick(edge, market_line):
     if abs_edge < TOTAL_THRESHOLD:
         return "❌ NO BET", f"Edge too small ({edge:+.1f})"
     
+    # Calculate EV
+    ev_val, win_prob = calculate_ev(0, edge, 'total', -110)
+    
+    # Check Positive EV
+    if ev_val <= 0:
+        return "❌ NO BET", f"Negative EV ({ev_val:.1f}%)"
+    
     # Check maximum edge cap - very large edges likely indicate model errors
     if abs_edge > MAX_TOTAL_EDGE:
         return "❌ NO BET", f"⚠️ SKIPPED: Edge too large ({abs_edge:.1f} > {MAX_TOTAL_EDGE:.1f}) - likely model error"
@@ -986,15 +1050,15 @@ def determine_total_pick(edge, market_line):
     if edge > 0:
         # Model projects higher, bet over
         direction = "OVER"
-        confidence = "HIGH" if abs_edge >= 7 else "MEDIUM"
+        confidence = "HIGH" if ev_val >= 5 else "MEDIUM"
     else:
         # Model projects lower, bet under
         direction = "UNDER"
-        confidence = "HIGH" if abs_edge >= 7 else "MEDIUM"
+        confidence = "HIGH" if ev_val >= 5 else "MEDIUM"
     
     return (
         f"✅ BET: {direction} {market_line}",
-        f"{confidence} confidence ({abs_edge:.1f} edge)"
+        f"{confidence} confidence (EV: +{ev_val:.1f}% | Win: {win_prob:.1f}%)"
     )
 
 # =========================
