@@ -60452,10 +60452,11 @@
       "model_line": 5.668600000000012,
       "market_line": -17.0,
       "edge": 22.668600000000012,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-22T19:23:04.997604-05:00"
+      "status": "loss",
+      "result": "Lost by 12.0",
+      "profit": -100,
+      "logged_at": "2026-01-22T19:23:04.997604-05:00",
+      "actual_score": "The Citadel Bulldogs 55, East Tennessee St Buccaneers 84"
     },
     {
       "pick_id": "Charlotte 49ers_Tulane Green Wave_2026-01-24T00:30:00Z_spread",
@@ -60637,10 +60638,11 @@
       "model_line": 8.240459999999999,
       "market_line": -6.5,
       "edge": 14.740459999999999,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-22T22:22:44.604802-05:00"
+      "status": "win",
+      "result": "Won by 16.5",
+      "profit": 91.0,
+      "logged_at": "2026-01-22T22:22:44.604802-05:00",
+      "actual_score": "Fairleigh Dickinson Knights 76, Central Connecticut St Blue Devils 66"
     },
     {
       "pick_id": "Central Connecticut St Blue Devils_Fairleigh Dickinson Knights_2026-01-24T00:00:00Z_total",
@@ -60652,10 +60654,11 @@
       "model_line": 150.0783,
       "market_line": 143.5,
       "edge": 6.578300000000013,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-22T22:22:44.820521-05:00"
+      "status": "loss",
+      "result": "Lost by 1.5",
+      "profit": -100,
+      "logged_at": "2026-01-22T22:22:44.820521-05:00",
+      "actual_score": "Fairleigh Dickinson Knights 76, Central Connecticut St Blue Devils 66"
     },
     {
       "pick_id": "Radford Highlanders_High Point Panthers_2026-01-24T00:00:00Z_spread",
@@ -60757,10 +60760,11 @@
       "model_line": 139.38,
       "market_line": 146.0,
       "edge": -6.6200000000000045,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-23T00:59:57.163980-05:00"
+      "status": "win",
+      "result": "Won by 5.0",
+      "profit": 91.0,
+      "logged_at": "2026-01-23T00:59:57.163980-05:00",
+      "actual_score": "Chicago St Cougars 60, St. Francis (PA) Red Flash 81"
     },
     {
       "pick_id": "Virginia Cavaliers_North Carolina Tar Heels_2026-01-24T17:00:00Z_spread",
@@ -61672,10 +61676,11 @@
       "model_line": 2.8000000000000114,
       "market_line": -4.5,
       "edge": 7.300000000000011,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-23T17:01:16.385010-05:00"
+      "status": "loss",
+      "result": "Lost by 16.5",
+      "profit": -100,
+      "logged_at": "2026-01-23T17:01:16.385010-05:00",
+      "actual_score": "Chicago St Cougars 60, St. Francis (PA) Red Flash 81"
     },
     {
       "pick_id": "Wofford Terriers_Mercer Bears_2026-01-24T16:00:00Z_spread",
@@ -63266,13 +63271,43 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-01-23T20:02:32.657790-05:00"
+    },
+    {
+      "pick_id": "Robert Morris Colonials_Green Bay Phoenix_2026-01-24T18:00:00Z_spread",
+      "game_date": "2026-01-24T18:00:00Z",
+      "home_team": "Robert Morris Colonials",
+      "away_team": "Green Bay Phoenix",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Green Bay Phoenix +6.5",
+      "model_line": 1.881600000000006,
+      "market_line": -6.5,
+      "edge": 8.381600000000006,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-01-23T20:55:53.715727-05:00"
+    },
+    {
+      "pick_id": "Robert Morris Colonials_Green Bay Phoenix_2026-01-24T18:00:00Z_total",
+      "game_date": "2026-01-24T18:00:00Z",
+      "home_team": "Robert Morris Colonials",
+      "away_team": "Green Bay Phoenix",
+      "pick_type": "total",
+      "pick_text": "\u2705 BET: UNDER 145.5",
+      "model_line": 135.52279999999996,
+      "market_line": 145.5,
+      "edge": -9.977200000000039,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-01-23T20:55:53.889120-05:00"
     }
   ],
   "summary": {
-    "total_picks": 3730,
-    "wins": 1849,
-    "losses": 1684,
+    "total_picks": 3732,
+    "wins": 1851,
+    "losses": 1687,
     "pushes": 5,
-    "pending": 192
+    "pending": 189
   }
 }
