@@ -16818,11 +16818,13 @@
       "edge": 5.1,
       "ev": 42.8,
       "tracked_at": "2026-01-23T19:43:22.963190-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_pts": 8,
       "clv_status": "positive",
-      "last_updated": "2026-01-23T21:31:24.623154-05:00"
+      "last_updated": "2026-01-23T21:31:24.623154-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-24T02:03:03.190503-05:00"
     },
     {
       "pick_id": "R.J. Barrett_15.5_over_2026-01-24T03:10:00Z",
@@ -16841,11 +16843,12 @@
       "edge": 4.1,
       "ev": 27.38,
       "tracked_at": "2026-01-23T19:43:22.963282-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_pts": null,
       "clv_status": "positive",
-      "last_updated": "2026-01-23T21:12:53.961584-05:00"
+      "last_updated": "2026-01-23T21:12:53.961584-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Miles McBride_10.5_over_2026-01-24T20:10:00Z",
@@ -16980,10 +16983,12 @@
       "edge": 6.1,
       "ev": 24.69,
       "tracked_at": "2026-01-23T20:37:59.959076-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_pts": 8,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-01-24T02:03:03.190742-05:00"
     },
     {
       "pick_id": "Collin Sexton_12.5_over_2026-01-24T17:10:00Z",
@@ -17053,6 +17058,28 @@
       "actual_pts": null,
       "clv_status": "positive",
       "last_updated": "2026-01-24T01:42:25.756164-05:00"
+    },
+    {
+      "pick_id": "De'Andre Hunter_10.5_over_2026-01-25T00:10:00Z",
+      "player": "De'Andre Hunter",
+      "prop_line": 10.5,
+      "bet_type": "over",
+      "team": "Cleveland Cavaliers",
+      "opponent": "Orlando Magic",
+      "ai_score": 10.0,
+      "odds": -112,
+      "opening_odds": -112,
+      "latest_odds": -112,
+      "game_time": "2026-01-25T00:10:00Z",
+      "season_avg": 13.9,
+      "recent_avg": 11.5,
+      "edge": 3.4,
+      "ev": 32.5,
+      "tracked_at": "2026-01-24T02:03:06.529997-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_pts": null,
+      "clv_status": null
     }
   ]
 }
