@@ -266,21 +266,21 @@
     <div class="container">
         <header>
             <h1>📊 Analytics Dashboard</h1>
-            <p>Comprehensive performance analysis across all models • Last updated: January 24, 2026 at 12:28 AM</p>
+            <p>Comprehensive performance analysis across all models • Last updated: January 24, 2026 at 12:45 AM</p>
         </header>
         
         <!-- Overview Cards -->
         <div class="overview-grid">
             <div class="stat-card">
-                <div class="value">2194-1889-19</div>
+                <div class="value">2194-1893-19</div>
                 <div class="label">Overall Record</div>
             </div>
-            <div class="stat-card profit">
-                <div class="value">+3u</div>
+            <div class="stat-card loss">
+                <div class="value">-2u</div>
                 <div class="label">Net Profit (Units)</div>
             </div>
-            <div class="stat-card profit">
-                <div class="value">+0.0%</div>
+            <div class="stat-card loss">
+                <div class="value">-0.0%</div>
                 <div class="label">ROI</div>
             </div>
             <div class="stat-card">
@@ -423,8 +423,8 @@
             <div class="model-grid">
                 <div class="model-item">
                     <div class="name">NBA Main</div>
-                    <div class="record">227-209</div>
-                    <div class="profit loss">-4u</div>
+                    <div class="record">227-213</div>
+                    <div class="profit loss">-8u</div>
                 </div><div class="model-item">
                     <div class="name">NBA Points</div>
                     <div class="record">350-297</div>
@@ -486,7 +486,7 @@
         </div>
         
         <footer>
-            <p>Quiet Wins Analytics • Auto-generated from 15 tracking files • 4102 total graded picks</p>
+            <p>Quiet Wins Analytics • Auto-generated from 15 tracking files • 4106 total graded picks</p>
         </footer>
     </div>
     
@@ -536,8 +536,8 @@
                 labels: ["2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25"],
                 datasets: [{
                     label: 'Profit',
-                    data: [4.279999999999999, -7.729999999999997, 1.52, 7.74, -0.06999999999999873, -6.090000000000002, 1.1599999999999993, -2.919999999999999, -0.5600000000000007, 5.470000000000001, 5.700000000000001, 3.5199999999999996, -2.8400000000000007, -4.24, 6.2700000000000005, 0.0],
-                    backgroundColor: [4.279999999999999, -7.729999999999997, 1.52, 7.74, -0.06999999999999873, -6.090000000000002, 1.1599999999999993, -2.919999999999999, -0.5600000000000007, 5.470000000000001, 5.700000000000001, 3.5199999999999996, -2.8400000000000007, -4.24, 6.2700000000000005, 0.0].map(v => v >= 0 ? 'rgba(0, 255, 136, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    data: [2.73, -7.729999999999997, 1.52, 7.74, -0.06999999999999873, -6.090000000000002, 1.1599999999999993, -2.919999999999999, -0.5600000000000007, 5.470000000000001, 5.700000000000001, 3.5199999999999996, -2.8400000000000007, -4.24, 6.2700000000000005, 0.0],
+                    backgroundColor: [2.73, -7.729999999999997, 1.52, 7.74, -0.06999999999999873, -6.090000000000002, 1.1599999999999993, -2.919999999999999, -0.5600000000000007, 5.470000000000001, 5.700000000000001, 3.5199999999999996, -2.8400000000000007, -4.24, 6.2700000000000005, 0.0].map(v => v >= 0 ? 'rgba(0, 255, 136, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
                     borderRadius: 4
                 }]
             },
@@ -563,11 +563,11 @@
         new Chart(document.getElementById('leagueChart'), {
             type: 'bar',
             data: {
-                labels: ["La Liga", "Premier League", "Unknown", "Ligue 1", "Serie A", "Bundesliga"],
+                labels: ["La Liga", "Premier League", "Ligue 1", "Unknown", "Serie A", "Bundesliga"],
                 datasets: [{
                     label: 'Profit (Units)',
-                    data: [12.850000000000003, 11.590000000000005, 1.0000000000000417, -1.5299999999999976, -6.959999999999994, -14.439999999999998],
-                    backgroundColor: [12.850000000000003, 11.590000000000005, 1.0000000000000417, -1.5299999999999976, -6.959999999999994, -14.439999999999998].map(v => v >= 0 ? 'rgba(68, 136, 255, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    data: [12.850000000000003, 11.590000000000005, -1.5299999999999976, -3.3999999999998503, -6.959999999999994, -14.439999999999998],
+                    backgroundColor: [12.850000000000003, 11.590000000000005, -1.5299999999999976, -3.3999999999998503, -6.959999999999994, -14.439999999999998].map(v => v >= 0 ? 'rgba(68, 136, 255, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
                     borderRadius: 4
                 }]
             },
@@ -593,9 +593,9 @@
         new Chart(document.getElementById('propsChart'), {
             type: 'doughnut',
             data: {
-                labels: ["total", "Unknown", "UNDER", "TOTAL", "Spread", "HOME", "Rushing Yards", "OVER", "Receptions", "Passing Yards", "Receiving Yards", "SPREAD", "Anytime TD", "Total", "spread", "AWAY"],
+                labels: ["total", "Unknown", "UNDER", "TOTAL", "HOME", "Spread", "Rushing Yards", "OVER", "Receptions", "Passing Yards", "Receiving Yards", "SPREAD", "Anytime TD", "Total", "spread", "AWAY"],
                 datasets: [{
-                    data: [29.00999999999933, 20.469999999997892, 13.930000000000001, 12.430000000000007, 10.800000000000026, 10.800000000000008, 2.3, -1.4999999999999951, -2.5, -5.27, -6.510000000000001, -10.919999999999987, -12.899999999999999, -14.54, -18.85999999999994, -21.72].map(Math.abs),
+                    data: [29.00999999999933, 16.069999999998473, 13.930000000000001, 12.430000000000007, 10.800000000000008, 9.700000000000026, 2.3, -1.4999999999999951, -2.5, -5.27, -6.510000000000001, -10.919999999999987, -12.899999999999999, -17.840000000000003, -18.85999999999994, -21.72].map(Math.abs),
                     backgroundColor: [
                         'rgba(0, 255, 136, 0.7)',
                         'rgba(68, 136, 255, 0.7)',
@@ -626,7 +626,7 @@
                 labels: ["0-1", "1-2", "2-3", "3+"],
                 datasets: [{
                     label: 'Win Rate %',
-                    data: [54.4, 59.2, 53.6, 52.8],
+                    data: [54.4, 59.2, 53.6, 52.7],
                     backgroundColor: 'rgba(136, 68, 255, 0.7)',
                     borderRadius: 4
                 }]
