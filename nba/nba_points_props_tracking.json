@@ -17720,11 +17720,12 @@
       "edge": 2.0,
       "ev": 40.0,
       "tracked_at": "2026-01-26T02:36:49.504348-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_pts": null,
       "clv_status": "positive",
-      "last_updated": "2026-01-26T10:02:29.312023-05:00"
+      "last_updated": "2026-01-26T10:02:29.312023-05:00",
+      "profit_loss": 0
     },
     {
       "pick_id": "Bennedict Mathurin_13.5_over_2026-01-26T18:40:00Z",
@@ -17743,11 +17744,13 @@
       "edge": 4.3,
       "ev": 36.04,
       "tracked_at": "2026-01-26T02:36:49.504511-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_pts": 16,
       "clv_status": "negative",
-      "last_updated": "2026-01-26T10:02:29.312248-05:00"
+      "last_updated": "2026-01-26T10:02:29.312248-05:00",
+      "profit_loss": 94,
+      "updated_at": "2026-01-26T17:27:51.050926-05:00"
     },
     {
       "pick_id": "Collin Sexton_11.5_over_2026-01-26T20:10:00Z",
@@ -17782,7 +17785,7 @@
       "ai_score": 10.0,
       "odds": -130,
       "opening_odds": -130,
-      "latest_odds": 100,
+      "latest_odds": -111,
       "game_time": "2026-01-27T00:10:00Z",
       "season_avg": 22.2,
       "recent_avg": 16.0,
@@ -17793,7 +17796,7 @@
       "result": null,
       "actual_pts": null,
       "clv_status": "negative",
-      "last_updated": "2026-01-26T10:02:29.312503-05:00"
+      "last_updated": "2026-01-26T17:27:55.628785-05:00"
     },
     {
       "pick_id": "Jrue Holiday_11.5_over_2026-01-27T01:10:00Z",
@@ -17805,7 +17808,7 @@
       "ai_score": 10.0,
       "odds": 100,
       "opening_odds": 100,
-      "latest_odds": 100,
+      "latest_odds": -122,
       "game_time": "2026-01-27T01:10:00Z",
       "season_avg": 15.4,
       "recent_avg": 12.8,
@@ -17815,7 +17818,8 @@
       "status": "pending",
       "result": null,
       "actual_pts": null,
-      "clv_status": null
+      "clv_status": "positive",
+      "last_updated": "2026-01-26T17:27:55.628980-05:00"
     },
     {
       "pick_id": "Deni Avdija_22.5_over_2026-01-27T01:10:00Z",
@@ -17884,6 +17888,50 @@
       "actual_pts": null,
       "clv_status": "negative",
       "last_updated": "2026-01-26T10:02:29.312975-05:00"
+    },
+    {
+      "pick_id": "Deni Avdija_21.5_over_2026-01-27T01:10:00Z",
+      "player": "Deni Avdija",
+      "prop_line": 21.5,
+      "bet_type": "over",
+      "team": "Portland Trail Blazers",
+      "opponent": "Boston Celtics",
+      "ai_score": 10.0,
+      "odds": -113,
+      "opening_odds": -113,
+      "latest_odds": -113,
+      "game_time": "2026-01-27T01:10:00Z",
+      "season_avg": 26.0,
+      "recent_avg": 28.2,
+      "edge": 4.5,
+      "ev": 31.95,
+      "tracked_at": "2026-01-26T17:27:55.629195-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_pts": null,
+      "clv_status": null
+    },
+    {
+      "pick_id": "Ayo Dosunmu_12.5_over_2026-01-27T01:10:00Z",
+      "player": "Ayo Dosunmu",
+      "prop_line": 12.5,
+      "bet_type": "over",
+      "team": "Chicago Bulls",
+      "opponent": "Los Angeles Lakers",
+      "ai_score": 10.0,
+      "odds": -102,
+      "opening_odds": -102,
+      "latest_odds": -102,
+      "game_time": "2026-01-27T01:10:00Z",
+      "season_avg": 14.3,
+      "recent_avg": 15.4,
+      "edge": 1.8,
+      "ev": 38.63,
+      "tracked_at": "2026-01-26T17:27:55.629383-05:00",
+      "status": "pending",
+      "result": null,
+      "actual_pts": null,
+      "clv_status": null
     }
   ]
 }
