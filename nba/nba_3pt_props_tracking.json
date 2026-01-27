@@ -4926,11 +4926,12 @@
       "edge": 1.2,
       "ev": 11.18,
       "tracked_at": "2026-01-13T15:00:54.609162-05:00",
-      "status": "pending",
-      "result": "DNP",
-      "actual_3pm": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 2,
       "clv_status": null,
-      "profit_loss": 0
+      "profit_loss": 58,
+      "updated_at": "2026-01-27T01:38:50.257478-05:00"
     },
     {
       "pick_id": "Marcus Smart_2.5_under_2026-01-14T03:40:00Z",
@@ -5218,12 +5219,13 @@
       "edge": 0.5,
       "ev": 2.39,
       "tracked_at": "2026-01-13T22:41:55.298008-05:00",
-      "status": "pending",
-      "result": "DNP",
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 0,
       "clv_status": "negative",
       "last_updated": "2026-01-14T18:10:58.311034-05:00",
-      "profit_loss": 0
+      "profit_loss": -100,
+      "updated_at": "2026-01-27T01:38:50.555471-05:00"
     },
     {
       "pick_id": "A.J. Green_2.5_over_2026-01-16T01:10:00Z",
@@ -5242,7 +5244,7 @@
       "edge": 0.5,
       "ev": -9.18,
       "tracked_at": "2026-01-15T01:01:26.761027-05:00",
-      "status": "pending",
+      "status": "void",
       "result": "DNP",
       "actual_3pm": null,
       "clv_status": "positive",
@@ -5316,7 +5318,7 @@
       "edge": 0.6,
       "ev": 10.57,
       "tracked_at": "2026-01-15T02:50:09.066474-05:00",
-      "status": "pending",
+      "status": "void",
       "result": "DNP",
       "actual_3pm": null,
       "clv_status": null,
@@ -5389,12 +5391,13 @@
       "edge": 1.1,
       "ev": 10.0,
       "tracked_at": "2026-01-15T01:01:26.760982-05:00",
-      "status": "pending",
-      "result": "DNP",
-      "actual_3pm": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1,
       "clv_status": "negative",
       "last_updated": "2026-01-15T18:01:10.526301-05:00",
-      "profit_loss": 0
+      "profit_loss": -100,
+      "updated_at": "2026-01-27T01:38:50.839038-05:00"
     },
     {
       "pick_id": "Nickeil Alexander-Walker_2.5_over_2026-01-16T03:10:00Z",
@@ -7468,7 +7471,7 @@
       "ai_score": 7.69,
       "odds": -180,
       "opening_odds": -180,
-      "latest_odds": -180,
+      "latest_odds": -182,
       "game_time": "2026-01-28T00:10:00Z",
       "season_avg": 2.4,
       "recent_avg": 2.1,
@@ -7478,7 +7481,8 @@
       "status": "pending",
       "result": null,
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": "positive",
+      "last_updated": "2026-01-27T01:38:53.475627-05:00"
     }
   ]
 }
