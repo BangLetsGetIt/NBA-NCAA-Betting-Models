@@ -109,6 +109,13 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run UFC Model
+if run_model "UFC Model" "ufc/ufc_model_runner.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Calculate total time
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
@@ -120,9 +127,9 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/6${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/7${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/6${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/7${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
@@ -135,6 +142,7 @@ echo "  • Assists: nba/nba_assists_props.html"
 echo "  • 3PT: nba/nba_3pt_props.html"
 echo "  • Points: nba/nba_points_props.html"
 echo "  • NCAAB: ncaa/ncaab_model_output.html"
+echo "  • UFC: ufc/ufc_dashboard.html"
 echo ""
 
 # Grade pending picks to ensure fresh data for reports
@@ -196,6 +204,32 @@ else
 fi
 cd "$SCRIPT_DIR"
 
+# Update Fighter Stats (UFC)
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🥊 Updating UFC Fighter Stats...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+if python3 update_fighter_stats.py 2>&1; then
+    echo -e "${GREEN}✅ UFC Fighter Stats updated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  UFC Fighter Stats update failed${NC}"
+    echo ""
+fi
+
+# Generate UFC Dashboard (Force Update)
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 Generating UFC Dashboard...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+if python3 generate_ufc_dash.py 2>&1; then
+    echo -e "${GREEN}✅ UFC Dashboard generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  UFC Dashboard generation failed${NC}"
+    echo ""
+fi
+
 # Generate Comprehensive Analytics Dashboard (FINAL - aggregates all data)
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}📊 Generating Comprehensive Analytics Dashboard...${NC}"
@@ -207,6 +241,24 @@ if python3 generate_analytics_dashboard.py 2>&1; then
     echo ""
 else
     echo -e "${YELLOW}⚠️  Comprehensive Analytics Dashboard generation failed${NC}"
+    echo ""
+fi
+
+# Generate Daily Recap
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📅 Generating Daily Recap...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+DATE=$(date +%Y-%m-%d)
+OUTPUT="daily_recap_${DATE}.html"
+if python3 generate_daily_recap.py --date "$DATE" --output "$OUTPUT" 2>&1; then
+    # Create persistent link
+    cp "$OUTPUT" daily_recap.html
+    echo -e "${GREEN}✅ Daily Recap generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Daily Recap generation failed${NC}"
     echo ""
 fi
 
