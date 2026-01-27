@@ -349,15 +349,14 @@
             </div>
         </div>
 
-        {% if picks %}
+        {% if pending_picks %}
         <section>
-            <div class="section-title">Verified Value Plays <span class="highlight">Min Edge: 5%</span></div>
+            <div class="section-title">Active Plays <span class="highlight">Status: Pending</span></div>
 
-            {% for pick in picks %}
+            {% for pick in pending_picks %}
             <div class="prop-card {{ 'glow-green' if pick.edge_pct >= 20 else '' }}">
                 <div class="card-header">
                     <div class="header-left">
-                        <!-- Placeholder logo or dynamic if we had fighter images -->
                         <div
                             style="width:40px; height:40px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:20px;">
                             🥊
@@ -369,8 +368,6 @@
                     </div>
                     <div class="game-meta">
                         <div class="game-date-time">{{ pick.date }}</div>
-                        <div style="font-size:10px; color:var(--text-secondary); margin-top:2px; text-align:right;">{{
-                            pick.status }}</div>
                     </div>
                 </div>
 
@@ -387,7 +384,6 @@
                         Model Probability: <strong>{{ pick.model_prob }}%</strong> (Edge: {{ pick.edge }}%)
                     </div>
 
-                    <!-- TALE OF THE TAPE / ADVANCED STATS -->
                     <div class="stats-row">
                         <div class="stat-item">
                             <div class="stat-title">Recent Form (L10)</div>
@@ -423,15 +419,80 @@
                         <span class="tag tag-blue">Underdog Value</span>
                         {% endif %}
                         <span class="tag tag-blue">{{ pick.weight_class }}</span>
-                        <span class="tag tag-blue">⏳ CLV Tracking</span>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </section>
-        {% else %}
+        {% endif %}
+
+        {% if graded_picks %}
+        <section>
+            <div class="section-title">Recent Results</div>
+
+            {% for pick in graded_picks %}
+            <div class="prop-card" style="opacity: 0.8;">
+                <div class="card-header">
+                    <div class="header-left">
+                        <div
+                            style="width:40px; height:40px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                            🏁
+                        </div>
+                        <div class="player-info">
+                            <h2>{{ pick.fighter }}</h2>
+                            <div class="matchup-info">vs {{ pick.opponent }}</div>
+                        </div>
+                    </div>
+                    <div class="game-meta">
+                        <div class="game-date-time">{{ pick.date }}</div>
+                        <div
+                            style="font-size:12px; font-weight:700; color:var(--text-primary); margin-top:2px; text-align:right;">
+                            {% if pick.status == 'won' %}
+                            <span style="color:var(--accent-green)">WON</span>
+                            {% elif pick.status == 'lost' %}
+                            <span style="color:var(--accent-red)">LOST</span>
+                            {% else %}
+                            <span style="color:var(--text-secondary)">{{ pick.status|upper }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="bet-main-row">
+                        <div class="bet-selection">
+                            <span class="pick-label">PICK:</span>
+                            <span class="line">{{ pick.fighter }}</span>
+                            <span class="bet-odds">{{ pick.odds }}</span>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-lbl">RESULT</span>
+                            <span class="metric-val {{ 'green' if pick.status == 'won' else 'red' }}">
+                                {{ pick.status|upper }}
+                            </span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-lbl">PROFIT</span>
+                            <!-- Calculate profit filtering logic in template or pass pre-calc? -->
+                            <!-- We will pass display strings from python -->
+                            <span class="metric-val {{ 'green' if pick.status == 'won' else 'red' }}">
+                                {{ "+{:.2f}u".format(pick.profit_amt) if pick.status == 'won' else "-1.00u" if
+                                pick.status == 'lost' else "0.00u" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if not pending_picks and not graded_picks %}
         <div style="text-align:center; padding:50px; color:var(--text-secondary);">
-            No active picks found at this time.
+            No picks found.
         </div>
         {% endif %}
 
