@@ -374,13 +374,7 @@
 
 
 
-        <!-- Performance Trend -->
-        <div class="section">
-            <h2>📈 Performance Trend</h2>
-            <div class="chart-container">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </div>
+
 
         <!-- Top Performers -->
         <div class="section">
@@ -668,46 +662,7 @@
 
 
 
-        // Time Series Chart
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: [{% for date in analytics.time_series.keys() | sort %}'{{ date }}'{% if not loop.last %}, {% endif %}{% endfor %}],
-            datasets: [{
-                label: 'Cumulative P&L (units)',
-                data: [{% for date in analytics.time_series.keys() | sort %}{{ "%.2f"| format(analytics.time_series[date].profit_loss) }}{% if not loop.last %}, {% endif %} {% endfor %}],
-        borderColor: 'rgba(30, 60, 114, 1)',
-            backgroundColor: 'rgba(30, 60, 114, 0.1)',
-                tension: 0.4
-                }, {
-            label: 'Win Rate %',
-                data: [{% for date in analytics.time_series.keys() | sort %} { { "%.1f" | format(analytics.time_series[date].win_rate * 100) } } {% if not loop.last %}, {% endif %} {% endfor %}],
-        borderColor: 'rgba(40, 167, 69, 1)',
-            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                tension: 0.4,
-                    yAxisID: 'y1'
-                }]
-            },
-        options: {
-                ...chartOptions,
-                scales: {
-                y: {
-                    type: 'linear',
-                        display: true,
-                            position: 'left',
-                    },
-                y1: {
-                    type: 'linear',
-                        display: true,
-                            position: 'right',
-                                grid: {
-                        drawOnChartArea: false,
-                        },
-                }
-            }
-        }
-        });
+
 
 
     </script>
