@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Recap - 2026-01-27</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max_width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #262626;
+            padding-bottom: 20px;
+        }
+        .date-badge {
+            background-color: #262626;
+            color: #94a3b8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        h1 { margin: 10px 0; font-size: 2rem; }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #262626;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .win-text { color: #10b981; }
+        .loss-text { color: #ef4444; }
+        
+        .section-title {
+            border-left: 4px solid #10b981;
+            padding-left: 10px;
+            margin: 40px 0 20px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .model-section {
+            margin-bottom: 40px;
+        }
+        
+        .model-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #262626;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        
+        .picks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .pick-card {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #262626;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pick-card.win { border-top: 3px solid #10b981; }
+        .pick-card.loss { border-top: 3px solid #ef4444; }
+        .pick-card.push { border-top: 3px solid #3b82f6; }
+        .pick-card.void { border-top: 3px solid #9ca3af; }
+        
+        .pick-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+        
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .matchup {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+        
+        .pick-details {
+            background-color: #262626;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .pick-line {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .pick-odds {
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+        
+        .pick-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid #262626;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-win { background-color: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-loss { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .badge-push { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .badge-void { background-color: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+        
+        .result-score {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="date-badge">2026-01-27</span>
+            <h1>Daily Recap</h1>
+        </div>
+
+        <div class="summary-grid">
+            <div class="stat-card">
+                <span class="stat-value">0-0-0 <span style="font-size:0.6em; color:#9ca3af">(0 void)</span></span>
+                <span class="stat-label">Daily Record</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value loss-text">
+                    +0.00u
+                </span>
+                <span class="stat-label">Total Profit</span>
+            </div>
+        </div>
+        
+        <!-- Highlights -->
+        <div class="summary-grid">
+            <div class="stat-card">
+                <span class="stat-label">Top Performer</span>
+                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
+                    N/A
+                </div>
+                <div class="win-text" style="font-size: 1.1rem;">
+                    -
+                </div>
+            </div>
+             <div class="stat-card">
+                <span class="stat-label">Needs Improvement</span>
+                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
+                    N/A
+                </div>
+                <div class="loss-text" style="font-size: 1.1rem;">
+                    -
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Model Breakdown</div>
+        
+        <!-- Iterate Models -->
+        
+        
+    </div>
+</body>
+</html>
+        
