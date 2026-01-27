@@ -1,0 +1,1705 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Recap - 2025-12-13</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max_width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #262626;
+            padding-bottom: 20px;
+        }
+        .date-badge {
+            background-color: #262626;
+            color: #94a3b8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        h1 { margin: 10px 0; font-size: 2rem; }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #262626;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .win-text { color: #10b981; }
+        .loss-text { color: #ef4444; }
+        
+        .section-title {
+            border-left: 4px solid #10b981;
+            padding-left: 10px;
+            margin: 40px 0 20px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .model-section {
+            margin-bottom: 40px;
+        }
+        
+        .model-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #262626;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        
+        .picks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .pick-card {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #262626;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pick-card.win { border-top: 3px solid #10b981; }
+        .pick-card.loss { border-top: 3px solid #ef4444; }
+        .pick-card.push { border-top: 3px solid #3b82f6; }
+        
+        .pick-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+        
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        
+        .matchup {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+        
+        .pick-details {
+            background-color: #262626;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .pick-line {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .pick-odds {
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+        
+        .pick-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid #262626;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-win { background-color: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-loss { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .badge-push { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        
+        .result-score {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="date-badge">2025-12-13</span>
+            <h1>Daily Recap</h1>
+        </div>
+
+        <div class="summary-grid">
+            <div class="stat-card">
+                <span class="stat-value">32-34-2</span>
+                <span class="stat-label">Daily Record</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value loss-text">
+                    -7.63u
+                </span>
+                <span class="stat-label">Total Profit</span>
+            </div>
+        </div>
+        
+        <!-- Highlights -->
+        <div class="summary-grid">
+            <div class="stat-card">
+                <span class="stat-label">Top Performer</span>
+                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
+                    Ncaab
+                </div>
+                <div class="win-text" style="font-size: 1.1rem;">
+                    +3.01u
+                </div>
+            </div>
+             <div class="stat-card">
+                <span class="stat-label">Needs Improvement</span>
+                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
+                    Soccer
+                </div>
+                <div class="loss-text" style="font-size: 1.1rem;">
+                    -6.90u
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Model Breakdown</div>
+        
+        <!-- Iterate Models -->
+        
+        <div class="model-section">
+            <div class="model-title">
+                <span>Ncaab</span>
+                <span class="win-text">
+                    11-7-0 (+3.01u)
+                </span>
+            </div>
+            <div class="picks-grid">
+                
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>01:00 ET</span>
+                </div>
+                <div class="player-name">Texas +15.5</div>
+                <div class="matchup">Texas @ Connecticut</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Texas +15.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>17:00 ET</span>
+                </div>
+                <div class="player-name">OVER 155.5</div>
+                <div class="matchup">Arkansas @ Texas Tech</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 155.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:00 ET</span>
+                </div>
+                <div class="player-name">South Carolina Upstate +28.5</div>
+                <div class="matchup">South Carolina Upstate @ North Carolina</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">South Carolina Upstate +28.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 152.5</div>
+                <div class="matchup">South Carolina Upstate @ North Carolina</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 152.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:30 ET</span>
+                </div>
+                <div class="player-name">George Washington +13.5</div>
+                <div class="matchup">George Washington @ Florida</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">George Washington +13.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:30 ET</span>
+                </div>
+                <div class="player-name">UNDER 162.5</div>
+                <div class="matchup">George Washington @ Florida</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 162.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">Mercer +21.5</div>
+                <div class="matchup">Mercer @ Clemson</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Mercer +21.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 151.5</div>
+                <div class="matchup">Mercer @ Clemson</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 151.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">Howard +2.5</div>
+                <div class="matchup">Hampton @ Howard</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Howard +2.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 142.5</div>
+                <div class="matchup">Hampton @ Howard</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 142.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>21:30 ET</span>
+                </div>
+                <div class="player-name">OVER 135.5</div>
+                <div class="matchup">Pittsburgh @ Villanova</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 135.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>01:00 ET</span>
+                </div>
+                <div class="player-name">OVER 145.5</div>
+                <div class="matchup">Texas @ Connecticut</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 145.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>17:00 ET</span>
+                </div>
+                <div class="player-name">Texas Tech -1.5</div>
+                <div class="matchup">Arkansas @ Texas Tech</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Texas Tech -1.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:00 ET</span>
+                </div>
+                <div class="player-name">Cincinnati +8.5</div>
+                <div class="matchup">Cincinnati @ Georgia</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Cincinnati +8.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>19:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 165.5</div>
+                <div class="matchup">Providence @ Butler</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 165.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:30 ET</span>
+                </div>
+                <div class="player-name">Memphis +16.5</div>
+                <div class="matchup">Memphis @ Louisville</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Memphis +16.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>21:30 ET</span>
+                </div>
+                <div class="player-name">Pittsburgh +9.5</div>
+                <div class="matchup">Pittsburgh @ Villanova</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Pittsburgh +9.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NCAAB</span>
+                     <span>20:30 ET</span>
+                </div>
+                <div class="player-name">UNDER 162.5</div>
+                <div class="matchup">Memphis @ Louisville</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 162.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+            </div>
+        </div>
+        
+        <div class="model-section">
+            <div class="model-title">
+                <span>Nba Points Props</span>
+                <span class="win-text">
+                    11-5-1 (+2.86u)
+                </span>
+            </div>
+            <div class="picks-grid">
+                
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:40 ET</span>
+                </div>
+                <div class="player-name">Max Christie</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 8.5 Pts</span>
+                    <span class="pick-odds">Odds: -104.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 15</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:40 ET</span>
+                </div>
+                <div class="player-name">Naji Marshall</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 10.5 Pts</span>
+                    <span class="pick-odds">Odds: -130.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 17</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>03:10 ET</span>
+                </div>
+                <div class="player-name">Stephen Curry</div>
+                <div class="matchup">Golden State Warriors vs Minnesota Timberwolves</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 24.5 Pts</span>
+                    <span class="pick-odds">Odds: -118.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 39</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Onyeka Okongwu</div>
+                <div class="matchup">Atlanta Hawks vs Detroit Pistons</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 17.5 Pts</span>
+                    <span class="pick-odds">Odds: +102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 14</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Brandon Miller</div>
+                <div class="matchup">Charlotte Hornets vs Chicago Bulls</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 22.5 Pts</span>
+                    <span class="pick-odds">Odds: -112.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 18</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Lonzo Ball</div>
+                <div class="matchup">Washington Wizards vs Cleveland Cavaliers</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 6.5 Pts</span>
+                    <span class="pick-odds">Odds: -102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 5</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:41 ET</span>
+                </div>
+                <div class="player-name">Brandon Williams</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 7.5 Pts</span>
+                    <span class="pick-odds">Odds: -250.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 9</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:41 ET</span>
+                </div>
+                <div class="player-name">Cooper Flagg</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 14.5 Pts</span>
+                    <span class="pick-odds">Odds: -275.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 22</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:41 ET</span>
+                </div>
+                <div class="player-name">Danny Wolf</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 5.5 Pts</span>
+                    <span class="pick-odds">Odds: -240.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 17</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:41 ET</span>
+                </div>
+                <div class="player-name">Klay Thompson</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 8.5 Pts</span>
+                    <span class="pick-odds">Odds: -240.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 12</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>22:30 ET</span>
+                </div>
+                <div class="player-name">Mikal Bridges</div>
+                <div class="matchup">New York Knicks vs Orlando Magic</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 14.5 Pts</span>
+                    <span class="pick-odds">Odds: -120.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 16</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card push">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Tyrese Maxey</div>
+                <div class="matchup">Philadelphia 76ers vs Indiana Pacers</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 28.5 Pts</span>
+                    <span class="pick-odds">Odds: -102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-push">PUSH</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Tre Jones</div>
+                <div class="matchup">Charlotte Hornets vs Chicago Bulls</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 11.5 Pts</span>
+                    <span class="pick-odds">Odds: -102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 6</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Miles Bridges</div>
+                <div class="matchup">Charlotte Hornets vs Chicago Bulls</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 22.5 Pts</span>
+                    <span class="pick-odds">Odds: -114.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 32</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Darius Garland</div>
+                <div class="matchup">Cleveland Cavaliers vs Washington Wizards</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 16.5 Pts</span>
+                    <span class="pick-odds">Odds: -128.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 18</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:41 ET</span>
+                </div>
+                <div class="player-name">Anthony Davis</div>
+                <div class="matchup">Dallas Mavericks vs Brooklyn Nets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 21.5 Pts</span>
+                    <span class="pick-odds">Odds: -150.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 24</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>22:30 ET</span>
+                </div>
+                <div class="player-name">Paolo Banchero</div>
+                <div class="matchup">Orlando Magic vs New York Knicks</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 22.5 Pts</span>
+                    <span class="pick-odds">Odds: +100.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Actual: 25</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+            </div>
+        </div>
+        
+        <div class="model-section">
+            <div class="model-title">
+                <span>Nba</span>
+                <span class="loss-text">
+                    0-6-0 (-6.60u)
+                </span>
+            </div>
+            <div class="picks-grid">
+                
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">UNDER 235.5</div>
+                <div class="matchup">Chicago Bulls @ Charlotte Hornets</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 235.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 129-126</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>01:10 ET</span>
+                </div>
+                <div class="player-name">Memphis Grizzlies -6.5</div>
+                <div class="matchup">Utah Jazz @ Memphis Grizzlies</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Memphis Grizzlies -6.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 130-126</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">UNDER 241.5</div>
+                <div class="matchup">Cleveland Cavaliers @ Washington Wizards</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 241.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 130-126</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Indiana Pacers +7.5</div>
+                <div class="matchup">Indiana Pacers @ Philadelphia 76ers</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Indiana Pacers +7.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 105-115</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>22:30 ET</span>
+                </div>
+                <div class="player-name">Orlando Magic +4.0</div>
+                <div class="matchup">New York Knicks @ Orlando Magic</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Orlando Magic +4.0</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 132-120</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>NBA</span>
+                     <span>03:12 ET</span>
+                </div>
+                <div class="player-name">UNDER 242.5</div>
+                <div class="matchup">Minnesota Timberwolves @ Golden State Warriors</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 242.5</span>
+                    <span class="pick-odds">Odds: </span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 127-120</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+            </div>
+        </div>
+        
+        <div class="model-section">
+            <div class="model-title">
+                <span>Soccer</span>
+                <span class="loss-text">
+                    10-16-1 (-6.90u)
+                </span>
+            </div>
+            <div class="picks-grid">
+                
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>15:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 3.5</div>
+                <div class="matchup">Brighton and Hove Albion @ Liverpool</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 3.5</span>
+                    <span class="pick-odds">Odds: -174.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">Arsenal -2.5</div>
+                <div class="matchup">Wolverhampton Wanderers @ Arsenal</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Arsenal -2.5</span>
+                    <span class="pick-odds">Odds: +110.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 1.0-2.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 3.5</div>
+                <div class="matchup">Wolverhampton Wanderers @ Arsenal</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 3.5</span>
+                    <span class="pick-odds">Odds: -167.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 1.0-2.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>13:00 ET</span>
+                </div>
+                <div class="player-name">Atlético Madrid -1.5</div>
+                <div class="matchup">Valencia @ Atlético Madrid</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Atlético Madrid -1.5</span>
+                    <span class="pick-odds">Odds: -118.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-1.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>15:15 ET</span>
+                </div>
+                <div class="player-name">OVER 2.0</div>
+                <div class="matchup">Elche CF @ Mallorca</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 2.0</span>
+                    <span class="pick-odds">Odds: -126.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 3.0-1.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>17:30 ET</span>
+                </div>
+                <div class="player-name">UNDER 3.75</div>
+                <div class="matchup">CA Osasuna @ Barcelona</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 3.75</span>
+                    <span class="pick-odds">Odds: +102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>19:45 ET</span>
+                </div>
+                <div class="player-name">Atalanta BC -1.5</div>
+                <div class="matchup">Cagliari @ Atalanta BC</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Atalanta BC -1.5</span>
+                    <span class="pick-odds">Odds: -101.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 1.0-2.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:30 ET</span>
+                </div>
+                <div class="player-name">OVER 2.25</div>
+                <div class="matchup">1. FC Heidenheim @ FC St. Pauli</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 2.25</span>
+                    <span class="pick-odds">Odds: -114.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-1.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:30 ET</span>
+                </div>
+                <div class="player-name">Borussia Monchengladbach -0.5</div>
+                <div class="matchup">VfL Wolfsburg @ Borussia Monchengladbach</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Borussia Monchengladbach -0.5</span>
+                    <span class="pick-odds">Odds: +104.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 1.0-3.0</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>20:05 ET</span>
+                </div>
+                <div class="player-name">OVER 2.25</div>
+                <div class="matchup">Toulouse @ Paris FC</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 2.25</span>
+                    <span class="pick-odds">Odds: -122.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        
+        <div class="pick-card push">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>17:30 ET</span>
+                </div>
+                <div class="player-name">Barcelona -2.0</div>
+                <div class="matchup">CA Osasuna @ Barcelona</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Barcelona -2.0</span>
+                    <span class="pick-odds">Odds: -116.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-push">PUSH</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>15:00 ET</span>
+                </div>
+                <div class="player-name">Liverpool -0.5</div>
+                <div class="matchup">Brighton and Hove Albion @ Liverpool</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Liverpool -0.5</span>
+                    <span class="pick-odds">Odds: -146.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>15:00 ET</span>
+                </div>
+                <div class="player-name">Chelsea -0.5</div>
+                <div class="matchup">Everton @ Chelsea</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Chelsea -0.5</span>
+                    <span class="pick-odds">Odds: -154.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>17:30 ET</span>
+                </div>
+                <div class="player-name">Fulham 0.5</div>
+                <div class="matchup">Fulham @ Burnley</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Fulham 0.5</span>
+                    <span class="pick-odds">Odds: -111.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-3.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>15:15 ET</span>
+                </div>
+                <div class="player-name">Mallorca -0.25</div>
+                <div class="matchup">Elche CF @ Mallorca</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Mallorca -0.25</span>
+                    <span class="pick-odds">Odds: +106.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 3.0-1.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>20:00 ET</span>
+                </div>
+                <div class="player-name">OVER 1.75</div>
+                <div class="matchup">Espanyol @ Getafe</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 1.75</span>
+                    <span class="pick-odds">Odds: -108.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:00 ET</span>
+                </div>
+                <div class="player-name">Torino -0.5</div>
+                <div class="matchup">Cremonese @ Torino</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Torino -0.5</span>
+                    <span class="pick-odds">Odds: +105.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:00 ET</span>
+                </div>
+                <div class="player-name">OVER 2.25</div>
+                <div class="matchup">Cremonese @ Torino</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 2.25</span>
+                    <span class="pick-odds">Odds: -111.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>17:00 ET</span>
+                </div>
+                <div class="player-name">OVER 2.25</div>
+                <div class="matchup">Lazio @ Parma</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">OVER 2.25</span>
+                    <span class="pick-odds">Odds: +102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:30 ET</span>
+                </div>
+                <div class="player-name">FC St. Pauli -0.5</div>
+                <div class="matchup">1. FC Heidenheim @ FC St. Pauli</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">FC St. Pauli -0.5</span>
+                    <span class="pick-odds">Odds: -102.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-1.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:30 ET</span>
+                </div>
+                <div class="player-name">Eintracht Frankfurt -0.75</div>
+                <div class="matchup">Augsburg @ Eintracht Frankfurt</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Eintracht Frankfurt -0.75</span>
+                    <span class="pick-odds">Odds: -114.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>14:30 ET</span>
+                </div>
+                <div class="player-name">TSG Hoffenheim -0.75</div>
+                <div class="matchup">Hamburger SV @ TSG Hoffenheim</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">TSG Hoffenheim -0.75</span>
+                    <span class="pick-odds">Odds: -115.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 4.0-1.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>17:30 ET</span>
+                </div>
+                <div class="player-name">Bayer Leverkusen -1.0</div>
+                <div class="matchup">1. FC Köln @ Bayer Leverkusen</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Bayer Leverkusen -1.0</span>
+                    <span class="pick-odds">Odds: -109.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>16:00 ET</span>
+                </div>
+                <div class="player-name">Rennes -0.5</div>
+                <div class="matchup">Brest @ Rennes</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Rennes -0.5</span>
+                    <span class="pick-odds">Odds: -122.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 3.0-1.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>18:00 ET</span>
+                </div>
+                <div class="player-name">Paris Saint Germain 1.75</div>
+                <div class="matchup">Paris Saint Germain @ Metz</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Paris Saint Germain 1.75</span>
+                    <span class="pick-odds">Odds: -105.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-3.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>18:00 ET</span>
+                </div>
+                <div class="player-name">UNDER 3.5</div>
+                <div class="matchup">Paris Saint Germain @ Metz</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">UNDER 3.5</span>
+                    <span class="pick-odds">Odds: -120.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score">Score: 2.0-3.0</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                     <span>Soccer</span>
+                     <span>20:05 ET</span>
+                </div>
+                <div class="player-name">Paris FC -0.25</div>
+                <div class="matchup">Toulouse @ Paris FC</div>
+                
+                <div class="pick-details">
+                    <span class="pick-line">Paris FC -0.25</span>
+                    <span class="pick-odds">Odds: +110.0</span>
+                </div>
+            </div>
+            
+            <div class="pick-result">
+                <span class="result-score"></span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        
+            </div>
+        </div>
+        
+        
+    </div>
+</body>
+</html>
+        
