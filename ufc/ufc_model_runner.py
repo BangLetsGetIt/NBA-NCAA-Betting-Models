@@ -21,6 +21,7 @@ class UFCModelRunner:
         self.odds_fetcher = UFCOddsFetcher(data_dir=data_dir)
         self.scraper = UFCStatsScraper(data_dir=data_dir)
         self.picks_file = os.path.join(data_dir, "ufc_picks.json")
+        self.tracking_file = os.path.join(data_dir, "ufc_tracking.json")
         self.dashboard_template = os.path.join("ufc", "ufc_dashboard_template.html")
         self.dashboard_output = os.path.join("ufc", "ufc_dashboard.html")
         
@@ -106,42 +107,53 @@ class UFCModelRunner:
                 odds = f2_price
             
             if bet_on:
+                # Create pick_id like NBA models
+                opponent = f2_name if bet_on == f1_name else f1_name
+                pick_id = f"{bet_on}_vs_{opponent}_{event.get('commence_time', '')}"
+                
                 pick = {
-                    "event_id": event['id'],
+                    "pick_id": pick_id,
                     "fighter": bet_on,
-                    "opponent": f2_name if bet_on == f1_name else f1_name,
-                    "odds": odds,
+                    "opponent": opponent,
+                    "bet_type": "moneyline",
                     "model_prob": f1_prob if bet_on == f1_name else (1 - f1_prob),
                     "edge_pct": round(edge * 100, 2),
-                    "recommended_bet_size_unit": 1, # Placeholder
+                    "odds": odds,
+                    "opening_odds": odds,
+                    "latest_odds": odds,
+                    "game_time": event.get('commence_time'),
+                    "tracked_at": datetime.now().isoformat(),
                     "status": "pending",
-                    "timestamp": datetime.now().isoformat(),
-                    "game_time": event.get('commence_time') 
+                    "result": None,
+                    "actual_result": None,
+                    "updated_at": None,
+                    "profit_loss": 0.0,
+                    "recommended_bet_size_unit": 1, # Placeholder
+                    "kelly_fraction": edge
                 }
                 picks.append(pick)
                 # Parse date for log
                 game_date = event.get('commence_time', '')[:10]
                 print(f"💰 Found Value ({game_date}): {bet_on} ({odds}) over {pick['opponent']}. Edge: {pick['edge_pct']}%")
         
-        # Save picks
+        # Save picks to tracking file
         if picks:
-            # Load existing picks to avoid overwriting history?
-            # ideally we append new ones.
-            existing = []
-            if os.path.exists(self.picks_file):
-                with open(self.picks_file, 'r') as f:
-                    existing = json.load(f)
+            # Load existing tracking data
+            existing_tracking = {"picks": []}
+            if os.path.exists(self.tracking_file):
+                with open(self.tracking_file, 'r') as f:
+                    existing_tracking = json.load(f)
             
-            # Simple dedup by event_id + fighter
-            existing_keys = set(f"{p['event_id']}_{p['fighter']}" for p in existing)
-            new_picks = [p for p in picks if f"{p['event_id']}_{p['fighter']}" not in existing_keys]
+            # Simple dedup by pick_id
+            existing_ids = set(p['pick_id'] for p in existing_tracking['picks'])
+            new_picks = [p for p in picks if p['pick_id'] not in existing_ids]
             
-            all_picks = existing + new_picks
+            all_picks = existing_tracking['picks'] + new_picks
             
-            with open(self.picks_file, 'w') as f:
-                json.dump(all_picks, f, indent=4)
+            with open(self.tracking_file, 'w') as f:
+                json.dump({"picks": all_picks}, f, indent=4)
                 
-            print(f"Saved {len(new_picks)} new picks to {self.picks_file}")
+            print(f"Saved {len(new_picks)} new picks to {self.tracking_file}")
         else:
             print("No value bets found.")
 
@@ -152,11 +164,12 @@ class UFCModelRunner:
         """
         print(f"[{datetime.now()}] Grading UFC Picks...")
         
-        if not os.path.exists(self.picks_file):
+        if not os.path.exists(self.tracking_file):
             return 0
             
-        with open(self.picks_file, 'r') as f:
-            picks = json.load(f)
+        with open(self.tracking_file, 'r') as f:
+            tracking_data = json.load(f)
+            picks = tracking_data.get('picks', [])
             
         pending_picks = [p for p in picks if p.get('status') == 'pending']
         if not pending_picks:
@@ -246,8 +259,8 @@ class UFCModelRunner:
                     print(f"Graded: {pick['fighter']} vs {pick['opponent']} -> {status_color}{pick['status'].upper()}{Colors.END}")
 
         if updated_count > 0:
-            with open(self.picks_file, 'w') as f:
-                json.dump(picks, f, indent=4)
+            with open(self.tracking_file, 'w') as f:
+                json.dump({"picks": picks}, f, indent=4)
             print(f"Updated {updated_count} picks.")
             
         return updated_count
@@ -256,12 +269,13 @@ class UFCModelRunner:
         """Generates HTML dashboard from picks history"""
         print(f"[{datetime.now()}] Generating UFC Dashboard...")
         
-        if not os.path.exists(self.picks_file):
-            print("No picks file found.")
+        if not os.path.exists(self.tracking_file):
+            print("No tracking file found.")
             return
 
-        with open(self.picks_file, 'r') as f:
-            picks = json.load(f)
+        with open(self.tracking_file, 'r') as f:
+            tracking_data = json.load(f)
+            picks = tracking_data.get('picks', [])
             
         # Calculate Stats
         total_picks = len(picks)
@@ -409,9 +423,24 @@ class UFCModelRunner:
             if odds_val > 0: odds_str = f"+{odds_val}"
             else: odds_str = str(odds_val)
             
+            status_orig = p.get('status', 'pending').lower()
+            status_display = status_orig.upper()
             status_class = 'pending'
-            if p.get('status') == 'won': status_class = 'win'
-            elif p.get('status') == 'lost': status_class = 'lost'
+            if status_orig == 'won': status_class = 'win'
+            elif status_orig == 'lost': status_class = 'lost'
+            
+            # Calculate Profit Amount for this specific pick
+            profit_amt = 0.0
+            units_bet = float(p.get('recommended_bet_size_unit', 1))
+            
+            if status_orig == 'won':
+                if odds_val > 0:
+                    profit_amt = (odds_val / 100.0) * units_bet
+                else:
+                    profit_amt = (100.0 / abs(odds_val)) * units_bet
+            elif status_orig == 'lost':
+                profit_amt = -units_bet
+            # else void/pending = 0
             
             # Implied Probability
             if odds_val > 0:
@@ -459,7 +488,7 @@ class UFCModelRunner:
                 'edge_pct': p.get('edge_pct'),
                 'odds': odds_str,
                 'odds_val': odds_val,
-                'status': p.get('status', 'pending').upper(),
+                'status': status_display,
                 'status_class': status_class,
                 'implied_prob': implied_prob_pct,
                 'kelly_suggestion': kelly_units,
@@ -467,12 +496,50 @@ class UFCModelRunner:
                 'str_diff_display': str_diff_display,
                 'td_avg_display': td_avg_display,
                 'reach_display': reach_display,
-                'td_avg_display': td_avg_display,
-                'reach_display': reach_display,
                 'weight_class': weight_class,
-                'recent_form': recent_form
+                'recent_form': recent_form,
+                'profit_amt': profit_amt
             })
             
+        # Calculate performance metrics for different time periods
+        def calculate_period_stats(picks_list):
+            if not picks_list:
+                return {"record": "0-0", "win_rate": 0, "profit": 0.0, "roi": 0.0}
+            
+            wins = sum(1 for p in picks_list if p.get('status') == 'won')
+            losses = sum(1 for p in picks_list if p.get('status') == 'lost')
+            total = wins + losses
+            
+            if total == 0:
+                return {"record": "0-0", "win_rate": 0, "profit": 0.0, "roi": 0.0}
+            
+            win_rate = (wins / total) * 100
+            profit = sum(p.get('profit_loss', 0) for p in picks_list)
+            roi = (profit / total) * 100 if total > 0 else 0
+            
+            return {
+                "record": f"{wins}-{losses}",
+                "win_rate": round(win_rate, 1),
+                "profit": round(profit, 1),
+                "roi": round(roi, 1)
+            }
+        
+        # Sort picks by game_time for period calculations
+        graded_picks = [p for p in picks if p.get('status') in ['won', 'lost']]
+        graded_picks.sort(key=lambda x: x.get('game_time', ''), reverse=True)
+        
+        # Calculate period stats
+        last_10_stats = calculate_period_stats(graded_picks[:10])
+        last_20_stats = calculate_period_stats(graded_picks[:20])
+        all_time_stats = calculate_period_stats(graded_picks)
+        
+        # Calculate favorites vs underdogs stats
+        fav_picks = [p for p in graded_picks if p.get('odds', 0) < 0]
+        dog_picks = [p for p in graded_picks if p.get('odds', 0) > 0]
+        
+        fav_stats = calculate_period_stats(fav_picks)
+        dog_stats = calculate_period_stats(dog_picks)
+        
         context = {
             'total_picks': total_picks,
             'wins': wins,
@@ -481,7 +548,28 @@ class UFCModelRunner:
             'win_rate': round(win_rate, 1),
             'profit_units': round(profit, 2),
             'roi': round(roi, 1),
-            'picks': formatted_picks,
+            'pending_picks': [p for p in formatted_picks if p['status'] == 'PENDING'],
+            'graded_picks': [p for p in formatted_picks if p['status'] != 'PENDING'],
+            'active_plays': [p for p in formatted_picks if p['status'] == 'PENDING'],  # Filter for active plays only
+            
+            # Performance metrics
+            'last_10_record': last_10_stats['record'],
+            'last_10_win_rate': last_10_stats['win_rate'],
+            'last_10_profit': last_10_stats['profit'],
+            'last_10_roi': last_10_stats['roi'],
+            
+            'last_20_record': last_20_stats['record'],
+            'last_20_win_rate': last_20_stats['win_rate'],
+            'last_20_profit': last_20_stats['profit'],
+            'last_20_roi': last_20_stats['roi'],
+            
+            'total_record': all_time_stats['record'],
+            
+            'fav_record': fav_stats['record'],
+            'fav_roi': fav_stats['roi'],
+            'dog_record': dog_stats['record'],
+            'dog_roi': dog_stats['roi'],
+            
             'generated_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         

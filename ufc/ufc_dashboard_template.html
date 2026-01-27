@@ -305,6 +305,44 @@
             border: 1px solid rgba(74, 222, 128, 0.3);
         }
 
+        .tracking-section { margin-top: 2.5rem; }
+        .tracking-header { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 1.25rem; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .metric-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .metric-value.good { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+
         .footer {
             margin-top: 50px;
             text-align: center;
@@ -495,6 +533,104 @@
             No picks found.
         </div>
         {% endif %}
+
+        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+        <div class="tracking-section">
+            <div class="tracking-header">Recent Form</div>
+            
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <!-- Last 10 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_10_record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_10_win_rate >= 50 else 'text-red' }}">{{ last_10_win_rate }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_10_profit >= 0 else 'text-red' }}">{{ "%+.1fu" % last_10_profit }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_10_roi >= 0 else 'text-red' }}">{{ "%+.1f%%" % last_10_roi }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last 20 -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ last_20_record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if last_20_win_rate >= 50 else 'text-red' }}">{{ last_20_win_rate }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if last_20_profit >= 0 else 'text-red' }}">{{ "%+.1fu" % last_20_profit }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if last_20_roi >= 0 else 'text-red' }}">{{ "%+.1f%%" % last_20_roi }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Time -->
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">ALL TIME</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div>
+                            <div class="metric-label">Record</div>
+                            <div class="metric-value">{{ total_record }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value {{ 'good' if win_rate >= 50 else 'text-red' }}">{{ win_rate }}%</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">Profit</div>
+                            <div class="metric-value {{ 'good' if profit_units >= 0 else 'text-red' }}">{{ "%+.1fu" % profit_units }}</div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ROI</div>
+                            <div class="metric-value {{ 'good' if roi >= 0 else 'text-red' }}">{{ "%+.1f%%" % roi }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    <section>
+        <div class="section-title">UFC Model Performance</div>
+        <div class="summary-grid">
+            <div class="stat-box">
+                <div class="stat-label">Overall Record</div>
+                <div class="stat-value">{{ total_record }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ROI</div>
+                <div class="stat-value {{ 'green' if roi >= 0 else 'red' }}">{{ "%+.1f%%" % roi }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Favorites: {{ fav_record }}</div>
+                <div class="stat-value {{ 'green' if fav_roi >= 0 else 'red' }}">{{ "%+.1f%% ROI" % fav_roi }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Underdogs: {{ dog_record }}</div>
+                <div class="stat-value {{ 'green' if dog_roi >= 0 else 'red' }}">{{ "%+.1f%% ROI" % dog_roi }}</div>
+            </div>
+        </div>
+    </section>
 
         <div class="footer">
             Generated by CourtSide Analytics • {{ generated_at }}
