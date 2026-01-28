@@ -7,8 +7,8 @@ cd /Users/rico/Dev/sports-models
 # source ~/.zshrc or ~/.bash_profile if needed, but often cron has limited env.
 # It's safer to use full paths.
 
-# execution date is today
-DATE=$(date +%Y-%m-%d)
+# execution date is yesterday (we recap games that already played)
+DATE=$(date -v-1d +%Y-%m-%d)
 
 # Run the generation script
 /Library/Frameworks/Python.framework/Versions/3.13/bin/python3 generate_daily_recap.py --date "$DATE" --output "daily_recap_$DATE.html" > "daily_recap_cron_output.log" 2>&1
