@@ -148,6 +148,23 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
         echo -e "${YELLOW}⚠️  ${FAIL_COUNT} model(s) failed. Check errors above.${NC}"
     fi
     echo ""
+
+    # Generate Best Plays Report
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}🔥 Generating Best Plays Report...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    cd "$SCRIPT_DIR"
+    if [ -f "best_plays_bot.py" ]; then
+        if python3 best_plays_bot.py 2>&1; then
+            echo -e "${GREEN}✅ Best Plays report generated successfully!${NC}"
+            echo -e "${YELLOW}📁 Generated: best_plays.html${NC}"
+        else
+            echo -e "${RED}❌ Best Plays report generation failed${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  best_plays_bot.py not found. Skipping Best Plays.${NC}"
+    fi
     
 # Generate Analytics Dashboard
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -164,6 +181,25 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
         fi
     else
         echo -e "${YELLOW}⚠️  generate_analytics_dashboard.py not found. Skipping analytics.${NC}"
+    fi
+    
+    # Generate Daily Recap
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}📅 Generating Daily Recap...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    cd "$SCRIPT_DIR"
+    TODAY=$(date +%Y-%m-%d)
+    if [ -f "generate_daily_recap.py" ]; then
+        if python3 generate_daily_recap.py --date "$TODAY" --output "daily_recap_$TODAY.html" 2>&1; then
+            cp "daily_recap_$TODAY.html" "daily_recap.html"
+            echo -e "${GREEN}✅ Daily recap generated for $TODAY!${NC}"
+            echo -e "${YELLOW}📁 Generated: daily_recap.html${NC}"
+        else
+            echo -e "${RED}❌ Daily recap generation failed${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  generate_daily_recap.py not found. Skipping daily recap.${NC}"
     fi
     
     # Auto-push to GitHub - push successful outputs even if some models failed

@@ -115,10 +115,23 @@ def track_new_picks(over_plays, under_plays):
         prop_line = float(match.group(1)) if match else 0
         
         # Generate unique pick ID (matches format in tracking data)
+        # pick_id includes line, but we want to check duplication ignoring line for line moves
         pick_id = f"{play['player']}_{prop_line}_{bet_type}_{play.get('game_time', '')}"
         
-        # Check if pick already exists
-        existing_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
+        # Check if pick already exists (Look for same player + date + bet_type)
+        existing_pick = None
+        for p in tracking_data['picks']:
+            p_gt = p.get('game_time', '')
+            # Match date string
+            if p.get('player') == play['player'] and \
+               p.get('bet_type') == bet_type and \
+               p_gt == play.get('game_time', ''):
+               existing_pick = p
+               break
+        
+        # Also check exact ID just in case
+        if not existing_pick:
+            existing_pick = next((p for p in tracking_data['picks'] if p.get('pick_id') == pick_id), None)
         
         if existing_pick:
             # Update latest odds if different
@@ -271,8 +284,22 @@ def grade_pending_picks():
                 p_key = player_name.lower()
                 
                 # Direct match
-                if p_key in batch_stats:
-                    actual_reb = batch_stats[p_key]
+                
+                # Check ALIASES for tricky names
+                aliases = {
+                    "moe wagner": "moritz wagner",
+                    "mo wagner": "moritz wagner",
+                    "kelly oubre jr.": "kelly oubre jr",
+                    "michael porter jr.": "michael porter jr",
+                    "c.j. mccollum": "cj mccollum",
+                    "carlton carrington": "bub carrington",
+                    "jimmy butler": "jimmy butler iii",
+                }
+                
+                lookup_key = aliases.get(p_key, p_key)
+                
+                if lookup_key in batch_stats:
+                    actual_reb = batch_stats[lookup_key]
                 else:
                     # Fuzzy match
                     for k, v in batch_stats.items():
@@ -380,6 +407,40 @@ def calculate_tracking_stats(tracking_data):
     """Calculate performance statistics from tracking data - CRITICAL: Requires profit_loss field"""
     completed_picks = [p for p in tracking_data['picks'] if p.get('status') in ['win', 'loss']]
     
+    # Deduplicate picks (fix for line moves counting as multiple bets)
+    # Group by player + date + bet_type
+    unique_picks_map = {}
+    
+    # Sort by updated_at/last_updated to keep most recent
+    def get_sort_key(p):
+        return p.get('last_updated') or p.get('updated_at') or p.get('tracked_at') or "0"
+        
+    sorted_picks = sorted(completed_picks, key=get_sort_key)
+    
+    from datetime import datetime
+    import pytz
+    
+    for p in sorted_picks:
+        player = p.get('player')
+        bet_type = p.get('bet_type')
+        gt_str = p.get('game_time', '')
+        if not gt_str: continue
+        
+        # Extract date from game_time
+        try:
+             # robust parse
+             dt_str = gt_str.split('T')[0] 
+        except:
+             continue
+             
+        # Unique key: player + date + bet_type
+        # This collapses "Over 10.5" and "Over 11.5" into one bet (the latest one)
+        key = f"{player}_{dt_str}_{bet_type}"
+        unique_picks_map[key] = p
+        
+    # Use unique picks for stats calculation
+    completed_picks = list(unique_picks_map.values())
+
     if not completed_picks:
         return {
             'total': 0,
@@ -1013,119 +1074,87 @@ def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
 # =============================================================================
 
 def get_player_props(player_stats=None):
-    """Fetch player rebounds prop odds from The Odds API.
-
-    Returns list of dicts each containing:
-    player, prop_line, over_price, under_price, team, opponent, home_team, away_team, game_time
-    """
-    print(f"\n{Colors.CYAN}Fetching player rebounds prop odds...{Colors.END}")
+    """Fetch player rebounds prop odds using centralized caching client."""
+    print(f"\n{Colors.CYAN}Fetching player rebounds prop odds via centralized cache...{Colors.END}")
     rosters = get_nba_team_rosters()
-
-    events_url = "https://api.the-odds-api.com/v4/sports/basketball_nba/events"
-    events_params = {"apiKey": API_KEY}
-
+    
     if not API_KEY:
         print(f"{Colors.RED}✗ Missing ODDS_API_KEY; cannot fetch props.{Colors.END}")
         return []
 
+    # Import Client
     try:
-        events_response = requests.get(events_url, params=events_params, timeout=10)
-        if events_response.status_code != 200:
-            print(f"{Colors.RED}✗ API Error: {events_response.status_code}{Colors.END}")
-            return []
+        from nba.nba_api_client import NBAOddsClient
+    except ImportError:
+        try:
+            from nba_api_client import NBAOddsClient
+        except ImportError:
+             # If running from root, try appending nba/
+            import sys
+            sys.path.append(os.path.join(os.path.dirname(__file__)))
+            from nba_api_client import NBAOddsClient
 
-        events = events_response.json()
-        print(f"{Colors.CYAN}  Found {len(events)} upcoming games{Colors.END}")
+    client = NBAOddsClient(API_KEY)
+    # Fetch ALL markets so we populate cache for other models in one go
+    games_data = client.get_odds_data()
 
-        all_props = []
+    all_props = []
 
-        # Filter for upcoming games only
-        upcoming_events = []
-        current_time_utc = datetime.now(timezone.utc)
+    for i, game in enumerate(games_data, 1):
+        home_team = game['home_team']
+        away_team = game['away_team']
+        commence_time = game['commence_time']
         
-        for event in events:
-            try:
-                commence_time = datetime.fromisoformat(event['commence_time'].replace('Z', '+00:00'))
-                if commence_time > current_time_utc:
-                    upcoming_events.append(event)
-            except:
-                continue
-                
-        print(f"{Colors.CYAN}  Filtered to {len(upcoming_events)} upcoming games{Colors.END}")
+        bookmakers = game.get('bookmakers', [])
+        if not bookmakers: 
+            continue
+            
+        # Prioritize Hard Rock Bet, then FanDuel, then first available
+        selected_book = next((b for b in bookmakers if b.get("key") == "hardrockbet"),
+                           next((b for b in bookmakers if b.get("key") == "fanduel"), 
+                                bookmakers[0]))
+        
+        for market in selected_book.get("markets", []):
+            if market.get("key") == "player_rebounds":
+                 # Group over/under outcomes by (player, line)
+                grouped = {}
+                for outcome in market.get("outcomes", []):
+                    player_name = outcome.get("description")
+                    if player_name:
+                        player_name = player_name.strip()
+                    point = outcome.get("point")
+                    if player_name is None or point is None:
+                        continue
 
-        for i, event in enumerate(upcoming_events[:10], 1):
-            event_id = event["id"]
-            home_team = event["home_team"]
-            away_team = event["away_team"]
+                    side = (outcome.get("name") or "").strip().lower()
+                    price = outcome.get("price", -110)
 
-            odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
-            odds_params = {
-                "apiKey": API_KEY,
-                "regions": "us",
-                "markets": "player_rebounds",
-                "oddsFormat": "american",
-            }
+                    key = (player_name, float(point))
+                    if key not in grouped:
+                        player_team, player_opponent = match_player_to_team(
+                            player_name, home_team, away_team, rosters, player_stats
+                        )
+                        grouped[key] = {
+                            "player": player_name,
+                            "prop_line": float(point),
+                            "over_price": None,
+                            "under_price": None,
+                            "team": player_team,
+                            "opponent": player_opponent,
+                            "home_team": home_team,
+                            "away_team": away_team,
+                            "game_time": commence_time
+                        }
 
-            odds_response = requests.get(odds_url, params=odds_params, timeout=15)
+                    if side == "over":
+                        grouped[key]["over_price"] = price
+                    elif side == "under":
+                        grouped[key]["under_price"] = price
 
-            if odds_response.status_code == 200:
-                odds_data = odds_response.json()
-                bookmakers = odds_data.get("bookmakers") or []
-                if bookmakers:
-                    # Prioritize Hard Rock Bet, then FanDuel, then first available
-                    selected_book = next((b for b in bookmakers if b.get("key") == "hardrockbet"),
-                                       next((b for b in bookmakers if b.get("key") == "fanduel"), 
-                                            bookmakers[0]))
-                    for market in selected_book.get("markets", []):
-                        if market.get("key") != "player_rebounds":
-                            continue
+                all_props.extend(grouped.values())
 
-                        # Group over/under outcomes by (player, line)
-                        grouped: dict[tuple[str, float], dict] = {}
-                        for outcome in market.get("outcomes", []):
-                            player_name = outcome.get("description")
-                            if player_name:
-                                player_name = player_name.strip()
-                            point = outcome.get("point")
-                            if player_name is None or point is None:
-                                continue
-
-                            side = (outcome.get("name") or "").strip().lower()
-                            price = outcome.get("price", -110)
-
-                            key = (player_name, float(point))
-                            if key not in grouped:
-                                player_team, player_opponent = match_player_to_team(
-                                    player_name, home_team, away_team, rosters, player_stats
-                                )
-                                grouped[key] = {
-                                    "player": player_name,
-                                    "prop_line": float(point),
-                                    "over_price": None,
-                                    "under_price": None,
-                                    "team": player_team,
-                                    "opponent": player_opponent,
-                                    "home_team": home_team,
-                                    "away_team": away_team,
-                                    "game_time": event.get("commence_time"),
-                                }
-
-                            if side == "over":
-                                grouped[key]["over_price"] = price
-                            elif side == "under":
-                                grouped[key]["under_price"] = price
-
-                        all_props.extend(grouped.values())
-
-            print(f"{Colors.CYAN}  Game {i}/{len(events[:10])}: {away_team} @ {home_team}{Colors.END}")
-
-        print(f"{Colors.GREEN}✓ Fetched {len(all_props)} player rebounds props (grouped){Colors.END}")
-        return all_props
-
-    except Exception as e:
-        print(f"{Colors.RED}✗ Error fetching props: {e}{Colors.END}")
-        return []
-
+    print(f"{Colors.GREEN}✓ Fetched {len(all_props)} player rebounds props (grouped){Colors.END}")
+    return all_props
 
 # =============================================================================
 # Model logic
@@ -1284,8 +1313,9 @@ def analyze_props(props_list, player_stats, reb_factors):
                     gt_dt = gt_dt.astimezone(pytz.utc)
                 
                 # Compare
-                if gt_dt < current_time:
-                    # Skip past games
+                # Relaxed Filter: Allow games that started up to 12 hours ago (to keep them on board during/after game)
+                if gt_dt < (current_time - timedelta(hours=12)):
+                    # Skip old past games
                     continue
             except Exception as e:
                 print(f"Rec Time Filter Error: {e} for {gt_str}")
@@ -1716,7 +1746,7 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
     try:
         import json
         import os
-        analytics_path = '/Users/rico/sports-models/analytics_data.json'
+        analytics_path = '/Users/rico/Dev/sports-models/analytics_data.json'
         if os.path.exists(analytics_path):
             with open(analytics_path, 'r') as f:
                 data = json.load(f)
@@ -2475,6 +2505,89 @@ def generate_html_output(over_plays, under_plays, stats=None, tracking_data=None
 
     return html
 
+def get_active_plays_for_display(tracking_data):
+    """
+    Reconstruct list of plays to display in HTML from tracking data.
+    Includes:
+    1. All plays for TODAY (pending or graded)
+    2. Future pending plays
+    """
+    display_plays = []
+    if not tracking_data or 'picks' not in tracking_data:
+        return display_plays
+        
+    from datetime import datetime
+    import pytz
+    
+    et_tz = pytz.timezone('US/Eastern')
+    now = datetime.now(et_tz)
+    today_date = now.date()
+    
+    for p in tracking_data['picks']:
+        try:
+            g_time = p.get('game_time') or p.get('game_date')
+            if not g_time: continue
+            
+            # Parse time
+            if 'Z' in g_time:
+                dt = datetime.fromisoformat(g_time.replace('Z', '+00:00'))
+                dt_et = dt.astimezone(et_tz)
+            else:
+                dt_et = datetime.fromisoformat(g_time)
+            
+            p_date = dt_et.date()
+            status = (p.get('status') or 'pending').lower()
+            
+            # FILTER LOGIC
+            should_show = False
+            
+            # 1. Today's games: Show ALL (pending, win, loss, void)
+            if p_date == today_date:
+                should_show = True
+            # 2. Future games: Show pending only
+            elif p_date > today_date and status == 'pending':
+                should_show = True
+                
+            if should_show:
+                # Reconstruct play object matching analyze_props output format
+                line = p.get('prop_line', 0)
+                b_type = p.get('bet_type', 'OVER').upper()
+                prop_str = f"{b_type} {line} REB"
+                
+                # Calculate edge if missing
+                edge = p.get('edge')
+                if edge is None and p.get('season_avg'):
+                    try:
+                         val = float(p.get('season_avg'))
+                         if 'OVER' in b_type: edge = val - float(line)
+                         else: edge = float(line) - val
+                    except: edge = 0
+                
+                play = {
+                    'player': p.get('player'),
+                    'prop': prop_str,
+                    'game_time': g_time,
+                    'team': p.get('team'),
+                    'opponent': p.get('opponent'),
+                    'ai_score': p.get('ai_score', 9.5),
+                    'odds': p.get('odds'),
+                    'season_avg': p.get('season_avg', 0),
+                    'recent_avg': p.get('recent_avg', 0),
+                    'edge': edge if edge is not None else 0,
+                    'ev': p.get('ev', 0),
+                    'ai_rating': p.get('ai_rating', 2.5),
+                    # Pass status info for display
+                    'status': status,
+                    'result': p.get('result'),
+                    'profit_loss': p.get('profit_loss')
+                }
+                display_plays.append(play)
+                
+        except Exception as e:
+            continue
+            
+    return display_plays
+
 
 def save_html(html_content: str) -> bool:
     try:
@@ -2515,6 +2628,16 @@ def main():
     tracking_data = load_tracking_data()
     stats = calculate_tracking_stats(tracking_data)
 
+    # RECONSTRUCT DISPLAY LIST from tracking data for HTML
+    # This ensures we show ALL of today's plays (even if games started/graded)
+    active_display_plays = get_active_plays_for_display(tracking_data)
+    display_over = [p for p in active_display_plays if 'OVER' in p['prop']]
+    display_under = [p for p in active_display_plays if 'UNDER' in p['prop']]
+    
+    # Sort by rating
+    display_over.sort(key=lambda x: x.get('ai_rating', 0), reverse=True)
+    display_under.sort(key=lambda x: x.get('ai_rating', 0), reverse=True)
+
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}TOP OVER PLAYS{Colors.END}")
     print(f"{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
@@ -2545,8 +2668,8 @@ def main():
             f"Rating: {ai_rating:.1f} {rating_stars}"
         )
 
-    print(f"\n{Colors.CYAN}Generating HTML report...{Colors.END}")
-    html_content = generate_html_output(over_plays, under_plays, stats, tracking_data, reb_factors, player_stats)
+    print(f"\n{Colors.CYAN}Generating HTML report with {len(active_display_plays)} active plays...{Colors.END}")
+    html_content = generate_html_output(display_over, display_under, stats, tracking_data, reb_factors, player_stats)
     save_html(html_content)
 
     print(f"\n{Colors.BOLD}{Colors.GREEN}{'='*80}{Colors.END}")
