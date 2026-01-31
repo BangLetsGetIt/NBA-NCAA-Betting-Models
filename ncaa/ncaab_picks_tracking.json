@@ -67748,10 +67748,11 @@
       "model_line": 6.089986999999979,
       "market_line": -8.5,
       "edge": 14.58998699999998,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-29T14:59:05.126044-05:00"
+      "status": "loss",
+      "result": "Lost by 4.5",
+      "profit": -100,
+      "logged_at": "2026-01-29T14:59:05.126044-05:00",
+      "actual_score": "UNLV Rebels 76, Nevada Wolf Pack 89"
     },
     {
       "pick_id": "Nevada Wolf Pack_UNLV Rebels_2026-01-31T03:00:00Z_total",
@@ -67763,10 +67764,11 @@
       "model_line": 140.194639,
       "market_line": 149.5,
       "edge": -9.305361000000005,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-01-29T14:59:05.187256-05:00"
+      "status": "loss",
+      "result": "Lost by 15.5",
+      "profit": -100,
+      "logged_at": "2026-01-29T14:59:05.187256-05:00",
+      "actual_score": "UNLV Rebels 76, Nevada Wolf Pack 89"
     },
     {
       "pick_id": "Kansas Jayhawks_BYU Cougars_2026-01-31T21:00:47Z_spread",
@@ -70323,12 +70325,42 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-01-30T23:53:50.568724-05:00"
+    },
+    {
+      "pick_id": "Yale Bulldogs_Harvard Crimson_2026-02-01T00:00:00Z_spread",
+      "game_date": "2026-02-01T00:00:00Z",
+      "home_team": "Yale Bulldogs",
+      "away_team": "Harvard Crimson",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Harvard Crimson +12.5",
+      "model_line": 7.464255999999992,
+      "market_line": -12.5,
+      "edge": 19.964255999999992,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-01-31T00:23:15.265314-05:00"
+    },
+    {
+      "pick_id": "Yale Bulldogs_Harvard Crimson_2026-02-01T00:00:00Z_total",
+      "game_date": "2026-02-01T00:00:00Z",
+      "home_team": "Yale Bulldogs",
+      "away_team": "Harvard Crimson",
+      "pick_type": "total",
+      "pick_text": "\u2705 BET: UNDER 142.5",
+      "model_line": 136.36271999999997,
+      "market_line": 142.5,
+      "edge": -6.1372800000000325,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-01-31T00:23:15.321402-05:00"
     }
   ],
   "summary": {
-    "total_picks": 4171,
+    "total_picks": 4173,
     "wins": 2100,
-    "losses": 1884,
+    "losses": 1886,
     "pushes": 6,
     "pending": 181
   }
