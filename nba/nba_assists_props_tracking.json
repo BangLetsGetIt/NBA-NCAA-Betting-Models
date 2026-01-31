@@ -3066,11 +3066,13 @@
       "edge": 2.3,
       "ev": 31.4,
       "tracked_at": "2026-01-30T00:42:51.593935-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 8,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:04:56.735528-05:00"
+      "last_updated": "2026-01-30T17:04:56.735528-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-30T23:19:52.275712-05:00"
     },
     {
       "pick_id": "Austin Reaves_3.5_over_2026-01-31T00:10:00Z",
@@ -3113,11 +3115,13 @@
       "edge": 2.3,
       "ev": 16.67,
       "tracked_at": "2026-01-30T17:04:56.735482-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 3,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:22:23.643134-05:00"
+      "last_updated": "2026-01-30T17:22:23.643134-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-30T23:19:52.413002-05:00"
     },
     {
       "pick_id": "Anfernee Simons_3.5_under_2026-01-31T00:40:00Z",
@@ -3136,10 +3140,12 @@
       "edge": 1.1,
       "ev": 10.23,
       "tracked_at": "2026-01-30T17:04:56.735587-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 1,
+      "clv_status": null,
+      "profit_loss": 57,
+      "updated_at": "2026-01-30T23:19:52.630420-05:00"
     }
   ]
 }

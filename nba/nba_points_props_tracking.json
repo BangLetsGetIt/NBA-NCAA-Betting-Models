@@ -19803,11 +19803,13 @@
       "edge": 4.1,
       "ev": 26.0,
       "tracked_at": "2026-01-29T23:44:34.264573-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_pts": 6,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:22:19.977556-05:00"
+      "last_updated": "2026-01-30T17:22:19.977556-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-30T23:19:27.768864-05:00"
     },
     {
       "pick_id": "Miles McBride_10.5_over_2026-01-31T00:40:00Z",
@@ -19826,10 +19828,11 @@
       "edge": 2.4,
       "ev": 40.0,
       "tracked_at": "2026-01-30T00:43:21.305405-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_pts": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Kawhi Leonard_22.5_over_2026-01-31T02:00:00Z",
@@ -19941,11 +19944,13 @@
       "edge": 4.3,
       "ev": 36.04,
       "tracked_at": "2026-01-30T17:05:10.436101-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_pts": 11,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:22:19.977775-05:00"
+      "last_updated": "2026-01-30T17:22:19.977775-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-01-30T23:19:27.769481-05:00"
     },
     {
       "pick_id": "Mark Williams_10.5_over_2026-01-31T02:00:00Z",
@@ -20033,11 +20038,13 @@
       "edge": 2.6,
       "ev": 33.06,
       "tracked_at": "2026-01-30T17:05:10.704087-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_pts": 8,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:39:24.707321-05:00"
+      "last_updated": "2026-01-30T17:39:24.707321-05:00",
+      "profit_loss": 90,
+      "updated_at": "2026-01-30T23:19:27.769787-05:00"
     },
     {
       "pick_id": "Scottie Barnes_17.5_over_2026-01-31T00:40:00Z",
@@ -20056,11 +20063,13 @@
       "edge": 1.9,
       "ev": 26.0,
       "tracked_at": "2026-01-30T17:22:19.978263-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_pts": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_pts": 19,
       "clv_status": "negative",
-      "last_updated": "2026-01-30T17:39:24.707492-05:00"
+      "last_updated": "2026-01-30T17:39:24.707492-05:00",
+      "profit_loss": 80,
+      "updated_at": "2026-01-30T23:19:27.769843-05:00"
     }
   ]
 }
