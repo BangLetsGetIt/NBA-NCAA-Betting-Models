@@ -157,6 +157,12 @@ class UFCModelRunner:
         else:
             print("No value bets found.")
 
+        # 6. Grade Pending Picks (Free via scraping)
+        self.grade_pending_picks()
+
+        # 7. Generate Dashboard
+        self.generate_dashboard()
+
     def grade_pending_picks(self):
         """
         Check pending picks against historical results.
