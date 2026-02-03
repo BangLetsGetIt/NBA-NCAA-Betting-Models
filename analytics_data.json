@@ -1,36 +1,36 @@
 {
   "overview": {
-    "total_picks": 6985,
-    "completed_picks": 6591,
-    "wins": 3483,
-    "losses": 3087,
+    "total_picks": 7041,
+    "completed_picks": 6625,
+    "wins": 3504,
+    "losses": 3100,
     "pushes": 21,
-    "win_rate": 0.5284478834774693,
-    "profit_loss": -42.89,
-    "roi": -0.6507358519192838
+    "win_rate": 0.5289056603773585,
+    "profit_loss": -37.47,
+    "roi": -0.5655849056603773
   },
   "by_sport": {
     "NBA": {
-      "total_picks": 2290,
-      "completed_picks": 2017,
-      "wins": 1091,
-      "losses": 922,
+      "total_picks": 2310,
+      "completed_picks": 2031,
+      "wins": 1101,
+      "losses": 926,
       "pushes": 4,
-      "win_rate": 0.5409023301933564,
-      "profit_loss": -58.31,
-      "roi": -2.890927119484383,
-      "avg_edge": 1.6178926752789908
+      "win_rate": 0.5420974889217134,
+      "profit_loss": -52.89,
+      "roi": -2.6041358936484493,
+      "avg_edge": 1.6517637343674842
     },
     "NCAAB": {
-      "total_picks": 4230,
-      "completed_picks": 4189,
-      "wins": 2195,
-      "losses": 1988,
+      "total_picks": 4266,
+      "completed_picks": 4209,
+      "wins": 2206,
+      "losses": 1997,
       "pushes": 6,
-      "win_rate": 0.5239914060634996,
+      "win_rate": 0.5241149916844856,
       "profit_loss": 11.33,
-      "roi": 0.27047027930293627,
-      "avg_edge": -0.2300681130950591
+      "roi": 0.26918507959135185,
+      "avg_edge": -0.195461765680286
     },
     "Soccer": {
       "total_picks": 449,
@@ -57,24 +57,24 @@
   },
   "by_model_type": {
     "Main": {
-      "total_picks": 5179,
-      "completed_picks": 5057,
-      "wins": 2636,
-      "losses": 2401,
+      "total_picks": 5221,
+      "completed_picks": 5081,
+      "wins": 2651,
+      "losses": 2410,
       "pushes": 20,
-      "win_rate": 0.5212576626458375,
-      "profit_loss": -3.27,
-      "roi": -0.06466284358315207
+      "win_rate": 0.5217476874630979,
+      "profit_loss": 0.73,
+      "roi": 0.014367250541232042
     },
     "Props": {
-      "total_picks": 1721,
-      "completed_picks": 1523,
-      "wins": 844,
-      "losses": 679,
+      "total_picks": 1735,
+      "completed_picks": 1533,
+      "wins": 850,
+      "losses": 683,
       "pushes": 0,
-      "win_rate": 0.5541694024950755,
-      "profit_loss": -37.17,
-      "roi": -2.4405778069599475
+      "win_rate": 0.5544683626875407,
+      "profit_loss": -35.75,
+      "roi": -2.3320287018917156
     }
   },
   "time_series": {
@@ -717,6 +717,14 @@
       "pushes": 10,
       "profit_loss": -10.81,
       "win_rate": 0.5213675213675214
+    },
+    "2026-02-02": {
+      "picks": 8,
+      "wins": 2444,
+      "losses": 2232,
+      "pushes": 10,
+      "profit_loss": -8.81,
+      "win_rate": 0.521553563807085
     }
   },
   "top_performers": {
@@ -875,6 +883,20 @@
       "prop_summary": "Pts (10-2-0), Reb (1-0-0), Ast (0-1-0)"
     },
     "player_11": {
+      "name": "Dylan Harper",
+      "type": "player",
+      "total_picks": 5,
+      "wins": 4,
+      "losses": 1,
+      "pushes": 0,
+      "win_rate": 0.8,
+      "profit_loss": 0.97,
+      "sport": "NBA",
+      "team_abbrev": "okc",
+      "team_name": "Oklahoma City Thunder",
+      "prop_summary": "3PT (3-0-0), Pts (1-1-0)"
+    },
+    "player_12": {
       "name": "Santi Aldama",
       "type": "player",
       "total_picks": 5,
@@ -888,7 +910,7 @@
       "team_name": "Minnesota Timberwolves",
       "prop_summary": "Pts (2-0-0), 3PT (2-0-0), Reb (0-1-0)"
     },
-    "player_12": {
+    "player_13": {
       "name": "Ochai Agbaji",
       "type": "player",
       "total_picks": 5,
@@ -902,7 +924,7 @@
       "team_name": "Toronto Raptors",
       "prop_summary": "Reb (4-0-0), Pts (0-1-0)"
     },
-    "player_13": {
+    "player_14": {
       "name": "Amen Thompson",
       "type": "player",
       "total_picks": 5,
@@ -915,20 +937,6 @@
       "team_abbrev": "hou",
       "team_name": "Houston Rockets",
       "prop_summary": "Pts (4-1-0)"
-    },
-    "player_14": {
-      "name": "Jalen Smith",
-      "type": "player",
-      "total_picks": 5,
-      "wins": 4,
-      "losses": 1,
-      "pushes": 0,
-      "win_rate": 0.8,
-      "profit_loss": 1.81,
-      "sport": "NBA",
-      "team_abbrev": "chi",
-      "team_name": "Chicago Bulls",
-      "prop_summary": "Reb (2-1-0), Pts (1-0-0), Ast (1-0-0)"
     },
     "team_eff_0": {
       "name": "Charlotte Hornets",
@@ -1052,6 +1060,17 @@
       "record_split": "Fav: 3-1-0 | Dog: 10-4-0"
     },
     "team_prof_1": {
+      "name": "Indiana Pacers",
+      "type": "team",
+      "total_picks": 19,
+      "wins": 13,
+      "losses": 6,
+      "pushes": 0,
+      "win_rate": 0.6842105263157895,
+      "profit_loss": 640.0,
+      "record_split": "Fav: 2-1-0 | Dog: 11-5-0"
+    },
+    "team_prof_2": {
       "name": "Charlotte Hornets",
       "type": "team",
       "total_picks": 6,
@@ -1062,7 +1081,7 @@
       "profit_loss": 600.0,
       "record_split": "Fav: 1-0-0 | Dog: 5-0-0"
     },
-    "team_prof_2": {
+    "team_prof_3": {
       "name": "Toronto Raptors",
       "type": "team",
       "total_picks": 6,
@@ -1072,17 +1091,6 @@
       "win_rate": 1.0,
       "profit_loss": 600.0,
       "record_split": "Dog: 6-0-0"
-    },
-    "team_prof_3": {
-      "name": "Indiana Pacers",
-      "type": "team",
-      "total_picks": 18,
-      "wins": 12,
-      "losses": 6,
-      "pushes": 0,
-      "win_rate": 0.6666666666666666,
-      "profit_loss": 540.0,
-      "record_split": "Fav: 2-1-0 | Dog: 10-5-0"
     },
     "team_prof_4": {
       "name": "Portland Trail Blazers",
@@ -1153,7 +1161,7 @@
   },
   "model_breakdown": {
     "NBA 3PT Props": {
-      "total_picks": 353,
+      "total_picks": 357,
       "completed_picks": 316,
       "wins": 202,
       "losses": 114,
@@ -1187,48 +1195,14 @@
       }
     },
     "NBA Rebounds Props": {
-      "total_picks": 334,
-      "completed_picks": 301,
-      "wins": 170,
+      "total_picks": 336,
+      "completed_picks": 303,
+      "wins": 172,
       "losses": 131,
       "pushes": 0,
-      "win_rate": 0.5647840531561462,
-      "profit_loss": -6.65,
-      "roi": -2.2093023255813953,
-      "recent_100": {
-        "wins": 56,
-        "losses": 44,
-        "pushes": 0,
-        "win_rate": 0.56
-      },
-      "recent_50": {
-        "wins": 24,
-        "losses": 26,
-        "pushes": 0,
-        "win_rate": 0.48
-      },
-      "recent_20": {
-        "wins": 8,
-        "losses": 12,
-        "pushes": 0,
-        "win_rate": 0.4
-      },
-      "recent_10": {
-        "wins": 6,
-        "losses": 4,
-        "pushes": 0,
-        "win_rate": 0.6
-      }
-    },
-    "NBA Assists Props": {
-      "total_picks": 139,
-      "completed_picks": 120,
-      "wins": 66,
-      "losses": 54,
-      "pushes": 0,
-      "win_rate": 0.55,
-      "profit_loss": -10.58,
-      "roi": -8.816666666666666,
+      "win_rate": 0.5676567656765676,
+      "profit_loss": -4.86,
+      "roi": -1.603960396039604,
       "recent_100": {
         "wins": 57,
         "losses": 43,
@@ -1236,16 +1210,50 @@
         "win_rate": 0.57
       },
       "recent_50": {
-        "wins": 29,
-        "losses": 21,
+        "wins": 26,
+        "losses": 24,
         "pushes": 0,
-        "win_rate": 0.58
+        "win_rate": 0.52
       },
       "recent_20": {
-        "wins": 8,
-        "losses": 12,
+        "wins": 10,
+        "losses": 10,
         "pushes": 0,
-        "win_rate": 0.4
+        "win_rate": 0.5
+      },
+      "recent_10": {
+        "wins": 7,
+        "losses": 3,
+        "pushes": 0,
+        "win_rate": 0.7
+      }
+    },
+    "NBA Assists Props": {
+      "total_picks": 141,
+      "completed_picks": 121,
+      "wins": 66,
+      "losses": 55,
+      "pushes": 0,
+      "win_rate": 0.5454545454545454,
+      "profit_loss": -11.58,
+      "roi": -9.570247933884298,
+      "recent_100": {
+        "wins": 57,
+        "losses": 43,
+        "pushes": 0,
+        "win_rate": 0.57
+      },
+      "recent_50": {
+        "wins": 28,
+        "losses": 22,
+        "pushes": 0,
+        "win_rate": 0.56
+      },
+      "recent_20": {
+        "wins": 7,
+        "losses": 13,
+        "pushes": 0,
+        "win_rate": 0.35
       },
       "recent_10": {
         "wins": 4,
@@ -1255,31 +1263,31 @@
       }
     },
     "NBA Points Props": {
-      "total_picks": 884,
-      "completed_picks": 786,
-      "wins": 406,
-      "losses": 380,
+      "total_picks": 890,
+      "completed_picks": 793,
+      "wins": 410,
+      "losses": 383,
       "pushes": 0,
-      "win_rate": 0.5165394402035624,
-      "profit_loss": -24.86,
-      "roi": -3.162849872773537,
+      "win_rate": 0.5170239596469105,
+      "profit_loss": -24.23,
+      "roi": -3.055485498108449,
       "recent_100": {
-        "wins": 39,
-        "losses": 61,
+        "wins": 43,
+        "losses": 57,
         "pushes": 0,
-        "win_rate": 0.39
+        "win_rate": 0.43
       },
       "recent_50": {
-        "wins": 25,
-        "losses": 25,
+        "wins": 24,
+        "losses": 26,
         "pushes": 0,
-        "win_rate": 0.5
+        "win_rate": 0.48
       },
       "recent_20": {
-        "wins": 10,
-        "losses": 10,
+        "wins": 11,
+        "losses": 9,
         "pushes": 0,
-        "win_rate": 0.5
+        "win_rate": 0.55
       },
       "recent_10": {
         "wins": 6,
@@ -1289,14 +1297,14 @@
       }
     },
     "NBA Main Model": {
-      "total_picks": 502,
-      "completed_picks": 494,
-      "wins": 247,
+      "total_picks": 508,
+      "completed_picks": 498,
+      "wins": 251,
       "losses": 243,
       "pushes": 4,
-      "win_rate": 0.5,
-      "profit_loss": -21.14,
-      "roi": -4.279352226720648,
+      "win_rate": 0.5040160642570282,
+      "profit_loss": -17.14,
+      "roi": -3.4417670682730925,
       "recent_100": {
         "wins": 51,
         "losses": 48,
@@ -1325,31 +1333,31 @@
   },
   "prop_breakdown": {
     "Unknown": {
-      "total_picks": 2590,
-      "wins": 1339,
-      "losses": 1244,
+      "total_picks": 2603,
+      "wins": 1347,
+      "losses": 1249,
       "pushes": 7,
-      "win_rate": 0.516988416988417,
-      "profit_loss": 12.47,
-      "roi": 48.14671814671815
+      "win_rate": 0.517479830964272,
+      "profit_loss": 14.47,
+      "roi": 55.58970418747599
     },
     "Main Bets": {
-      "total_picks": 2478,
-      "wins": 1300,
-      "losses": 1164,
+      "total_picks": 2489,
+      "wins": 1307,
+      "losses": 1168,
       "pushes": 14,
-      "win_rate": 0.5246166263115416,
-      "profit_loss": -18.19,
-      "roi": -73.40597255851493
+      "win_rate": 0.5251104861390117,
+      "profit_loss": -16.19,
+      "roi": -65.04620329449578
     },
     "Points": {
-      "total_picks": 786,
-      "wins": 406,
-      "losses": 380,
+      "total_picks": 793,
+      "wins": 410,
+      "losses": 383,
       "pushes": 0,
-      "win_rate": 0.5165394402035624,
-      "profit_loss": -24.86,
-      "roi": -316.2849872773537
+      "win_rate": 0.5170239596469105,
+      "profit_loss": -24.23,
+      "roi": -305.54854981084486
     },
     "3-Pointers": {
       "total_picks": 316,
@@ -1361,22 +1369,22 @@
       "roi": 155.69620253164558
     },
     "Rebounds": {
-      "total_picks": 301,
-      "wins": 170,
+      "total_picks": 303,
+      "wins": 172,
       "losses": 131,
       "pushes": 0,
-      "win_rate": 0.5647840531561462,
-      "profit_loss": -6.65,
-      "roi": -220.93023255813952
+      "win_rate": 0.5676567656765676,
+      "profit_loss": -4.86,
+      "roi": -160.39603960396042
     },
     "Assists": {
-      "total_picks": 120,
+      "total_picks": 121,
       "wins": 66,
-      "losses": 54,
+      "losses": 55,
       "pushes": 0,
-      "win_rate": 0.55,
-      "profit_loss": -10.58,
-      "roi": -881.6666666666666
+      "win_rate": 0.5454545454545454,
+      "profit_loss": -11.58,
+      "roi": -957.0247933884298
     }
   },
   "players_by_prop": {
@@ -1593,15 +1601,15 @@
         "team_name": "Cleveland Cavaliers"
       },
       {
-        "name": "Victor Wembanyama",
+        "name": "Julian Champagnie",
         "total_picks": 6,
         "wins": 3,
         "losses": 3,
         "pushes": 0,
         "win_rate": 0.5,
-        "profit_loss": -0.93,
-        "team_abbrev": "sa",
-        "team_name": "San Antonio Spurs"
+        "profit_loss": -0.82,
+        "team_abbrev": "atl",
+        "team_name": "Atlanta Hawks"
       }
     ],
     "Assists Props": [
@@ -1764,25 +1772,25 @@
     ]
   },
   "edge_analysis": {
-    "avg_edge": 0.47782207671443405,
+    "avg_edge": 0.5130311301462043,
     "median_edge": 1.9,
     "edge_ranges": {
-      "negative": 2238,
-      "0-5": 1435,
-      "5-10": 1025,
-      "10-15": 854,
-      "15+": 731
+      "negative": 2252,
+      "0-5": 1448,
+      "5-10": 1027,
+      "10-15": 872,
+      "15+": 740
     }
   },
   "ai_score_analysis": {
-    "avg_ai_score": 9.743544389073458,
+    "avg_ai_score": 9.744230881895243,
     "max_ai_score": 10.0,
     "score_distribution": {
       "0-2": 0,
       "2-4": 0,
       "4-6": 0,
       "6-8": 82,
-      "8-10": 1638
+      "8-10": 1652
     }
   }
 }
