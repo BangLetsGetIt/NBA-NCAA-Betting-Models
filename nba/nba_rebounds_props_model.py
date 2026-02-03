@@ -2541,9 +2541,11 @@ def get_active_plays_for_display(tracking_data):
             # FILTER LOGIC
             should_show = False
             
-            # 1. Today's games: Show PENDING only (hide completed)
+            # 1. Today's games: Show PENDING only (hide completed AND started)
             if p_date == today_date and status == 'pending':
-                should_show = True
+                # Only show if game hasn't started yet
+                if dt_et > now:
+                    should_show = True
             # 2. Future games: Show pending only
             elif p_date > today_date and status == 'pending':
                 should_show = True
