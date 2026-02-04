@@ -10700,11 +10700,11 @@
       "edge": 12.4,
       "pick": "\u2705 BET: Indiana Pacers -4.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 122,
+      "actual_away_score": 131,
       "clv_status": null
     },
     {
@@ -10784,7 +10784,7 @@
       "model_line": 8.5,
       "market_line": 3.5,
       "opening_line": 3.5,
-      "closing_line": 3.5,
+      "closing_line": 3.0,
       "edge": 12.0,
       "pick": "\u2705 BET: Portland Trail Blazers +3.5",
       "units": 1,
@@ -10793,7 +10793,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     },
     {
       "pick_id": "Portland Trail Blazers_Phoenix Suns_2026-02-04T04:10:00Z_total",
@@ -10806,7 +10806,7 @@
       "model_line": 229.7,
       "market_line": 217.5,
       "opening_line": 217.5,
-      "closing_line": 217.5,
+      "closing_line": 219.5,
       "edge": 12.2,
       "pick": "\u2705 BET: OVER 217.5",
       "units": 1,
@@ -10815,14 +10815,14 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": null
+      "clv_status": "positive"
     }
   ],
   "summary": {
     "total_picks": 508,
     "wins": 251,
-    "losses": 243,
+    "losses": 244,
     "pushes": 4,
-    "pending": 10
+    "pending": 9
   }
 }
