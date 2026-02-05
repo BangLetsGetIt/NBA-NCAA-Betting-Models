@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default to today if no date provided
-DATE=${1:-$(date +%Y-%m-%d)}
+DATE=${1:-$(date -v-1d +%Y-%m-%d)}
 OUTPUT="daily_recap_${DATE}.html"
 
 echo "Generating Daily Recap for $DATE..."
