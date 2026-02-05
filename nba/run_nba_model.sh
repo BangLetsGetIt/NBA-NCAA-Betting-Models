@@ -11,7 +11,7 @@ set -o pipefail
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:$PATH"
 
 # Navigate to NBA Model folder
-cd "/Users/rico/sports-models/nba"
+cd "/Users/rico/Dev/sports-models/nba"
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
@@ -52,10 +52,27 @@ if [ $? -eq 0 ]; then
     echo "📊 Updating Analysis Dashboard..." | tee -a "$LOG_FILE"
     python3 generate_nba_analysis_report.py 2>&1 | tee -a "$LOG_FILE"
 
+    # Update Best Plays & Overall Dashboard
+    echo "" | tee -a "$LOG_FILE"
+    echo "🔥 Updating Best Plays & Analytics..." | tee -a "$LOG_FILE"
+    
+    # Switch to root directory for bot
+    cd "/Users/rico/Dev/sports-models"
+    
+    # Run bot (using absolute path to log file)
+    if python3 best_plays_bot.py 2>&1 | tee -a "nba/$LOG_FILE"; then
+        echo "✅ Best Plays updated" | tee -a "nba/$LOG_FILE"
+    else
+        echo "⚠️ Best Plays update warning" | tee -a "nba/$LOG_FILE"
+    fi
+    
+    # Return to NBA dir
+    cd "/Users/rico/Dev/sports-models/nba"
+
     # Auto-push to GitHub
     echo "" | tee -a "$LOG_FILE"
     echo "📤 Pushing updates to GitHub..." | tee -a "$LOG_FILE"
-    /Users/rico/sports-models/auto_push.sh 2>&1 | tee -a "$LOG_FILE"
+    /Users/rico/Dev/sports-models/auto_push.sh 2>&1 | tee -a "$LOG_FILE"
 
     exit 0
 else
