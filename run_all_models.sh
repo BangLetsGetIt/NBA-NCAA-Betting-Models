@@ -250,12 +250,12 @@ echo -e "${BLUE}📅 Generating Daily Recap...${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 cd "$SCRIPT_DIR"
-DATE=$(date +%Y-%m-%d)
-OUTPUT="daily_recap_${DATE}.html"
-if python3 generate_daily_recap.py --date "$DATE" --output "$OUTPUT" 2>&1; then
+RECAP_DATE=$(date -v-1d +%Y-%m-%d)
+OUTPUT="daily_recap_${RECAP_DATE}.html"
+if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "$OUTPUT" 2>&1; then
     # Create persistent link
     cp "$OUTPUT" daily_recap.html
-    echo -e "${GREEN}✅ Daily Recap generated successfully${NC}"
+    echo -e "${GREEN}✅ Daily Recap generated for $RECAP_DATE!${NC}"
     echo ""
 else
     echo -e "${YELLOW}⚠️  Daily Recap generation failed${NC}"
