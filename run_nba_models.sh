@@ -189,11 +189,11 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     
     cd "$SCRIPT_DIR"
-    TODAY=$(date +%Y-%m-%d)
+    RECAP_DATE=$(date -v-1d +%Y-%m-%d)
     if [ -f "generate_daily_recap.py" ]; then
-        if python3 generate_daily_recap.py --date "$TODAY" --output "daily_recap_$TODAY.html" 2>&1; then
-            cp "daily_recap_$TODAY.html" "daily_recap.html"
-            echo -e "${GREEN}✅ Daily recap generated for $TODAY!${NC}"
+        if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "daily_recap_$RECAP_DATE.html" 2>&1; then
+            cp "daily_recap_$RECAP_DATE.html" "daily_recap.html"
+            echo -e "${GREEN}✅ Daily recap generated for $RECAP_DATE!${NC}"
             echo -e "${YELLOW}📁 Generated: daily_recap.html${NC}"
         else
             echo -e "${RED}❌ Daily recap generation failed${NC}"
