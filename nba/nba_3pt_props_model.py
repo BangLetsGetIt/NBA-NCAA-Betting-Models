@@ -1055,7 +1055,7 @@ def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
     else:
         ev = (true_prob * (100 / abs(odds))) - (1 - true_prob)
 
-    return ev * 100
+    return ev * 100, true_prob * 100
 
 
 # =============================================================================
@@ -1366,8 +1366,13 @@ def analyze_props(props_list, player_stats, three_factors):
                 if over_odds is None:
                     over_odds = prop.get("under_price")
 
-                ev = calculate_ev(over_score, prop_line, season_avg, recent_avg, over_odds, "over")
+                ev, win_prob = calculate_ev(over_score, prop_line, season_avg, recent_avg, over_odds, "over")
                 prob_edge = calculate_probability_edge(over_score, season_avg, recent_avg, prop_line, over_odds, "over")
+
+                # Require positive EV and minimum win-prob before adding
+                if not (ev > 0 and win_prob >= 55):
+                    skipped_low_score += 1
+                    continue
 
                 play = {
                     "player": player_name,
@@ -1383,6 +1388,7 @@ def analyze_props(props_list, player_stats, three_factors):
                     "recent_avg": round(recent_avg, 2),
                     "edge": round(season_avg - prop_line, 2),
                     "ev": round(ev, 2),
+                    "win_prob_percent": round(win_prob, 1),
                     "probability_edge": prob_edge,
                 }
                 play["ai_rating"] = calculate_ai_rating_props(play)
@@ -1400,8 +1406,13 @@ def analyze_props(props_list, player_stats, three_factors):
                 if under_odds is None:
                     under_odds = prop.get("over_price")
 
-                ev = calculate_ev(under_score, prop_line, season_avg, recent_avg, under_odds, "under")
+                ev, win_prob = calculate_ev(under_score, prop_line, season_avg, recent_avg, under_odds, "under")
                 prob_edge = calculate_probability_edge(under_score, season_avg, recent_avg, prop_line, under_odds, "under")
+
+                # Require positive EV and minimum win-prob before adding
+                if not (ev > 0 and win_prob >= 55):
+                    skipped_low_score += 1
+                    continue
 
                 play = {
                     "player": player_name,
@@ -1417,6 +1428,7 @@ def analyze_props(props_list, player_stats, three_factors):
                     "recent_avg": round(recent_avg, 2),
                     "edge": round(prop_line - season_avg, 2),
                     "ev": round(ev, 2),
+                    "win_prob_percent": round(win_prob, 1),
                     "probability_edge": prob_edge,
                 }
                 play["ai_rating"] = calculate_ai_rating_props(play)

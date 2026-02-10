@@ -223,7 +223,7 @@ HTML_FOOTER = """
 
 def generate_report():
     # Load Data
-    file_path = '/Users/rico/sports-models/ncaa/ncaab_picks_tracking.json'
+    file_path = '/Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json'
     if not os.path.exists(file_path):
         print("Data file not found")
         return
@@ -592,7 +592,7 @@ def generate_report():
     
     html += HTML_FOOTER
     
-    output_path = '/Users/rico/sports-models/ncaa/ncaab_analysis_report.html'
+    output_path = '/Users/rico/Dev/sports-models/ncaa/ncaab_analysis_report.html'
     with open(output_path, 'w') as f:
         f.write(html)
         

@@ -4,7 +4,7 @@ import os
 import pytz
 from datetime import datetime, timedelta
 
-SCRIPT_DIR = "/Users/rico/sports-models/nba"
+SCRIPT_DIR = "/Users/rico/Dev/sports-models/nba"
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "nba_picks_tracking.json")
 
 def load_picks_tracking():

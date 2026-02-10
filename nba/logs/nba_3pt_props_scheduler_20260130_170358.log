@@ -1,0 +1,94 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Fri Jan 30 17:03:58 EST 2026
+Working dir: /Users/rico/Dev/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 9 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-14...
+[96m  Fetching batch stats for 01/14/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+[96m  Fetching batch stats for 01/24/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-29...
+[96m  Fetching batch stats for 01/29/2026...[0m
+    [92mWIN[0m: Anthony Edwards had 4 3-pointers (line: 2.5, bet: OVER) | Profit: 0.69 units
+    [92mWIN[0m: Donte DiVincenzo had 3 3-pointers (line: 2.5, bet: OVER) | Profit: 0.63 units
+  Fetching team stats to verify completed games for 2026-01-30...
+
+[92m✓ Graded 2 picks[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[96m  Fetching season 3-pointers stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL 3-pointers stats for 514 players[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Fetched 3-pointers factors for 30 teams[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[91m✗ API Error: 429[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 7.5)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/Dev/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Fri Jan 30 17:04:55 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+Already up to date.
+[main 9787710c] Update model outputs - 2026-01-30 17:04:56
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 19 insertions(+), 164 deletions(-)
+📤 Pushing to GitHub...
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   78077a62..9787710c  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Jan 30 17:04:57 EST 2026

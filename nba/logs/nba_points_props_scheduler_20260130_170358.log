@@ -1,0 +1,148 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Fri Jan 30 17:03:59 EST 2026
+Working dir: /Users/rico/Dev/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 27 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+
+[96mProcessing 1 picks for 2026-01-16...[0m
+[96m  Fetching batch stats for 01/16/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-16...
+
+[96mProcessing 1 picks for 2026-01-24...[0m
+[96m  Fetching batch stats for 01/24/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+
+[96mProcessing 2 picks for 2026-01-27...[0m
+[96m  Fetching batch stats for 01/27/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-27...
+
+[96mProcessing 5 picks for 2026-01-29...[0m
+[96m  Fetching batch stats for 01/29/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-29...
+    [91mLOSS[0m: Shai Gilgeous-Alexander had 30 points (line: 30.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Isaiah Hartenstein had 11 points (line: 7.5, bet: OVER) | Profit: 0.96 units
+    [92mWIN[0m: Anthony Edwards had 26 points (line: 25.5, bet: OVER) | Profit: 0.76 units
+    [91mLOSS[0m: Julius Randle had 13 points (line: 19.5, bet: OVER) | Profit: -1.00 units
+    [92mWIN[0m: Jaden McDaniels had 21 points (line: 12.5, bet: OVER) | Profit: 1.00 units
+
+[92m✓ Graded 5 picks[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[96m  Fetching season points stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL stats for 514 players[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Fetched defense factors for 30 teams[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 10 upcoming games[0m
+[96m  Filtered to 10 upcoming games[0m
+[96m  Game 1/10: Los Angeles Lakers @ Washington Wizards[0m
+[96m  Game 2/10: Sacramento Kings @ Boston Celtics[0m
+[96m  Game 3/10: Memphis Grizzlies @ New Orleans Pelicans[0m
+[96m  Game 4/10: Portland Trail Blazers @ New York Knicks[0m
+[96m  Game 5/10: Toronto Raptors @ Orlando Magic[0m
+[96m  Game 6/10: Cleveland Cavaliers @ Phoenix Suns[0m
+[96m  Game 7/10: Los Angeles Clippers @ Denver Nuggets[0m
+[96m  Game 8/10: Brooklyn Nets @ Utah Jazz[0m
+[96m  Game 9/10: Detroit Pistons @ Golden State Warriors[0m
+[96m  Game 10/10: San Antonio Spurs @ Charlotte Hornets[0m
+[92m✓ Fetched 156 total player props[0m
+
+[96mAnalyzing 156 player props with REAL stats...[0m
+[92m✓ Found 8 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 10 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 8 props (no player stats found)[0m
+[93m  Skipped 260 props (score below 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[92m✓ Tracked 1 new picks[0m
+[93m✓ Updated odds for 2 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+  [96m 1. Austin Reaves            [0m | [92mOVER 15.5 PTS  [0m | Los Angeles Lakers vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Deni Avdija              [0m | [92mOVER 21.5 PTS  [0m | Portland Trail Blazers vs New York Knicks | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Tristan da Silva         [0m | [92mOVER 6.5 PTS   [0m | Orlando Magic vs Toronto Raptors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Kawhi Leonard            [0m | [92mOVER 23.5 PTS  [0m | Los Angeles Clippers vs Denver Nuggets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. James Harden             [0m | [92mOVER 23.5 PTS  [0m | Los Angeles Clippers vs Denver Nuggets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Jamal Murray             [0m | [92mOVER 22.5 PTS  [0m | Denver Nuggets vs Los Angeles Clippers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Duncan Robinson          [0m | [92mOVER 9.5 PTS   [0m | Detroit Pistons vs Golden State Warriors | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Quinten Post             [0m | [92mOVER 6.5 PTS   [0m | Golden State Warriors vs Detroit Pistons | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Kyshawn George           [0m | [91mUNDER 19.5 PTS [0m | Washington Wizards vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. LeBron James             [0m | [91mUNDER 23.5 PTS [0m | Los Angeles Lakers vs Washington Wizards | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 3. Carlton Carrington       [0m | [91mUNDER 13.5 PTS [0m | Washington Wizards vs Los Angeles Lakers | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 4. Anfernee Simons          [0m | [91mUNDER 16.5 PTS [0m | Boston Celtics vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 5. Derrick White            [0m | [91mUNDER 22.5 PTS [0m | Boston Celtics vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 6. Payton Pritchard         [0m | [91mUNDER 21.5 PTS [0m | Boston Celtics vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 7. Neemias Queta            [0m | [91mUNDER 11.5 PTS [0m | Boston Celtics vs Sacramento Kings | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 8. Kyle Filipowski          [0m | [91mUNDER 14.5 PTS [0m | Utah Jazz vs Brooklyn Nets | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 9. Danny Wolf               [0m | [91mUNDER 13.5 PTS [0m | Brooklyn Nets vs Utah Jazz | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m10. Terance Mann             [0m | [91mUNDER 10.5 PTS [0m | Brooklyn Nets vs Utah Jazz | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/Dev/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Fri Jan 30 17:05:10 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+Already up to date.
+[main a9ee499f] Update model outputs - 2026-01-30 17:05:12
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 1044 insertions(+), 157 deletions(-)
+📤 Pushing to GitHub...
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   37466942..a9ee499f  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Jan 30 17:05:13 EST 2026

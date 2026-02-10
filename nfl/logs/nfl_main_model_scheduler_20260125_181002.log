@@ -1,0 +1,74 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sun Jan 25 18:10:02 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   No pending picks to grade
+
+📡 Fetching current NFL odds...
+Fetched 2 games, filtered to 1 upcoming.
+✅ Found 1 games
+
+🔍 Analyzing games...
+
+Los Angeles Rams @ Seattle Seahawks
+  🕐 2026-01-25T23:30:00Z
+  📊 Ratings: Seattle Seahawks (54.3) vs Los Angeles Rams (55.6)
+  📈 Predicted: Seattle Seahawks 22.9, Los Angeles Rams 21.6
+  SPREAD (⭐ LOGGED):
+    Market: Seattle Seahawks -2.5
+    Model:  1.4
+    Edge:   +3.9
+    ✅ SHARP BET: Seattle Seahawks -2.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 1
+Bets Logged:    1 (high-confidence +EV only)
+Total Tracked:  101
+Completed:      101
+Pending:        0
+Win Rate:       52.5%
+ROI:            +0.2%
+Total Profit:   $+23.00
+============================================================
+✅ Completed: nfl_main_model at Sun Jan 25 18:10:03 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 7acbd873] Update model outputs - 2026-01-25 18:10:03
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 2 insertions(+), 81 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   45b6847f..7acbd873  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Jan 25 18:10:04 EST 2026

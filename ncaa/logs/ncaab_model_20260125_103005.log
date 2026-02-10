@@ -1,0 +1,173 @@
+==========================================
+NCAA Model Run: Sun Jan 25 10:30:05 EST 2026
+==========================================
+Running NCAA Basketball model (IMPROVED)...
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 20 pending picks...[0m
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 164 completed games[0m
+[92m✓ Updated: ✅ BET: OVER 150.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: CSU Northridge Matadors +9.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: UNDER 155.0 -> LOSS[0m
+[92m✓ Updated: ✅ BET: CSU Northridge Matadors +9.5 -> LOSS[0m
+[92m✓ Updated: ✅ BET: UNDER 157.5 -> WIN[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3792[0m
+[92m✅ Updated 5 picks[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[93m⚠️  Cache expired or missing. Fetching fresh stats from Sports-Reference...[0m
+Fetching Pace data from Advanced Stats...
+✓ Parsed Pace for 364 teams
+Fetching NCAA basketball ratings for 2025 season...
+Columns found: [' 0_Rk', ' 1_School', ' 2_Conf', ' 3_ 3', ' 4_W', ' 5_L', ' 6_Pts', ' 7_Opp', ' 8_MOV', ' 9_ 9', ' 10_SOS', ' 11_ 11', 'SRS_OSRS', 'SRS_DSRS', 'SRS_SRS', 'Adjusted_ORtg', 'Adjusted_DRtg', 'Adjusted_NRtg']
+
+✓ Successfully fetched stats for 364 teams
+[92m✓ Stats cached to /Users/rico/sports-models/ncaa/ncaab_stats_cache.json[0m
+
+[1m[96mSTEP 3: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched 5 games from The Odds API[0m
+[92m✓ 5 games in the next 7 days[0m
+
+[1m[96mSTEP 4: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 3793[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: OVER 143.5 (Edge: +7.1)[0m
+
+[1m[92m✅ Analyzed 5 games with complete odds[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Florida Atlantic Owls @ South Florida Bulls ━━━[0m
+[96m🕐 01/25 01:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: -0.6 | Edge: +3.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 167.5 | Model: 142.2 | Edge: -25.3
+  [92m✅ BET: UNDER 167.5[0m
+  [96mHIGH confidence (EV: +89.4% | Win: 99.2%)[0m
+
+[35m📈 Florida Atlantic Owls 71.4, South Florida Bulls 70.8[0m
+
+[1m[96m━━━ GAME 2: Chicago St Cougars @ Mercyhurst Lakers ━━━[0m
+[96m🕐 01/25 02:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +3.6 | Edge: +13.1
+  [92m✅ BET: Chicago St Cougars +9.5[0m
+  [96mHIGH confidence (EV: +70.6% | Win: 89.3%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 130.5 | Model: 129.9 | Edge: -0.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.6)[0m
+
+[35m📈 Chicago St Cougars 63.2, Mercyhurst Lakers 66.8[0m
+
+[1m[96m━━━ GAME 3: Oregon Ducks @ Washington Huskies ━━━[0m
+[96m🕐 01/25 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +2.5 | Edge: +12.0
+  [92m✅ BET: Oregon Ducks +9.5[0m
+  [96mHIGH confidence (EV: +66.7% | Win: 87.3%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 143.5 | Model: 150.6 | Edge: +7.1
+  [92m✅ BET: OVER 143.5[0m
+  [96mHIGH confidence (EV: +43.2% | Win: 75.0%)[0m
+
+[35m📈 Oregon Ducks 74.0, Washington Huskies 76.5[0m
+
+[1m[96m━━━ GAME 4: Southern Illinois Salukis @ Evansville Purple Aces ━━━[0m
+[96m🕐 01/25 04:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: -1.1 | Edge: -4.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.6)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 132.7 | Edge: -7.8
+  [92m✅ BET: UNDER 140.5[0m
+  [96mHIGH confidence (EV: +47.2% | Win: 77.1%)[0m
+
+[35m📈 Southern Illinois Salukis 66.9, Evansville Purple Aces 65.8[0m
+
+[1m[96m━━━ GAME 5: USC Trojans @ Wisconsin Badgers ━━━[0m
+[96m🕐 01/25 04:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +7.6 | Edge: +15.1
+  [92m✅ BET: USC Trojans +7.5[0m
+  [96mHIGH confidence (EV: +76.7% | Win: 92.5%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 160.5 | Model: 149.5 | Edge: -11.0
+  [92m✅ BET: UNDER 160.5[0m
+  [96mHIGH confidence (EV: +62.7% | Win: 85.2%)[0m
+
+[35m📈 USC Trojans 70.9, Wisconsin Badgers 78.6[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 5: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 3793[0m
+[92mRecord: 1972-1799-6[0m
+[92mWin Rate: 52.3%[0m
+[91mProfit: -4.48 units[0m
+[91mROI: -0.1%[0m
+[1m====================================================================================================[0m
+
+
+==========================================
+✅ NCAA Model completed successfully!
+==========================================
+
+📊 Updating Analysis Dashboard...
+HTML Report generated at: /Users/rico/sports-models/ncaa/ncaab_analysis_report.html
+
+📤 Pushing updates to GitHub...
+[main cd1fc446] Update model outputs - 2026-01-25 10:30:09
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 328 insertions(+), 529 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   ca231e18..cd1fc446  main -> main
+✅ Successfully pushed to GitHub!

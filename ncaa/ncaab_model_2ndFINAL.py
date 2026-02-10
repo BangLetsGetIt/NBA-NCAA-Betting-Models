@@ -37,17 +37,18 @@ def calculate_ev(model_val, market_val, line_type='spread', price=-110):
     
     std_dev = STD_DEV_TOTAL if line_type == 'total' else STD_DEV_SPREAD
     
-    # Edge is Model - Market. 
-    # If Edge is +3, what is prob we cover? 
-    # Approx 61% for 3pt edge with 10.5 std dev.
-    
-    edge = abs(model_val - market_val)
-    
-    # Z-Score approximation for "Probability of winning given x points of edge"
-    # This assumes the edge is the mean of the distribution of margins relative to the line.
-    z_score = edge / std_dev
-    
-    # CDF using error function
+    # Determine signed edge (model - market). Some callers pass (0, edge)
+    # where `market_val` is actually the precomputed edge (model - market).
+    if model_val == 0 and market_val != 0:
+        signed_edge = float(market_val)
+    else:
+        signed_edge = float(model_val) - float(market_val)
+
+    # Z-Score approximation for "Probability of winning given signed points of edge"
+    # Positive signed_edge -> model favors the bet side; negative -> model disfavors.
+    z_score = signed_edge / std_dev
+
+    # CDF using error function (signed)
     model_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2)))
     
     # 3. Calculate EV
@@ -73,7 +74,10 @@ except ImportError:
 # CONFIG
 # =========================
 
-load_dotenv()
+# Force load from project root .env with override=True to prevent stale env vars
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dotenv_path = os.path.join(root_dir, ".env")
+load_dotenv(dotenv_path, override=True)
 API_KEY = os.getenv("ODDS_API_KEY")
 if not API_KEY:
     print("FATAL: ODDS_API_KEY not found in .env file.")
@@ -115,6 +119,11 @@ CONFIDENT_TOTAL_EDGE = 6.0    # Matched to TOTAL_THRESHOLD (Was 10.0)
 MAX_SPREAD_EDGE = 35.0 
 MAX_TOTAL_EDGE = 35.0
 UNIT_SIZE = 100  # Standard bet size in dollars
+
+# Bet sizing (fractional Kelly)
+FRACTIONAL_KELLY = 0.25  # use 25% of Kelly fraction
+MIN_STAKE_UNITS = 0.25   # minimum stake in units (0.25 units -> $25 if UNIT_SIZE=100)
+MAX_STAKE_UNITS = 5.0    # maximum stake in units
 
 # Date filtering
 DAYS_AHEAD_TO_FETCH = 7  # Only fetch games within next 7 days
@@ -265,6 +274,12 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
         print(f"{Colors.YELLOW}⚠️  Skipping logging for non-pick: {pick_type}{Colors.END}")
         return
 
+    # Compute EV and win probability for tracking
+    try:
+        ev_val, win_prob = calculate_ev(0, edge, pick_type, -110) if pick_type == 'spread' else calculate_ev(0, edge, 'total', -110)
+    except Exception:
+        ev_val, win_prob = None, None
+
     pick_entry = {
         "pick_id": pick_id,
         "game_date": game_data['commence_time'],
@@ -275,6 +290,12 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
         "model_line": model_line,
         "market_line": market_line,
         "edge": edge,
+        "ev_percent": ev_val,
+        "win_prob_percent": win_prob,
+        # Stake will be computed in units (relative to UNIT_SIZE) and dollars
+        # Compute fractional Kelly stake using win probability and -110 odds
+        "stake_units": None,
+        "stake": None,
         "status": "pending",
         "result": None,
         "profit": None,
@@ -285,9 +306,32 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
     tracking_data['summary']['total_picks'] = tracking_data['summary'].get('total_picks', 0) + 1
     tracking_data['summary']['pending'] = tracking_data['summary'].get('pending', 0) + 1
     
+    # Compute stake using fractional Kelly if win_prob is available
+    try:
+        if ev_val is not None and win_prob is not None:
+            p = float(win_prob) / 100.0
+            # For -110 price, net odds b = 100/110
+            b = 100.0 / 110.0
+            q = 1.0 - p
+            f_star = (b * p - q) / b
+            # Use fractional Kelly
+            f_used = max(0.0, f_star) * FRACTIONAL_KELLY
+            # convert fraction of bankroll to units relative to UNIT_SIZE; approximate bankroll as large, so scale to units
+            # We'll interpret f_used as fraction of a single unit allocation baseline; convert to units via f_used * (1/b)
+            stake_units = max(MIN_STAKE_UNITS, min(MAX_STAKE_UNITS, f_used * 1.0 / max(1e-6, 1.0)))
+        else:
+            stake_units = 1.0
+    except Exception:
+        stake_units = 1.0
+
+    stake_dollars = round(stake_units * UNIT_SIZE, 2)
+    # fill in stake fields for the last appended pick
+    tracking_data['picks'][-1]['stake_units'] = stake_units
+    tracking_data['picks'][-1]['stake'] = stake_dollars
+
     save_picks_tracking(tracking_data)
     
-    print(f"{Colors.PURPLE}📝 LOGGED: {pick_type.upper()} - {pick_text} (Edge: {edge:+.1f}){Colors.END}")
+    print(f"{Colors.PURPLE}📝 LOGGED: {pick_type.upper()} - {pick_text} (Edge: {edge:+.1f}) stake={stake_units:.2f}u (${stake_dollars:.2f}){Colors.END}")
 
 def fetch_completed_scores():
     """Fetch scores for recently completed games"""
@@ -443,6 +487,9 @@ def evaluate_spread_pick(pick, home_score, away_score):
     else:
         covered_margin = -actual_margin + spread
     
+    # Determine stake (dollars) — default to UNIT_SIZE if not present
+    risk = pick.get('stake', UNIT_SIZE)
+
     # Determine result
     if abs(covered_margin) < 0.1:  # Push
         return {
@@ -454,13 +501,13 @@ def evaluate_spread_pick(pick, home_score, away_score):
         return {
             "status": "win",
             "result": f"Won by {abs(covered_margin):.1f}",
-            "profit": UNIT_SIZE * 0.91  # Standard -110 odds
+            "profit": round(risk * 0.91, 2)  # Standard -110 odds payout on win
         }
     else:  # Loss
         return {
             "status": "loss",
             "result": f"Lost by {abs(covered_margin):.1f}",
-            "profit": -UNIT_SIZE
+            "profit": round(-risk, 2)
         }
 
 def evaluate_total_pick(pick, home_score, away_score):
@@ -480,6 +527,9 @@ def evaluate_total_pick(pick, home_score, away_score):
     # Calculate difference
     difference = total_score - line
     
+    # Determine stake (dollars) — default to UNIT_SIZE if not present
+    risk = pick.get('stake', UNIT_SIZE)
+
     # Determine result
     if abs(difference) < 0.1:  # Push
         return {
@@ -492,14 +542,14 @@ def evaluate_total_pick(pick, home_score, away_score):
         return {
             "status": "win",
             "result": f"Won by {abs(difference):.1f}",
-            "profit": UNIT_SIZE * 0.91
+            "profit": round(risk * 0.91, 2)
         }
     else:
         # Loss
         return {
             "status": "loss",
             "result": f"Lost by {abs(difference):.1f}",
-            "profit": -UNIT_SIZE
+            "profit": round(-risk, 2)
         }
 
 def calculate_summary_stats(picks):
@@ -998,6 +1048,10 @@ def determine_spread_pick(home_team, away_team, edge, market_line):
     # Check Positive EV
     if ev_val <= 0:
         return "❌ NO BET", f"Negative EV ({ev_val:.1f}%)"
+
+    # Require a minimum win probability to avoid low-confidence, noisy edges
+    if win_prob < 55.0:
+        return "❌ NO BET", f"Low model win probability ({win_prob:.1f}%)"
     
     # Check maximum edge cap - very large edges likely indicate model errors
     if abs_edge > MAX_SPREAD_EDGE:
@@ -1041,6 +1095,10 @@ def determine_total_pick(edge, market_line):
     # Check Positive EV
     if ev_val <= 0:
         return "❌ NO BET", f"Negative EV ({ev_val:.1f}%)"
+
+    # Require a minimum win probability to avoid low-confidence, noisy edges
+    if win_prob < 55.0:
+        return "❌ NO BET", f"Low model win probability ({win_prob:.1f}%)"
     
     # Check maximum edge cap - very large edges likely indicate model errors
     if abs_edge > MAX_TOTAL_EDGE:
@@ -1128,7 +1186,7 @@ def get_auto_bet_teams():
     Identify top 20 profitable teams (Auto-Bets) from centralized JSON.
     Returns a set of team names.
     """
-    json_path = "/Users/rico/sports-models/auto_bet_teams.json"
+    json_path = "/Users/rico/Dev/sports-models/auto_bet_teams.json"
     try:
         if os.path.exists(json_path):
             with open(json_path, 'r') as f:

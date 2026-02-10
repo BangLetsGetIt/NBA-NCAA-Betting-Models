@@ -21,7 +21,10 @@ import time
 # CONFIG
 # =========================
 
-load_dotenv()
+# Force load from project root .env with override=True to prevent stale env vars
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dotenv_path = os.path.join(root_dir, ".env")
+load_dotenv(dotenv_path, override=True)
 API_KEY = os.getenv("ODDS_API_KEY")
 if not API_KEY:
     print("FATAL: ODDS_API_KEY not found in .env file.")
@@ -56,17 +59,54 @@ CURRENT_SEASON = '2024-25'
 
 # --- IMPROVED Model Parameters ---
 HOME_COURT_ADVANTAGE = 2.5  # Reduced from 3.0 - modern NBA HCA trending lower
-SPREAD_THRESHOLD = 5.0      # Tightened from 3.0 - only show higher confidence plays
-TOTAL_THRESHOLD = 8.0       # Increased from 6.0 - only bet on higher confidence totals
+SPREAD_THRESHOLD = 6.0      # Tightened from 5.0 - only show higher confidence plays
+TOTAL_THRESHOLD = 10.0      # Increased from 8.0 - only bet on higher confidence totals
 
 # Stricter thresholds for LOGGING picks (these are the bets we actually track)
-CONFIDENT_SPREAD_EDGE = 5.0  # MATCHES VISUAL THRESHOLD (was 8.0)
-CONFIDENT_TOTAL_EDGE = 8.0   # Increased from 6.0 - only track higher confidence totals
+CONFIDENT_SPREAD_EDGE = 6.0  # MATCHES VISUAL THRESHOLD (was 5.0)
+CONFIDENT_TOTAL_EDGE = 10.0  # Increased from 8.0 - only track higher confidence totals
 
 # CALIBRATION: Model projects ~13.6 points lower than actual game totals (verified via performance data)
-# Increased calibration to fix systematic UNDER bias - was incorrectly reduced to 6.0
-TOTAL_CALIBRATION = 13.6    # Fixed: Model has -13.6 point bias, now properly calibrated
+# Reduced calibration to 6.0 to fix systematic OVER bias (was 13.6)
+TOTAL_CALIBRATION = 6.0     # Fixed: Reduced to 6.0 to correct recent Over bias
 UNIT_SIZE = 100
+
+# Standard deviations for NBA margins/totals (approximate)
+STD_DEV_SPREAD = 12.0
+STD_DEV_TOTAL = 11.0
+
+def calculate_ev(model_val, market_val, line_type='spread', price=-110):
+    """
+    Calculate Expected Value and model win probability (percent).
+    Mirrors the approach used in the NCAAB model: compute signed edge,
+    approximate a normal CDF probability, and compute EV versus American price.
+    Returns: (ev_percent, win_prob_percent)
+    """
+    import math
+
+    # Determine std dev for line type
+    std_dev = STD_DEV_TOTAL if line_type == 'total' else STD_DEV_SPREAD
+
+    # Determine signed edge (model - market). Support callers passing
+    # (0, edge) like some older code paths.
+    if model_val == 0 and market_val != 0:
+        signed_edge = float(market_val)
+    else:
+        signed_edge = float(model_val) - float(market_val)
+
+    # Z-score and model probability (normal CDF approximation)
+    z_score = signed_edge / std_dev
+    model_prob = 0.5 * (1 + math.erf(z_score / math.sqrt(2)))
+
+    # Implied payout for American odds (default -110)
+    if price < 0:
+        profit = 100 / -price
+    else:
+        profit = price / 100.0
+
+    ev = (model_prob * profit) - ((1 - model_prob) * 1.0)
+
+    return ev * 100.0, model_prob * 100.0
 
 # Date filtering
 DAYS_AHEAD_TO_FETCH = 2  # Only fetch games within next 2 days (today + tomorrow)
@@ -317,7 +357,8 @@ def get_team_performance_indicator(team_name, team_performance):
             'message': f"{team_name} - Poor performer: {record} ({win_rate:.0f}%) | {profit:+.2f}u over {total} picks"
         }
 
-def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
+def log_confident_pick(game_data, pick_type, edge, model_line, market_line,
+                       ev_percent=None, win_prob_percent=None, stake_units=1, stake=None):
     """Log a confident pick to the tracking file"""
     tracking_data = load_picks_tracking()
 
@@ -346,6 +387,10 @@ def log_confident_pick(game_data, pick_type, edge, model_line, market_line):
         "opening_line": market_line,  # Store opening line when first logged
         "closing_line": market_line,   # Initially same as opening, will be updated on subsequent runs
         "edge": round(edge, 1),
+        "ev_percent": round(ev_percent, 2) if ev_percent is not None else None,
+        "win_prob_percent": round(win_prob_percent, 1) if win_prob_percent is not None else None,
+        "stake_units": stake_units,
+        "stake": stake if stake is not None else UNIT_SIZE,
         "pick": pick_text,
         "units": 1,
         "status": "Pending",
@@ -2155,6 +2200,41 @@ def fetch_home_away_splits():
 # FETCH ODDS
 # =========================
 
+def save_error_html(error_message):
+    """Save an error message to the HTML file so the user knows why it didn't update"""
+    try:
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>CourtSide Analytics - Update Failed</title>
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 2rem; background: #121212; color: #e0e0e0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; margin: 0; }}
+                .error-card {{ border: 1px solid #ff453a; padding: 2rem; background: rgba(255, 69, 58, 0.05); border-radius: 12px; max-width: 600px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }}
+                h1 {{ color: #ff453a; margin-top: 0; font-size: 1.5rem; }}
+                p {{ font-size: 1.1rem; line-height: 1.5; color: #b0b0b0; }}
+                .timestamp {{ color: #666; margin-top: 1.5rem; font-size: 0.9rem; border-top: 1px solid #333; padding-top: 1rem; }}
+                .icon {{ font-size: 3rem; margin-bottom: 1rem; display: block; }}
+            </style>
+        </head>
+        <body>
+            <div class="error-card">
+                <span class="icon">⚠️</span>
+                <h1>Model Update Failed</h1>
+                <p>{error_message}</p>
+                <div class="timestamp">
+                    Attempted: {datetime.now().strftime('%Y-%m-%d %H:%M:%S EST')}
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        with open(HTML_FILE, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"{Colors.RED}✓ Error HTML saved to {HTML_FILE}{Colors.END}")
+    except Exception as save_err:
+        print(f"Error saving error HTML: {save_err}")
+
 def fetch_odds():
     """Fetch current NBA odds from The Odds API, filtered by date"""
     try:
@@ -2197,6 +2277,7 @@ def fetch_odds():
 
     except Exception as e:
         print(f"{Colors.RED}✗ Error fetching odds: {e}{Colors.END}")
+        save_error_html(f"The model failed to fetch new data. Error details: <br><strong>{str(e)}</strong><br><br>Please check your API Key and connection.")
         return []
 
 # =========================
@@ -2295,7 +2376,8 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 continue
 
             # Calculate edges
-            spread_edge = model_spread + home_spread
+            # Correct signed difference: edge = model_spread - market_spread
+            spread_edge = model_spread - home_spread
             total_edge = model_total - market_total
 
             # Predicted scores
@@ -2451,12 +2533,22 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
 
             results.append(result)
 
-            # Log ONLY confident picks with higher thresholds
+            # Log ONLY confident picks with higher thresholds and positive EV
             if '✅' in ats_pick and abs(spread_edge) >= CONFIDENT_SPREAD_EDGE:
-                log_confident_pick(result, 'spread', spread_edge, model_spread, home_spread)
+                ev_percent, win_prob_percent = calculate_ev(model_spread, home_spread, 'spread', -110)
+                if ev_percent > 0 and win_prob_percent >= 55:
+                    log_confident_pick(result, 'spread', spread_edge, model_spread, home_spread,
+                                       ev_percent=ev_percent, win_prob_percent=win_prob_percent)
+                else:
+                    print(f"{Colors.YELLOW}↩ Skipped spread pick (EV {ev_percent:+.2f}%, WP {win_prob_percent:.1f}%) {result.get('matchup','')}{Colors.END}")
 
             if '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
-                log_confident_pick(result, 'total', total_edge, model_total, market_total)
+                ev_percent, win_prob_percent = calculate_ev(model_total, market_total, 'total', -110)
+                if ev_percent > 0 and win_prob_percent >= 55:
+                    log_confident_pick(result, 'total', total_edge, model_total, market_total,
+                                       ev_percent=ev_percent, win_prob_percent=win_prob_percent)
+                else:
+                    print(f"{Colors.YELLOW}↩ Skipped total pick (EV {ev_percent:+.2f}%, WP {win_prob_percent:.1f}%) {result.get('matchup','')}{Colors.END}")
 
         except Exception as e:
             print(f"{Colors.YELLOW}⚠ Error processing game: {e}{Colors.END}")
@@ -2542,7 +2634,7 @@ def save_html(results):
     # Load Auto Bet Teams (Top 10 Most Profitable from nba_analysis_report)
     auto_bet_teams = set()
     try:
-        with open('/Users/rico/sports-models/nba/nba_auto_bet_teams.json', 'r') as f:
+        with open('/Users/rico/Dev/sports-models/nba/nba_auto_bet_teams.json', 'r') as f:
             abt_data = json.load(f)
             # Keys are team names directly
             auto_bet_teams = set(abt_data.keys())

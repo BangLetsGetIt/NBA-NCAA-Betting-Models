@@ -7,10 +7,10 @@
 
     <key>ProgramArguments</key>
     <array>
-      <string>/Users/rico/sports-models/scheduler/scripts/run_model.sh</string>
-      <string>/Users/rico/sports-models/nba</string>
+      <string>/Users/rico/Dev/sports-models/scheduler/scripts/run_model.sh</string>
+      <string>/Users/rico/Dev/sports-models/nba</string>
       <string>nba_points_props_model.py</string>
-      <string>/Users/rico/sports-models/nba/logs</string>
+      <string>/Users/rico/Dev/sports-models/nba/logs</string>
       <string>nba_points_props</string>
     </array>
 
@@ -18,12 +18,7 @@
     <true/>
 
     <key>StartCalendarInterval</key>
-    <array>
-      <dict><key>Hour</key><integer>2</integer><key>Minute</key><integer>35</integer></dict>
-      <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-      <dict><key>Hour</key><integer>15</integer><key>Minute</key><integer>0</integer></dict>
-      <dict><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
-    </array>
+    <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
 
     <key>StandardOutPath</key>
     <string>/tmp/com.rico.sportsmodels.nba.points_props.out.log</string>

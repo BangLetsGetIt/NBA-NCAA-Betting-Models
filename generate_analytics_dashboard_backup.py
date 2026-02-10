@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class SportsAnalytics:
     def __init__(self):
-        self.base_dir = Path("/Users/rico/sports-models")
+        self.base_dir = Path("/Users/rico/Dev/sports-models")
         self.all_picks = []
         self.tracking_files = [
             "nba/nba_picks_tracking.json",

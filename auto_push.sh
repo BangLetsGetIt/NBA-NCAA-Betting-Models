@@ -6,7 +6,7 @@
 # IMPORTANT: This script includes safety measures for iCloud Drive sync issues
 # If your repo is in iCloud, files can desync. This script handles that gracefully.
 
-cd "/Users/rico/sports-models"
+cd "/Users/rico/Dev/sports-models"
 
 # SAFETY: Wait for any iCloud sync to complete (files with .icloud extension)
 sync_wait=0

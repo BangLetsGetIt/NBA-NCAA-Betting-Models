@@ -1,0 +1,1222 @@
+============================================================
+Scheduler run: ncaab_main_model
+Time: Thu Jan 29 18:37:51 EST 2026
+Working dir: /Users/rico/Dev/sports-models/ncaa
+Script: ncaab_model_2ndFINAL.py
+============================================================
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 122 pending picks...[0m
+[96mFetching completed game scores...[0m
+[92m✓ Fetched 164 completed games[0m
+[93mNo picks were updated (games may not be complete yet)[0m
+[92m✓ Tracking dashboard saved: /Users/rico/Dev/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 5h)[0m
+
+[1m[96mSTEP 3: Fetching Live Odds (Next 7 Days)[0m
+[92m✓ Fetched 80 games from The Odds API[0m
+[92m✓ 74 games in the next 7 days[0m
+
+[1m[96mSTEP 4: Processing Games & Generating Sharp Picks[0m
+
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4064[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Stony Brook Seawolves +5.5 (Edge: +6.4)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4065[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 152.5 (Edge: -26.4)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4066[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: North Carolina A&T Aggies +9.5 (Edge: +15.0)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4067[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 144.5 (Edge: -14.7)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4068[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 142.5 (Edge: -18.1)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4069[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: UL Monroe Warhawks +11.5 (Edge: -7.6)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4070[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 161.5 (Edge: -24.8)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4071[0m
+[35m📝 LOGGED: SPREAD - ✅ BET: Rice Owls +6.5 (Edge: +11.4)[0m
+[92m✓ Tracking data saved to /Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json[0m
+[92m  Total picks in file: 4072[0m
+[35m📝 LOGGED: TOTAL - ✅ BET: UNDER 142.5 (Edge: -11.3)[0m
+
+[1m[92m✅ Analyzed 74 games with complete odds[0m
+
+
+[1m========================================================================================================================[0m
+[1m[93m🏀 COLLEGE BASKETBALL MODEL PREDICTIONS 🏀[0m
+[1m========================================================================================================================[0m
+
+[1m[96m━━━ GAME 1: Colorado Buffaloes @ Iowa State Cyclones ━━━[0m
+[96m🕐 01/29 06:59 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -17.5 | Model: +5.8 | Edge: +23.3
+  [92m✅ BET: Colorado Buffaloes +17.5[0m
+  [96mHIGH confidence (EV: +88.4% | Win: 98.7%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 153.4 | Edge: +0.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.9)[0m
+
+[35m📈 Colorado Buffaloes 73.8, Iowa State Cyclones 79.6[0m
+
+[1m[96m━━━ GAME 2: Charleston Cougars @ Hofstra Pride ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: -0.8 | Edge: +1.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 132.1 | Edge: -16.4
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (EV: +79.6% | Win: 94.1%)[0m
+
+[35m📈 Charleston Cougars 66.4, Hofstra Pride 65.7[0m
+
+[1m[96m━━━ GAME 3: Radford Highlanders @ Charleston Southern Buccaneers ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: -1.2 | Edge: +0.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 162.5 | Model: 130.1 | Edge: -32.4
+  [92m✅ BET: UNDER 162.5[0m
+  [96mHIGH confidence (EV: +90.7% | Win: 99.9%)[0m
+
+[35m📈 Radford Highlanders 65.7, Charleston Southern Buccaneers 64.4[0m
+
+[1m[96m━━━ GAME 4: Western Carolina Catamounts @ East Tennessee St Buccaneers ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +8.1 | Edge: +17.6
+  [92m✅ BET: Western Carolina Catamounts +9.5[0m
+  [96mHIGH confidence (EV: +82.0% | Win: 95.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 145.7 | Edge: +0.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.2)[0m
+
+[35m📈 Western Carolina Catamounts 68.8, East Tennessee St Buccaneers 76.9[0m
+
+[1m[96m━━━ GAME 5: William & Mary Tribe @ Elon Phoenix ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +2.2 | Edge: +0.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 169.5 | Model: 135.1 | Edge: -34.4
+  [92m✅ BET: UNDER 169.5[0m
+  [96mHIGH confidence (EV: +90.8% | Win: 99.9%)[0m
+
+[35m📈 William & Mary Tribe 66.4, Elon Phoenix 68.7[0m
+
+[1m[96m━━━ GAME 6: Fairleigh Dickinson Knights @ Stonehill Skyhawks ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +3.5 | Edge: +6.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+6.0)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 130.5 | Model: 130.5 | Edge: +0.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.0)[0m
+
+[35m📈 Fairleigh Dickinson Knights 63.5, Stonehill Skyhawks 67.0[0m
+
+[1m[96m━━━ GAME 7: North Alabama Lions @ Florida Gulf Coast Eagles ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +1.4 | Edge: +10.9
+  [92m✅ BET: North Alabama Lions +9.5[0m
+  [96mHIGH confidence (EV: +62.4% | Win: 85.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 146.5 | Model: 135.1 | Edge: -11.4
+  [92m✅ BET: UNDER 146.5[0m
+  [96mHIGH confidence (EV: +64.6% | Win: 86.2%)[0m
+
+[35m📈 North Alabama Lions 66.8, Florida Gulf Coast Eagles 68.2[0m
+
+[1m[96m━━━ GAME 8: Lipscomb Bisons @ Jacksonville Dolphins ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: -0.9 | Edge: -4.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 139.0 | Edge: -3.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.5)[0m
+
+[35m📈 Lipscomb Bisons 70.0, Jacksonville Dolphins 69.0[0m
+
+[1m[96m━━━ GAME 9: James Madison Dukes @ Troy Trojans ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: -0.5 | Edge: +9.0
+  [92m✅ BET: James Madison Dukes +9.5[0m
+  [96mHIGH confidence (EV: +53.4% | Win: 80.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 147.5 | Model: 137.3 | Edge: -10.2
+  [92m✅ BET: UNDER 147.5[0m
+  [96mHIGH confidence (EV: +59.3% | Win: 83.4%)[0m
+
+[35m📈 James Madison Dukes 68.9, Troy Trojans 68.4[0m
+
+[1m[96m━━━ GAME 10: Le Moyne Dolphins @ LIU Sharks ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +0.5 | Edge: +8.0
+  [92m✅ BET: Le Moyne Dolphins +7.5[0m
+  [96mHIGH confidence (EV: +48.3% | Win: 77.7%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 147.5 | Model: 131.4 | Edge: -16.1
+  [92m✅ BET: UNDER 147.5[0m
+  [96mHIGH confidence (EV: +79.1% | Win: 93.8%)[0m
+
+[35m📈 Le Moyne Dolphins 65.4, LIU Sharks 65.9[0m
+
+[1m[96m━━━ GAME 11: Liberty Flames @ Middle Tennessee Blue Raiders ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +3.0 | Edge: +1.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 136.5 | Model: 144.5 | Edge: +8.0
+  [92m✅ BET: OVER 136.5[0m
+  [96mHIGH confidence (EV: +48.4% | Win: 77.7%)[0m
+
+[35m📈 Liberty Flames 70.8, Middle Tennessee Blue Raiders 73.7[0m
+
+[1m[96m━━━ GAME 12: Longwood Lancers @ South Carolina Upstate Spartans ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +1.6 | Edge: +0.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.1)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 146.5 | Model: 136.9 | Edge: -9.6
+  [92m✅ BET: UNDER 146.5[0m
+  [96mHIGH confidence (EV: +56.3% | Win: 81.9%)[0m
+
+[35m📈 Longwood Lancers 67.7, South Carolina Upstate Spartans 69.3[0m
+
+[1m[96m━━━ GAME 13: UNC Greensboro Spartans @ Mercer Bears ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -10.5 | Model: +1.3 | Edge: +11.8
+  [92m✅ BET: UNC Greensboro Spartans +10.5[0m
+  [96mHIGH confidence (EV: +66.1% | Win: 87.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 158.5 | Model: 134.5 | Edge: -24.0
+  [92m✅ BET: UNDER 158.5[0m
+  [96mHIGH confidence (EV: +88.8% | Win: 98.9%)[0m
+
+[35m📈 UNC Greensboro Spartans 66.6, Mercer Bears 67.9[0m
+
+[1m[96m━━━ GAME 14: New Haven Chargers @ Mercyhurst Lakers ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +3.6 | Edge: +9.1
+  [92m✅ BET: New Haven Chargers +5.5[0m
+  [96mHIGH confidence (EV: +53.9% | Win: 80.6%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 122.5 | Model: 129.9 | Edge: +7.4
+  [92m✅ BET: OVER 122.5[0m
+  [96mHIGH confidence (EV: +45.2% | Win: 76.1%)[0m
+
+[35m📈 New Haven Chargers 63.2, Mercyhurst Lakers 66.8[0m
+
+[1m[96m━━━ GAME 15: Stetson Hatters @ North Florida Ospreys ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +7.0 | Edge: +5.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (+5.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 164.5 | Model: 133.1 | Edge: -31.4
+  [92m✅ BET: UNDER 164.5[0m
+  [96mHIGH confidence (EV: +90.6% | Win: 99.9%)[0m
+
+[35m📈 Stetson Hatters 63.0, North Florida Ospreys 70.1[0m
+
+[1m[96m━━━ GAME 16: UMBC Retrievers @ Vermont Catamounts ━━━[0m
+[96m🕐 01/29 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +0.4 | Edge: +8.9
+  [92m✅ BET: UMBC Retrievers +8.5[0m
+  [96mHIGH confidence (EV: +53.1% | Win: 80.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 140.5 | Model: 130.6 | Edge: -9.9
+  [92m✅ BET: UNDER 140.5[0m
+  [96mHIGH confidence (EV: +58.1% | Win: 82.8%)[0m
+
+[35m📈 UMBC Retrievers 65.1, Vermont Catamounts 65.5[0m
+
+[1m[96m━━━ GAME 17: Stony Brook Seawolves @ Campbell Fighting Camels ━━━[0m
+[96m🕐 01/29 07:05 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +0.9 | Edge: +6.4
+  [92m✅ BET: Stony Brook Seawolves +5.5[0m
+  [96mHIGH confidence (EV: +39.4% | Win: 73.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 126.1 | Edge: -26.4
+  [92m✅ BET: UNDER 152.5[0m
+  [96mHIGH confidence (EV: +89.8% | Win: 99.4%)[0m
+
+[35m📈 Stony Brook Seawolves 62.6, Campbell Fighting Camels 63.5[0m
+
+[1m[96m━━━ GAME 18: Hampton Pirates @ Drexel Dragons ━━━[0m
+[96m🕐 01/29 07:05 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +2.8 | Edge: +5.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+5.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 128.5 | Model: 130.3 | Edge: +1.8
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.8)[0m
+
+[35m📈 Hampton Pirates 63.7, Drexel Dragons 66.5[0m
+
+[1m[96m━━━ GAME 19: North Carolina A&T Aggies @ Monmouth Hawks ━━━[0m
+[96m🕐 01/29 07:05 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +5.5 | Edge: +15.0
+  [92m✅ BET: North Carolina A&T Aggies +9.5[0m
+  [96mHIGH confidence (EV: +76.3% | Win: 92.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 129.8 | Edge: -14.7
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (EV: +75.6% | Win: 92.0%)[0m
+
+[35m📈 North Carolina A&T Aggies 62.1, Monmouth Hawks 67.6[0m
+
+[1m[96m━━━ GAME 20: VMI Keydets @ The Citadel Bulldogs ━━━[0m
+[96m🕐 01/29 07:05 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +2.4 | Edge: +4.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 124.4 | Edge: -18.1
+  [92m✅ BET: UNDER 142.5[0m
+  [96mHIGH confidence (EV: +82.8% | Win: 95.7%)[0m
+
+[35m📈 VMI Keydets 61.0, The Citadel Bulldogs 63.4[0m
+
+[1m[96m━━━ GAME 21: Central Connecticut St Blue Devils @ Wagner Seahawks ━━━[0m
+[96m🕐 01/29 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: -6.5 | Edge: -10.0
+  [92m✅ BET: Wagner Seahawks +3.5[0m
+  [96mHIGH confidence (EV: +58.6% | Win: 83.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 136.5 | Model: 132.4 | Edge: -4.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.1)[0m
+
+[35m📈 Central Connecticut St Blue Devils 69.5, Wagner Seahawks 62.9[0m
+
+[1m[96m━━━ GAME 22: SIU-Edwardsville Cougars @ Morehead St Eagles ━━━[0m
+[96m🕐 01/29 07:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +3.1 | Edge: +4.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.6)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 130.5 | Model: 139.4 | Edge: +8.9
+  [92m✅ BET: OVER 130.5[0m
+  [96mHIGH confidence (EV: +52.9% | Win: 80.1%)[0m
+
+[35m📈 SIU-Edwardsville Cougars 68.1, Morehead St Eagles 71.2[0m
+
+[1m[96m━━━ GAME 23: Penn State Nittany Lions @ Northwestern Wildcats ━━━[0m
+[96m🕐 01/29 07:59 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +1.7 | Edge: +9.2
+  [92m✅ BET: Penn State Nittany Lions +7.5[0m
+  [96mHIGH confidence (EV: +54.7% | Win: 81.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 152.1 | Edge: +3.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (+3.6)[0m
+
+[35m📈 Penn State Nittany Lions 75.2, Northwestern Wildcats 76.9[0m
+
+[1m[96m━━━ GAME 24: Utah Tech Trailblazers @ Abilene Christian Wildcats ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: -0.7 | Edge: +2.8
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.8)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 133.5 | Edge: -11.0
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (EV: +62.9% | Win: 85.3%)[0m
+
+[35m📈 Utah Tech Trailblazers 67.1, Abilene Christian Wildcats 66.4[0m
+
+[1m[96m━━━ GAME 25: Appalachian St Mountaineers @ Southern Miss Golden Eagles ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: -0.4 | Edge: -1.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.9)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 134.5 | Model: 137.2 | Edge: +2.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.7)[0m
+
+[35m📈 Appalachian St Mountaineers 68.8, Southern Miss Golden Eagles 68.4[0m
+
+[1m[96m━━━ GAME 26: Coastal Carolina Chanticleers @ South Alabama Jaguars ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +2.9 | Edge: +7.4
+  [92m✅ BET: Coastal Carolina Chanticleers +4.5[0m
+  [96mHIGH confidence (EV: +45.2% | Win: 76.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 139.5 | Model: 127.5 | Edge: -12.0
+  [92m✅ BET: UNDER 139.5[0m
+  [96mHIGH confidence (EV: +66.7% | Win: 87.3%)[0m
+
+[35m📈 Coastal Carolina Chanticleers 62.3, South Alabama Jaguars 65.2[0m
+
+[1m[96m━━━ GAME 27: Eastern Washington Eagles @ Northern Arizona Lumberjacks ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +3.7 | Edge: +2.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 130.6 | Edge: -11.9
+  [92m✅ BET: UNDER 142.5[0m
+  [96mHIGH confidence (EV: +66.4% | Win: 87.1%)[0m
+
+[35m📈 Eastern Washington Eagles 63.5, Northern Arizona Lumberjacks 67.1[0m
+
+[1m[96m━━━ GAME 28: Florida Atlantic Owls @ Memphis Tigers ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +1.8 | Edge: +4.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 148.0 | Edge: -3.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.5)[0m
+
+[35m📈 Florida Atlantic Owls 73.1, Memphis Tigers 74.9[0m
+
+[1m[96m━━━ GAME 29: Georgia St Panthers @ Louisiana Ragin' Cajuns ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: -0.2 | Edge: -1.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 129.5 | Model: 139.1 | Edge: +9.6
+  [92m✅ BET: OVER 129.5[0m
+  [96mHIGH confidence (EV: +56.4% | Win: 81.9%)[0m
+
+[35m📈 Georgia St Panthers 69.6, Louisiana Ragin' Cajuns 69.4[0m
+
+[1m[96m━━━ GAME 30: North Dakota Fighting Hawks @ St. Thomas (MN) Tommies ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -11.5 | Model: +4.1 | Edge: +15.6
+  [92m✅ BET: North Dakota Fighting Hawks +11.5[0m
+  [96mHIGH confidence (EV: +77.9% | Win: 93.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 140.3 | Edge: -12.2
+  [92m✅ BET: UNDER 152.5[0m
+  [96mHIGH confidence (EV: +67.7% | Win: 87.8%)[0m
+
+[35m📈 North Dakota Fighting Hawks 68.1, St. Thomas (MN) Tommies 72.2[0m
+
+[1m[96m━━━ GAME 31: Oral Roberts Golden Eagles @ South Dakota Coyotes ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: +5.0 | Edge: +7.5
+  [92m✅ BET: Oral Roberts Golden Eagles +2.5[0m
+  [96mHIGH confidence (EV: +45.5% | Win: 76.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 154.5 | Model: 137.1 | Edge: -17.4
+  [92m✅ BET: UNDER 154.5[0m
+  [96mHIGH confidence (EV: +81.6% | Win: 95.1%)[0m
+
+[35m📈 Oral Roberts Golden Eagles 66.1, South Dakota Coyotes 71.0[0m
+
+[1m[96m━━━ GAME 32: Southern Utah Thunderbirds @ UT-Arlington Mavericks ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +5.7 | Edge: +14.2
+  [92m✅ BET: Southern Utah Thunderbirds +8.5[0m
+  [96mHIGH confidence (EV: +74.0% | Win: 91.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 143.5 | Model: 135.8 | Edge: -7.7
+  [92m✅ BET: UNDER 143.5[0m
+  [96mHIGH confidence (EV: +46.6% | Win: 76.8%)[0m
+
+[35m📈 Southern Utah Thunderbirds 65.1, UT-Arlington Mavericks 70.7[0m
+
+[1m[96m━━━ GAME 33: Utah Valley Wolverines @ Tarleton State Texans ━━━[0m
+[96m🕐 01/29 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +4.5 | Model: -1.3 | Edge: -5.8
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.8)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 154.5 | Model: 134.1 | Edge: -20.4
+  [92m✅ BET: UNDER 154.5[0m
+  [96mHIGH confidence (EV: +86.0% | Win: 97.4%)[0m
+
+[35m📈 Utah Valley Wolverines 67.7, Tarleton State Texans 66.4[0m
+
+[1m[96m━━━ GAME 34: Arkansas-Little Rock Trojans @ Tennessee St Tigers ━━━[0m
+[96m🕐 01/29 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +7.6 | Edge: +13.1
+  [92m✅ BET: Arkansas-Little Rock Trojans +5.5[0m
+  [96mHIGH confidence (EV: +70.6% | Win: 89.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 146.2 | Edge: -6.3
+  [92m✅ BET: UNDER 152.5[0m
+  [96mHIGH confidence (EV: +38.3% | Win: 72.5%)[0m
+
+[35m📈 Arkansas-Little Rock Trojans 69.3, Tennessee St Tigers 76.9[0m
+
+[1m[96m━━━ GAME 35: Tenn-Martin Skyhawks @ Eastern Illinois Panthers ━━━[0m
+[96m🕐 01/29 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +3.5 | Model: -1.5 | Edge: -5.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.0)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 128.5 | Model: 131.4 | Edge: +2.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.9)[0m
+
+[35m📈 Tenn-Martin Skyhawks 66.5, Eastern Illinois Panthers 65.0[0m
+
+[1m[96m━━━ GAME 36: Lindenwood Lions @ Southern Indiana Screaming Eagles ━━━[0m
+[96m🕐 01/29 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +4.5 | Model: +6.9 | Edge: +2.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 128.3 | Edge: -22.2
+  [92m✅ BET: UNDER 150.5[0m
+  [96mHIGH confidence (EV: +87.6% | Win: 98.3%)[0m
+
+[35m📈 Lindenwood Lions 60.7, Southern Indiana Screaming Eagles 67.6[0m
+
+[1m[96m━━━ GAME 37: SE Missouri St Redhawks @ Western Illinois Leathernecks ━━━[0m
+[96m🕐 01/29 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +9.5 | Model: -2.7 | Edge: -12.2
+  [92m✅ BET: Western Illinois Leathernecks +9.5[0m
+  [96mHIGH confidence (EV: +67.6% | Win: 87.8%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 138.4 | Edge: -4.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.1)[0m
+
+[35m📈 SE Missouri St Redhawks 70.6, Western Illinois Leathernecks 67.9[0m
+
+[1m[96m━━━ GAME 38: Presbyterian Blue Hose @ High Point Panthers ━━━[0m
+[96m🕐 01/29 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.5 | Model: +7.9 | Edge: +23.4
+  [92m✅ BET: Presbyterian Blue Hose +15.5[0m
+  [96mHIGH confidence (EV: +88.4% | Win: 98.7%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 149.5 | Model: 137.2 | Edge: -12.3
+  [92m✅ BET: UNDER 149.5[0m
+  [96mHIGH confidence (EV: +68.0% | Win: 88.0%)[0m
+
+[35m📈 Presbyterian Blue Hose 64.6, High Point Panthers 72.5[0m
+
+[1m[96m━━━ GAME 39: Idaho Vandals @ N Colorado Bears ━━━[0m
+[96m🕐 01/29 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -2.5 | Model: -0.4 | Edge: +2.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.1)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 155.5 | Model: 137.9 | Edge: -17.6
+  [92m✅ BET: UNDER 155.5[0m
+  [96mHIGH confidence (EV: +82.0% | Win: 95.3%)[0m
+
+[35m📈 Idaho Vandals 69.1, N Colorado Bears 68.7[0m
+
+[1m[96m━━━ GAME 40: UNC Wilmington Seahawks @ Towson Tigers ━━━[0m
+[96m🕐 01/29 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +0.6 | Edge: +2.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.1)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 134.5 | Model: 135.0 | Edge: +0.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.5)[0m
+
+[35m📈 UNC Wilmington Seahawks 67.2, Towson Tigers 67.8[0m
+
+[1m[96m━━━ GAME 41: Washington Huskies @ Illinois Fighting Illini ━━━[0m
+[96m🕐 01/29 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -12.5 | Model: +5.7 | Edge: +18.2
+  [92m✅ BET: Washington Huskies +12.5[0m
+  [96mHIGH confidence (EV: +83.0% | Win: 95.9%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 152.4 | Edge: -0.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (-0.1)[0m
+
+[35m📈 Washington Huskies 73.3, Illinois Fighting Illini 79.1[0m
+
+[1m[96m━━━ GAME 42: Cal Poly Mustangs @ CSU Bakersfield Roadrunners ━━━[0m
+[96m🕐 01/29 09:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: -0.2 | Edge: -1.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 160.5 | Model: 144.8 | Edge: -15.7
+  [92m✅ BET: UNDER 160.5[0m
+  [96mHIGH confidence (EV: +78.0% | Win: 93.2%)[0m
+
+[35m📈 Cal Poly Mustangs 72.5, CSU Bakersfield Roadrunners 72.3[0m
+
+[1m[96m━━━ GAME 43: UC Davis Aggies @ CSU Northridge Matadors ━━━[0m
+[96m🕐 01/29 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: +7.0 | Edge: +10.5
+  [92m✅ BET: UC Davis Aggies +3.5[0m
+  [96mHIGH confidence (EV: +60.4% | Win: 84.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 162.5 | Model: 135.1 | Edge: -27.4
+  [92m✅ BET: UNDER 162.5[0m
+  [96mHIGH confidence (EV: +90.0% | Win: 99.5%)[0m
+
+[35m📈 UC Davis Aggies 64.1, CSU Northridge Matadors 71.0[0m
+
+[1m[96m━━━ GAME 44: Long Beach St 49ers @ UC Riverside Highlanders ━━━[0m
+[96m🕐 01/29 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +2.5 | Model: +5.0 | Edge: +2.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 138.1 | Edge: -7.4
+  [92m✅ BET: UNDER 145.5[0m
+  [96mHIGH confidence (EV: +45.2% | Win: 76.0%)[0m
+
+[35m📈 Long Beach St 49ers 66.6, UC Riverside Highlanders 71.5[0m
+
+[1m[96m━━━ GAME 45: Montana Grizzlies @ Portland St Vikings ━━━[0m
+[96m🕐 01/29 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +1.6 | Edge: +6.1
+  [92m✅ BET: Montana Grizzlies +4.5[0m
+  [96mHIGH confidence (EV: +37.6% | Win: 72.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 143.5 | Model: 136.4 | Edge: -7.1
+  [92m✅ BET: UNDER 143.5[0m
+  [96mHIGH confidence (EV: +43.4% | Win: 75.1%)[0m
+
+[35m📈 Montana Grizzlies 67.4, Portland St Vikings 69.0[0m
+
+[1m[96m━━━ GAME 46: Montana St Bobcats @ Sacramento St Hornets ━━━[0m
+[96m🕐 01/29 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +4.5 | Model: -0.1 | Edge: -4.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.6)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 153.5 | Model: 138.9 | Edge: -14.6
+  [92m✅ BET: UNDER 153.5[0m
+  [96mHIGH confidence (EV: +75.3% | Win: 91.8%)[0m
+
+[35m📈 Montana St Bobcats 69.5, Sacramento St Hornets 69.4[0m
+
+[1m[96m━━━ GAME 47: UC Santa Barbara Gauchos @ UC San Diego Tritons ━━━[0m
+[96m🕐 01/29 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: +2.6 | Edge: +6.1
+  [92m✅ BET: UC Santa Barbara Gauchos +3.5[0m
+  [96mHIGH confidence (EV: +37.4% | Win: 72.0%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 143.5 | Edge: -1.0
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.0)[0m
+
+[35m📈 UC Santa Barbara Gauchos 70.4, UC San Diego Tritons 73.0[0m
+
+[1m[96m━━━ GAME 48: Hawai'i Rainbow Warriors @ UC Irvine Anteaters ━━━[0m
+[96m🕐 01/29 11:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: +1.0 | Edge: +2.5
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.5)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 141.5 | Model: 143.2 | Edge: +1.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.7)[0m
+
+[35m📈 Hawai'i Rainbow Warriors 71.1, UC Irvine Anteaters 72.1[0m
+
+[1m[96m━━━ GAME 49: Georgia Southern Eagles @ UL Monroe Warhawks ━━━[0m
+[96m🕐 01/30 03:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +11.5 | Model: +3.9 | Edge: -7.6
+  [92m✅ BET: UL Monroe Warhawks +11.5[0m
+  [96mHIGH confidence (EV: +46.0% | Win: 76.5%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 136.7 | Edge: -24.8
+  [92m✅ BET: UNDER 161.5[0m
+  [96mHIGH confidence (EV: +89.2% | Win: 99.1%)[0m
+
+[35m📈 Georgia Southern Eagles 66.4, UL Monroe Warhawks 70.3[0m
+
+[1m[96m━━━ GAME 50: Kent State Golden Flashes @ Akron Zips ━━━[0m
+[96m🕐 01/30 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -11.5 | Model: +7.2 | Edge: +18.7
+  [92m✅ BET: Kent State Golden Flashes +11.5[0m
+  [96mHIGH confidence (EV: +83.8% | Win: 96.3%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 171.5 | Model: 140.2 | Edge: -31.3
+  [92m✅ BET: UNDER 171.5[0m
+  [96mHIGH confidence (EV: +90.6% | Win: 99.9%)[0m
+
+[35m📈 Kent State Golden Flashes 66.5, Akron Zips 73.7[0m
+
+[1m[96m━━━ GAME 51: Princeton Tigers @ Cornell Big Red ━━━[0m
+[96m🕐 01/30 06:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: +8.1 | Edge: +13.6
+  [92m✅ BET: Princeton Tigers +5.5[0m
+  [96mHIGH confidence (EV: +72.2% | Win: 90.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 142.4 | Edge: -19.1
+  [92m✅ BET: UNDER 161.5[0m
+  [96mHIGH confidence (EV: +84.3% | Win: 96.5%)[0m
+
+[35m📈 Princeton Tigers 67.2, Cornell Big Red 75.2[0m
+
+[1m[96m━━━ GAME 52: IUPUI Jaguars @ Youngstown St Penguins ━━━[0m
+[96m🕐 01/30 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -10.5 | Model: +3.1 | Edge: +13.6
+  [92m✅ BET: IUPUI Jaguars +10.5[0m
+  [96mHIGH confidence (EV: +72.3% | Win: 90.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 158.5 | Model: 139.4 | Edge: -19.1
+  [92m✅ BET: UNDER 158.5[0m
+  [96mHIGH confidence (EV: +84.4% | Win: 96.6%)[0m
+
+[35m📈 IUPUI Jaguars 68.1, Youngstown St Penguins 71.2[0m
+
+[1m[96m━━━ GAME 53: Siena Saints @ Niagara Purple Eagles ━━━[0m
+[96m🕐 01/30 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +8.5 | Model: +3.8 | Edge: -4.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 129.5 | Model: 126.8 | Edge: -2.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (-2.7)[0m
+
+[35m📈 Siena Saints 61.5, Niagara Purple Eagles 65.3[0m
+
+[1m[96m━━━ GAME 54: Harvard Crimson @ Brown Bears ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +2.5 | Model: +2.9 | Edge: +0.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 131.5 | Model: 130.4 | Edge: -1.1
+  [91m❌ NO BET[0m
+  [96mEdge too small (-1.1)[0m
+
+[35m📈 Harvard Crimson 63.8, Brown Bears 66.7[0m
+
+[1m[96m━━━ GAME 55: Marist Red Foxes @ Canisius Golden Griffins ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +11.5 | Model: +8.3 | Edge: -3.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (-3.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 125.5 | Model: 121.1 | Edge: -4.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.4)[0m
+
+[35m📈 Marist Red Foxes 56.4, Canisius Golden Griffins 64.7[0m
+
+[1m[96m━━━ GAME 56: Cleveland St Vikings @ Green Bay Phoenix ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +4.1 | Edge: +11.6
+  [92m✅ BET: Cleveland St Vikings +7.5[0m
+  [96mHIGH confidence (EV: +65.4% | Win: 86.6%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 154.5 | Model: 133.3 | Edge: -21.2
+  [92m✅ BET: UNDER 154.5[0m
+  [96mHIGH confidence (EV: +86.7% | Win: 97.8%)[0m
+
+[35m📈 Cleveland St Vikings 64.6, Green Bay Phoenix 68.7[0m
+
+[1m[96m━━━ GAME 57: Pennsylvania Quakers @ Columbia Lions ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -4.5 | Model: +5.1 | Edge: +9.6
+  [92m✅ BET: Pennsylvania Quakers +4.5[0m
+  [96mHIGH confidence (EV: +56.3% | Win: 81.9%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 131.4 | Edge: -20.1
+  [92m✅ BET: UNDER 151.5[0m
+  [96mHIGH confidence (EV: +85.6% | Win: 97.2%)[0m
+
+[35m📈 Pennsylvania Quakers 63.2, Columbia Lions 68.2[0m
+
+[1m[96m━━━ GAME 58: Dartmouth Big Green @ Yale Bulldogs ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -15.5 | Model: +9.4 | Edge: +24.9
+  [92m✅ BET: Dartmouth Big Green +15.5[0m
+  [96mHIGH confidence (EV: +89.2% | Win: 99.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 142.9 | Edge: -13.6
+  [92m✅ BET: UNDER 156.5[0m
+  [96mHIGH confidence (EV: +72.4% | Win: 90.3%)[0m
+
+[35m📈 Dartmouth Big Green 66.7, Yale Bulldogs 76.1[0m
+
+[1m[96m━━━ GAME 59: Northern Kentucky Norse @ Detroit Mercy Titans ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +5.5 | Model: +0.2 | Edge: -5.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (-5.3)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 128.9 | Edge: -32.6
+  [92m✅ BET: UNDER 161.5[0m
+  [96mHIGH confidence (EV: +90.7% | Win: 99.9%)[0m
+
+[35m📈 Northern Kentucky Norse 64.3, Detroit Mercy Titans 64.6[0m
+
+[1m[96m━━━ GAME 60: Fairfield Stags @ Iona Gaels ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: +0.9 | Edge: +4.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 148.5 | Model: 127.1 | Edge: -21.4
+  [92m✅ BET: UNDER 148.5[0m
+  [96mHIGH confidence (EV: +86.9% | Win: 97.9%)[0m
+
+[35m📈 Fairfield Stags 63.1, Iona Gaels 64.0[0m
+
+[1m[96m━━━ GAME 61: Rider Broncs @ Manhattan Jaspers ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -6.5 | Model: +5.6 | Edge: +12.1
+  [92m✅ BET: Rider Broncs +6.5[0m
+  [96mHIGH confidence (EV: +67.2% | Win: 87.6%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 144.5 | Model: 127.6 | Edge: -16.9
+  [92m✅ BET: UNDER 144.5[0m
+  [96mHIGH confidence (EV: +80.7% | Win: 94.6%)[0m
+
+[35m📈 Rider Broncs 61.0, Manhattan Jaspers 66.6[0m
+
+[1m[96m━━━ GAME 62: Mt. St. Mary's Mountaineers @ Saint Peter's Peacocks ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: -1.3 | Edge: +4.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 137.5 | Model: 131.0 | Edge: -6.5
+  [92m✅ BET: UNDER 137.5[0m
+  [96mHIGH confidence (EV: +39.7% | Win: 73.2%)[0m
+
+[35m📈 Mt. St. Mary's Mountaineers 66.1, Saint Peter's Peacocks 64.9[0m
+
+[1m[96m━━━ GAME 63: Providence Friars @ Villanova Wildcats ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -8.5 | Model: +6.4 | Edge: +14.9
+  [92m✅ BET: Providence Friars +8.5[0m
+  [96mHIGH confidence (EV: +76.1% | Win: 92.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 142.5 | Edge: -14.0
+  [92m✅ BET: UNDER 156.5[0m
+  [96mHIGH confidence (EV: +73.5% | Win: 90.9%)[0m
+
+[35m📈 Providence Friars 68.0, Villanova Wildcats 74.5[0m
+
+[1m[96m━━━ GAME 64: Sacred Heart Pioneers @ Quinnipiac Bobcats ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -9.5 | Model: +1.0 | Edge: +10.5
+  [92m✅ BET: Sacred Heart Pioneers +9.5[0m
+  [96mHIGH confidence (EV: +60.5% | Win: 84.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 156.5 | Model: 135.8 | Edge: -20.7
+  [92m✅ BET: UNDER 156.5[0m
+  [96mHIGH confidence (EV: +86.3% | Win: 97.6%)[0m
+
+[35m📈 Sacred Heart Pioneers 67.4, Quinnipiac Bobcats 68.4[0m
+
+[1m[96m━━━ GAME 65: Rice Owls @ Charlotte 49ers ━━━[0m
+[96m🕐 01/30 07:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -6.5 | Model: +4.9 | Edge: +11.4
+  [92m✅ BET: Rice Owls +6.5[0m
+  [96mHIGH confidence (EV: +64.4% | Win: 86.1%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 142.5 | Model: 131.2 | Edge: -11.3
+  [92m✅ BET: UNDER 142.5[0m
+  [96mHIGH confidence (EV: +63.9% | Win: 85.9%)[0m
+
+[35m📈 Rice Owls 63.2, Charlotte 49ers 68.1[0m
+
+[1m[96m━━━ GAME 66: Dayton Flyers @ Saint Louis Billikens ━━━[0m
+[96m🕐 01/30 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -11.5 | Model: +0.7 | Edge: +12.2
+  [92m✅ BET: Dayton Flyers +11.5[0m
+  [96mHIGH confidence (EV: +67.4% | Win: 87.7%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 151.5 | Model: 142.5 | Edge: -9.0
+  [92m✅ BET: UNDER 151.5[0m
+  [96mHIGH confidence (EV: +53.4% | Win: 80.4%)[0m
+
+[35m📈 Dayton Flyers 70.9, Saint Louis Billikens 71.6[0m
+
+[1m[96m━━━ GAME 67: Wright St Raiders @ Milwaukee Panthers ━━━[0m
+[96m🕐 01/30 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +4.2 | Edge: +2.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+2.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 150.5 | Model: 140.7 | Edge: -9.8
+  [92m✅ BET: UNDER 150.5[0m
+  [96mHIGH confidence (EV: +57.4% | Win: 82.4%)[0m
+
+[35m📈 Wright St Raiders 68.3, Milwaukee Panthers 72.5[0m
+
+[1m[96m━━━ GAME 68: Michigan Wolverines @ Michigan St Spartans ━━━[0m
+[96m🕐 01/30 08:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: +1.5 | Model: +3.1 | Edge: +1.6
+  [91m❌ NO BET[0m
+  [96mEdge too small (+1.6)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 145.5 | Model: 157.4 | Edge: +11.9
+  [92m✅ BET: OVER 145.5[0m
+  [96mHIGH confidence (EV: +66.2% | Win: 87.1%)[0m
+
+[35m📈 Michigan Wolverines 77.1, Michigan St Spartans 80.2[0m
+
+[1m[96m━━━ GAME 69: Boise State Broncos @ Grand Canyon Antelopes ━━━[0m
+[96m🕐 01/30 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -1.5 | Model: -1.3 | Edge: +0.2
+  [91m❌ NO BET[0m
+  [96mEdge too small (+0.2)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 139.5 | Model: 145.4 | Edge: +5.9
+  [91m❌ NO BET[0m
+  [96mEdge too small (+5.9)[0m
+
+[35m📈 Boise State Broncos 73.3, Grand Canyon Antelopes 72.1[0m
+
+[1m[96m━━━ GAME 70: Loyola (Chi) Ramblers @ VCU Rams ━━━[0m
+[96m🕐 01/30 09:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -19.5 | Model: +3.1 | Edge: +22.6
+  [92m✅ BET: Loyola (Chi) Ramblers +19.5[0m
+  [96mHIGH confidence (EV: +87.9% | Win: 98.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 152.5 | Model: 139.4 | Edge: -13.1
+  [92m✅ BET: UNDER 152.5[0m
+  [96mHIGH confidence (EV: +70.7% | Win: 89.4%)[0m
+
+[35m📈 Loyola (Chi) Ramblers 68.1, VCU Rams 71.2[0m
+
+[1m[96m━━━ GAME 71: UNLV Rebels @ Nevada Wolf Pack ━━━[0m
+[96m🕐 01/30 10:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -7.5 | Model: +6.1 | Edge: +13.6
+  [92m✅ BET: UNLV Rebels +7.5[0m
+  [96mHIGH confidence (EV: +72.2% | Win: 90.2%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 149.5 | Model: 140.2 | Edge: -9.3
+  [92m✅ BET: UNDER 149.5[0m
+  [96mHIGH confidence (EV: +55.1% | Win: 81.2%)[0m
+
+[35m📈 UNLV Rebels 67.1, Nevada Wolf Pack 73.1[0m
+
+[1m[96m━━━ GAME 72: BYU Cougars @ Kansas Jayhawks ━━━[0m
+[96m🕐 01/31 04:00 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -3.5 | Model: +4.1 | Edge: +7.6
+  [92m✅ BET: BYU Cougars +3.5[0m
+  [96mHIGH confidence (EV: +45.9% | Win: 76.4%)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 158.5 | Model: 148.6 | Edge: -9.9
+  [92m✅ BET: UNDER 158.5[0m
+  [96mHIGH confidence (EV: +57.7% | Win: 82.6%)[0m
+
+[35m📈 BYU Cougars 72.3, Kansas Jayhawks 76.3[0m
+
+[1m[96m━━━ GAME 73: Kentucky Wildcats @ Arkansas Razorbacks ━━━[0m
+[96m🕐 01/31 06:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -6.5 | Model: -2.1 | Edge: +4.4
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.4)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 161.5 | Model: 157.2 | Edge: -4.3
+  [91m❌ NO BET[0m
+  [96mEdge too small (-4.3)[0m
+
+[35m📈 Kentucky Wildcats 79.7, Arkansas Razorbacks 77.5[0m
+
+[1m[96m━━━ GAME 74: Auburn Tigers @ Tennessee Volunteers ━━━[0m
+[96m🕐 01/31 08:30 PM[0m
+
+[93m📊 SPREAD:[0m
+  Market: -5.5 | Model: -0.8 | Edge: +4.7
+  [91m❌ NO BET[0m
+  [96mEdge too small (+4.7)[0m
+
+[93m🎯 TOTAL:[0m
+  Market: 149.5 | Model: 162.6 | Edge: +13.1
+  [92m✅ BET: OVER 149.5[0m
+  [96mHIGH confidence (EV: +70.8% | Win: 89.5%)[0m
+
+[35m📈 Auburn Tigers 81.7, Tennessee Volunteers 80.9[0m
+
+[1m========================================================================================================================[0m
+
+[92m✓ CSV saved: /Users/rico/Dev/sports-models/ncaa/ncaab_model_output.csv[0m
+[92m✓ HTML saved: /Users/rico/Dev/sports-models/ncaa/ncaab_model_output.html[0m
+
+[1m[96mSTEP 5: Generating Final Tracking Dashboard[0m
+[92m✓ Tracking dashboard saved: /Users/rico/Dev/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m====================================================================================================[0m
+[1m[93m📊 TRACKING SUMMARY 📊[0m
+[1m====================================================================================================[0m
+[92mTotal Tracked Bets: 4072[0m
+[92mRecord: 2065-1870-6[0m
+[92mWin Rate: 52.5%[0m
+[92mProfit: +9.15 units[0m
+[92mROI: +0.2%[0m
+[1m====================================================================================================[0m
+
+✅ Completed: ncaab_main_model at Thu Jan 29 18:43:07 EST 2026
+
+📊 Generating NCAAB Analysis Report...
+HTML Report generated at: /Users/rico/Dev/sports-models/ncaa/ncaab_analysis_report.html
+✅ NCAAB Analysis Report generated
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+Already up to date.
+[main 0d1d0554] Update model outputs - 2026-01-29 18:43:09
+ Committer: Ricardo Hill <rico@Ricos-M1-Mac-2.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 712 insertions(+), 950 deletions(-)
+📤 Pushing to GitHub...
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   a2d6a2d5..0d1d0554  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Thu Jan 29 18:43:20 EST 2026

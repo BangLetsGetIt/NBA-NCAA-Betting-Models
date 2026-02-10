@@ -1,0 +1,72 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Tue Jan 27 10:46:46 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   No pending picks to grade
+
+📡 Fetching current NFL odds...
+Fetched 1 games, filtered to 1 upcoming.
+✅ Found 1 games
+
+🔍 Analyzing games...
+
+Seattle Seahawks @ New England Patriots
+  🕐 2026-02-08T23:30:00Z
+  📊 Ratings: New England Patriots (42.3) vs Seattle Seahawks (54.3)
+  📈 Predicted: New England Patriots 16.0, Seattle Seahawks 25.1
+  SPREAD (⭐ LOGGED):
+    Market: New England Patriots +4.5
+    Model:  -9.2
+    Edge:   -13.7
+    ✅ SHARP BET: Seattle Seahawks -4.5
+  TOTAL (⭐ LOGGED):
+    Market: 45.5
+    Model:  41.1
+    Edge:   -4.4
+    ✅ SHARP BET: UNDER 45.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 1
+Bets Logged:    2 (high-confidence +EV only)
+Total Tracked:  103
+Completed:      103
+Pending:        0
+Win Rate:       52.4%
+ROI:            +0.1%
+Total Profit:   $+14.00
+============================================================
+✅ Completed: nfl_main_model at Tue Jan 27 10:47:03 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+fatal: Unable to create '/Users/rico/sports-models/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+ ! [remote rejected]   main -> main (cannot lock ref 'refs/heads/main': is at 07ca9564e23ca4950a287cf2ba12d3cf3730e104 but expected ebb95e52799748846ed9e8a3b7f004d8888c0363)
+error: failed to push some refs to 'https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git'
+⚠️  Push failed - you may need to set up the GitHub remote first
+✅ Auto-push succeeded at Tue Jan 27 11:01:22 EST 2026

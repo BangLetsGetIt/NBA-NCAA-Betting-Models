@@ -1,0 +1,235 @@
+============================================================
+Scheduler run: nba_points_props
+Time: Fri Jan 30 18:00:05 EST 2026
+Working dir: /Users/rico/Dev/sports-models/nba
+Script: nba_points_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA POINTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS (BATCH MODE)[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 29 pending picks...[0m
+
+
+[96mProcessing 9 picks for 2025-12-16...[0m
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠️  No stats found for 2025-12-16 yet[0m
+
+[96mProcessing 2 picks for 2025-12-23...[0m
+[96m  Fetching batch stats for 12/23/2025...[0m
+  Fetching team stats to verify completed games for 2025-12-23...
+
+[96mProcessing 2 picks for 2026-01-08...[0m
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+
+[96mProcessing 1 picks for 2026-01-16...[0m
+[96m  Fetching batch stats for 01/16/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-16...
+
+[96mProcessing 1 picks for 2026-01-24...[0m
+[96m  Fetching batch stats for 01/24/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+
+[96mProcessing 2 picks for 2026-01-27...[0m
+[96m  Fetching batch stats for 01/27/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-27...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player points statistics...[0m
+[92m✓ Using cached player stats (less than 6 hours old)[0m
+
+[96mFetching opponent defense factors...[0m
+[92m✓ Using cached defense factors[0m
+
+[96mFetching player points prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Los Angeles Lakers @ Washington Wizards[0m
+[96m  Game 2/10: Sacramento Kings @ Boston Celtics[0m
+[96m  Game 3/10: Memphis Grizzlies @ New Orleans Pelicans[0m
+[96m  Game 4/10: Portland Trail Blazers @ New York Knicks[0m
+[96m  Game 5/10: Toronto Raptors @ Orlando Magic[0m
+[96m  Game 6/10: Cleveland Cavaliers @ Phoenix Suns[0m
+[96m  Game 7/10: Los Angeles Clippers @ Denver Nuggets[0m
+[96m  Game 8/10: Brooklyn Nets @ Utah Jazz[0m
+[96m  Game 9/10: Detroit Pistons @ Golden State Warriors[0m
+[96m  Game 10/10: San Antonio Spurs @ Charlotte Hornets[0m
+[92m✓ Fetched 0 total player props[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/Dev/sports-models/nba/nba_points_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_points_props at Fri Jan 30 18:00:11 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+error: unknown option `staged'
+usage: git diff --no-index [<options>] <path> <path>
+
+Diff output format options
+    -p, --patch           generate patch
+    -s, --no-patch        suppress diff output
+    -u                    generate patch
+    -U, --unified[=<n>]   generate diffs with <n> lines context
+    -W, --[no-]function-context
+                          generate diffs with <n> lines context
+    --raw                 generate the diff in raw format
+    --patch-with-raw      synonym for '-p --raw'
+    --patch-with-stat     synonym for '-p --stat'
+    --numstat             machine friendly --stat
+    --shortstat           output only the last line of --stat
+    -X, --dirstat[=<param1>,<param2>...]
+                          output the distribution of relative amount of changes for each sub-directory
+    --cumulative          synonym for --dirstat=cumulative
+    --dirstat-by-file[=<param1>,<param2>...]
+                          synonym for --dirstat=files,<param1>,<param2>...
+    --check               warn if changes introduce conflict markers or whitespace errors
+    --summary             condensed summary such as creations, renames and mode changes
+    --name-only           show only names of changed files
+    --name-status         show only names and status of changed files
+    --stat[=<width>[,<name-width>[,<count>]]]
+                          generate diffstat
+    --stat-width <width>  generate diffstat with a given width
+    --stat-name-width <width>
+                          generate diffstat with a given name width
+    --stat-graph-width <width>
+                          generate diffstat with a given graph width
+    --stat-count <count>  generate diffstat with limited lines
+    --[no-]compact-summary
+                          generate compact summary in diffstat
+    --binary              output a binary diff that can be applied
+    --[no-]full-index     show full pre- and post-image object names on the "index" lines
+    --[no-]color[=<when>] show colored diff
+    --ws-error-highlight <kind>
+                          highlight whitespace errors in the 'context', 'old' or 'new' lines in the diff
+    -z                    do not munge pathnames and use NULs as output field terminators in --raw or --numstat
+    --[no-]abbrev[=<n>]   use <n> digits to display object names
+    --src-prefix <prefix> show the given source prefix instead of "a/"
+    --dst-prefix <prefix> show the given destination prefix instead of "b/"
+    --line-prefix <prefix>
+                          prepend an additional prefix to every line of output
+    --no-prefix           do not show any source or destination prefix
+    --default-prefix      use default prefixes a/ and b/
+    --inter-hunk-context <n>
+                          show context between diff hunks up to the specified number of lines
+    --output-indicator-new <char>
+                          specify the character to indicate a new line instead of '+'
+    --output-indicator-old <char>
+                          specify the character to indicate an old line instead of '-'
+    --output-indicator-context <char>
+                          specify the character to indicate a context instead of ' '
+
+Diff rename options
+    -B, --break-rewrites[=<n>[/<m>]]
+                          break complete rewrite changes into pairs of delete and create
+    -M, --find-renames[=<n>]
+                          detect renames
+    -D, --irreversible-delete
+                          omit the preimage for deletes
+    -C, --find-copies[=<n>]
+                          detect copies
+    --[no-]find-copies-harder
+                          use unmodified files as source to find copies
+    --no-renames          disable rename detection
+    --[no-]rename-empty   use empty blobs as rename source
+    --[no-]follow         continue listing the history of a file beyond renames
+    -l <n>                prevent rename/copy detection if the number of rename/copy targets exceeds given limit
+
+Diff algorithm options
+    --minimal             produce the smallest possible diff
+    -w, --ignore-all-space
+                          ignore whitespace when comparing lines
+    -b, --ignore-space-change
+                          ignore changes in amount of whitespace
+    --ignore-space-at-eol ignore changes in whitespace at EOL
+    --ignore-cr-at-eol    ignore carrier-return at the end of line
+    --ignore-blank-lines  ignore changes whose lines are all blank
+    -I, --[no-]ignore-matching-lines <regex>
+                          ignore changes whose all lines match <regex>
+    --[no-]indent-heuristic
+                          heuristic to shift diff hunk boundaries for easy reading
+    --patience            generate diff using the "patience diff" algorithm
+    --histogram           generate diff using the "histogram diff" algorithm
+    --diff-algorithm <algorithm>
+                          choose a diff algorithm
+    --anchored <text>     generate diff using the "anchored diff" algorithm
+    --word-diff[=<mode>]  show word diff, using <mode> to delimit changed words
+    --word-diff-regex <regex>
+                          use <regex> to decide what a word is
+    --color-words[=<regex>]
+                          equivalent to --word-diff=color --word-diff-regex=<regex>
+    --[no-]color-moved[=<mode>]
+                          moved lines of code are colored differently
+    --[no-]color-moved-ws <mode>
+                          how white spaces are ignored in --color-moved
+
+Other diff options
+    --[no-]relative[=<prefix>]
+                          when run from subdir, exclude changes outside and show relative paths
+    -a, --[no-]text       treat all files as text
+    -R                    swap two inputs, reverse the diff
+    --[no-]exit-code      exit with 1 if there were differences, 0 otherwise
+    --[no-]quiet          disable all output of the program
+    --[no-]ext-diff       allow an external diff helper to be executed
+    --[no-]textconv       run external text conversion filters when comparing binary files
+    --ignore-submodules[=<when>]
+                          ignore changes to submodules in the diff generation
+    --submodule[=<format>]
+                          specify how differences in submodules are shown
+    --ita-invisible-in-index
+                          hide 'git add -N' entries from the index
+    --ita-visible-in-index
+                          treat 'git add -N' entries as real in the index
+    -S <string>           look for differences that change the number of occurrences of the specified string
+    -G <regex>            look for differences that change the number of occurrences of the specified regex
+    --pickaxe-all         show all changes in the changeset with -S or -G
+    --pickaxe-regex       treat <string> in -S as extended POSIX regular expression
+    -O <file>             control the order in which files appear in the output
+    --rotate-to <path>    show the change in the specified path first
+    --skip-to <path>      skip the output to the specified path
+    --find-object <object-id>
+                          look for differences that change the number of occurrences of the specified object
+    --diff-filter [(A|C|D|M|R|T|U|X|B)...[*]]
+                          select files by diff type
+    --output <file>       output to a specific file
+
+fatal: not a git repository (or any of the parent directories): .git
+📤 Pushing to GitHub...
+fatal: not a git repository (or any of the parent directories): .git
+⚠️  Push attempt 1 failed, retrying...
+fatal: not a git repository (or any of the parent directories): .git
+⚠️  Push attempt 2 failed, retrying...
+fatal: not a git repository (or any of the parent directories): .git
+⚠️  Push attempt 3 failed, retrying...
+❌ Push failed after 3 attempts - check for conflicts
+⚠️ Auto-push failed at Fri Jan 30 18:00:18 EST 2026 (see log for details)

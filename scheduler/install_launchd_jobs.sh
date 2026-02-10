@@ -4,7 +4,7 @@ set -euo pipefail
 # Installs and loads launchd jobs for sports-models.
 # This enables automatic overnight grading + HTML refresh without manual runs.
 
-REPO_DIR="/Users/rico/sports-models"
+REPO_DIR="/Users/rico/Dev/sports-models"
 PLISTS_DIR="${REPO_DIR}/scheduler/plists"
 LAUNCH_AGENTS_DIR="/Users/rico/Library/LaunchAgents"
 

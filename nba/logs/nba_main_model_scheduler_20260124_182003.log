@@ -1,0 +1,69 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Sat Jan 24 18:20:03 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 7 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[92m✓ Found 18 completed games (Free API)[0m
+  ✓ Updating: New York Knicks 98 @ Philadelphia 76ers 88
+    Result: Win
+  ✓ Updating: New York Knicks 98 @ Philadelphia 76ers 88
+    Result: Loss
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✅ Updated 2 picks[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[92m✅ Updated 2 picks[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[96m🔄 Fetching new team stats from stats.nba.com...[0m
+[92m✓ Fetched and cached stats for 76 teams[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[96m🔄 Fetching home/away splits from stats.nba.com...[0m
+[92m✓ Fetched and cached home/away splits[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[91m✗ Error fetching odds: 401 Client Error: Unauthorized for url: https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey=cf796adc9ac20a6df2247368d40fe0a0&regions=us%2Cus2&markets=h2h%2Cspreads%2Ctotals&oddsFormat=american&dateFormat=iso[0m
+
+[93m⚠️  No games found from The Odds API.[0m
+
+✅ Completed: nba_main_model at Sat Jan 24 18:20:50 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main d78e6c4f] Update model outputs - 2026-01-24 18:20:50
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 53 insertions(+), 53 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   f8488055..d78e6c4f  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sat Jan 24 18:20:51 EST 2026

@@ -97,10 +97,17 @@ def retrieve_active_plays(tracking_data, stat_type="PTS"):
             should_show = False
             status = (p.get('status') or 'pending').lower()
 
-            if status == 'pending':
-                # Show if game is in future OR started within last 15 minutes (grace period)
-                if p_dt_aware > (now_utc - timedelta(minutes=15)):
-                    should_show = True
+            # Show if:
+            # 1. It is TODAY's game (regardless of status/time - show all day)
+            # 2. It is a FUTURE game and status is pending
+            
+            is_today = (p_date == today_date)
+            is_future = (p_date > today_date)
+            
+            if is_today:
+                should_show = True
+            elif is_future and status == 'pending':
+                should_show = True
             
             if should_show:
                 # Reconstruct play object
@@ -1008,6 +1015,32 @@ def main():
                 except Exception as e:
                     log(f"Best plays generation failed: {e}", "warning")
                 
+                # Generate Daily Recap for yesterday
+                try:
+                    from datetime import datetime, timedelta
+                    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+                    import generate_daily_recap
+                    import importlib
+                    importlib.reload(generate_daily_recap)
+                    
+                    generator = generate_daily_recap.DailyRecapGenerator(yesterday)
+                    generator.load_data()
+                    stats = generator.calculate_stats()
+                    html = generator.generate_html(stats)
+                    
+                    # Save dated version
+                    dated_output = f"daily_recap_{yesterday}.html"
+                    with open(dated_output, 'w') as f:
+                        f.write(html)
+                    
+                    # Update the main daily_recap.html
+                    with open('daily_recap.html', 'w') as f:
+                        f.write(html)
+                    
+                    log(f"Generated daily recap for {yesterday}", "success")
+                except Exception as e:
+                    log(f"Daily recap generation failed: {e}", "warning")
+                
                 trigger_git_push()
             else:
                 log("No updates found.", "info")
@@ -1035,6 +1068,32 @@ def main():
                 log("Regenerated best_plays.html", "success")
             except Exception as e:
                 log(f"Best plays generation failed: {e}", "warning")
+            
+            # Generate Daily Recap for yesterday
+            try:
+                from datetime import datetime, timedelta
+                yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+                import generate_daily_recap
+                import importlib
+                importlib.reload(generate_daily_recap)
+                
+                generator = generate_daily_recap.DailyRecapGenerator(yesterday)
+                generator.load_data()
+                stats = generator.calculate_stats()
+                html = generator.generate_html(stats)
+                
+                # Save dated version
+                dated_output = f"daily_recap_{yesterday}.html"
+                with open(dated_output, 'w') as f:
+                    f.write(html)
+                
+                # Update the main daily_recap.html
+                with open('daily_recap.html', 'w') as f:
+                    f.write(html)
+                
+                log(f"Generated daily recap for {yesterday}", "success")
+            except Exception as e:
+                log(f"Daily recap generation failed: {e}", "warning")
             
             trigger_git_push()
         else:

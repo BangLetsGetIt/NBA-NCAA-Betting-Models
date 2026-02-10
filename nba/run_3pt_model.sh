@@ -22,7 +22,7 @@ if [ $? -eq 0 ]; then
     echo "========================================"
 
     # Change to the repo root
-    cd /Users/rico/sports-models
+    cd /Users/rico/Dev/sports-models
 
     # Add the 3PT model files
     git add nba/nba_3pt_props.html

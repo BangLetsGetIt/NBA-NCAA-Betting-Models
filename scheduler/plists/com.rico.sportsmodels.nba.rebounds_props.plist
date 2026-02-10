@@ -7,10 +7,10 @@
 
     <key>ProgramArguments</key>
     <array>
-      <string>/Users/rico/sports-models/scheduler/scripts/run_model.sh</string>
-      <string>/Users/rico/sports-models/nba</string>
+      <string>/Users/rico/Dev/sports-models/scheduler/scripts/run_model.sh</string>
+      <string>/Users/rico/Dev/sports-models/nba</string>
       <string>nba_rebounds_props_model.py</string>
-      <string>/Users/rico/sports-models/nba/logs</string>
+      <string>/Users/rico/Dev/sports-models/nba/logs</string>
       <string>nba_rebounds_props</string>
     </array>
 
@@ -18,12 +18,7 @@
     <true/>
 
     <key>StartCalendarInterval</key>
-    <array>
-      <dict><key>Hour</key><integer>2</integer><key>Minute</key><integer>45</integer></dict>
-      <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>10</integer></dict>
-      <dict><key>Hour</key><integer>15</integer><key>Minute</key><integer>10</integer></dict>
-      <dict><key>Hour</key><integer>18</integer><key>Minute</key><integer>10</integer></dict>
-    </array>
+    <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>10</integer></dict>
 
     <key>StandardOutPath</key>
     <string>/tmp/com.rico.sportsmodels.nba.rebounds_props.out.log</string>

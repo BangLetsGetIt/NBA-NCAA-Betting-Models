@@ -1,0 +1,97 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Sun Jan 25 10:05:03 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 5 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+[93m  ⚠ Could not find stats for Brandin Podziemski on 2026-01-24[0m
+  Fetching team stats to verify completed games for 2026-01-25...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[96m  Fetching season assists stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL assists stats for 513 players[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 8 upcoming games[0m
+[96m  Game 1/8: Sacramento Kings @ Detroit Pistons[0m
+[96m  Game 2/8: Denver Nuggets @ Memphis Grizzlies[0m
+[96m  Game 3/8: Golden State Warriors @ Minnesota Timberwolves[0m
+[96m  Game 4/8: Dallas Mavericks @ Milwaukee Bucks[0m
+[96m  Game 5/8: New Orleans Pelicans @ San Antonio Spurs[0m
+[96m  Game 6/8: Toronto Raptors @ Oklahoma City Thunder[0m
+[96m  Game 7/8: Miami Heat @ Phoenix Suns[0m
+[96m  Game 8/8: Brooklyn Nets @ Los Angeles Clippers[0m
+[92m✓ Fetched 62 player assists props (grouped)[0m
+
+[96mAnalyzing 62 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 2 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 118 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[93m✓ Updated odds for 1 existing picks[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+  [96m 1. Ryan Rollins             [0m | [91mUNDER 6.5 AST  [0m | Milwaukee Bucks           vs Dallas Mavericks          | [1mA.I.: 10.00[0m | Rating: 4.9 ⭐⭐
+  [96m 2. Brandin Podziemski       [0m | [91mUNDER 4.5 AST  [0m | Golden State Warriors     vs Minnesota Timberwolves    | [1mA.I.: 10.00[0m | Rating: 3.9 ⭐
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Sun Jan 25 10:05:10 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main b31d2ea0] Update model outputs - 2026-01-25 10:05:10
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   23b61660..b31d2ea0  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sun Jan 25 10:05:11 EST 2026

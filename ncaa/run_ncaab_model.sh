@@ -9,7 +9,7 @@ set -o pipefail
 # Set PATH to include Python 3.13 installation
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:$PATH"
 
-cd "/Users/rico/sports-models/ncaa"
+cd "/Users/rico/Dev/sports-models/ncaa"
 
 mkdir -p logs
 LOG_FILE="logs/ncaab_model_$(date +%Y%m%d_%H%M%S).log"
@@ -45,7 +45,7 @@ if [ $? -eq 0 ]; then
     # Auto-push to GitHub
     echo "" | tee -a "$LOG_FILE"
     echo "📤 Pushing updates to GitHub..." | tee -a "$LOG_FILE"
-    /Users/rico/sports-models/auto_push.sh 2>&1 | tee -a "$LOG_FILE"
+    /Users/rico/Dev/sports-models/auto_push.sh 2>&1 | tee -a "$LOG_FILE"
 
     exit 0
 else

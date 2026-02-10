@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class SportsAnalytics:
     def __init__(self):
-        self.base_dir = Path("/Users/rico/sports-models")
+        self.base_dir = Path("/Users/rico/Dev/sports-models")
         self.all_picks = []
         self.tracking_files = [
             "nba/nba_picks_tracking.json",
@@ -22,6 +22,7 @@ class SportsAnalytics:
             "soccer/soccer_picks_tracking.json",
             "wnba/wnba_model_tracking.json",
             "wnba/wnba_props_tracking.json",
+            "ufc/data/ufc_picks.json",
             "best_plays_tracking.json"
         ]
         
@@ -46,6 +47,30 @@ class SportsAnalytics:
                             pick['sport'] = self.get_sport_from_file(file_path)
                             pick['model_type'] = self.get_model_type_from_file(file_path)
                             pick['file_path'] = file_path
+                            
+                            # Normalize UFC Data
+                            if pick['sport'] == 'UFC':
+                                # Normalize Status
+                                status = pick.get('status', 'pending').lower()
+                                if status == 'won': pick['status'] = 'win'
+                                elif status == 'lost': pick['status'] = 'loss'
+                                elif status == 'void': pick['status'] = 'push'
+                                
+                                # Calculate Profit/Loss (if missing)
+                                if 'profit_loss' not in pick and pick['status'] in ['win', 'loss']:
+                                    units = float(pick.get('recommended_bet_size_unit', 1))
+                                    odds = float(pick.get('odds', -110))
+                                    if pick['status'] == 'win':
+                                        if odds > 0:
+                                            profit = (odds / 100) * units * 100 # $100/unit
+                                        else:
+                                            profit = (100 / abs(odds)) * units * 100
+                                        pick['profit_loss'] = profit
+                                    elif pick['status'] == 'loss':
+                                        pick['profit_loss'] = - (units * 100)
+                                    else:
+                                        pick['profit_loss'] = 0
+                                        
                         self.all_picks.extend(picks)
                 except Exception as e:
                     print(f"Error loading {file_path}: {e}")
@@ -62,6 +87,8 @@ class SportsAnalytics:
             return 'NCAAB'
         elif 'soccer' in file_path:
             return 'Soccer'
+        elif 'ufc' in file_path:
+            return 'UFC'
         elif 'wnba' in file_path:
             return 'WNBA'
         elif 'mlb' in file_path:
@@ -112,7 +139,7 @@ class SportsAnalytics:
         """Calculate metrics broken down by sport"""
         sport_metrics = {}
         
-        for sport in ['NBA', 'NCAAB', 'Soccer', 'WNBA', 'MLB']:
+        for sport in ['NBA', 'NCAAB', 'Soccer', 'WNBA', 'UFC', 'MLB']:
             sport_picks = [p for p in self.all_picks if p.get('sport') == sport]
             if not sport_picks:
                 continue
@@ -536,7 +563,8 @@ class SportsAnalytics:
             'ncaa/cbb_rebounds_props_tracking.json': 'NCAAB Rebounds Props',
             'soccer/soccer_picks_tracking.json': 'Soccer Model',
             'wnba/wnba_model_tracking.json': 'WNBA Main Model',
-            'wnba/wnba_props_tracking.json': 'WNBA Props'
+            'wnba/wnba_props_tracking.json': 'WNBA Props',
+            'ufc/data/ufc_picks.json': 'UFC Model'
         }
         
         for file_path in self.tracking_files:
@@ -869,15 +897,11 @@ class SportsAnalytics:
         template_env = Environment(loader=template_loader)
         template = template_env.get_template("analytics_dashboard_template.html")
         
-        # Render template with analytics data
-        html_content = template.render(analytics=analytics)
-        
         # Update the timestamp in the rendered HTML
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S ET')
-        html_content = html_content.replace(
-            'Last Updated: 2026-01-13 18:54:33 ET',
-            f'Last Updated: {current_time}'
-        )
+        
+        # Render template with analytics data and timestamp
+        html_content = template.render(analytics=analytics, last_updated=current_time)
         
         # Write the rendered HTML
         output_path = self.base_dir / "analytics_dashboard.html"

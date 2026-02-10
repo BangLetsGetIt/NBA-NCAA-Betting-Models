@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime
 
 def reset_voided_picks():
-    nfl_dir = Path('/Users/rico/sports-models/nfl')
+    nfl_dir = Path('/Users/rico/Dev/sports-models/nfl')
     files = list(nfl_dir.glob('*tracking.json'))
     
     now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

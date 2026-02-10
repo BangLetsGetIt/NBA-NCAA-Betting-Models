@@ -11,7 +11,7 @@ set -o pipefail
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:$PATH"
 
 # Navigate to Soccer Model folder
-cd "/Users/rico/sports-models/soccer"
+cd "/Users/rico/Dev/sports-models/soccer"
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
@@ -43,7 +43,7 @@ if [ $? -eq 0 ]; then
     # Auto-push to GitHub
     echo "" | tee -a "$LOG_FILE"
     echo "📤 Pushing updates to GitHub..." | tee -a "$LOG_FILE"
-    cd /Users/rico/sports-models && bash auto_push.sh 2>&1 | tee -a "$LOG_FILE"
+    cd /Users/rico/Dev/sports-models && bash auto_push.sh 2>&1 | tee -a "$LOG_FILE"
 
     exit 0
 else

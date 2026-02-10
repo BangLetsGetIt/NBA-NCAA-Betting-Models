@@ -5,7 +5,7 @@ from collections import defaultdict
 from datetime import datetime
 
 # Configuration
-BASE_DIR = "/Users/rico/sports-models"
+BASE_DIR = "/Users/rico/Dev/sports-models"
 OUTPUT_FILE = os.path.join(BASE_DIR, "auto_bet_teams.html")
 JSON_OUTPUT_FILE = os.path.join(BASE_DIR, "auto_bet_teams.json")
 MIN_PICKS = 5

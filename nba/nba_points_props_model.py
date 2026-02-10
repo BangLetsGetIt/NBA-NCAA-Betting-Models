@@ -1355,8 +1355,8 @@ def calculate_ev(ai_score, prop_line, season_avg, recent_avg, odds, bet_type):
         ev = (true_prob * (odds / 100)) - (1 - true_prob)
     else:
         ev = (true_prob * (100 / abs(odds))) - (1 - true_prob)
-    
-    return ev * 100  # Return as percentage
+
+    return ev * 100, true_prob * 100  # Return EV% and win-prob%
 
 def analyze_props(props_list, player_stats, defense_factors):
     """Analyze all player props using REAL NBA stats"""
@@ -1426,12 +1426,17 @@ def analyze_props(props_list, player_stats, defense_factors):
             recent_avg = player_data.get('recent_pts_avg', 0)
             
             if season_avg >= prop_line + 0.5 and recent_avg >= prop_line + 0.3:
-                # Calculate EV
-                ev = calculate_ev(over_score, prop_line, season_avg, recent_avg, prop['over_price'], 'over')
-                
+                # Calculate EV and win-prob
+                ev, win_prob = calculate_ev(over_score, prop_line, season_avg, recent_avg, prop['over_price'], 'over')
+
                 # Calculate probability edge
                 prob_edge = calculate_probability_edge(over_score, season_avg, recent_avg, prop_line, prop['over_price'], 'over')
-                
+
+                # Require positive EV and minimum win-prob before adding
+                if not (ev > 0 and win_prob >= 55):
+                    skipped_low_score += 1
+                    continue
+
                 play_dict = {
                     'player': player_name,
                     'prop': f"OVER {prop_line} PTS",
@@ -1446,6 +1451,7 @@ def analyze_props(props_list, player_stats, defense_factors):
                     'recent_avg': recent_avg,
                     'edge': round(season_avg - prop_line, 2),
                     'ev': round(ev, 2),
+                    'win_prob_percent': round(win_prob, 1),
                     'probability_edge': prob_edge
                 }
                 
@@ -1465,12 +1471,17 @@ def analyze_props(props_list, player_stats, defense_factors):
             recent_avg = player_data.get('recent_pts_avg', 0)
             
             if season_avg <= prop_line - 0.5 and recent_avg <= prop_line - 0.3:
-                # Calculate EV
-                ev = calculate_ev(under_score, prop_line, season_avg, recent_avg, prop['over_price'], 'under')
-                
+                # Calculate EV and win-prob
+                ev, win_prob = calculate_ev(under_score, prop_line, season_avg, recent_avg, prop['over_price'], 'under')
+
                 # Calculate probability edge
                 prob_edge = calculate_probability_edge(under_score, season_avg, recent_avg, prop_line, prop['over_price'], 'under')
-                
+
+                # Require positive EV and minimum win-prob before adding
+                if not (ev > 0 and win_prob >= 55):
+                    skipped_low_score += 1
+                    continue
+
                 play_dict = {
                     'player': player_name,
                     'prop': f"UNDER {prop_line} PTS",
@@ -1485,6 +1496,7 @@ def analyze_props(props_list, player_stats, defense_factors):
                     'recent_avg': recent_avg,
                     'edge': round(prop_line - season_avg, 2),
                     'ev': round(ev, 2),
+                    'win_prob_percent': round(win_prob, 1),
                     'probability_edge': prob_edge
                 }
                 

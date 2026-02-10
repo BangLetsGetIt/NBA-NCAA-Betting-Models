@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 
 class AnalyticsDashboard:
-    def __init__(self, base_dir="/Users/rico/sports-models"):
+    def __init__(self, base_dir="/Users/rico/Dev/sports-models"):
         self.base_dir = base_dir
         self.tracking_files = []
         self.all_data = {}

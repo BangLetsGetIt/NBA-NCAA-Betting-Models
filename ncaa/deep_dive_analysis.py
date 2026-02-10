@@ -5,7 +5,7 @@ import sys
 
 def analyze_performance():
     # Load data
-    file_path = '/Users/rico/sports-models/ncaa/ncaab_picks_tracking.json'
+    file_path = '/Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json'
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
         return

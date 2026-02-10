@@ -1,7 +1,7 @@
 import json
 import os
 
-TRACKING_FILE = "/Users/rico/sports-models/ncaa/ncaab_picks_tracking.json"
+TRACKING_FILE = "/Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json"
 TARGET_TEAM = "Prairie View Panthers"
 
 def analyze_record():

@@ -8,4 +8,4 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-python3 /Users/rico/sports-models/nba_props_bot.py "$1"
+python3 /Users/rico/Dev/sports-models/nba_props_bot.py "$1"

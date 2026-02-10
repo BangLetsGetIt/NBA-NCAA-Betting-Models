@@ -2,7 +2,7 @@
 # ABL Dashboard Auto-Update Script
 # Runs abl_recap.py, updates dashboard, and pushes to GitHub
 
-cd "/Users/rico/sports-models/American Betting League"
+cd "/Users/rico/Dev/sports-models/American Betting League"
 
 echo "============================================================"
 echo "ABL Dashboard Update: $(date)"
@@ -13,7 +13,7 @@ echo "============================================================"
 
 # Check if dashboard was updated
 if [ -f "dashboard.html" ]; then
-    cd /Users/rico/sports-models
+    cd /Users/rico/Dev/sports-models
     
     # Add and commit changes
     git add "American Betting League/dashboard.html" "American Betting League/history/"

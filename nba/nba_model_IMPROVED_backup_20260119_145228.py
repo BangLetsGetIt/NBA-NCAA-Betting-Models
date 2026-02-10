@@ -2542,7 +2542,7 @@ def save_html(results):
     # Load Auto Bet Teams (Top 10 Most Profitable from nba_analysis_report)
     auto_bet_teams = set()
     try:
-        with open('/Users/rico/sports-models/nba/nba_auto_bet_teams.json', 'r') as f:
+        with open('/Users/rico/Dev/sports-models/nba/nba_auto_bet_teams.json', 'r') as f:
             abt_data = json.load(f)
             # Keys are team names directly
             auto_bet_teams = set(abt_data.keys())

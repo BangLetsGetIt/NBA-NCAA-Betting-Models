@@ -1,0 +1,84 @@
+============================================================
+Scheduler run: nfl_main_model
+Time: Sat Jan 24 09:43:39 EST 2026
+Working dir: /Users/rico/sports-models/nfl
+Script: nfl_model_IMPROVED.py
+============================================================
+🏈 NFL Betting Model - Sharp +EV Version
+============================================================
+Spread Threshold: 3.0+ pts (display)
+Spread Logging: 3.0+ pts (sharp +EV)
+Total Threshold: 3.0+ pts (display)
+Total Logging: 3.0+ pts (sharp +EV)
+============================================================
+
+📊 STEP 1: Grading Pending Picks
+   No pending picks to grade
+
+📡 Fetching current NFL odds...
+Fetched 2 games, filtered to 2 upcoming.
+✅ Found 2 games
+
+🔍 Analyzing games...
+
+New England Patriots @ Denver Broncos
+  🕐 2026-01-25T20:00:00Z
+  📊 Ratings: Denver Broncos (60.2) vs New England Patriots (42.3)
+  📈 Predicted: Denver Broncos 31.6, New England Patriots 11.0
+  SPREAD (⭐ LOGGED):
+    Market: Denver Broncos +4.0
+    Model:  20.7
+    Edge:   +16.7
+    ✅ SHARP BET: Denver Broncos +4.0
+
+Los Angeles Rams @ Seattle Seahawks
+  🕐 2026-01-25T23:30:00Z
+  📊 Ratings: Seattle Seahawks (54.3) vs Los Angeles Rams (55.6)
+  📈 Predicted: Seattle Seahawks 22.9, Los Angeles Rams 21.6
+  SPREAD (⭐ LOGGED):
+    Market: Seattle Seahawks -2.5
+    Model:  1.4
+    Edge:   +3.9
+    ✅ SHARP BET: Seattle Seahawks -2.5
+
+📄 Generating HTML reports...
+
+✅ HTML saved: /Users/rico/sports-models/nfl/nfl_model_output.html
+✅ Created: /Users/rico/sports-models/nfl/nfl_model_output.html
+
+✅ Tracking dashboard saved: /Users/rico/sports-models/nfl/nfl_tracking_dashboard.html
+
+============================================================
+📊 ANALYSIS SUMMARY
+============================================================
+Games Analyzed: 2
+Bets Logged:    2 (high-confidence +EV only)
+Total Tracked:  101
+Completed:      101
+Pending:        0
+Win Rate:       52.5%
+ROI:            +0.2%
+Total Profit:   $+23.00
+============================================================
+✅ Completed: nfl_main_model at Sat Jan 24 09:43:40 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main 234c7acf] Update model outputs - 2026-01-24 09:43:40
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   2eb93d25..234c7acf  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sat Jan 24 09:43:41 EST 2026

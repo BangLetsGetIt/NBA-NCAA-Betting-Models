@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the aliases
-ALIAS1="alias check1='cd /Users/rico/sports-models && python3 auto_grader.py --grade-only'"
-ALIAS2="alias check2='cd /Users/rico/sports-models && bash run_all_models.sh'"
+ALIAS1="alias check1='cd /Users/rico/Dev/sports-models && python3 auto_grader.py --grade-only'"
+ALIAS2="alias check2='cd /Users/rico/Dev/sports-models && bash run_all_models.sh'"
 
 # Target file
 RC_FILE="$HOME/.zshrc"

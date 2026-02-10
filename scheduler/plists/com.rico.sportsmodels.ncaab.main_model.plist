@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.rico.sportsmodels.ncaab.main_model</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/Users/rico/Dev/sports-models/scheduler/scripts/run_model.sh</string>
+      <string>/Users/rico/Dev/sports-models/ncaa</string>
+      <string>ncaab_model_2ndFINAL.py</string>
+      <string>/Users/rico/Dev/sports-models/ncaa/logs</string>
+      <string>ncaab_main_model</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StartCalendarInterval</key>
+    <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>30</integer></dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/com.rico.sportsmodels.ncaab.main_model.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/com.rico.sportsmodels.ncaab.main_model.err.log</string>
+  </dict>
+</plist>

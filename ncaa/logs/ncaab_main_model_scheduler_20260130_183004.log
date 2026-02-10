@@ -1,0 +1,60 @@
+============================================================
+Scheduler run: ncaab_main_model
+Time: Fri Jan 30 18:30:04 EST 2026
+Working dir: /Users/rico/Dev/sports-models/ncaa
+Script: ncaab_model_2ndFINAL.py
+============================================================
+
+[1m====================================================================================================[0m
+[1m[96m🏀 COLLEGE BASKETBALL SHARP MODEL 🏀[0m
+[1m[92m⚡ Targeting 56%+ Win Rate with Advanced Analytics ⚡[0m
+[1m[93m📅 Filtering games within next 7 days[0m
+[1m====================================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games & Updating Past Picks[0m
+[96mChecking 131 pending picks...[0m
+[96mFetching completed game scores...[0m
+[93m⚠️  Could not fetch scores: 401[0m
+[93mNo completed games found.[0m
+[92m✓ Tracking dashboard saved: /Users/rico/Dev/sports-models/ncaa/ncaab_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Loading Team Statistics[0m
+[96mLoading team statistics...[0m
+[92m✓ Using cached stats (age: 1h)[0m
+
+[1m[96mSTEP 3: Fetching Live Odds (Next 7 Days)[0m
+[91mERROR: The Odds API returned status 401[0m
+Response: {"message":"Usage quota has been reached. See usage plans at https://the-odds-api.com","error_code":"OUT_OF_USAGE_CREDITS","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#out-of-usage-credits"}
+
+
+[93m⚠️  No games found from The Odds API in next 7 days.[0m
+
+✅ Completed: ncaab_main_model at Fri Jan 30 18:30:06 EST 2026
+
+📊 Generating NCAAB Analysis Report...
+HTML Report generated at: /Users/rico/Dev/sports-models/ncaa/ncaab_analysis_report.html
+✅ NCAAB Analysis Report generated
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+Already up to date.
+[main 597c7bf5] Update model outputs - 2026-01-30 18:30:08
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 38 insertions(+), 38 deletions(-)
+📤 Pushing to GitHub...
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   8b2b2206..597c7bf5  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Fri Jan 30 18:30:08 EST 2026

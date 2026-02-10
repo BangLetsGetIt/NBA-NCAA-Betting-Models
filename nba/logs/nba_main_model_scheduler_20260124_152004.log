@@ -1,0 +1,60 @@
+============================================================
+Scheduler run: nba_main_model
+Time: Sat Jan 24 15:20:04 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_model_IMPROVED.py
+============================================================
+
+[1m==========================================================================================[0m
+[1m[96m🎲 IMPROVED NBA BETTING MODEL 🎲[0m
+[1m[92m⚡ Enhanced Stats + Rest Days + Stricter Filters ⚡[0m
+[1m==========================================================================================[0m
+
+[1m[96mSTEP 1: Checking for Completed Games[0m
+
+[96m==========================================================================================[0m
+[96m🔄 UPDATING RESULTS FOR COMPLETED GAMES[0m
+[96m==========================================================================================[0m
+
+[93m📋 Checking 7 pending picks...[0m
+[96mFetching completed NBA game scores (via NBA API)...[0m
+[92m✓ Found 17 completed games (Free API)[0m
+[92m✓ Tracking data saved to /Users/rico/sports-models/nba/nba_picks_tracking.json[0m
+[93mNo picks were updated (games may not be complete yet)[0m
+[92m✓ Tracking dashboard saved: /Users/rico/sports-models/nba/nba_tracking_dashboard.html[0m
+
+[1m[96mSTEP 2: Fetching Composite Stats (Season + Form)[0m
+[92m✓ Using cached composite stats (less than 6 hours old)[0m
+
+[1m[96mSTEP 3: Fetching Home/Away Splits[0m
+[92m✓ Using cached home/away splits (less than 6 hours old)[0m
+
+[1m[96mSTEP 4: Fetching Team Schedules (Rest Days)[0m
+
+[1m[96mSTEP 5: Fetching Live Odds (Next 2 Days)[0m
+[91m✗ Error fetching odds: 401 Client Error: Unauthorized for url: https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?apiKey=cf796adc9ac20a6df2247368d40fe0a0&regions=us%2Cus2&markets=h2h%2Cspreads%2Ctotals&oddsFormat=american&dateFormat=iso[0m
+
+[93m⚠️  No games found from The Odds API.[0m
+
+✅ Completed: nba_main_model at Sat Jan 24 15:20:08 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+[main fd184509] Update model outputs - 2026-01-24 15:20:08
+ Committer: Ricardo Hill <rico@MacBookAir.lan>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 1 file changed, 1 insertion(+), 21 deletions(-)
+To https://github.com/BangLetsGetIt/NBA-NCAA-Betting-Models.git
+   228a01bd..fd184509  main -> main
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Sat Jan 24 15:20:09 EST 2026

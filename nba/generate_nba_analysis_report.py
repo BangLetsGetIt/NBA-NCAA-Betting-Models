@@ -223,7 +223,7 @@ HTML_FOOTER = """
 
 def generate_report():
     # Load Data from Multiple Sources
-    base_dir = '/Users/rico/sports-models/nba'
+    base_dir = '/Users/rico/Dev/sports-models/nba'
     files = {
         'Main Model': 'nba_picks_tracking.json',
         'Points Props': 'nba_points_props_tracking.json',
@@ -649,14 +649,14 @@ def generate_report():
     
     html += HTML_FOOTER
     
-    output_path = '/Users/rico/sports-models/nba/nba_analysis_report.html'
+    output_path = '/Users/rico/Dev/sports-models/nba/nba_analysis_report.html'
     with open(output_path, 'w') as f:
         f.write(html)
         
     print(f"HTML Report generated at: {output_path}")
     
     # Export Top 10 Auto-Bet Teams to JSON for use by other scripts
-    auto_bet_json_path = '/Users/rico/sports-models/nba/nba_auto_bet_teams.json'
+    auto_bet_json_path = '/Users/rico/Dev/sports-models/nba/nba_auto_bet_teams.json'
     auto_bet_data = {t['team']: {'record': t['record'], 'profit': t['profit']} for t in best_teams}
     with open(auto_bet_json_path, 'w') as f:
         json.dump(auto_bet_data, f, indent=4)

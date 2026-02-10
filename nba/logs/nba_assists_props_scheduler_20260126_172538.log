@@ -1,0 +1,87 @@
+============================================================
+Scheduler run: nba_assists_props
+Time: Mon Jan 26 17:25:40 EST 2026
+Working dir: /Users/rico/sports-models/nba
+Script: nba_assists_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA ASSISTS PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 4 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[93m  ⚠ Could not find stats for De'Aaron Fox on 2025-12-16[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+[93m  ⚠ Could not find stats for Brandin Podziemski on 2026-01-24[0m
+  Fetching team stats to verify completed games for 2026-01-25...
+[93m  ⚠ Could not find stats for Ryan Rollins on 2026-01-25[0m
+[93m  ⚠ Could not find stats for Kyle Kuzma on 2026-01-25[0m
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player assists statistics...[0m
+[96m  Fetching season assists stats...[0m
+[96m  Fetching recent form (last 10 games)...[0m
+[92m✓ Fetched REAL assists stats for 513 players[0m
+
+[96mFetching opponent assists factors...[0m
+[92m✓ Fetched assists factors for 30 teams[0m
+
+[96mFetching player assists prop odds...[0m
+[96m  Found 8 upcoming games[0m
+[96m  Filtered to 7 upcoming games[0m
+[96m  Game 1/8: Orlando Magic @ Cleveland Cavaliers[0m
+[96m  Game 2/8: Portland Trail Blazers @ Boston Celtics[0m
+[96m  Game 3/8: Los Angeles Lakers @ Chicago Bulls[0m
+[96m  Game 4/8: Memphis Grizzlies @ Houston Rockets[0m
+[96m  Game 5/8: Golden State Warriors @ Minnesota Timberwolves[0m
+[96m  Game 6/8: Sacramento Kings @ New York Knicks[0m
+[96m  Game 7/8: New Orleans Pelicans @ Oklahoma City Thunder[0m
+[92m✓ Fetched 34 player assists props (grouped)[0m
+
+[96mAnalyzing 34 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 10.0)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 10.0)[0m
+[93m  Skipped 2 props (no player stats found)[0m
+[93m  Skipped 64 props (score below 10.0 or failed checks)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/sports-models/nba/nba_assists_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_assists_props at Mon Jan 26 17:26:54 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+fatal: Unable to create '/Users/rico/sports-models/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+Everything up-to-date
+✅ Successfully pushed to GitHub!
+✅ Auto-push succeeded at Mon Jan 26 17:27:07 EST 2026

@@ -1,0 +1,82 @@
+============================================================
+Scheduler run: nba_3pt_props
+Time: Fri Jan 30 18:00:05 EST 2026
+Working dir: /Users/rico/Dev/sports-models/nba
+Script: nba_3pt_props_model.py
+============================================================
+
+[1m[96m================================================================================[0m
+[1m[96mNBA 3PT PROPS A.I. MODEL[0m
+[1m[96m================================================================================[0m
+
+[96m==========================================================================================[0m
+[96m🎯 GRADING PENDING PICKS[0m
+[96m==========================================================================================[0m
+
+[93m📋 Found 10 pending picks...[0m
+
+  Fetching team stats to verify completed games for 2025-12-16...
+[96m  Fetching batch stats for 12/16/2025...[0m
+  Fetching team stats to verify completed games for 2026-01-08...
+[96m  Fetching batch stats for 01/08/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-14...
+[96m  Fetching batch stats for 01/14/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-24...
+[96m  Fetching batch stats for 01/24/2026...[0m
+  Fetching team stats to verify completed games for 2026-01-30...
+
+[93mNo picks ready for grading yet[0m
+
+[96mFetching REAL NBA player 3-pointers statistics...[0m
+[92m✓ Using cached player 3-pointers stats (less than 6 hours old)[0m
+
+[96mFetching opponent 3-pointers factors...[0m
+[92m✓ Using cached 3-pointers factors[0m
+
+[96mFetching player 3-pointers prop odds...[0m
+[96m  Found 12 upcoming games[0m
+[96m  Filtered to 12 upcoming games[0m
+[96m  Game 1/10: Los Angeles Lakers @ Washington Wizards[0m
+[96m  Game 2/10: Sacramento Kings @ Boston Celtics[0m
+[96m  Game 3/10: Memphis Grizzlies @ New Orleans Pelicans[0m
+[96m  Game 4/10: Portland Trail Blazers @ New York Knicks[0m
+[96m  Game 5/10: Toronto Raptors @ Orlando Magic[0m
+[96m  Game 6/10: Cleveland Cavaliers @ Phoenix Suns[0m
+[96m  Game 7/10: Los Angeles Clippers @ Denver Nuggets[0m
+[96m  Game 8/10: Brooklyn Nets @ Utah Jazz[0m
+[96m  Game 9/10: Detroit Pistons @ Golden State Warriors[0m
+[96m  Game 10/10: San Antonio Spurs @ Charlotte Hornets[0m
+[92m✓ Fetched 0 player 3-pointers props (grouped)[0m
+
+[96mAnalyzing 0 player props with REAL stats...[0m
+[92m✓ Found 0 top OVER plays (A.I. Score >= 7.5)[0m
+[92m✓ Found 0 top UNDER plays (A.I. Score >= 7.5)[0m
+
+[96m==========================================================================================[0m
+[96m📊 TRACKING NEW PICKS[0m
+[96m==========================================================================================[0m
+[96mNo new picks to track[0m
+
+[1m[92m================================================================================[0m
+[1m[92mTOP OVER PLAYS[0m
+[1m[92m================================================================================[0m
+
+[1m[91m================================================================================[0m
+[1m[91mTOP UNDER PLAYS[0m
+[1m[91m================================================================================[0m
+
+[96mGenerating HTML report...[0m
+
+[92m✓ HTML report saved: /Users/rico/Dev/sports-models/nba/nba_3pt_props.html[0m
+
+[1m[92m================================================================================[0m
+[1m[92m✓ Model execution complete![0m
+[1m[92m================================================================================[0m
+
+✅ Completed: nba_3pt_props at Fri Jan 30 18:00:11 EST 2026
+
+📤 Auto-pushing model outputs to GitHub...
+📥 Pulling latest changes from remote...
+Already up to date.
+No changes to commit
+✅ Auto-push succeeded at Fri Jan 30 18:00:12 EST 2026

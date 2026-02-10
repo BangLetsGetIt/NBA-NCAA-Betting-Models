@@ -15,7 +15,7 @@ check_status() {
         echo "  - 3:00 PM"
         echo "  - 6:00 PM"
         echo ""
-        echo "  Logs: /Users/rico/sports-models/nba/logs/launchd_output.log"
+        echo "  Logs: /Users/rico/Dev/sports-models/nba/logs/launchd_output.log"
         return 0
     else
         echo "✗ Scheduler is NOT running"
@@ -47,12 +47,12 @@ case "$1" in
     logs)
         echo "Showing recent logs..."
         echo ""
-        tail -50 /Users/rico/sports-models/nba/logs/launchd_output.log
+        tail -50 /Users/rico/Dev/sports-models/nba/logs/launchd_output.log
         ;;
     test)
         echo "Running model manually (test run)..."
         echo ""
-        cd /Users/rico/sports-models/nba
+        cd /Users/rico/Dev/sports-models/nba
         python3 nba_3pt_props_model.py
         ;;
     *)
