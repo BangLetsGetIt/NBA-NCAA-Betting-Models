@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NBA Diagnostics — Interactive</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#0b1220;color:#e6eef8;margin:0}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    h1{margin:0 0 8px 0}
+    .row{display:flex;gap:20px}
+    .col{flex:1}
+    .card{background:#071022;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    canvas{background:#071022;border-radius:8px}
+    a{color:#7ee7b8}
+    table.dataTable{background:#071022}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>NBA Diagnostics — Interactive</h1>
+    <p class="muted">Quick interactive view: charts + sortable tables. Data comes from the CSVs in this folder.</p>
+
+    <div class="row" style="margin-top:12px">
+      <div class="col card">
+        <h3 style="margin-top:0">Edge buckets — Profit by bucket</h3>
+        <canvas id="edgeChart" height="220"></canvas>
+      </div>
+      <div class="col card">
+        <h3 style="margin-top:0">Cumulative P/L</h3>
+        <img src="cumulative_pl.png" style="width:100%;border-radius:8px" alt="Cumulative P/L"/>
+      </div>
+    </div>
+
+    <div style="height:18px"></div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Edge buckets table</h3>
+      <table id="edgeTable" class="display" style="width:100%"><thead><tr><th>Bucket</th><th>Picks</th><th>Wins</th><th>Pushes</th><th>Losses</th><th>Profit (u)</th><th>Avg Edge</th><th>Avg EV%</th><th>Avg WP%</th></tr></thead><tbody></tbody></table>
+    </div>
+
+    <div style="height:18px"></div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Staking summary</h3>
+      <pre id="stakePre" style="white-space:pre-wrap;color:#cfeef0"></pre>
+    </div>
+
+    <div style="height:12px"></div>
+    <div class="muted">Raw CSVs: <a href="edge_buckets.csv">edge_buckets.csv</a> · <a href="staking_summary.csv">staking_summary.csv</a> · <a href="../../nba/nba_picks_tracking.json">tracking JSON</a></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <script>
+    function fetchCSV(url){
+      return new Promise((res,rej)=>{
+        Papa.parse(url, {download:true, header:true, dynamicTyping:true, complete:function(results){res(results.data)}, error:rej})
+      })
+    }
+
+    async function init(){
+      const edge = await fetchCSV('edge_buckets.csv')
+      const stake = await fetchCSV('staking_summary.csv')
+
+      // Fill table
+      const et = $('#edgeTable').DataTable({data: edge, columns:[
+        {data:'edge_bucket'},{data:'picks'},{data:'wins'},{data:'pushes'},{data:'losses'},{data:'profit_units'},{data:'avg_edge'},{data:'avg_ev'},{data:'avg_win_prob'}
+      ], pageLength: 10});
+
+      // Chart
+      const labels = edge.map(r=>r.edge_bucket)
+      const profits = edge.map(r=>parseFloat(r.profit_units)||0)
+      const ctx = document.getElementById('edgeChart').getContext('2d')
+      new Chart(ctx, {type:'bar', data:{labels:labels,datasets:[{label:'Profit (units)',data:profits,backgroundColor:'#6ee7b7'}]}, options:{scales:{y:{beginAtZero:true}}}})
+
+      // Staking summary
+      const stakeObj = stake[0] || {}
+      document.getElementById('stakePre').textContent = JSON.stringify(stakeObj,null,2)
+    }
+
+    init().catch(e=>{console.error(e); alert('Error loading diagnostics CSVs')})
+  </script>
+</body>
+</html>
