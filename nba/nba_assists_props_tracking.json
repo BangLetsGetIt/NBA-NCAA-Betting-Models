@@ -3453,10 +3453,11 @@
       "edge": 1.4,
       "ev": 14.3,
       "tracked_at": "2026-02-10T01:52:10.484166-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_ast": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Immanuel Quickley_4.5_over_2026-02-12T00:30:00Z",
@@ -3475,10 +3476,12 @@
       "edge": 1.6,
       "ev": 13.21,
       "tracked_at": "2026-02-11T02:02:45.573826-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_ast": 5,
+      "clv_status": null,
+      "profit_loss": 61,
+      "updated_at": "2026-02-12T00:03:53.379638-05:00"
     },
     {
       "pick_id": "Jaden Ivey_3.5_under_2026-02-12T00:40:00Z",
@@ -3497,10 +3500,12 @@
       "edge": 1.7,
       "ev": 13.21,
       "tracked_at": "2026-02-11T02:02:45.573907-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_ast": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_ast": 4,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-02-12T00:03:53.521924-05:00"
     }
   ]
 }
