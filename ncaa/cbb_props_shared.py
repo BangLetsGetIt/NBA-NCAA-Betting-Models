@@ -225,11 +225,11 @@ class CBBPropsEngine:
             self.prop_unit = 'PTS'
             self.market_key = 'player_points'
 
-        # Model Parameters - STRICT FOR PROFITABILITY (NBA-style)
-        self.min_ai_score = 9.5  # High confidence only
-        self.min_edge_over = 2.0  # Must average 2.0+ above line for OVER
-        self.min_edge_under = 1.5  # Must average 1.5+ below line for UNDER
-        self.min_recent_form_edge = 1.0  # Recent form must support the bet
+        # Model Parameters - Adjusted for CBB (less data/predictability than NBA)
+        self.min_ai_score = 7.5  # Moderate confidence for CBB
+        self.min_edge_over = 1.2  # CBB needs lower edge threshold
+        self.min_edge_under = 1.0  # CBB needs lower edge threshold
+        self.min_recent_form_edge = 0.8  # Recent form support
         self.pause_unders = False  # UNDERs enabled for CBB - will track performance separately
         self.top_plays_count = 10
         self.recent_games_window = 5  # Use last 5 games for recent form (CBB has fewer games than NBA)
