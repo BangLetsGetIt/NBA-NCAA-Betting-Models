@@ -459,102 +459,72 @@ class CBBPropsEngine:
         return None
 
     def fetch_odds(self):
-        print(f"\n{Colors.CYAN}Fetching {self.prop_type} props from Odds API...{Colors.END}")
-        
-        if not API_KEY:
-            print(f"{Colors.RED}Missing API Key{Colors.END}")
-            return []
+        """Fetch player props odds using centralized caching client."""
+        print(f"\n{Colors.CYAN}Fetching {self.prop_type} props via centralized cache...{Colors.END}")
 
-        # Get upcoming games
-        events_url = "https://api.the-odds-api.com/v4/sports/basketball_ncaab/events"
+        # Import CBB Odds Client
         try:
-            resp = requests.get(events_url, params={"apiKey": API_KEY}, timeout=10)
-            if resp.status_code != 200:
-                print(f"{Colors.RED}Error: {resp.status_code}{Colors.END}")
-                return []
-            
-            events = resp.json()
-            # Filter for next 24h
-            upcoming = []
-            now = datetime.now(pytz.UTC)
-            for e in events:
-                game_time = datetime.fromisoformat(e['commence_time'].replace('Z', '+00:00'))
-                if now <= game_time <= now + timedelta(hours=36):
-                    upcoming.append(e)
-            
-            print(f"  Found {len(upcoming)} upcoming games (next 36h)")
-            
-            all_props = []
-            teams_playing = set()
-            
-            for i, event in enumerate(upcoming[:15]): # Limit to 15 games to save calls/time
-                event_id = event['id']
-                home = event['home_team']
-                away = event['away_team']
-                teams_playing.add(home)
-                teams_playing.add(away)
-                
-                print(f"  Fetching odds for {away} @ {home}...")
-                
-                odds_url = f"https://api.the-odds-api.com/v4/sports/basketball_ncaab/events/{event_id}/odds"
-                params = {
-                    "apiKey": API_KEY,
-                    "regions": "us,us2",
-                    "markets": self.market_key,
-                    "oddsFormat": "american"
-                }
-                
-                odds_resp = requests.get(odds_url, params=params, timeout=5)
-                if odds_resp.status_code == 200:
-                    data = odds_resp.json()
-                    bookmakers = data.get('bookmakers', [])
-                    
-                    # Find best book (Hard Rock, FanDuel or DraftKings usually good for props)
-                    book = next((b for b in bookmakers if b['key'] == 'hardrockbet'), 
-                                next((b for b in bookmakers if b['key'] in ['fanduel', 'draftkings']), 
-                                     None) or (bookmakers[0] if bookmakers else None))
-                    
-                    if book:
-                        for market in book.get('markets', []):
-                            if market['key'] == self.market_key:
-                                # Process outcomes
-                                grouped = {} # player -> {over, under, line}
-                                
-                                for outcome in market['outcomes']:
-                                    pname = outcome['description']
-                                    label = outcome['name'].lower() # over/under
-                                    price = outcome['price']
-                                    point = outcome['point']
-                                    
-                                    key = (pname, point)
-                                    if key not in grouped:
-                                        grouped[key] = {
-                                            'player': pname,
-                                            'line': point,
-                                            'over': None,
-                                            'under': None,
-                                            'team': None, # Need to infer
-                                            'opponent': None
-                                        }
-                                    
-                                    if label == 'over':
-                                        grouped[key]['over'] = price
-                                    else:
-                                        grouped[key]['under'] = price
-                                
-                                # Infer team? Difficult without roster match.
-                                # Use fuzzy matching against home/away teams later.
-                                for item in grouped.values():
-                                    item['home_team'] = home
-                                    item['away_team'] = away
-                                    item['game_time'] = event['commence_time']
-                                    all_props.append(item)
-                                    
-            return all_props, list(teams_playing)
-            
-        except Exception as e:
-            print(f"{Colors.RED}Error fetching odds: {e}{Colors.END}")
-            return [], []
+            from cbb_api_client import CBBOddsClient
+        except ImportError:
+            import sys
+            sys.path.append(os.path.dirname(__file__))
+            from cbb_api_client import CBBOddsClient
+
+        client = CBBOddsClient()
+        # Fetch ALL markets so we populate cache for other models in one go
+        games_data = client.get_odds_data()
+
+        all_props = []
+        teams_playing = set()
+
+        for game in games_data:
+            home_team = game['home_team']
+            away_team = game['away_team']
+            commence_time = game['commence_time']
+            teams_playing.add(home_team)
+            teams_playing.add(away_team)
+
+            bookmakers = game.get('bookmakers', [])
+            if not bookmakers:
+                continue
+
+            # Prioritize Hard Rock Bet, then FanDuel, then first available
+            selected_book = next((b for b in bookmakers if b.get("key") == "hardrockbet"),
+                               next((b for b in bookmakers if b.get("key") == "fanduel"),
+                                    bookmakers[0]))
+
+            for market in selected_book.get("markets", []):
+                if market.get("key") == self.market_key:
+                    # Process outcomes
+                    grouped = {}  # (player, line) -> {over, under}
+
+                    for outcome in market['outcomes']:
+                        player_name = outcome['description']
+                        bet_type = outcome['name'].lower()  # over/under
+                        price = outcome['price']
+                        point = outcome['point']
+
+                        key = (player_name, point)
+                        if key not in grouped:
+                            grouped[key] = {
+                                'player': player_name,
+                                'line': point,
+                                'over': None,
+                                'under': None,
+                                'home_team': home_team,
+                                'away_team': away_team,
+                                'game_time': commence_time
+                            }
+
+                        if bet_type == 'over':
+                            grouped[key]['over'] = price
+                        else:
+                            grouped[key]['under'] = price
+
+                    all_props.extend(grouped.values())
+
+        print(f"{Colors.GREEN}✓ Fetched {len(all_props)} total {self.prop_type} props{Colors.END}")
+        return all_props, list(teams_playing)
 
     def calculate_ev(self, ai_score, prop_line, season_avg, odds, bet_type):
         """
