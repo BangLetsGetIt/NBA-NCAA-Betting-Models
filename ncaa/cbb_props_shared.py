@@ -230,7 +230,7 @@ class CBBPropsEngine:
         self.min_edge_over = 2.0  # Must average 2.0+ above line for OVER
         self.min_edge_under = 1.5  # Must average 1.5+ below line for UNDER
         self.min_recent_form_edge = 1.0  # Recent form must support the bet
-        self.pause_unders = True  # Pause UNDERs until we have proven profitability
+        self.pause_unders = False  # UNDERs enabled for CBB - will track performance separately
         self.top_plays_count = 10
         self.recent_games_window = 5  # Use last 5 games for recent form (CBB has fewer games than NBA)
     
