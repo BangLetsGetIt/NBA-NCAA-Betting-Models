@@ -67,6 +67,13 @@ run_model() {
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 
+# Run NCAAB Model (main game model)
+if run_model "NCAAB Model" "ncaa/ncaab_model_2ndFINAL.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Run CBB Rebounds Model
 if run_model "CBB Rebounds Props" "ncaa/cbb_rebounds_props_model.py"; then
     ((SUCCESS_COUNT++))
@@ -99,15 +106,16 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/3${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/4${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/3${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/4${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
 
 # Output file locations
 echo -e "${YELLOW}📁 Generated Files:${NC}"
+echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo "  • CBB Rebounds: ncaa/cbb_rebounds_props.html"
 echo "  • CBB Points: ncaa/cbb_points_props.html"
 echo "  • CBB Assists: ncaa/cbb_assists_props.html"

@@ -74,13 +74,6 @@ else
     ((FAIL_COUNT++))
 fi
 
-# Run NCAAB Model
-if run_model "NCAAB Model" "ncaa/ncaab_model_2ndFINAL.py"; then
-    ((SUCCESS_COUNT++))
-else
-    ((FAIL_COUNT++))
-fi
-
 # Run Rebounds Model
 if run_model "NBA Rebounds Props" "nba/nba_rebounds_props_model.py"; then
     ((SUCCESS_COUNT++))
@@ -122,9 +115,9 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/6${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/5${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/6${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/5${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
@@ -132,7 +125,6 @@ echo ""
 # Output file locations
 echo -e "${YELLOW}📁 Generated Files:${NC}"
 echo "  • NBA: nba/nba_model_output.html"
-echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo "  • Rebounds: nba/nba_rebounds_props.html"
     echo "  • Assists: nba/nba_assists_props.html"
     echo "  • 3PT: nba/nba_3pt_props.html"
