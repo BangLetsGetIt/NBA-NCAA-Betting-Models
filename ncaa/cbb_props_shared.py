@@ -753,7 +753,7 @@ class CBBPropsEngine:
                             </div>
                         </div>
                          <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">{p['game_time'].split('T')[0]}</div>
+                            <div class="metric-val" style="font-size: 0.9em">{datetime.fromisoformat(p['game_time'].replace('Z', '+00:00')).astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')}</div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -836,7 +836,8 @@ class CBBPropsEngine:
         new_count = 0
         for p in picks:
             # Create unique pick ID
-            pid = f"{p['player']}_{p['prop']}_{p['game_time'][:10]}"
+            eastern_date = datetime.fromisoformat(p['game_time'].replace('Z', '+00:00')).astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
+            pid = f"{p['player']}_{p['prop']}_{eastern_date}"
             if not any(x.get('id') == pid for x in data['picks']):
                 entry = p.copy()
                 entry['id'] = pid
@@ -869,7 +870,7 @@ class CBBPropsEngine:
 
         graded_count = 0
         for pick in pending_picks:
-            game_date = pick['game_time'][:10]  # YYYY-MM-DD
+            game_date = datetime.fromisoformat(pick['game_time'].replace('Z', '+00:00')).astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
             player_name = pick['player']
             team_name = pick['team']
 
