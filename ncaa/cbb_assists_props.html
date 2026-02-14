@@ -157,6 +157,63 @@
         }
         .metric-value.good { color: var(--accent-green); }
 
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .nav-pill {
+            padding: 8px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background-color: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--bg-main);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-item { text-align: center; }
+        .stat-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .stat-val { font-size: 15px; font-weight: 700; }
+
+        /* Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
         @media (max-width: 600px) {
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
             .stat-box:last-child { grid-column: span 2; }
@@ -172,154 +229,34 @@
         <div>
             <h1>CourtSide Analytics</h1>
             <div class="subheader">CBB Assists Model</div>
-             <div class="date-sub">Sharp Parameters &bull; Min AI Score: 7.5 &bull; All Bets Active</div>
+            <div class="date-sub">Season 2025 &bull; All Bets Active</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="metric-title">SEASON RECORD</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
+                1-2 (33.3%)
+            </div>
+            <div style="font-size: 0.9rem; color: var(--accent-red);">
+                -0.8u
+            </div>
         </div>
     </header>
-    
+
+    <div class="nav-bar">
+        <a href="cbb_points_props.html" class="nav-pill">Points</a>
+        <a href="cbb_assists_props.html" class="nav-pill active">Assists</a>
+        <a href="cbb_rebounds_props.html" class="nav-pill">Rebounds</a>
+    </div>
+
     <section>
         <div class="section-title">Top OVER Plays</div>
         
     </section>
-    
+
     <section>
         <div class="section-title">Top UNDER Plays</div>
         
-                <div class="prop-card">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <div class="player-info">
-                                <h2>Fred Payne</h2>
-                                <div class="matchup-info">California Golden Bears @ Boston College Eagles</div>
-                            </div>
-                        </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                         <div class="bet-main-row">
-                            <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">2.5 AST</span> 
-                                <span class="bet-odds">105</span>
-                            </div>
-                        </div>
-                        <div class="metrics-grid">
-                            <div class="metric-item">
-                                <span class="metric-lbl">AI SCORE</span>
-                                <span class="metric-val txt-green">9.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">+33.3%</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">AVG</span>
-                                <span class="metric-val">0.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EDGE</span>
-                                <span class="metric-val">+2.5</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">WIN PROB</span>
-                                <span class="metric-val">65%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="prop-card">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <div class="player-info">
-                                <h2>Isaiah Evans</h2>
-                                <div class="matchup-info">Clemson Tigers @ Duke Blue Devils</div>
-                            </div>
-                        </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                         <div class="bet-main-row">
-                            <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">1.5 AST</span> 
-                                <span class="bet-odds">-230</span>
-                            </div>
-                        </div>
-                        <div class="metrics-grid">
-                            <div class="metric-item">
-                                <span class="metric-lbl">AI SCORE</span>
-                                <span class="metric-val txt-green">9.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">-15.3%</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">AVG</span>
-                                <span class="metric-val">0.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EDGE</span>
-                                <span class="metric-val">+1.5</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">WIN PROB</span>
-                                <span class="metric-val">59%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="prop-card">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <div class="player-info">
-                                <h2>Caleb Foster</h2>
-                                <div class="matchup-info">Clemson Tigers @ Duke Blue Devils</div>
-                            </div>
-                        </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                         <div class="bet-main-row">
-                            <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">2.5 AST</span> 
-                                <span class="bet-odds">-130</span>
-                            </div>
-                        </div>
-                        <div class="metrics-grid">
-                            <div class="metric-item">
-                                <span class="metric-lbl">AI SCORE</span>
-                                <span class="metric-val txt-green">9.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">+15.0%</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">AVG</span>
-                                <span class="metric-val">0.0</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">EDGE</span>
-                                <span class="metric-val">+2.5</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-lbl">WIN PROB</span>
-                                <span class="metric-val">65%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="prop-card">
+                <div class="prop-card glow-blue">
                     <div class="card-header">
                         <div class="header-left">
                             <div class="player-info">
@@ -327,17 +264,20 @@
                                 <div class="matchup-info">Michigan Wolverines @ UCLA Bruins</div>
                             </div>
                         </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
+                        <div class="game-meta">
+                            <div class="game-date-time">Feb 14 12:45PM ET</div>
                         </div>
                     </div>
                     <div class="card-body">
-                         <div class="bet-main-row">
+                        <div class="bet-main-row">
                             <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">2.5 AST</span> 
+                                <span class="txt-red">UNDER</span>
+                                <span class="line">2.5 AST</span>
                                 <span class="bet-odds">-155</span>
                             </div>
+                        </div>
+                        <div class="model-subtext">
+                            Model Predicts: <strong>-2.5 AST</strong> (Edge: +2.5)
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-item">
@@ -364,25 +304,28 @@
                     </div>
                 </div>
                 
-                <div class="prop-card">
+                <div class="prop-card ">
                     <div class="card-header">
                         <div class="header-left">
                             <div class="player-info">
-                                <h2>David Punch</h2>
-                                <div class="matchup-info">Oklahoma St Cowboys @ TCU Horned Frogs</div>
+                                <h2>Sam Hoiberg</h2>
+                                <div class="matchup-info">Northwestern Wildcats @ Nebraska Cornhuskers</div>
                             </div>
                         </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
+                        <div class="game-meta">
+                            <div class="game-date-time">Feb 14 01:00PM ET</div>
                         </div>
                     </div>
                     <div class="card-body">
-                         <div class="bet-main-row">
+                        <div class="bet-main-row">
                             <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">2.5 AST</span> 
-                                <span class="bet-odds">-170</span>
+                                <span class="txt-red">UNDER</span>
+                                <span class="line">4.5 AST</span>
+                                <span class="bet-odds">+120</span>
                             </div>
+                        </div>
+                        <div class="model-subtext">
+                            Model Predicts: <strong>-4.5 AST</strong> (Edge: +4.5)
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-item">
@@ -391,7 +334,7 @@
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">+3.2%</span>
+                                <span class="metric-val txt-green">+43.0%</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">AVG</span>
@@ -399,7 +342,7 @@
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">EDGE</span>
-                                <span class="metric-val">+2.5</span>
+                                <span class="metric-val">+4.5</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">WIN PROB</span>
@@ -409,25 +352,28 @@
                     </div>
                 </div>
                 
-                <div class="prop-card">
+                <div class="prop-card ">
                     <div class="card-header">
                         <div class="header-left">
                             <div class="player-info">
-                                <h2>Baye Ndongo</h2>
-                                <div class="matchup-info">Notre Dame Fighting Irish @ Georgia Tech Yellow Jackets</div>
+                                <h2>Morez Johnson Jr.</h2>
+                                <div class="matchup-info">UCLA Bruins @ Michigan Wolverines</div>
                             </div>
                         </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
+                        <div class="game-meta">
+                            <div class="game-date-time">Feb 14 12:45PM ET</div>
                         </div>
                     </div>
                     <div class="card-body">
-                         <div class="bet-main-row">
+                        <div class="bet-main-row">
                             <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">1.5 AST</span> 
-                                <span class="bet-odds">149</span>
+                                <span class="txt-red">UNDER</span>
+                                <span class="line">1.5 AST</span>
+                                <span class="bet-odds">-250</span>
                             </div>
+                        </div>
+                        <div class="model-subtext">
+                            Model Predicts: <strong>-1.5 AST</strong> (Edge: +1.5)
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-item">
@@ -436,7 +382,7 @@
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">+46.9%</span>
+                                <span class="metric-val txt-red">-17.4%</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">AVG</span>
@@ -454,25 +400,28 @@
                     </div>
                 </div>
                 
-                <div class="prop-card">
+                <div class="prop-card ">
                     <div class="card-header">
                         <div class="header-left">
                             <div class="player-info">
-                                <h2>Braeden Shrewsberry</h2>
-                                <div class="matchup-info">Georgia Tech Yellow Jackets @ Notre Dame Fighting Irish</div>
+                                <h2>Bryce Hopkins</h2>
+                                <div class="matchup-info">St. John's Red Storm @ Providence Friars</div>
                             </div>
                         </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
+                        <div class="game-meta">
+                            <div class="game-date-time">Feb 14 01:00PM ET</div>
                         </div>
                     </div>
                     <div class="card-body">
-                         <div class="bet-main-row">
+                        <div class="bet-main-row">
                             <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">2.5 AST</span> 
-                                <span class="bet-odds">-175</span>
+                                <span class="txt-red">UNDER</span>
+                                <span class="line">2.5 AST</span>
+                                <span class="bet-odds">-180</span>
                             </div>
+                        </div>
+                        <div class="model-subtext">
+                            Model Predicts: <strong>-2.5 AST</strong> (Edge: +2.5)
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-item">
@@ -481,7 +430,7 @@
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">+2.1%</span>
+                                <span class="metric-val txt-green">+1.1%</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">AVG</span>
@@ -499,25 +448,28 @@
                     </div>
                 </div>
                 
-                <div class="prop-card">
+                <div class="prop-card ">
                     <div class="card-header">
                         <div class="header-left">
                             <div class="player-info">
-                                <h2>Morez Johnson Jr.</h2>
-                                <div class="matchup-info">UCLA Bruins @ Michigan Wolverines</div>
+                                <h2>Nick Martinelli</h2>
+                                <div class="matchup-info">Nebraska Cornhuskers @ Northwestern Wildcats</div>
                             </div>
                         </div>
-                         <div class="game-meta">
-                            <div class="metric-val" style="font-size: 0.9em">2026-02-14</div>
+                        <div class="game-meta">
+                            <div class="game-date-time">Feb 14 01:00PM ET</div>
                         </div>
                     </div>
                     <div class="card-body">
-                         <div class="bet-main-row">
+                        <div class="bet-main-row">
                             <div class="bet-selection">
-                                <span class="txt-red">UNDER</span> 
-                                <span class="line">1.5 AST</span> 
-                                <span class="bet-odds">-250</span>
+                                <span class="txt-red">UNDER</span>
+                                <span class="line">1.5 AST</span>
+                                <span class="bet-odds">-160</span>
                             </div>
+                        </div>
+                        <div class="model-subtext">
+                            Model Predicts: <strong>-1.5 AST</strong> (Edge: +1.5)
                         </div>
                         <div class="metrics-grid">
                             <div class="metric-item">
@@ -526,7 +478,7 @@
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">EV</span>
-                                <span class="metric-val txt-green">-17.4%</span>
+                                <span class="metric-val txt-red">-4.1%</span>
                             </div>
                             <div class="metric-item">
                                 <span class="metric-lbl">AVG</span>
@@ -545,6 +497,87 @@
                 </div>
                 
     </section>
+
+    
+        <section style="margin-top: 2rem;">
+            <div class="section-title">Daily Performance</div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">TODAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">0-0</div>
+                        <div class="">+0.0u</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">0.0% ROI</div>
+                    </div>
+                </div>
+                <div class="prop-card" style="padding: 1rem; margin:0;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
+                    <div style="text-align:center;">
+                        <div style="font-weight:700; font-size:1.1rem;">1-2</div>
+                        <div class="txt-red">-0.8u</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">-28.3% ROI</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    
+        <div class="tracking-section">
+            <div class="tracking-header">Recent Form</div>
+            <div class="metrics-row" style="margin-bottom: 1.5rem;">
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div><div class="metric-label">Record</div><div class="metric-value">1-2</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value text-red">33%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-0.8u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-28.3%</div></div>
+                    </div>
+                </div>
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div><div class="metric-label">Record</div><div class="metric-value">1-2</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value text-red">33%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-0.8u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-28.3%</div></div>
+                    </div>
+                </div>
+                <div class="prop-card" style="flex: 1; padding: 1.5rem;">
+                    <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                        <div><div class="metric-label">Record</div><div class="metric-value">1-2</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value text-red">33%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-0.8u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-28.3%</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    
+        <section>
+            <div class="section-title">CBB Assists Model Performance</div>
+            <div class="summary-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Overall Record</div>
+                    <div class="stat-value">1-2</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">ROI</div>
+                    <div class="stat-value txt-red">-28.3%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">OVER: 0-0</div>
+                    <div class="stat-value txt-red">0.0% ROI</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">UNDER: 1-2</div>
+                    <div class="stat-value txt-red">-28.3% ROI</div>
+                </div>
+            </div>
+        </section>
+            
 </div>
 </body>
 </html>
