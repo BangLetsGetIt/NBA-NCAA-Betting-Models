@@ -1,2346 +1,603 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Sports Models Analytics Dashboard</title>
+    <title>📊 Analytics Dashboard | Quiet Wins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --bg-card-secondary: #2a2a2a;
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: rgba(255, 255, 255, 0.03);
             --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --accent-blue: #60a5fa;
-            --border-color: #333333;
+            --text-secondary: #a0a0b0;
+            --accent-green: #00ff88;
+            --accent-red: #ff4466;
+            --accent-blue: #4488ff;
+            --accent-purple: #8844ff;
+            --accent-gold: #ffaa00;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a3a 50%, var(--bg-primary) 100%);
             color: var(--text-primary);
             min-height: 100vh;
-            line-height: 1.6;
+            padding: 20px;
         }
-
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
-
-        .header {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
+        
+        header {
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
         }
-
-        .header h1 {
-            color: var(--text-primary);
-            font-size: 2.5em;
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
-            font-weight: 700;
         }
-
-        .header p {
+        
+        header p {
             color: var(--text-secondary);
-            font-size: 1.1em;
+            font-size: 0.95rem;
         }
-
+        
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-
-        .metric-card {
+        
+        .stat-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
-            border-color: var(--accent-blue);
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
-
-        .metric-value {
-            font-size: 2.2em;
-            font-weight: 700;
+        
+        .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 8px;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
         }
-
-        .metric-label {
+        
+        .stat-card .label {
             color: var(--text-secondary);
-            font-size: 0.9em;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 600;
         }
-
-        .txt-green {
+        
+        .stat-card.profit .value {
             color: var(--accent-green);
         }
-
-        .txt-red {
+        
+        .stat-card.loss .value {
             color: var(--accent-red);
         }
-
-        .txt-blue {
-            color: var(--accent-blue);
-        }
-
-        .txt-neutral {
-            color: var(--text-secondary);
-        }
-
-        .positive {
-            color: var(--accent-green);
-        }
-
-        .negative {
-            color: var(--accent-red);
-        }
-
-        .neutral {
-            color: var(--text-secondary);
-        }
-
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-
-        .section h2 {
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            border-bottom: 2px solid var(--accent-blue);
-            padding-bottom: 10px;
+        
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-card h3 {
+            font-size: 1.1rem;
             font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
-            background: var(--bg-card-secondary);
-            border-radius: 8px;
-            padding: 15px;
+        
+        .chart-card.full-width {
+            grid-column: 1 / -1;
         }
-
-        .table {
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .table-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background: var(--bg-card-secondary);
-            border-radius: 8px;
-            overflow: hidden;
         }
-
-        .table th,
-        .table td {
-            padding: 12px;
+        
+        th, td {
+            padding: 10px 8px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
         }
-
-        .table th {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.9em;
+        
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
             text-transform: uppercase;
+            font-size: 0.75rem;
             letter-spacing: 0.5px;
         }
-
-        .table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table tr:hover {
-            background: rgba(96, 165, 250, 0.1);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
+        
+        .win { color: var(--accent-green); }
+        .loss { color: var(--accent-red); }
+        
         .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8em;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-
-        .badge-nba {
-            background: #FF6B35;
-            color: white;
+        
+        .badge.hot {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--accent-green);
         }
-
-        .badge-ncaab {
-            background: #1976D2;
-            color: white;
+        
+        .badge.cold {
+            background: rgba(255, 68, 102, 0.15);
+            color: var(--accent-red);
         }
-
-        .badge-wnba {
-            background: #E91E63;
-            color: white;
-        }
-
-        .badge-soccer {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .badge-mlb {
-            background: #F44336;
-            color: white;
-        }
-
-        .badge-auto-bet {
-            background: #FFD700;
-            color: #000000;
-            margin-left: 8px;
-            font-size: 0.7em;
-            vertical-align: middle;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
-
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
-        }
-
-        .footer {
+        
+        footer {
             text-align: center;
             padding: 20px;
             color: var(--text-secondary);
-            font-size: 0.9em;
+            font-size: 0.8rem;
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .overview-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section {
-                padding: 20px;
-            }
-
-            .chart-container {
-                height: 300px;
-            }
+        
+        .canvas-container {
+            position: relative;
+            height: 280px;
         }
-
-        /* Chart.js dark theme overrides */
-        canvas {
-            background: transparent !important;
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .model-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .model-item .name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .model-item .record {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .model-item .profit {
+            font-size: 0.85rem;
+            font-weight: 600;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <div class="header">
-            <h1>📊 Sports Models Analytics Dashboard</h1>
-            <p>Complete Performance Analysis & Tracking</p>
-            <p><small>Last Updated: 2026-02-12 00:06:01 ET</small></p>
-        </div>
-
-        <!-- Overview Metrics -->
+        <header>
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Comprehensive performance analysis across all models • Last updated: February 13, 2026 at 08:06 PM</p>
+        </header>
+        
+        <!-- Overview Cards -->
         <div class="overview-grid">
-            <div class="metric-card">
-                <div
-                    class="metric-value negative">
-                    -50.59 units
-                </div>
-                <div class="metric-label">Total P&L</div>
+            <div class="stat-card">
+                <div class="value">2456-2172-25</div>
+                <div class="label">Overall Record</div>
             </div>
-            <div class="metric-card">
-                <div
-                    class="metric-value negative">
-                    -0.7%
-                </div>
-                <div class="metric-label">ROI</div>
+            <div class="stat-card loss">
+                <div class="value">-74u</div>
+                <div class="label">Net Profit (Units)</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-value positive">
-                    53.0%
-                </div>
-                <div class="metric-label">Win Rate</div>
+            <div class="stat-card loss">
+                <div class="value">-0.0%</div>
+                <div class="label">ROI</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-value neutral">
-                    7726
-                </div>
-                <div class="metric-label">Total Picks</div>
+            <div class="stat-card">
+                <div class="value">53.1%</div>
+                <div class="label">Win Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">15</div>
+                <div class="label">Active Models</div>
             </div>
         </div>
-
-        <!-- Performance by Sport -->
-        <div class="section">
-            <h2>🏈 Performance by Sport</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Sport</th>
-                        <th>Picks</th>
-                        <th>Win Rate</th>
-                        <th>P&L</th>
-                        <th>ROI</th>
-                        <th>Avg Edge</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge badge-nba">NBA</span>
-                        </td>
-                        <td>2477</td>
-                        <td>54.0%</td>
-                        <td
-                            class="negative">
-                            -65.65 units
-                        </td>
-                        <td
-                            class="negative">
-                            -3.0%
-                        </td>
-                        <td>2.0</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge badge-ncaab">NCAAB</span>
-                        </td>
-                        <td>4731</td>
-                        <td>52.7%</td>
-                        <td
-                            class="positive">
-                            11.33 units
-                        </td>
-                        <td
-                            class="positive">
-                            0.2%
-                        </td>
-                        <td>-0.1</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge badge-soccer">Soccer</span>
-                        </td>
-                        <td>502</td>
-                        <td>51.8%</td>
-                        <td
-                            class="positive">
-                            6.18 units
-                        </td>
-                        <td
-                            class="positive">
-                            1.6%
-                        </td>
-                        <td>0.6</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge badge-ufc">UFC</span>
-                        </td>
-                        <td>16</td>
-                        <td>27.3%</td>
-                        <td
-                            class="negative">
-                            -2.45 units
-                        </td>
-                        <td
-                            class="negative">
-                            -22.3%
-                        </td>
-                        <td>0.0</td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-        </div>
-
-
-
-
-
-        <!-- Top Performers -->
-        <div class="section">
-            <h2>🏆 Top Performers</h2>
-            <div class="grid">
-                <div>
-                    <h3>Players</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Player</th>
-                                <th>Picks</th>
-                                <th>Props</th>
-                                <th>Win Rate</th>
-                                <th>Record</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
-                                        alt="Dallas Mavericks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Naji Marshall
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    3PT (3-0-0), Pts (2-0-0), Reb (1-0-0)
-                                </td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>6-0-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
-                                        alt="Philadelphia 76ers Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Joel Embiid
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Reb (2-0-0), 3PT (2-0-0), Pts (1-0-0)
-                                </td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>5-0-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
-                                        alt="Sacramento Kings Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Keon Ellis
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Reb (4-0-0), 3PT (1-0-0)
-                                </td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>5-0-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
-                                        alt="Miami Heat Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Tyler Herro
-                                </td>
-                                <td>7</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (3-0-0), Ast (2-0-0), Reb (1-0-0)
-                                </td>
-                                <td class="positive">
-                                    85.7%
-                                </td>
-                                <td>6-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                        alt="New York Knicks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Jaylon Tyson
-                                </td>
-                                <td>19</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (10-1-0), 3PT (5-2-0), Reb (1-0-0)
-                                </td>
-                                <td class="positive">
-                                    84.2%
-                                </td>
-                                <td>16-3-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
-                                        alt="Chicago Bulls Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Coby White
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Ast (3-1-0), Pts (2-0-0)
-                                </td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                        alt="New York Knicks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Landry Shamet
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (2-1-0), 3PT (3-0-0)
-                                </td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png"
-                                        alt="Golden State Warriors Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    De'Anthony Melton
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    3PT (5-0-0), Reb (0-1-0)
-                                </td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Isaiah Joe
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Reb (2-0-0), Ast (2-0-0), 3PT (1-1-0)
-                                </td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
-                                        alt="Orlando Magic Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Tyus Jones
-                                </td>
-                                <td>6</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    3PT (4-0-0), Ast (1-1-0)
-                                </td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Ajay Mitchell
-                                </td>
-                                <td>15</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (10-2-0), Reb (1-0-0), Ast (0-1-0)
-                                </td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>12-3-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Dylan Harper
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    3PT (3-0-0), Pts (1-1-0)
-                                </td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png"
-                                        alt="Minnesota Timberwolves Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Santi Aldama
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (2-0-0), 3PT (2-0-0), Reb (0-1-0)
-                                </td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
-                                        alt="Toronto Raptors Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Ochai Agbaji
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Reb (4-0-0), Pts (0-1-0)
-                                </td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
-                                        alt="Houston Rockets Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Amen Thompson
-                                </td>
-                                <td>5</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                    Pts (4-1-0)
-                                </td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                            </tr>
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                        </tbody>
-                    </table>
-                </div>
-                <div>
-                    <div>
-                        <h3>Teams - Most Efficient (Win %)</h3>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Picks</th>
-                                    <th>Fav/Dog Splits</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Charlotte Hornets
-                                    </td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>6-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Marquette Golden Eagles
-                                    </td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>6-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Le Moyne Dolphins
-                                    </td>
-                                    <td>5</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>5-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Notre Dame Fighting Irish
-                                    </td>
-                                    <td>5</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>5-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        N Colorado Bears
-                                    </td>
-                                    <td>5</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>5-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Toronto Raptors
-                                    </td>
-                                    <td>7</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 6-1-0
-                                    </td>
-                                    <td class="positive">
-                                        85.7%
-                                    </td>
-                                    <td>6-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Missouri Tigers
-                                    </td>
-                                    <td>7</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 6-1-0
-                                    </td>
-                                    <td class="positive">
-                                        85.7%
-                                    </td>
-                                    <td>6-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        James Madison Dukes
-                                    </td>
-                                    <td>7</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 6-1-0
-                                    </td>
-                                    <td class="positive">
-                                        85.7%
-                                    </td>
-                                    <td>6-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Fairfield Stags
-                                    </td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 5-1-0
-                                    </td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>
-                                        Holy Cross Crusaders
-                                    </td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 4-1-0
-                                    </td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div>
-                        <h3>Teams - Most Profitable ($$$)</h3>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Picks</th>
-                                    <th>Fav/Dog Splits</th>
-                                    <th>Profit</th>
-                                    <th>Record</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                
-                                <tr>
-                                    <td>Dallas Mavericks</td>
-                                    <td>19</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 3-1-0 | Dog: 10-5-0
-                                    </td>
-                                    <td class="positive">
-                                        +6.41u
-                                    </td>
-                                    <td>13-6-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Charlotte Hornets</td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        +6.00u
-                                    </td>
-                                    <td>6-0-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Indiana Pacers</td>
-                                    <td>20</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 2-2-0 | Dog: 11-5-0
-                                    </td>
-                                    <td class="positive">
-                                        +5.30u
-                                    </td>
-                                    <td>13-7-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Toronto Raptors</td>
-                                    <td>7</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 6-1-0
-                                    </td>
-                                    <td class="positive">
-                                        +4.90u
-                                    </td>
-                                    <td>6-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Portland Trail Blazers</td>
-                                    <td>13</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 2-1-0 | Dog: 7-3-0
-                                    </td>
-                                    <td class="positive">
-                                        +4.60u
-                                    </td>
-                                    <td>9-4-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Orlando Magic</td>
-                                    <td>13</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 5-2-0 | Dog: 4-2-0
-                                    </td>
-                                    <td class="positive">
-                                        +4.51u
-                                    </td>
-                                    <td>9-4-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Ole Miss Rebels</td>
-                                    <td>5</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 4-1-0
-                                    </td>
-                                    <td class="positive">
-                                        +3.64u
-                                    </td>
-                                    <td>4-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Holy Cross Crusaders</td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 4-1-0
-                                    </td>
-                                    <td class="positive">
-                                        +3.64u
-                                    </td>
-                                    <td>5-1-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Virginia Tech Hokies</td>
-                                    <td>9</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Dog: 7-2-0
-                                    </td>
-                                    <td class="positive">
-                                        +3.64u
-                                    </td>
-                                    <td>7-2-0</td>
-                                </tr>
-                                
-                                
-                                
-                                <tr>
-                                    <td>Marquette Golden Eagles</td>
-                                    <td>6</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        Fav: 1-0-0 | Dog: 5-0-0
-                                    </td>
-                                    <td class="positive">
-                                        +3.64u
-                                    </td>
-                                    <td>6-0-0</td>
-                                </tr>
-                                
-                                
-                            </tbody>
-                        </table>
-                    </div>
+        
+        <!-- Charts Row 1 -->
+        <div class="charts-grid">
+            <div class="chart-card full-width">
+                <h3>📈 Cumulative Profit Over Time</h3>
+                <div class="canvas-container">
+                    <canvas id="cumulativeChart"></canvas>
                 </div>
             </div>
         </div>
-
-        <!-- Model Records & Breakdown -->
-        <div class="section">
-            <h2>🎯 NBA Model Records & Breakdown</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Model</th>
-                        <th>Total Picks</th>
-                        <th>Win Rate</th>
-                        <th>Overall Record</th>
-                        <th>P&L</th>
-                        <th>Last 100</th>
-                        <th>Last 50</th>
-                        <th>Last 20</th>
-                        <th>Last 10</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    
-                    <tr>
-                        <td>NBA 3PT Props</td>
-                        <td>400 (225-128-0)
-                        </td>
-                        <td class="positive">
-                            63.7%
-                        </td>
-                        <td>225-128-0</td>
-                        <td
-                            class="positive">
-                            5.23 units
-                        </td>
-                        <td class="positive">
-                            63.0%
-                            <br><small>63-37-0</small>
-                        </td>
-                        <td class="positive">
-                            66.0%
-                            <br><small>33-17-0</small>
-                        </td>
-                        <td class="positive">
-                            60.0%
-                            <br><small>12-8-0</small>
-                        </td>
-                        <td class="negative">
-                            50.0%
-                            <br><small>5-5-0</small>
-                        </td>
-                    </tr>
-                    
-                    
-                    
-                    <tr>
-                        <td>NBA Rebounds Props</td>
-                        <td>350 (177-137-0)
-                        </td>
-                        <td class="positive">
-                            56.4%
-                        </td>
-                        <td>177-137-0</td>
-                        <td
-                            class="negative">
-                            -7.00 units
-                        </td>
-                        <td class="positive">
-                            55.0%
-                            <br><small>55-45-0</small>
-                        </td>
-                        <td class="negative">
-                            46.0%
-                            <br><small>23-27-0</small>
-                        </td>
-                        <td class="positive">
-                            55.0%
-                            <br><small>11-9-0</small>
-                        </td>
-                        <td class="negative">
-                            50.0%
-                            <br><small>5-5-0</small>
-                        </td>
-                    </tr>
-                    
-                    
-                    
-                    <tr>
-                        <td>NBA Assists Props</td>
-                        <td>152 (71-60-0)
-                        </td>
-                        <td class="positive">
-                            54.2%
-                        </td>
-                        <td>71-60-0</td>
-                        <td
-                            class="negative">
-                            -13.06 units
-                        </td>
-                        <td class="positive">
-                            56.0%
-                            <br><small>56-44-0</small>
-                        </td>
-                        <td class="positive">
-                            54.0%
-                            <br><small>27-23-0</small>
-                        </td>
-                        <td class="negative">
-                            45.0%
-                            <br><small>9-11-0</small>
-                        </td>
-                        <td class="negative">
-                            50.0%
-                            <br><small>5-5-0</small>
-                        </td>
-                    </tr>
-                    
-                    
-                    
-                    <tr>
-                        <td>NBA Points Props</td>
-                        <td>943 (435-414-0)
-                        </td>
-                        <td class="positive">
-                            51.2%
-                        </td>
-                        <td>435-414-0</td>
-                        <td
-                            class="negative">
-                            -33.88 units
-                        </td>
-                        <td class="negative">
-                            49.0%
-                            <br><small>49-51-0</small>
-                        </td>
-                        <td class="negative">
-                            42.0%
-                            <br><small>21-29-0</small>
-                        </td>
-                        <td class="negative">
-                            35.0%
-                            <br><small>7-13-0</small>
-                        </td>
-                        <td class="negative">
-                            20.0%
-                            <br><small>2-8-0</small>
-                        </td>
-                    </tr>
-                    
-                    
-                    
-                    <tr>
-                        <td>NBA Main Model</td>
-                        <td>544 (271-261-4)
-                        </td>
-                        <td class="positive">
-                            50.6%
-                        </td>
-                        <td>271-261-4</td>
-                        <td
-                            class="negative">
-                            -16.94 units
-                        </td>
-                        <td class="positive">
-                            51.0%
-                            <br><small>51-48-1</small>
-                        </td>
-                        <td class="negative">
-                            34.0%
-                            <br><small>17-32-1</small>
-                        </td>
-                        <td class="negative">
-                            50.0%
-                            <br><small>10-10-0</small>
-                        </td>
-                        <td class="positive">
-                            60.0%
-                            <br><small>6-4-0</small>
-                        </td>
-                    </tr>
-                    
-                    
-                </tbody>
-            </table>
+        
+        <!-- Hot/Cold Tables -->
+        <div class="tables-grid">
+            <div class="table-card">
+                <h3>🔥 Hot Teams (Last 14 Days)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-card">
+                <h3>❄️ Cold Teams (Last 14 Days)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Record</th>
+                            <th>Win %</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- Player Props Breakdown -->
-        <div class="section">
-            <h2>👤 Player Props Breakdown</h2>
-            <div class="grid">
-                <div>
-                    <h3>Best Performing Players (Min 5 Picks)</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Player</th>
-                                <th>Sport</th>
-                                <th>Picks</th>
-                                <th>Win Rate</th>
-                                <th>Record</th>
-                                <th>P&L</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
-                                        alt="Dallas Mavericks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Naji Marshall
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>6-0-0</td>
-                                <td
-                                    class="positive">
-                                    3.73 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
-                                        alt="Philadelphia 76ers Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Joel Embiid
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>5-0-0</td>
-                                <td
-                                    class="positive">
-                                    3.19 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
-                                        alt="Sacramento Kings Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Keon Ellis
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    100.0%
-                                </td>
-                                <td>5-0-0</td>
-                                <td
-                                    class="positive">
-                                    3.46 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
-                                        alt="Miami Heat Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Tyler Herro
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>7</td>
-                                <td class="positive">
-                                    85.7%
-                                </td>
-                                <td>6-1-0</td>
-                                <td
-                                    class="positive">
-                                    3.41 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                        alt="New York Knicks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Jaylon Tyson
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>19</td>
-                                <td class="positive">
-                                    84.2%
-                                </td>
-                                <td>16-3-0</td>
-                                <td
-                                    class="positive">
-                                    9.49 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
-                                        alt="Chicago Bulls Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Coby White
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                                <td
-                                    class="positive">
-                                    2.65 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                        alt="New York Knicks Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Landry Shamet
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                                <td
-                                    class="positive">
-                                    2.38 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png"
-                                        alt="Golden State Warriors Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    De'Anthony Melton
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                                <td
-                                    class="positive">
-                                    1.23 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Isaiah Joe
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                                <td
-                                    class="positive">
-                                    2.49 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
-                                        alt="Orlando Magic Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Tyus Jones
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>6</td>
-                                <td class="positive">
-                                    83.3%
-                                </td>
-                                <td>5-1-0</td>
-                                <td
-                                    class="positive">
-                                    1.56 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Ajay Mitchell
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>15</td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>12-3-0</td>
-                                <td
-                                    class="positive">
-                                    6.96 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                        alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Dylan Harper
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                                <td
-                                    class="positive">
-                                    0.97 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png"
-                                        alt="Minnesota Timberwolves Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Santi Aldama
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                                <td
-                                    class="positive">
-                                    1.60 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
-                                        alt="Toronto Raptors Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Ochai Agbaji
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                                <td
-                                    class="positive">
-                                    1.50 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            <tr>
-                                <td>
-                                    
-                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
-                                        alt="Houston Rockets Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                    
-                                    Amen Thompson
-                                </td>
-                                <td><span class="badge badge-nba">NBA</span>
-                                </td>
-                                <td>5</td>
-                                <td class="positive">
-                                    80.0%
-                                </td>
-                                <td>4-1-0</td>
-                                <td
-                                    class="positive">
-                                    2.54 units
-                                </td>
-                            </tr>
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                        </tbody>
-                    </table>
+        
+        <!-- Charts Row 2 -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📅 Daily Performance (14 Days)</h3>
+                <div class="canvas-container">
+                    <canvas id="dailyChart"></canvas>
                 </div>
-                <div>
-                    <h3>Top Players by Prop Type</h3>
-                    
-                    
-                    <div style="margin-bottom: 30px;">
-                        <h4>Points Props</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Picks</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png"
-                                            alt="Atlanta Hawks Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Onyeka Okongwu
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>6-0-0</td>
-                                    <td
-                                        class="positive">
-                                        5.57 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                            alt="New York Knicks Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Jaylon Tyson
-                                    </td>
-                                    <td>11</td>
-                                    <td class="positive">
-                                        90.9%
-                                    </td>
-                                    <td>10-1-0</td>
-                                    <td
-                                        class="positive">
-                                        7.99 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-                                            alt="Oklahoma City Thunder Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Ajay Mitchell
-                                    </td>
-                                    <td>12</td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>10-2-0</td>
-                                    <td
-                                        class="positive">
-                                        6.49 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
-                                            alt="Phoenix Suns Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Grayson Allen
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                    <td
-                                        class="positive">
-                                        4.41 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
-                                            alt="Milwaukee Bucks Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Bobby Portis
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        80.0%
-                                    </td>
-                                    <td>4-1-0</td>
-                                    <td
-                                        class="positive">
-                                        3.71 units
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    
-                    
-                    <div style="margin-bottom: 30px;">
-                        <h4>Rebounds Props</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Picks</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
-                                            alt="Indiana Pacers Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Jay Huff
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        80.0%
-                                    </td>
-                                    <td>4-1-0</td>
-                                    <td
-                                        class="positive">
-                                        1.76 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
-                                            alt="Phoenix Suns Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Mark Williams
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        80.0%
-                                    </td>
-                                    <td>4-1-0</td>
-                                    <td
-                                        class="positive">
-                                        1.79 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png"
-                                            alt="San Antonio Spurs Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Brice Sensabaugh
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        80.0%
-                                    </td>
-                                    <td>4-1-0</td>
-                                    <td
-                                        class="positive">
-                                        2.32 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"
-                                            alt="Brooklyn Nets Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Danny Wolf
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        66.7%
-                                    </td>
-                                    <td>4-2-0</td>
-                                    <td
-                                        class="positive">
-                                        0.60 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
-                                            alt="Miami Heat Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Kel'el Ware
-                                    </td>
-                                    <td>8</td>
-                                    <td class="positive">
-                                        62.5%
-                                    </td>
-                                    <td>5-3-0</td>
-                                    <td
-                                        class="positive">
-                                        1.10 units
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    
-                    
-                    <div style="margin-bottom: 30px;">
-                        <h4>Assists Props</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Picks</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
-                                            alt="Cleveland Cavaliers Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Tre Jones
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>5-0-0</td>
-                                    <td
-                                        class="positive">
-                                        3.43 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png"
-                                            alt="Golden State Warriors Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Keyonte George
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                    <td
-                                        class="positive">
-                                        2.52 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/mem.png"
-                                            alt="Memphis Grizzlies Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Ryan Rollins
-                                    </td>
-                                    <td>5</td>
-                                    <td class="neutral">
-                                        60.0%
-                                    </td>
-                                    <td>3-2-0</td>
-                                    <td
-                                        class="negative">
-                                        -0.03 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
-                                            alt="Charlotte Hornets Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        LaMelo Ball
-                                    </td>
-                                    <td>5</td>
-                                    <td class="neutral">
-                                        40.0%
-                                    </td>
-                                    <td>2-3-0</td>
-                                    <td
-                                        class="negative">
-                                        -1.46 units
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    
-                    
-                    <div style="margin-bottom: 30px;">
-                        <h4>3PT Props</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Picks</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png"
-                                            alt="Golden State Warriors Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        De'Anthony Melton
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        100.0%
-                                    </td>
-                                    <td>5-0-0</td>
-                                    <td
-                                        class="positive">
-                                        2.23 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
-                                            alt="Charlotte Hornets Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        LaMelo Ball
-                                    </td>
-                                    <td>9</td>
-                                    <td class="positive">
-                                        88.9%
-                                    </td>
-                                    <td>8-1-0</td>
-                                    <td
-                                        class="positive">
-                                        4.29 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
-                                            alt="New York Knicks Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Mikal Bridges
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                    <td
-                                        class="positive">
-                                        1.62 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png"
-                                            alt="Minnesota Timberwolves Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Anthony Edwards
-                                    </td>
-                                    <td>6</td>
-                                    <td class="positive">
-                                        83.3%
-                                    </td>
-                                    <td>5-1-0</td>
-                                    <td
-                                        class="positive">
-                                        2.01 units
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        
-                                        <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
-                                            alt="Phoenix Suns Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
-                                        
-                                        Devin Booker
-                                    </td>
-                                    <td>5</td>
-                                    <td class="positive">
-                                        80.0%
-                                    </td>
-                                    <td>4-1-0</td>
-                                    <td
-                                        class="positive">
-                                        0.98 units
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    
+            </div>
+            <div class="chart-card">
+                <h3>🏆 League Performance</h3>
+                <div class="canvas-container">
+                    <canvas id="leagueChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>📊 Prop Type Analysis</h3>
+                <div class="canvas-container">
+                    <canvas id="propsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🎯 Edge vs Win Rate</h3>
+                <div class="canvas-container">
+                    <canvas id="edgeChart"></canvas>
                 </div>
             </div>
         </div>
-
-        <div class="footer">
-            <p>Generated by Sports Models Analytics Dashboard | Data from 7726 total
-                picks</p>
+        
+        <!-- Model Breakdown -->
+        <div class="chart-card" style="margin-bottom: 30px;">
+            <h3>🤖 Model Breakdown</h3>
+            <div class="model-grid">
+                <div class="model-item">
+                    <div class="name">NBA Main</div>
+                    <div class="record">271-261</div>
+                    <div class="profit loss">-17u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Points</div>
+                    <div class="record">435-414</div>
+                    <div class="profit loss">-34u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Rebounds</div>
+                    <div class="record">177-137</div>
+                    <div class="profit loss">-7u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA Assists</div>
+                    <div class="record">71-60</div>
+                    <div class="profit loss">-13u</div>
+                </div><div class="model-item">
+                    <div class="name">NBA 3PT</div>
+                    <div class="record">225-128</div>
+                    <div class="profit win">+5u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Main</div>
+                    <div class="record">54-49</div>
+                    <div class="profit loss">-1u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Passing</div>
+                    <div class="record">10-14</div>
+                    <div class="profit loss">-5u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Rushing</div>
+                    <div class="record">20-15</div>
+                    <div class="profit win">+2u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Receiving</div>
+                    <div class="record">12-17</div>
+                    <div class="profit loss">-7u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL Receptions</div>
+                    <div class="record">2-4</div>
+                    <div class="profit loss">-2u</div>
+                </div><div class="model-item">
+                    <div class="name">NFL ATD</div>
+                    <div class="record">9-23</div>
+                    <div class="profit loss">-13u</div>
+                </div><div class="model-item">
+                    <div class="name">NCAAB Main</div>
+                    <div class="record">972-876</div>
+                    <div class="profit win">+11u</div>
+                </div><div class="model-item">
+                    <div class="name">NCAAB Rebounds</div>
+                    <div class="record">0-0</div>
+                    <div class="profit win">+0u</div>
+                </div><div class="model-item">
+                    <div class="name">Soccer</div>
+                    <div class="record">198-174</div>
+                    <div class="profit win">+6u</div>
+                </div><div class="model-item">
+                    <div class="name">MLB</div>
+                    <div class="record">0-0</div>
+                    <div class="profit win">+0u</div>
+                </div>
+            </div>
         </div>
+        
+        <footer>
+            <p>Quiet Wins Analytics • Auto-generated from 15 tracking files • 4653 total graded picks</p>
+        </footer>
     </div>
-
+    
     <script>
-        // Chart.js configurations
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
+        // Chart.js defaults
+        Chart.defaults.color = '#a0a0b0';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+        
+        // Cumulative Profit Chart
+        new Chart(document.getElementById('cumulativeChart'), {
+            type: 'line',
+            data: {
+                labels: ["2026-02-08", "2026-02-08", "2026-02-08", "2026-02-08", "2026-02-08", "2026-02-08", "2026-02-09", "2026-02-09", "2026-02-09", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-10", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-11", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12", "2026-02-12"],
+                datasets: [{
+                    label: 'Cumulative Profit (Units)',
+                    data: [-41.14000000000211, -40.24000000000211, -39.440000000002115, -40.440000000002115, -40.440000000002115, -40.440000000002115, -39.53000000000212, -40.53000000000212, -41.53000000000212, -40.64000000000212, -39.91000000000212, -40.91000000000212, -41.91000000000212, -42.91000000000212, -42.33000000000212, -41.70000000000212, -41.13000000000212, -40.17000000000212, -39.25000000000212, -40.25000000000212, -41.25000000000212, -40.330000000002116, -41.330000000002116, -40.720000000002116, -39.720000000002116, -38.96000000000212, -38.24000000000212, -39.24000000000212, -40.24000000000212, -39.61000000000212, -39.080000000002116, -38.470000000002116, -37.870000000002115, -37.28000000000211, -36.72000000000211, -35.880000000002106, -35.30000000000211, -34.740000000002105, -35.740000000002105, -36.740000000002105, -35.960000000002104, -36.960000000002104, -37.960000000002104, -38.960000000002104, -39.960000000002104, -40.960000000002104, -40.020000000002106, -41.020000000002106, -42.020000000002106, -41.450000000002106, -40.6100000000021, -41.6100000000021, -41.0000000000021, -40.3200000000021, -41.3200000000021, -42.3200000000021, -43.3200000000021, -44.3200000000021, -45.3200000000021, -46.3200000000021],
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 10 }
+                    }
                 }
             }
-        };
-
-
-
-
-
-
-
-
+        });
+        
+        // Daily Performance Chart
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'bar',
+            data: {
+                labels: ["2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-07", "2026-02-08", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12"],
+                datasets: [{
+                    label: 'Profit',
+                    data: [-1.46, -0.52, 6.08, -1.2, -1.5999999999999996, -6.02, 0.9300000000000002, -1.8799999999999994, 0.32999999999999996, -1.0899999999999999, 3.06, -1.4899999999999998, -6.359999999999999],
+                    backgroundColor: [-1.46, -0.52, 6.08, -1.2, -1.5999999999999996, -6.02, 0.9300000000000002, -1.8799999999999994, 0.32999999999999996, -1.0899999999999999, 3.06, -1.4899999999999998, -6.359999999999999].map(v => v >= 0 ? 'rgba(0, 255, 136, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 7 }
+                    }
+                }
+            }
+        });
+        
+        // League Performance Chart
+        new Chart(document.getElementById('leagueChart'), {
+            type: 'bar',
+            data: {
+                labels: ["La Liga", "Premier League", "Ligue 1", "Serie A", "Bundesliga", "Unknown"],
+                datasets: [{
+                    label: 'Profit (Units)',
+                    data: [20.860000000000003, 7.140000000000006, -0.9799999999999975, -5.589999999999993, -15.249999999999996, -80.5600000000035],
+                    backgroundColor: [20.860000000000003, 7.140000000000006, -0.9799999999999975, -5.589999999999993, -15.249999999999996, -80.5600000000035].map(v => v >= 0 ? 'rgba(68, 136, 255, 0.7)' : 'rgba(255, 68, 102, 0.7)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Props Analysis Chart
+        new Chart(document.getElementById('propsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["total", "HOME", "UNDER", "TOTAL", "Spread", "Rushing Yards", "OVER", "Receptions", "Passing Yards", "Receiving Yards", "SPREAD", "Anytime TD", "spread", "AWAY", "Total", "Unknown"],
+                datasets: [{
+                    data: [30.099999999999206, 17.91000000000001, 16.48, 14.260000000000009, 9.900000000000034, 2.3, -2.2199999999999944, -2.5, -5.27, -6.510000000000001, -8.079999999999984, -12.899999999999999, -18.769999999999943, -25.99, -26.840000000000032, -130.63000000000386].map(Math.abs),
+                    backgroundColor: [
+                        'rgba(0, 255, 136, 0.7)',
+                        'rgba(68, 136, 255, 0.7)',
+                        'rgba(136, 68, 255, 0.7)',
+                        'rgba(255, 170, 0, 0.7)',
+                        'rgba(255, 68, 102, 0.7)',
+                        'rgba(0, 200, 200, 0.7)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { boxWidth: 12, padding: 10 }
+                    }
+                }
+            }
+        });
+        
+        // Edge Analysis Chart
+        new Chart(document.getElementById('edgeChart'), {
+            type: 'bar',
+            data: {
+                labels: ["0-1", "1-2", "2-3", "3+"],
+                datasets: [{
+                    label: 'Win Rate %',
+                    data: [54.8, 56.2, 49.5, 52.2],
+                    backgroundColor: 'rgba(136, 68, 255, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.03)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
     </script>
 </body>
-
 </html>
