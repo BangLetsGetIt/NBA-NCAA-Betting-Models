@@ -34,7 +34,11 @@ class CBBOddsClient:
             list: List of odds objects (one per game)
         """
         if markets is None:
-            markets = ["player_points", "player_assists", "player_rebounds"]
+            markets = [
+                "player_points", "player_assists", "player_rebounds",
+                "player_points_rebounds_assists", "player_points_rebounds",
+                "player_points_assists", "player_rebounds_assists"
+            ]
 
         # Check cache
         cached_data = self._load_cache()

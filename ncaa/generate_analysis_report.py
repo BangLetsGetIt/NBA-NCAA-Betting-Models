@@ -221,6 +221,193 @@ HTML_FOOTER = """
 </html>
 """
 
+def load_props_data():
+    """Load all CBB props tracking files and return combined decided picks."""
+    base_dir = '/Users/rico/Dev/sports-models/ncaa'
+    props_files = {
+        'Points': os.path.join(base_dir, 'cbb_points_props_tracking.json'),
+        'Assists': os.path.join(base_dir, 'cbb_assists_props_tracking.json'),
+        'Rebounds': os.path.join(base_dir, 'cbb_rebounds_props_tracking.json'),
+        'PRA': os.path.join(base_dir, 'cbb_pra_props_tracking.json'),
+        'P+R': os.path.join(base_dir, 'cbb_points_rebounds_props_tracking.json'),
+        'P+A': os.path.join(base_dir, 'cbb_points_assists_props_tracking.json'),
+        'R+A': os.path.join(base_dir, 'cbb_rebounds_assists_props_tracking.json'),
+    }
+
+    all_props = []
+    props_by_model = {}
+
+    for model_name, fpath in props_files.items():
+        if not os.path.exists(fpath):
+            continue
+        try:
+            with open(fpath, 'r') as f:
+                data = json.load(f)
+            picks = data.get('picks', []) if isinstance(data, dict) else data
+            decided = [p for p in picks if p.get('status', '').lower() in ['win', 'loss', 'push']]
+            for p in decided:
+                p['_prop_model'] = model_name
+            props_by_model[model_name] = decided
+            all_props.extend(decided)
+        except Exception as e:
+            print(f"Error loading {fpath}: {e}")
+
+    return all_props, props_by_model
+
+
+def generate_props_html(all_props, props_by_model):
+    """Generate HTML sections for CBB props performance."""
+    if not all_props:
+        return ""
+
+    def get_prop_profit(pick):
+        status = pick.get('status', '').lower()
+        raw = pick.get('profit_loss', 0)
+        if raw == 0:
+            if status == 'win': raw = 91.0
+            elif status == 'loss': raw = -100.0
+        return float(raw) / 100.0
+
+    # Overall props stats
+    wins = sum(1 for p in all_props if p['status'].lower() == 'win')
+    losses = sum(1 for p in all_props if p['status'].lower() == 'loss')
+    pushes = sum(1 for p in all_props if p['status'].lower() == 'push')
+    total_profit = sum(get_prop_profit(p) for p in all_props)
+    wr = (wins / (wins + losses) * 100) if (wins + losses) > 0 else 0
+    profit_class = "text-green" if total_profit > 0 else "text-red"
+    sign = "+" if total_profit > 0 else ""
+
+    html = f"""
+        <div class="section">
+            <h2 class="section-title">🏀 CBB Props Performance</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{wins + losses + pushes}</div>
+                    <div class="stat-label">Props Tracked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{wins}-{losses}-{pushes}</div>
+                    <div class="stat-label">Props Record</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{wr:.1f}%</div>
+                    <div class="stat-label">Props Win Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value {profit_class}">{sign}{total_profit:.2f}u</div>
+                    <div class="stat-label">Props Profit (Units)</div>
+                </div>
+            </div>
+        </div>
+    """
+
+    # Per-model breakdown
+    html += """
+        <div class="section">
+            <h2 class="section-title">📊 Props by Category</h2>
+            <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prop Type</th>
+                        <th>Record</th>
+                        <th>Win Rate</th>
+                        <th>OVER Record</th>
+                        <th>UNDER Record</th>
+                        <th>Profit (Units)</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+
+    for model_name in ['Points', 'Assists', 'Rebounds', 'PRA', 'P+R', 'P+A', 'R+A']:
+        picks = props_by_model.get(model_name, [])
+        if not picks:
+            continue
+        m_wins = sum(1 for p in picks if p['status'].lower() == 'win')
+        m_losses = sum(1 for p in picks if p['status'].lower() == 'loss')
+        m_pushes = sum(1 for p in picks if p['status'].lower() == 'push')
+        m_profit = sum(get_prop_profit(p) for p in picks)
+        m_wr = (m_wins / (m_wins + m_losses) * 100) if (m_wins + m_losses) > 0 else 0
+
+        # Over/Under split
+        overs = [p for p in picks if p.get('bet_type', '').lower() == 'over']
+        unders = [p for p in picks if p.get('bet_type', '').lower() == 'under']
+        o_w = sum(1 for p in overs if p['status'].lower() == 'win')
+        o_l = sum(1 for p in overs if p['status'].lower() == 'loss')
+        u_w = sum(1 for p in unders if p['status'].lower() == 'win')
+        u_l = sum(1 for p in unders if p['status'].lower() == 'loss')
+
+        p_class = 'text-green' if m_profit > 0 else 'text-red'
+        p_sign = "+" if m_profit > 0 else ""
+
+        badge = ""
+        if m_wr >= 55: badge = '<span class="badge badge-hot">HOT</span>'
+        elif m_wr < 48: badge = '<span class="badge badge-cold">COLD</span>'
+        else: badge = '<span class="badge" style="background:#334155; color:#94a3b8">NORMAL</span>'
+
+        html += f"""
+                <tr>
+                    <td class="font-bold">{model_name}</td>
+                    <td>{m_wins}-{m_losses}-{m_pushes}</td>
+                    <td>{m_wr:.1f}%</td>
+                    <td>{o_w}-{o_l}</td>
+                    <td>{u_w}-{u_l}</td>
+                    <td class="{p_class} profit-value">{p_sign}{m_profit:.2f}u</td>
+                    <td>{badge}</td>
+                </tr>
+        """
+
+    html += "</tbody></table></div></div>"
+
+    # Top players section
+    player_stats = defaultdict(lambda: {'wins': 0, 'losses': 0, 'profit': 0, 'picks': 0})
+    for p in all_props:
+        name = p.get('player', 'Unknown')
+        status = p.get('status', '').lower()
+        player_stats[name]['picks'] += 1
+        if status == 'win': player_stats[name]['wins'] += 1
+        elif status == 'loss': player_stats[name]['losses'] += 1
+        player_stats[name]['profit'] += get_prop_profit(p)
+
+    # Filter to players with 3+ picks, sort by profit
+    qualified = [(name, s) for name, s in player_stats.items() if s['picks'] >= 3]
+    best_players = sorted(qualified, key=lambda x: x[1]['profit'], reverse=True)[:20]
+
+    if best_players:
+        html += """
+            <div class="section">
+                <h2 class="section-title">🌟 Top Props Players (3+ picks)</h2>
+                <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Record</th>
+                            <th>Win Rate</th>
+                            <th>Profit (Units)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        """
+        for name, s in best_players:
+            wr = (s['wins'] / (s['wins'] + s['losses']) * 100) if (s['wins'] + s['losses']) > 0 else 0
+            p_class = 'text-green' if s['profit'] > 0 else 'text-red'
+            p_sign = "+" if s['profit'] > 0 else ""
+            html += f"""
+                    <tr>
+                        <td class="font-bold">{name}</td>
+                        <td>{s['wins']}-{s['losses']}</td>
+                        <td>{wr:.1f}%</td>
+                        <td class="{p_class} profit-value">{p_sign}{s['profit']:.2f}u</td>
+                    </tr>
+            """
+        html += "</tbody></table></div></div>"
+
+    return html
+
+
 def generate_report():
     # Load Data
     file_path = '/Users/rico/Dev/sports-models/ncaa/ncaab_picks_tracking.json'
@@ -230,16 +417,19 @@ def generate_report():
 
     with open(file_path, 'r') as f:
         data = json.load(f)
-    
+
     picks = data.get('picks', [])
-    
+
+    # Load CBB Props data
+    all_props, props_by_model = load_props_data()
+
     # Sort and Filter
     decided_picks = [p for p in picks if p.get('status', '').lower() in ['win', 'loss', 'push']]
-    
+
     # Sort by date descending
     def get_date(x): return x.get('game_date') or x.get('date_logged') or ''
     decided_picks.sort(key=get_date, reverse=True)
-    
+
     current_time = datetime.now().strftime("%B %d, %Y at %I:%M %p")
     html = HTML_HEADER.replace("{date}", current_time)
     
@@ -589,7 +779,10 @@ def generate_report():
             <td class="text-green profit-value">+{t['profit']:.2f}u</td>
         </tr>"""
     html += "</tbody></table></div></div></div>"
-    
+
+    # --- 5. CBB PROPS PERFORMANCE ---
+    html += generate_props_html(all_props, props_by_model)
+
     html += HTML_FOOTER
     
     output_path = '/Users/rico/Dev/sports-models/ncaa/ncaab_analysis_report.html'

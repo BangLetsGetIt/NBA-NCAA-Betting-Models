@@ -95,6 +95,34 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run CBB PRA (Combo) Model
+if run_model "CBB PRA Props" "ncaa/cbb_pra_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run CBB P+R (Combo) Model
+if run_model "CBB P+R Props" "ncaa/cbb_points_rebounds_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run CBB P+A (Combo) Model
+if run_model "CBB P+A Props" "ncaa/cbb_points_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run CBB R+A (Combo) Model
+if run_model "CBB R+A Props" "ncaa/cbb_rebounds_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Calculate total time
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
@@ -106,9 +134,9 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/4${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/8${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/4${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/8${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
@@ -119,6 +147,10 @@ echo "  • NCAAB: ncaa/ncaab_model_output.html"
 echo "  • CBB Rebounds: ncaa/cbb_rebounds_props.html"
 echo "  • CBB Points: ncaa/cbb_points_props.html"
 echo "  • CBB Assists: ncaa/cbb_assists_props.html"
+echo "  • CBB PRA: ncaa/cbb_pra_props.html"
+echo "  • CBB P+R: ncaa/cbb_points_rebounds_props.html"
+echo "  • CBB P+A: ncaa/cbb_points_assists_props.html"
+echo "  • CBB R+A: ncaa/cbb_rebounds_assists_props.html"
 echo ""
 
 if [ $SUCCESS_COUNT -gt 0 ]; then

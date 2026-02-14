@@ -47,6 +47,13 @@ TRACKING_SOURCES = [
     ('NBA Main', 'nba/nba_picks_tracking.json', 'NBA', 'Spread/Total'),
     ('NFL Main', 'nfl/nfl_picks_tracking.json', 'NFL', 'Spread/Total'),
     ('NCAAB', 'ncaa/ncaab_picks_tracking.json', 'NCAAB', 'Spread/Total'),
+    ('CBB Points Props', 'ncaa/cbb_points_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB Assists Props', 'ncaa/cbb_assists_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB Rebounds Props', 'ncaa/cbb_rebounds_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB PRA Props', 'ncaa/cbb_pra_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB P+R Props', 'ncaa/cbb_points_rebounds_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB P+A Props', 'ncaa/cbb_points_assists_props_tracking.json', 'NCAAB', 'Props'),
+    ('CBB R+A Props', 'ncaa/cbb_rebounds_assists_props_tracking.json', 'NCAAB', 'Props'),
     ('Soccer', 'soccer/soccer_picks_tracking.json', 'Soccer', 'Total'),
 ]
 

@@ -868,6 +868,63 @@ def run_ncaab_grading(force=False, grade_only=False):
         
     return any_updates
 
+def run_cbb_props_grading(force=False, grade_only=False):
+    """
+    Grades CBB (college basketball) props picks across all prop types.
+    Uses the CBBPropsEngine class from cbb_props_shared.py.
+    """
+    log("Starting CBB Props Grading...", "info")
+
+    any_updates = False
+    prop_types = ['points', 'assists', 'rebounds', 'pra', 'points_rebounds', 'points_assists', 'rebounds_assists']
+
+    try:
+        from cbb_props_shared import CBBPropsEngine
+    except ImportError:
+        try:
+            spec = importlib.util.spec_from_file_location(
+                "cbb_props_shared",
+                os.path.join("ncaa", "cbb_props_shared.py")
+            )
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules["cbb_props_shared"] = mod
+            spec.loader.exec_module(mod)
+            CBBPropsEngine = mod.CBBPropsEngine
+        except Exception as e:
+            log(f"Failed to import CBBPropsEngine: {e}", "error")
+            return False
+
+    for prop_type in prop_types:
+        try:
+            log(f"Processing CBB {prop_type} props...", "info")
+            engine = CBBPropsEngine(prop_type)
+
+            # Grade pending picks
+            graded = engine.grade_pending_picks()
+            if isinstance(graded, int) and graded > 0:
+                log(f"Graded {graded} CBB {prop_type} picks", "success")
+                any_updates = True
+
+            # Backfill missing profit_loss
+            backfilled = engine.backfill_profit_loss()
+            if isinstance(backfilled, int) and backfilled > 0:
+                any_updates = True
+
+            if not grade_only:
+                # Full mode: also analyze new props and regenerate HTML
+                try:
+                    engine.analyze()
+                    log(f"Analyzed new CBB {prop_type} props", "success")
+                    any_updates = True
+                except Exception as e:
+                    log(f"Error analyzing CBB {prop_type} props: {e}", "error")
+
+        except Exception as e:
+            log(f"Error processing CBB {prop_type} props: {e}", "error")
+
+    return any_updates
+
+
 def run_soccer_grading(force=False, grade_only=False):
     """
     Grades Soccer pending picks and regenerates HTML with fresh data.
@@ -1001,10 +1058,11 @@ def main():
             updates_nfl = run_nfl_grading(force=args.force, grade_only=args.grade_only)
             updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
             updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
+            updates_cbb_props = run_cbb_props_grading(force=args.force, grade_only=args.grade_only)
             updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
             updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
-            
-            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer or updates_ufc:
+
+            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc:
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
@@ -1055,10 +1113,11 @@ def main():
         updates_nfl = run_nfl_grading(force=args.force, grade_only=args.grade_only)
         updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
         updates_ncaab = run_ncaab_grading(force=args.force, grade_only=args.grade_only)
+        updates_cbb_props = run_cbb_props_grading(force=args.force, grade_only=args.grade_only)
         updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
         updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
-        
-        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_soccer or updates_ufc:
+
+        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc:
             # Regenerate Best Plays aggregator
             try:
                 import best_plays_bot
