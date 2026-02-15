@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCAAB Model Tracking • CourtSide Analytics</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>NCAAB Bet Tracking Dashboard</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #121212;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #000000;
             color: #ffffff;
-            padding: 2rem;
+            padding: 1.5rem;
+            min-height: 100vh;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1400px; margin: 0 auto; }
         .card {
-            background: #1c1c1e;
-            border: 1px solid #2a2a2a;
+            background: #1a1a1a;
+            border-radius: 1.25rem;
+            border: none;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .stat-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            border: 2px solid #f97316;
-            border-radius: 0.75rem;
+            background: #262626;
+            border: none;
+            border-radius: 1rem;
             padding: 1.5rem;
             text-align: center;
         }
         .stat-value {
             font-size: 2.5rem;
-            font-weight: 900;
-            color: #f97316;
+            font-weight: 700;
+            color: #4ade80;
         }
-        .stat-value.positive { color: #10b981; }
-        .stat-value.negative { color: #ef4444; }
+        .stat-value.positive { color: #4ade80; }
+        .stat-value.negative { color: #f87171; }
         .stat-label {
-            color: #9ca3af;
-            font-size: 0.875rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-top: 0.5rem;
+            font-weight: 500;
         }
         .grid {
             display: grid;
@@ -52,37 +50,57 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; color: #f97316; }
-        h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; color: #f97316; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #0a0a0a; }
-        th { padding: 0.75rem 1rem; text-align: left; color: #f97316; font-weight: 700; }
-        td { padding: 0.75rem 1rem; border-bottom: 1px solid #2a2a2a; }
-        tr:hover { background: #0a0a0a; }
+        thead { background: #262626; }
+        th { padding: 0.875rem 1rem; text-align: left; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 0.875rem 1rem; border-bottom: 1px solid #2a3441; font-size: 0.9375rem; }
+        tr:hover { background: #262626; }
         .text-center { text-align: center; }
-        .text-green-400 { color: #10b981; }
+        .text-green-400 { color: #4ade80; }
         .text-blue-400 { color: #60a5fa; }
         .text-pink-400 { color: #f472b6; }
-        .text-red-400 { color: #ef4444; }
-        .text-yellow-400 { color: #f97316; }
-        .text-gray-400 { color: #9ca3af; }
-        h3 { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
-        h4 { font-size: 1.125rem; font-weight: 600; color: #94a3b8; }
+        .text-red-400 { color: #f87171; }
+        .text-yellow-400 { color: #fbbf24; }
+        .text-gray-400 { color: #94a3b8; }
         .font-bold { font-weight: 700; }
         .text-sm { font-size: 0.875rem; }
         .badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
         }
-        .badge-pending { background: #78350f; color: #fb923c; }
-        .badge-win { background: #064e3b; color: #10b981; }
-        .badge-loss { background: #450a0a; color: #ef4444; }
-        .badge-push { background: #374151; color: #9ca3af; }
-        .badge-error { background: #450a0a; color: #ef4444; }
-        
+        .badge-pending { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .badge-win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        .badge-push { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .badge-error { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+        .subtitle { color: #94a3b8; font-size: 1rem; font-weight: 400; }
+
         /* Mobile Responsiveness */
         @media (max-width: 1024px) {
             .container { max-width: 100%; }
@@ -90,32 +108,42 @@
             h2 { font-size: 1.5rem; }
             h3 { font-size: 1.25rem; }
         }
-        
+
         @media (max-width: 768px) {
             body { padding: 1rem; }
             .card { padding: 1.25rem; }
-            
+
             h1 { font-size: 1.75rem; }
             h2 { font-size: 1.25rem; }
             h3 { font-size: 1.125rem; }
             h4 { font-size: 1rem; }
-            
+
+            /* Make all inline 5-column grids responsive */
+            div[style*="grid-template-columns: repeat(5, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
             /* Make all inline 4-column grids responsive */
             div[style*="grid-template-columns: repeat(4, 1fr)"] {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
-            
+
             /* Make all inline 2-column grids single column on mobile */
             div[style*="grid-template-columns: repeat(2, 1fr)"] {
                 grid-template-columns: 1fr !important;
             }
-            
+
+            /* Make all inline 3-column grids responsive */
+            div[style*="grid-template-columns: repeat(3, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
             /* Make auto-fit grids smaller on mobile */
             .grid {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 0.75rem;
             }
-            
+
             /* Stat cards */
             .stat-card {
                 padding: 1rem;
@@ -126,8 +154,8 @@
             .stat-label {
                 font-size: 0.6875rem;
             }
-            
-            /* Tables - enable horizontal scroll */
+
+            /* Tables - enable horizontal scroll and reduce font */
             table {
                 font-size: 0.8125rem;
                 display: block;
@@ -144,285 +172,565 @@
                 padding: 0.625rem 0.5rem;
                 font-size: 0.8125rem;
             }
-            
+            th {
+                font-size: 0.75rem;
+            }
+
+            /* Badges */
+            .badge {
+                padding: 0.3125rem 0.625rem;
+                font-size: 0.6875rem;
+                margin: 0.1875rem;
+            }
+
             /* Reduce spacing */
             div[style*="padding: 2rem"] {
                 padding: 1.25rem !important;
             }
+            div[style*="padding: 1.5rem"] {
+                padding: 1rem !important;
+            }
+            div[style*="gap: 1.5rem"] {
+                gap: 1rem !important;
+            }
             div[style*="margin-bottom: 2rem"] {
                 margin-bottom: 1.25rem !important;
             }
+            div[style*="font-size: 1.75rem"] {
+                font-size: 1.5rem !important;
+            }
         }
-        
+
         @media (max-width: 480px) {
             body { padding: 0.75rem; }
             .card { padding: 1rem; margin-bottom: 1rem; }
-            
+
             h1 { font-size: 1.5rem; }
             h2 { font-size: 1.125rem; }
             h3 { font-size: 1rem; }
-            
+
             .stat-value { font-size: 1.5rem; }
             .stat-label { font-size: 0.625rem; }
             .stat-card { padding: 0.75rem; }
-            
+
             /* Force all multi-column grids to single column on small phones */
             div[style*="grid-template-columns"] {
                 grid-template-columns: 1fr !important;
             }
-            
+
             .grid {
                 grid-template-columns: 1fr;
             }
-            
+
             table { font-size: 0.75rem; }
             th, td { padding: 0.5rem 0.375rem; font-size: 0.75rem; }
-            
-            header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .header-title h1 { font-size: 1.5rem; }
-            div[style*="text-align: right"] { text-align: left !important; }
+            th { font-size: 0.6875rem; }
+
+            .badge {
+                display: block;
+                margin: 0.25rem 0;
+                text-align: center;
+            }
+
+            div[style*="font-size: 1.75rem"] {
+                font-size: 1.25rem !important;
+            }
+            div[style*="font-size: 1.5rem"] {
+                font-size: 1.125rem !important;
+            }
+            div[style*="font-size: 1.125rem"] {
+                font-size: 1rem !important;
+            }
         }
-        
-        /* Header Section */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #333;
-        }
-        .header-title h1 { margin: 0; font-size: 2rem; color: #f97316; }
-        .header-subtitle { color: #9ca3af; font-size: 0.9rem; margin-top: 0.5rem; }
-        .metric-title { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; font-weight: 600; }
     </style>
 </head>
 <body>
-        <div class="container">
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center">Model Performance</h1>
+            <p class="text-center subtitle" style="margin-bottom: 2rem;">CourtSide Analytics - NCAAB</p>
 
-            <header>
-                <div class="header-title">
-                    <h1>🏀 COLLEGE BASKETBALL TRACKING</h1>
-                    <div class="header-subtitle">Generated: 2026-02-15 12:21 AM ET</div>
-                </div>
-                <div style="text-align: right;">
-                    <div class="metric-title">SEASON RECORD</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">
-                        2529-2269-7 (52.6%)
-                    </div>
-                    <div style="font-size: 1.1rem; color: #10b981; font-weight: 600;">
-                         +34.5u
-                    </div>
-                </div>
-            </header>
-
-            <!-- Overall Stats Cards -->
-            <div class="card">
-                <div class="grid">
+            <!-- Overall Performance Card -->
+            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    📊 Overall Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem;">
                     <div class="stat-card">
-                        <div class="stat-value">4845</div>
+                        <div class="stat-value">4840</div>
                         <div class="stat-label">Total Bets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2528-2269-7</div>
+                        <div class="stat-label">Record</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">52.7%</div>
                         <div class="stat-label">Win Rate</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value positive">
-                            +34.52u
+                        <div class="stat-value text-green-400">
+                            +34.29u
                         </div>
                         <div class="stat-label">Total Profit</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value positive">
+                        <div class="stat-value text-green-400">
                             +0.7%
                         </div>
                         <div class="stat-label">ROI</div>
                     </div>
                 </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (2324 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">1223-1096-5</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">52.7%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">17.40u</span></div>
+                        </div>
+                    </div>
+                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
+                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (2480 picks)</h4>
+                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">1305-1173-2</div>
+                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
+                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">52.7%</span></div>
+                            <div><span class="text-gray-400">Profit:</span> <span class="text-green-400 font-bold">14.70u</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Daily Performance -->
-            <div style="background: #1c1c1e; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
-                    <span style="font-size: 1.5rem;">📅</span>
-                    <h2 style="margin: 0; font-size: 1.5rem; color: #f3f4f6;">Daily Performance</h2>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <!-- TODAY -->
-                    <div style="background: #121212; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 1px solid #333;">
-                        <div style="color: #9ca3af; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Today</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">0-0-0</div>
-                        <div style="font-size: 1.25rem; font-weight: 600; color: #e5e7eb; margin-bottom: 0.25rem;">
-                            +0.0u
-                        </div>
-                        <div style="font-size: 0.875rem; color: #9ca3af;">0.0% ROI</div>
+            <!-- Today's/Yesterday's Record -->
+            
+            <div style="background: #262626; border-radius: 1rem; padding: 1.5rem;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center; color: #fbbf24;">Recent Records</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                    
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 0.5rem;">Feb 14</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #4ade80;">40-45</div>
                     </div>
                     
-                    <!-- YESTERDAY -->
-                    <div style="background: #121212; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 1px solid #333;">
-                        <div style="color: #9ca3af; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Yesterday</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">40-43-0</div>
-                        <div style="font-size: 1.25rem; font-weight: 600; color: #ef4444; margin-bottom: 0.25rem;">
-                            -165.0u
-                        </div>
-                        <div style="font-size: 0.875rem; color: #9ca3af;">-2.0% ROI</div>
-                    </div>
                 </div>
             </div>
+            
+        </div>
         
-        <!-- PERFORMANCE BREAKDOWN - SELLING POINT -->
+        
         <div class="card">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">🔥 Recent Performance Breakdown</h2>
-                <p class="text-gray-400" style="font-size: 1rem; font-weight: 400;">Verified Track Record</p>
-            </div>
-
-            <!-- Last 100 Picks -->
-            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-                    📊 Last 100 Picks
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                    <div class="stat-card">
-                        <div class="stat-value">51-49</div>
-                        <div class="stat-label">Record</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">51.0%</div>
-                        <div class="stat-label">Win Rate</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value negative">
-                            -0.65u
-                        </div>
-                        <div class="stat-label">Profit</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value negative">
-                            -0.6%
-                        </div>
-                        <div class="stat-label">ROI</div>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #60a5fa; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Spreads (76 picks)</h4>
-                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.5rem;">37-39</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-blue-400 font-bold">48.7%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-1.8%</span></div>
-                        </div>
-                    </div>
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #f472b6; font-size: 1.125rem; margin-bottom: 1rem; text-align: center;">Totals (24 picks)</h4>
-                        <div style="text-align: center; font-size: 1.75rem; font-weight: 700; color: #f472b6; margin-bottom: 0.5rem;">14-10</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-pink-400 font-bold">58.3%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+2.9%</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Last 50 Picks -->
-            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem; margin-bottom: 1.5rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-                    🚀 Last 50 Picks
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                    <div class="stat-card">
-                        <div class="stat-value positive">28-22</div>
-                        <div class="stat-label">Record</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">56.0%</div>
-                        <div class="stat-label">Win Rate</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">
-                            +0.87u
-                        </div>
-                        <div class="stat-label">Profit</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">
-                            +1.7%
-                        </div>
-                        <div class="stat-label">ROI</div>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (39 picks)</h4>
-                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">20-19</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">51.3%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-0.5%</span></div>
-                        </div>
-                    </div>
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (11 picks)</h4>
-                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">8-3</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">72.7%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+9.7%</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Last 20 Picks -->
-            <div style="background: #262626; border-radius: 1.25rem; padding: 2rem;">
-                <h3 style="color: #4ade80; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-                    ⚡ Last 20 Picks (Hot Streak)
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                    <div class="stat-card">
-                        <div class="stat-value positive">11-9</div>
-                        <div class="stat-label">Record</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">55.0%</div>
-                        <div class="stat-label">Win Rate</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">
-                            +0.25u
-                        </div>
-                        <div class="stat-label">Profit</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value positive">
-                            +1.3%
-                        </div>
-                        <div class="stat-label">ROI</div>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #60a5fa; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Spreads (16 picks)</h4>
-                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">8-8</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">50.0%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-red-400 font-bold">-1.1%</span></div>
-                        </div>
-                    </div>
-                    <div style="background: #1a1a1a; border-radius: 1rem; padding: 1.5rem;">
-                        <h4 style="color: #f472b6; font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Totals (4 picks)</h4>
-                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">3-1</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3441;">
-                            <div><span class="text-gray-400">Win%:</span> <span class="text-green-400 font-bold">75.0%</span></div>
-                            <div><span class="text-gray-400">ROI:</span> <span class="text-green-400 font-bold">+10.8%</span></div>
-                        </div>
-                    </div>
-                </div>
+            <h2>🎯 Upcoming Bets</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game Date</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Pick</th>
+                            <th>Line</th>
+                            <th>Edge</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">UTSA Roadrunners @ Charlotte 49ers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: UTSA Roadrunners +15.5</td>
+                            <td>-15.5</td>
+                            <td>+18.4</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Utah Utes @ Cincinnati Bearcats</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Utah Utes +11.5</td>
+                            <td>-11.5</td>
+                            <td>+12.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Utah Utes @ Cincinnati Bearcats</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 141.5</td>
+                            <td>141.5</td>
+                            <td>+7.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Maryland Terrapins @ Rutgers Scarlet Knights</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Maryland Terrapins +2.5</td>
+                            <td>-2.5</td>
+                            <td>+7.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Maryland Terrapins @ Rutgers Scarlet Knights</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 144.5</td>
+                            <td>144.5</td>
+                            <td>+11.3</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Utah @ Cincinnati</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Utah +11.5</td>
+                            <td>-11.5</td>
+                            <td>+10.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Utah @ Cincinnati</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 142.5</td>
+                            <td>142.5</td>
+                            <td>+7.5</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 12:00 PM</td>
+                            <td class="font-bold">Maryland @ Rutgers</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 144.5</td>
+                            <td>144.5</td>
+                            <td>+11.7</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 01:00 PM</td>
+                            <td class="font-bold">Denver Pioneers @ Omaha Mavericks</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Denver Pioneers +2.5</td>
+                            <td>-2.5</td>
+                            <td>+9.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 01:00 PM</td>
+                            <td class="font-bold">Holy Cross Crusaders @ Loyola (MD) Greyhounds</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Holy Cross Crusaders +4.5</td>
+                            <td>-4.5</td>
+                            <td>+6.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 01:00 PM</td>
+                            <td class="font-bold">Indiana Hoosiers @ Illinois Fighting Illini</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Indiana Hoosiers +10.5</td>
+                            <td>-10.5</td>
+                            <td>+16.8</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">IUPUI Jaguars @ Fort Wayne Mastodons</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: IUPUI Jaguars +8.5</td>
+                            <td>-8.5</td>
+                            <td>+11.6</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">Indiana St Sycamores @ Valparaiso Beacons</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Indiana St Sycamores +4.5</td>
+                            <td>-4.5</td>
+                            <td>+8.1</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">Merrimack Warriors @ Quinnipiac Bobcats</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Merrimack Warriors +1.5</td>
+                            <td>-1.5</td>
+                            <td>+7.1</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">North Texas Mean Green @ Temple Owls</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: North Texas Mean Green +1.5</td>
+                            <td>-1.5</td>
+                            <td>+6.3</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">Rider Broncs @ Sacred Heart Pioneers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Rider Broncs +9.0</td>
+                            <td>-9.0</td>
+                            <td>+12.4</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 02:00 PM</td>
+                            <td class="font-bold">Tulane Green Wave @ UAB Blazers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Tulane Green Wave +6.5</td>
+                            <td>-6.5</td>
+                            <td>+13.5</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 03:00 PM</td>
+                            <td class="font-bold">Drake Bulldogs @ Northern Iowa Panthers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Drake Bulldogs +9.5</td>
+                            <td>-9.5</td>
+                            <td>+12.5</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 03:00 PM</td>
+                            <td class="font-bold">Drake Bulldogs @ Northern Iowa Panthers</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 135.5</td>
+                            <td>135.5</td>
+                            <td>+8.6</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 03:00 PM</td>
+                            <td class="font-bold">Illinois St Redbirds @ UIC Flames</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 137.5</td>
+                            <td>137.5</td>
+                            <td>+12.1</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 03:00 PM</td>
+                            <td class="font-bold">Drake @ Northern Iowa</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Drake +9.5</td>
+                            <td>-9.5</td>
+                            <td>+6.4</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 03:00 PM</td>
+                            <td class="font-bold">Drake @ Northern Iowa</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 136.5</td>
+                            <td>136.5</td>
+                            <td>+8.5</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 04:00 PM</td>
+                            <td class="font-bold">Davidson Wildcats @ Dayton Flyers</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Davidson Wildcats +3.5</td>
+                            <td>-3.5</td>
+                            <td>+7.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 04:00 PM</td>
+                            <td class="font-bold">Eastern Kentucky @ North Alabama</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: North Alabama +4.5</td>
+                            <td>4.5</td>
+                            <td>+7.7</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 04:00 PM</td>
+                            <td class="font-bold">Eastern Kentucky @ North Alabama</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: UNDER 149.5</td>
+                            <td>149.5</td>
+                            <td>-11.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 06:00 PM</td>
+                            <td class="font-bold">Seton Hall Pirates @ Butler Bulldogs</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Seton Hall Pirates -2.5</td>
+                            <td>2.5</td>
+                            <td>+8.0</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 06:00 PM</td>
+                            <td class="font-bold">Seton Hall @ Butler</td>
+                            <td>Spread</td>
+                            <td class="text-yellow-400">✅ BET: Butler +1.5</td>
+                            <td>1.5</td>
+                            <td>+12.1</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/15 08:00 PM</td>
+                            <td class="font-bold">Oregon St Beavers @ Seattle Redhawks</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 137.5</td>
+                            <td>137.5</td>
+                            <td>+8.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/16 09:00 PM</td>
+                            <td class="font-bold">Houston Cougars @ Iowa State Cyclones</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 133.5</td>
+                            <td>133.5</td>
+                            <td>+28.4</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="text-sm font-bold">02/16 09:00 PM</td>
+                            <td class="font-bold">Houston @ Iowa State</td>
+                            <td>Total</td>
+                            <td class="text-yellow-400">✅ BET: OVER 133.5</td>
+                            <td>133.5</td>
+                            <td>+27.9</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
             </div>
         </div>
         
+        
+        
+        <div class="card">
+            <h2>⚠️ Past Pending Bets (Need Update)</h2>
+            <p style="color: #f59e0b; margin-bottom: 1rem; font-size: 0.875rem;">
+                ⚠️ These picks are from past games but haven't been updated yet. Run the model to update them.
+            </p>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Game Date</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Pick</th>
+                            <th>Line</th>
+                            <th>Edge</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">12/17 07:00 PM</td>
+                            <td class="font-bold">Mercer @ UCF</td>
+                            <td>Total</td>
+                            <td class="text-gray-400">✅ BET: UNDER 161.5</td>
+                            <td>161.5</td>
+                            <td>-18.3</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">01/18 12:00 PM</td>
+                            <td class="font-bold">Florida Atlantic @ Temple</td>
+                            <td>Total</td>
+                            <td class="text-gray-400">✅ BET: UNDER 151.5</td>
+                            <td>151.5</td>
+                            <td>-7.3</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">01/18 01:00 PM</td>
+                            <td class="font-bold">American @ Army</td>
+                            <td>Spread</td>
+                            <td class="text-gray-400">✅ BET: Army +5.5</td>
+                            <td>5.5</td>
+                            <td>+8.3</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">01/26 07:00 PM</td>
+                            <td class="font-bold">Abilene Christian Wildcats @ Tarleton State Texans</td>
+                            <td>Total</td>
+                            <td class="text-gray-400">✅ BET: UNDER 145.5</td>
+                            <td>145.5</td>
+                            <td>-14.0</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">01/26 07:00 PM</td>
+                            <td class="font-bold">Wagner Seahawks @ LIU Sharks</td>
+                            <td>Total</td>
+                            <td class="text-gray-400">✅ BET: UNDER 144.5</td>
+                            <td>144.5</td>
+                            <td>-18.6</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                        <tr style="opacity: 0.7;">
+                            <td class="text-sm font-bold">02/02 06:00 PM</td>
+                            <td class="font-bold">Gardner-Webb Bulldogs @ Charleston Southern Buccaneers</td>
+                            <td>Total</td>
+                            <td class="text-gray-400">✅ BET: UNDER 158.5</td>
+                            <td>158.5</td>
+                            <td>-26.6</td>
+                            <td><span class="badge badge-error">Needs Update</span></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        
         <div class="text-center text-gray-400 text-sm" style="margin-top: 2rem;">
-            <p>Last updated: 2026-02-15 12:21 AM ET</p>
+            <p>Last updated: 2026-02-15 12:28 AM</p>
         </div>
     </div>
 </body>
