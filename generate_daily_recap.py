@@ -123,7 +123,8 @@ class DailyRecapGenerator:
             
             # If main model (no player), maybe rely on pick_text or mismatch?
             # Let's try to be specific for props mostly as that's where duplicates likely are
-            if pick.get('sport') == 'NBA' and (pick.get('player') or 'prop' in pick.get('model', '').lower()): # Refined condition for props
+            is_props_pick = pick.get('player') or 'prop' in pick.get('model', '').lower()
+            if is_props_pick and pick.get('sport') in ('NBA', 'NCAAB'): # NBA and CBB props
                  # Ignore prop line value for deduplication to handle CLV line moves
                  # Include model to distinguish between Points, Rebs, 3PT etc for same player
                  model = pick.get('model', 'unknown')
