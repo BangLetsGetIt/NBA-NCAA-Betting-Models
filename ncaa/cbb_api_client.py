@@ -37,7 +37,8 @@ class CBBOddsClient:
             markets = [
                 "player_points", "player_assists", "player_rebounds",
                 "player_points_rebounds_assists", "player_points_rebounds",
-                "player_points_assists", "player_rebounds_assists"
+                "player_points_assists", "player_rebounds_assists",
+                "player_threes"
             ]
 
         # Check cache

@@ -294,6 +294,10 @@ class CBBPropsEngine:
             self.stat_col = ['TRB', 'AST']
             self.prop_unit = 'R+A'
             self.market_key = 'player_rebounds_assists'
+        elif self.prop_type == 'threes':
+            self.stat_col = '3P'  # Sports-Reference column
+            self.prop_unit = '3PT'
+            self.market_key = 'player_threes'
         else: # points
             self.stat_col = 'PTS'
             self.prop_unit = 'PTS'
@@ -315,6 +319,12 @@ class CBBPropsEngine:
         if self.is_combo:
             self.min_edge_over = 2.0
             self.min_edge_under = 1.5
+
+        # 3pt props have smaller lines (1.5-4.5), tighter edges are meaningful
+        if self.prop_type == 'threes':
+            self.min_edge_over = 0.8
+            self.min_edge_under = 0.6
+            self.min_recent_form_edge = 0.5
     
     def get_composite_stat(self, player_stats):
         """Get the relevant stat value, handling both single and combo props."""
@@ -325,6 +335,8 @@ class CBBPropsEngine:
         # Single stat
         if self.prop_type == 'points':
             return player_stats.get('pts', 0)
+        if self.prop_type == 'threes':
+            return player_stats.get('fg3', 0)
         return player_stats.get(self.prop_type[:3], 0)
 
     def load_tracking_data(self):
@@ -398,6 +410,8 @@ class CBBPropsEngine:
                 stat_labels_needed = ['REB']
             elif self.prop_type == 'assists':
                 stat_labels_needed = ['AST']
+            elif self.prop_type == 'threes':
+                stat_labels_needed = ['3PT']
             else:
                 stat_labels_needed = ['PTS']
 
@@ -425,6 +439,12 @@ class CBBPropsEngine:
                             for needed in stat_labels_needed:
                                 if needed in labels:
                                     indices[needed] = labels.index(needed)
+                                elif self.prop_type == 'threes':
+                                    # ESPN may use different labels for 3pt made
+                                    for alt in ['3PM', 'FG3M', 'FG3', '3PT']:
+                                        if alt in labels:
+                                            indices[needed] = labels.index(alt)
+                                            break
 
                             if not indices:
                                 continue
@@ -857,6 +877,9 @@ class CBBPropsEngine:
                                     'ast': float(row.get('AST', 0)),
                                     'min': float(row.get('MP', 0)),
                                     'fg_pct': float(row.get('FG%', 0) or 0),
+                                    'fg3': float(row.get('3P', 0) or 0),
+                                    'fg3a': float(row.get('3PA', 0) or 0),
+                                    'fg3_pct': float(row.get('3P%', 0) or 0),
                                 }
                                 team_players[p_name] = stats
                             except:
@@ -935,16 +958,21 @@ class CBBPropsEngine:
                 continue
 
             # Prioritize Hard Rock Bet, then FanDuel, then first available
-            selected_book = next((b for b in bookmakers if b.get("key") == "hardrockbet"),
-                               next((b for b in bookmakers if b.get("key") == "fanduel"),
-                                    bookmakers[0]))
+            preferred_order = [
+                next((b for b in bookmakers if b.get("key") == "hardrockbet"), None),
+                next((b for b in bookmakers if b.get("key") == "fanduel"), None),
+            ]
+            # Build ordered list: preferred books first, then rest
+            tried_keys = {b.get("key") for b in preferred_order if b}
+            ordered_books = [b for b in preferred_order if b] + [b for b in bookmakers if b.get("key") not in tried_keys]
 
-            for market in selected_book.get("markets", []):
-                if market.get("key") == self.market_key:
+            for book in ordered_books:
+                target_market = next((m for m in book.get("markets", []) if m.get("key") == self.market_key), None)
+                if target_market:
                     # Process outcomes
                     grouped = {}  # (player, line) -> {over, under}
 
-                    for outcome in market['outcomes']:
+                    for outcome in target_market['outcomes']:
                         player_name = outcome['description']
                         bet_type = outcome['name'].lower()  # over/under
                         price = outcome['price']
@@ -968,6 +996,7 @@ class CBBPropsEngine:
                             grouped[key]['under'] = price
 
                     all_props.extend(grouped.values())
+                    break  # Use first book that has this market
 
         print(f"{Colors.GREEN}✓ Fetched {len(all_props)} total {self.prop_type} props{Colors.END}")
         return all_props, list(teams_playing)
@@ -1011,20 +1040,22 @@ class CBBPropsEngine:
         Calculate STRICT A.I. Score for CBB props using real stats
         Adapted from NBA model with CBB-specific adjustments
         """
-        score = 4.0
-
-        stat_avg = self.get_composite_stat(player_stats)
-
         games_played = player_stats.get('games', 0)
         minutes = player_stats.get('min', 0)
-        fg_pct = player_stats.get('fg_pct', 0)
 
         # Minimum requirements
-        if games_played < 3:  # Need at least 3 games
+        if games_played < 3:
+            return 0.0
+        if minutes < 12:
             return 0.0
 
-        if minutes < 12:  # Need significant playing time
-            return 0.0
+        # --- 3PT-SPECIFIC SCORING ---
+        if self.prop_type == 'threes':
+            return self._calculate_3pt_ai_score(player_stats, line, bet_type)
+
+        score = 4.0
+        stat_avg = self.get_composite_stat(player_stats)
+        fg_pct = player_stats.get('fg_pct', 0)
 
         if bet_type == 'over':
             edge_above_line = stat_avg - line
@@ -1081,6 +1112,89 @@ class CBBPropsEngine:
 
         final_score = min(10.0, max(0.0, score))
         return final_score
+
+    def _calculate_3pt_ai_score(self, player_stats, line, bet_type):
+        """
+        3PT-specific A.I. Score calculation.
+        Adapted from NBA 3pt model for college basketball.
+        Factors: edge, minutes, 3P%, 3PA volume, consistency.
+        """
+        score = 4.0
+
+        season_3pm = player_stats.get('fg3', 0)
+        fg3a = player_stats.get('fg3a', 0)
+        fg3_pct = player_stats.get('fg3_pct', 0)
+        minutes = player_stats.get('min', 0)
+
+        if bet_type == 'over':
+            edge = season_3pm - line
+
+            # Edge scoring (tighter scale for 3pt props)
+            if edge >= self.min_edge_over:  # 0.8+
+                score += 3.5
+            elif edge >= 0.6:
+                score += 2.5
+            elif edge >= 0.4:
+                score += 1.5
+            elif edge >= 0.2:
+                score += 0.5
+            else:
+                return 0.0  # No edge, no play
+
+            # Minutes bonus
+            if minutes >= 30:
+                score += 1.5
+            elif minutes >= 25:
+                score += 1.0
+            elif minutes >= 20:
+                score += 0.5
+
+            # 3PA volume bonus (more attempts = more opportunity)
+            if fg3a >= 6.0:
+                score += 1.0
+            elif fg3a >= 4.0:
+                score += 0.5
+
+            # 3P% efficiency bonus
+            if fg3_pct >= 0.38:
+                score += 0.5
+            elif fg3_pct >= 0.35:
+                score += 0.3
+
+        else:  # under
+            edge = line - season_3pm
+
+            # Edge scoring
+            if edge >= self.min_edge_under:  # 0.6+
+                score += 3.5
+            elif edge >= 0.5:
+                score += 2.5
+            elif edge >= 0.3:
+                score += 1.5
+            elif edge >= 0.2:
+                score += 0.5
+            else:
+                return 0.0
+
+            # Low volume bonus (fewer attempts = easier under)
+            if fg3a < 3.0:
+                score += 1.0
+            elif fg3a < 4.0:
+                score += 0.5
+
+            # Low 3P% bonus
+            if fg3_pct < 0.30:
+                score += 0.5
+            elif fg3_pct < 0.33:
+                score += 0.3
+
+            # Low minutes bonus
+            if minutes < 25:
+                score += 1.0
+            elif minutes < 30:
+                score += 0.5
+
+        return min(10.0, max(0.0, score))
 
     def analyze(self):
         # 1. Fetch Odds
@@ -1207,6 +1321,7 @@ class CBBPropsEngine:
         nav_points = ' active' if self.prop_type == 'points' else ''
         nav_assists = ' active' if self.prop_type == 'assists' else ''
         nav_rebounds = ' active' if self.prop_type == 'rebounds' else ''
+        nav_threes = ' active' if self.prop_type == 'threes' else ''
         nav_pra = ' active' if self.prop_type == 'pra' else ''
         nav_pr = ' active' if self.prop_type == 'points_rebounds' else ''
         nav_pa = ' active' if self.prop_type == 'points_assists' else ''
@@ -1452,6 +1567,7 @@ class CBBPropsEngine:
         <a href="cbb_points_props.html" class="nav-pill{nav_points}">Points</a>
         <a href="cbb_assists_props.html" class="nav-pill{nav_assists}">Assists</a>
         <a href="cbb_rebounds_props.html" class="nav-pill{nav_rebounds}">Rebounds</a>
+        <a href="cbb_threes_props.html" class="nav-pill{nav_threes}">3PT</a>
         <a href="cbb_pra_props.html" class="nav-pill{nav_pra}">PRA</a>
         <a href="cbb_points_rebounds_props.html" class="nav-pill{nav_pr}">P+R</a>
         <a href="cbb_points_assists_props.html" class="nav-pill{nav_pa}">P+A</a>
