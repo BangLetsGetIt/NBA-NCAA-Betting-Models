@@ -359,9 +359,101 @@ class CBBPropsEngine:
         except Exception:
             return "neutral"
 
+    def fetch_boxscores_espn(self, date_str):
+        """
+        Fetch all CBB box scores for a given date from ESPN API (fast, reliable).
+        Returns dict: lowercase player_name -> stat value
+        Also returns set of team display names that played (for game-final detection).
+        """
+        print(f"  {Colors.CYAN}Fetching CBB box scores from ESPN for {date_str}...{Colors.END}")
+
+        player_stats = {}
+        completed_teams = set()
+
+        try:
+            espn_date = date_str.replace('-', '')  # YYYYMMDD
+            scoreboard_url = f"https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?dates={espn_date}&groups=50&limit=300"
+            resp = requests.get(scoreboard_url, timeout=15)
+            if resp.status_code != 200:
+                print(f"    {Colors.RED}✗ ESPN scoreboard failed (Status {resp.status_code}){Colors.END}")
+                return player_stats, completed_teams
+
+            events = resp.json().get('events', [])
+            completed_events = [e for e in events if e.get('status', {}).get('type', {}).get('completed', False)]
+
+            if not completed_events:
+                print(f"    {Colors.YELLOW}⚠ No completed games found on ESPN for {date_str}{Colors.END}")
+                return player_stats, completed_teams
+
+            print(f"    Found {len(completed_events)} completed games on ESPN")
+
+            # Determine which stat columns to extract
+            stat_labels_needed = []
+            if self.is_combo:
+                col_map = {'PTS': 'PTS', 'TRB': 'REB', 'AST': 'AST'}
+                stat_labels_needed = [col_map.get(c, c) for c in self.stat_col]
+            elif self.prop_type == 'points':
+                stat_labels_needed = ['PTS']
+            elif self.prop_type == 'rebounds':
+                stat_labels_needed = ['REB']
+            elif self.prop_type == 'assists':
+                stat_labels_needed = ['AST']
+            else:
+                stat_labels_needed = ['PTS']
+
+            for event in completed_events:
+                game_id = event['id']
+                try:
+                    summary_url = f"https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event={game_id}"
+                    box_resp = requests.get(summary_url, timeout=15)
+                    if box_resp.status_code != 200:
+                        continue
+
+                    box_data = box_resp.json()
+                    teams_data = box_data.get('boxscore', {}).get('players', [])
+
+                    for team_data in teams_data:
+                        team_name = team_data.get('team', {}).get('displayName', '')
+                        team_slug = team_name.lower().replace(' ', '-').replace('.', '').replace("'", '')
+                        completed_teams.add(team_slug)
+                        completed_teams.add(team_name)  # Also add display name for matching
+
+                        for stat_group in team_data.get('statistics', []):
+                            labels = stat_group.get('labels', [])
+                            # Find indices for needed stats
+                            indices = {}
+                            for needed in stat_labels_needed:
+                                if needed in labels:
+                                    indices[needed] = labels.index(needed)
+
+                            if not indices:
+                                continue
+
+                            for athlete in stat_group.get('athletes', []):
+                                name = athlete.get('athlete', {}).get('displayName', '')
+                                if not name:
+                                    continue
+                                stat_vals = athlete.get('stats', [])
+                                try:
+                                    total = sum(float(stat_vals[idx]) for idx in indices.values() if idx < len(stat_vals))
+                                    player_stats[name.lower()] = total
+                                except (ValueError, TypeError, IndexError):
+                                    continue
+
+                except Exception as e:
+                    print(f"    {Colors.RED}✗ Error fetching ESPN game {game_id}: {e}{Colors.END}")
+                    continue
+
+            print(f"    {Colors.GREEN}✓ Found stats for {len(player_stats)} players across {len(completed_teams)} teams{Colors.END}")
+
+        except Exception as e:
+            print(f"    {Colors.RED}✗ ESPN error: {e}{Colors.END}")
+
+        return player_stats, completed_teams
+
     def fetch_boxscores_for_date(self, date_str):
         """
-        Fetch all CBB box scores for a given date from Sports-Reference.
+        Fetch all CBB box scores for a given date from Sports-Reference (fallback).
         Returns dict: lowercase player_name -> {stat_col value, team}
         Also returns set of teams that played (for game-final detection).
         """
@@ -1511,8 +1603,12 @@ class CBBPropsEngine:
         for date_str, picks in picks_by_date.items():
             print(f"\n{Colors.CYAN}Processing {len(picks)} picks for {date_str}...{Colors.END}")
 
-            # Batch fetch stats for this date
-            daily_stats, completed_team_slugs = self.fetch_boxscores_for_date(date_str)
+            # Batch fetch stats for this date - try ESPN first (fast), fall back to SR
+            daily_stats, completed_team_slugs = self.fetch_boxscores_espn(date_str)
+
+            if not daily_stats:
+                print(f"  {Colors.YELLOW}ESPN had no stats, trying Sports-Reference...{Colors.END}")
+                daily_stats, completed_team_slugs = self.fetch_boxscores_for_date(date_str)
 
             if not daily_stats:
                 print(f"{Colors.YELLOW}  ⚠ No stats found for {date_str} yet{Colors.END}")
@@ -1524,8 +1620,10 @@ class CBBPropsEngine:
                     team_name = pick.get('team', '')
                     team_slug = self.get_team_slug(team_name)
 
-                    # Check if game is final (team slug found in completed teams)
-                    is_game_final = team_slug in completed_team_slugs
+                    # Check if game is final (team slug or name found in completed teams)
+                    is_game_final = (team_slug in completed_team_slugs or
+                                     team_name in completed_team_slugs or
+                                     team_name.lower() in {t.lower() for t in completed_team_slugs})
 
                     # Try to find player stats - exact match first
                     player_key = player_name.lower()
