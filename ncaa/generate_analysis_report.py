@@ -245,10 +245,21 @@ def load_props_data():
                 data = json.load(f)
             picks = data.get('picks', []) if isinstance(data, dict) else data
             decided = [p for p in picks if p.get('status', '').lower() in ['win', 'loss', 'push']]
+            # Dedup within each model file by player + bet_type + game_date
+            seen = set()
+            deduped = []
             for p in decided:
+                player = p.get('player', '')
+                bet_type = p.get('bet_type', '')
+                game_date = p.get('game_time', p.get('date', ''))[:10]
+                key = f"{player}|{bet_type}|{game_date}"
+                if key not in seen:
+                    seen.add(key)
+                    deduped.append(p)
+            for p in deduped:
                 p['_prop_model'] = model_name
-            props_by_model[model_name] = decided
-            all_props.extend(decided)
+            props_by_model[model_name] = deduped
+            all_props.extend(deduped)
         except Exception as e:
             print(f"Error loading {fpath}: {e}")
 
