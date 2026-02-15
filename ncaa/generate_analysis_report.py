@@ -372,18 +372,21 @@ def generate_props_html(all_props, props_by_model):
 
     html += "</tbody></table></div></div>"
 
-    # Top players section
-    player_stats = defaultdict(lambda: {'wins': 0, 'losses': 0, 'profit': 0, 'picks': 0})
+    # Top players section - count per player per prop model (not combined across models)
+    # Key: (player, prop_model) so each prop type is a separate line
+    player_model_stats = defaultdict(lambda: {'wins': 0, 'losses': 0, 'profit': 0, 'picks': 0})
     for p in all_props:
         name = p.get('player', 'Unknown')
+        model = p.get('_prop_model', 'Unknown')
         status = p.get('status', '').lower()
-        player_stats[name]['picks'] += 1
-        if status == 'win': player_stats[name]['wins'] += 1
-        elif status == 'loss': player_stats[name]['losses'] += 1
-        player_stats[name]['profit'] += get_prop_profit(p)
+        key = (name, model)
+        player_model_stats[key]['picks'] += 1
+        if status == 'win': player_model_stats[key]['wins'] += 1
+        elif status == 'loss': player_model_stats[key]['losses'] += 1
+        player_model_stats[key]['profit'] += get_prop_profit(p)
 
-    # Filter to players with 3+ picks, sort by profit
-    qualified = [(name, s) for name, s in player_stats.items() if s['picks'] >= 3]
+    # Filter to player+model combos with 3+ picks, sort by profit
+    qualified = [((name, model), s) for (name, model), s in player_model_stats.items() if s['picks'] >= 3]
     best_players = sorted(qualified, key=lambda x: x[1]['profit'], reverse=True)[:20]
 
     if best_players:
@@ -395,6 +398,7 @@ def generate_props_html(all_props, props_by_model):
                     <thead>
                         <tr>
                             <th>Player</th>
+                            <th>Prop Type</th>
                             <th>Record</th>
                             <th>Win Rate</th>
                             <th>Profit (Units)</th>
@@ -402,13 +406,14 @@ def generate_props_html(all_props, props_by_model):
                     </thead>
                     <tbody>
         """
-        for name, s in best_players:
+        for (name, model), s in best_players:
             wr = (s['wins'] / (s['wins'] + s['losses']) * 100) if (s['wins'] + s['losses']) > 0 else 0
             p_class = 'text-green' if s['profit'] > 0 else 'text-red'
             p_sign = "+" if s['profit'] > 0 else ""
             html += f"""
                     <tr>
                         <td class="font-bold">{name}</td>
+                        <td>{model}</td>
                         <td>{s['wins']}-{s['losses']}</td>
                         <td>{wr:.1f}%</td>
                         <td class="{p_class} profit-value">{p_sign}{s['profit']:.2f}u</td>
