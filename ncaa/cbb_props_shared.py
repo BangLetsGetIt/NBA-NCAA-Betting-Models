@@ -1868,3 +1868,44 @@ class CBBPropsEngine:
 
         # 4. Analyze new props
         self.analyze()
+
+        # 5. Push updated HTML and tracking to GitHub Pages
+        self.push_to_git()
+
+    def push_to_git(self):
+        """Commit and push HTML output and tracking data to GitHub."""
+        import subprocess
+
+        repo_root = os.path.dirname(self.script_dir)  # sports-models/
+        html_file = self.output_html
+        tracking_file = self.tracking_file
+
+        files_to_add = [f for f in [html_file, tracking_file] if os.path.exists(f)]
+        if not files_to_add:
+            return
+
+        try:
+            # Pull latest
+            subprocess.run(["git", "pull", "--rebase"], cwd=repo_root, capture_output=True, timeout=30)
+
+            # Stage files
+            subprocess.run(["git", "add"] + files_to_add, cwd=repo_root, capture_output=True, timeout=10)
+
+            # Check if there are changes to commit
+            result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=repo_root, capture_output=True, timeout=10)
+            if result.returncode == 0:
+                print(f"{Colors.GREEN}✓ No changes to push{Colors.END}")
+                return
+
+            # Commit
+            msg = f"Update CBB {self.prop_type} props - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            subprocess.run(["git", "commit", "-m", msg], cwd=repo_root, capture_output=True, timeout=15)
+
+            # Push
+            push_result = subprocess.run(["git", "push"], cwd=repo_root, capture_output=True, text=True, timeout=30)
+            if push_result.returncode == 0:
+                print(f"{Colors.GREEN}✅ Pushed to GitHub{Colors.END}")
+            else:
+                print(f"{Colors.RED}⚠ Push failed: {push_result.stderr}{Colors.END}")
+        except Exception as e:
+            print(f"{Colors.RED}⚠ Git error: {e}{Colors.END}")
