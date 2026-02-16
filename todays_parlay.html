@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parlay Builder &bull; CourtSide Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-card: #1e1e1e;
+            --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-blue: #60a5fa;
+            --accent-orange: #ff6b35;
+            --border-color: #333333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 5px 0;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .timestamp {
+            background: var(--bg-card-secondary);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Strategy & Stats Banner */
+        .stats-banner {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 25px;
+            text-align: center;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-box-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .stat-box-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .stat-box-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Leg Cards */
+        .legs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .leg-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .leg-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            border-color: #444;
+        }
+
+        .leg-number {
+            background: var(--bg-card-secondary);
+            padding: 20px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            min-width: 50px;
+        }
+
+        .leg-body {
+            padding: 18px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .leg-top-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sport-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .sport-badge-sm {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .type-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-card-secondary);
+            padding: 3px 10px;
+            border-radius: 6px;
+        }
+
+        .tag-correlated {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent-orange);
+            background: rgba(255, 107, 53, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .leg-pick {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .leg-matchup {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .leg-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-card-secondary);
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .leg-predicted {
+            font-size: 13px;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .leg-explanation {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .edge-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .edge-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            min-width: 35px;
+        }
+
+        .edge-bar-container {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-card-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .edge-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), #22d3ee);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .edge-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--accent-green);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+        }
+
+        .instructions-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--accent-blue);
+        }
+
+        .instructions ol {
+            list-style: none;
+            counter-reset: steps;
+            padding: 0;
+        }
+
+        .instructions li {
+            counter-increment: steps;
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions li::before {
+            content: counter(steps);
+            background: var(--bg-card-secondary);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 12px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Runners */
+        .runners-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .runners-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .runners-table th {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            text-align: left;
+            background: var(--bg-card-secondary);
+            font-weight: 600;
+        }
+
+        .runners-table td {
+            padding: 10px 12px;
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .runner-pick {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .runner-matchup {
+            color: var(--text-secondary);
+        }
+
+        .runner-type {
+            color: var(--text-secondary);
+        }
+
+        .runner-edge {
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-icon { font-size: 48px; margin-bottom: 15px; }
+        .empty-text { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .empty-sub { font-size: 14px; color: var(--text-secondary); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .leg-card { flex-direction: column; }
+            .leg-number {
+                writing-mode: horizontal-tb;
+                padding: 10px;
+                min-width: unset;
+            }
+            .stats-banner { flex-direction: column; }
+            .stat-box { min-width: unset; }
+            header { flex-direction: column; align-items: center; text-align: center; }
+            .runners-table { font-size: 12px; }
+            .runners-table th, .runners-table td { padding: 8px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>🎰 Parlay Builder</h1>
+                <div class="subtitle">Monday, February 16 &bull; 3-Pick Entry for DaBble &amp; Hard Rock</div>
+            </div>
+            <div class="timestamp">Generated: 2026-02-16 01:31 AM ET</div>
+        </header>
+
+        <div class="stats-banner">
+            <div class="stat-box">
+                <div class="stat-box-label">Strategy</div>
+                <div class="stat-box-value" style="font-size: 16px; color: #ff6b35;">🔗 Correlated Edge Stack</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Combined Edge</div>
+                <div class="stat-box-value" style="color: var(--accent-green);">+69.1</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Plays Analyzed</div>
+                <div class="stat-box-value">12</div>
+                <div class="stat-box-sub">NCAAB</div>
+            </div>
+        </div>
+
+        <div class="legs-container">
+            
+            <div class="leg-card">
+                <div class="leg-number">LEG 1</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        <span class="tag tag-correlated">🔗 CORRELATED</span>
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">Syracuse Orange +20.5</div>
+                    <div class="leg-matchup">Syracuse Orange @ Duke Blue Devils</div>
+                    <div class="leg-time">Mon 07:00 PM</div>
+                    <div class="leg-predicted">Model: Syracuse Orange 75.3, Duke Blue Devils 81.9</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.0% | Win: 99.5%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 98.78016328619475%;"></div>
+                        </div>
+                        <div class="edge-value">+27.1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="leg-card">
+                <div class="leg-number">LEG 2</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📊 TOTAL</span>
+                        <span class="tag tag-correlated">🔗 CORRELATED</span>
+                    </div>
+                    <div class="leg-pick" style="color: #4ade80;">OVER 142.5</div>
+                    <div class="leg-matchup">Syracuse Orange @ Duke Blue Devils</div>
+                    <div class="leg-time">Mon 07:00 PM</div>
+                    <div class="leg-predicted">Model: Syracuse Orange 75.3, Duke Blue Devils 81.9</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +75.3% | Win: 91.8%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 53.43780193210258%;"></div>
+                        </div>
+                        <div class="edge-value">+14.6</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="leg-card">
+                <div class="leg-number">LEG 3</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📊 TOTAL</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #4ade80;">OVER 134.5</div>
+                    <div class="leg-matchup">Houston Cougars @ Iowa State Cyclones</div>
+                    <div class="leg-time">Mon 09:00 PM</div>
+                    <div class="leg-predicted">Model: Houston Cougars 79.2, Iowa State Cyclones 82.7</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.0% | Win: 99.5%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 100.0%;"></div>
+                        </div>
+                        <div class="edge-value">+27.4</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="instructions"><div class="instructions-title">How to Enter</div><ol><li>Open DaBble or Hard Rock Bet</li><li>Add each leg above to your bet slip</li><li>Select 3-Pick Parlay entry type</li><li>Set your unit size and confirm</li></ol></div>
+
+        
+            <div class="runners-section">
+                <div class="section-title">📋 Runner-Up Plays</div>
+                <table class="runners-table">
+                    <thead>
+                        <tr>
+                            <th>Sport</th>
+                            <th>Pick</th>
+                            <th>Game</th>
+                            <th>Type</th>
+                            <th>Edge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                <tr>
+                    <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
+                    <td class="runner-pick">Miss Valley St Delta Devils +14.5</td>
+                    <td class="runner-matchup">Miss Valley St Delta Devils @ Alabama St Hornets</td>
+                    <td class="runner-type">Spread</td>
+                    <td class="runner-edge">+23.6</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
+                    <td class="runner-pick">Wagner Seahawks +9.5</td>
+                    <td class="runner-matchup">Wagner Seahawks @ LIU Sharks</td>
+                    <td class="runner-type">Spread</td>
+                    <td class="runner-edge">+17.3</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
+                    <td class="runner-pick">Lamar Cardinals +6.5</td>
+                    <td class="runner-matchup">Lamar Cardinals @ UT Rio Grande Valley Vaqueros</td>
+                    <td class="runner-type">Spread</td>
+                    <td class="runner-edge">+12.2</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
+                    <td class="runner-pick">OVER 140.5</td>
+                    <td class="runner-matchup">Miss Valley St Delta Devils @ Alabama St Hornets</td>
+                    <td class="runner-type">Total</td>
+                    <td class="runner-edge">+11.1</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
+                    <td class="runner-pick">Morgan St Bears +5.5</td>
+                    <td class="runner-matchup">Morgan St Bears @ North Carolina Central Eagles</td>
+                    <td class="runner-type">Spread</td>
+                    <td class="runner-edge">+10.5</td>
+                </tr>
+                
+                    </tbody>
+                </table>
+            </div>
+            
+
+        <div class="footer">
+            CourtSide Analytics &bull; <a href="https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/best_plays.html">Best Plays</a> &bull; <a href="https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/dashboard.html">Dashboard</a> &bull; <a href="https://bangletsgetit.github.io/NBA-NCAA-Betting-Models/analytics_dashboard.html">Analytics</a>
+        </div>
+    </div>
+</body>
+</html>
