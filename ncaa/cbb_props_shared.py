@@ -957,10 +957,12 @@ class CBBPropsEngine:
             if not bookmakers:
                 continue
 
-            # Prioritize Hard Rock Bet, then FanDuel, then first available
+            # Prioritize Hard Rock Bet, then FanDuel, then Pinnacle/Fliff, then first available
             preferred_order = [
                 next((b for b in bookmakers if b.get("key") == "hardrockbet"), None),
                 next((b for b in bookmakers if b.get("key") == "fanduel"), None),
+                next((b for b in bookmakers if b.get("key") == "pinnacle"), None),
+                next((b for b in bookmakers if b.get("key") == "fliff"), None),
             ]
             # Build ordered list: preferred books first, then rest
             tried_keys = {b.get("key") for b in preferred_order if b}
