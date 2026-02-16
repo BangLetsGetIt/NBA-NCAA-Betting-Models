@@ -876,7 +876,7 @@ def run_cbb_props_grading(force=False, grade_only=False):
     log("Starting CBB Props Grading...", "info")
 
     any_updates = False
-    prop_types = ['points', 'assists', 'rebounds', 'pra', 'points_rebounds', 'points_assists', 'rebounds_assists']
+    prop_types = ['points', 'assists', 'rebounds', 'threes', 'pra', 'points_rebounds', 'points_assists', 'rebounds_assists']
 
     try:
         from cbb_props_shared import CBBPropsEngine

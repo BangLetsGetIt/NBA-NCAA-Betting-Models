@@ -1201,6 +1201,10 @@ class CBBPropsEngine:
         props, teams = self.fetch_odds()
         if not props:
             print("No props found.")
+            # Still regenerate HTML with updated tracking stats (graded picks, etc.)
+            tracking_data = self.load_tracking_data()
+            stats = self.calculate_tracking_stats(tracking_data)
+            self.generate_html([], [], stats)
             return
             
         # 2. Fetch/Load Stats
