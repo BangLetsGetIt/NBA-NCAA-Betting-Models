@@ -13,12 +13,22 @@ class SportsAnalytics:
         self.all_picks = []
         self.tracking_files = [
             "nba/nba_picks_tracking.json",
-            "nba/nba_points_props_tracking.json", 
+            "nba/nba_points_props_tracking.json",
             "nba/nba_rebounds_props_tracking.json",
             "nba/nba_assists_props_tracking.json",
             "nba/nba_3pt_props_tracking.json",
+            "nba/nba_pra_props_tracking.json",
+            "nba/nba_points_rebounds_props_tracking.json",
+            "nba/nba_points_assists_props_tracking.json",
+            "nba/nba_rebounds_assists_props_tracking.json",
             "ncaa/ncaab_picks_tracking.json",
             "ncaa/cbb_rebounds_props_tracking.json",
+            "ncaa/cbb_points_props_tracking.json",
+            "ncaa/cbb_assists_props_tracking.json",
+            "ncaa/cbb_pra_props_tracking.json",
+            "ncaa/cbb_points_rebounds_props_tracking.json",
+            "ncaa/cbb_points_assists_props_tracking.json",
+            "ncaa/cbb_rebounds_assists_props_tracking.json",
             "soccer/soccer_picks_tracking.json",
             "wnba/wnba_model_tracking.json",
             "wnba/wnba_props_tracking.json",
@@ -346,11 +356,14 @@ class SportsAnalytics:
                 pick_str = str(pick)
                 file_path = pick.get('file_path', '').lower()
                 
-                if 'points' in file_path or 'Points' in pick_str: prop_type = 'Pts'
+                if 'points_rebounds_assists' in file_path or 'pra' in file_path: prop_type = 'PRA'
+                elif 'points_rebounds' in file_path: prop_type = 'P+R'
+                elif 'points_assists' in file_path: prop_type = 'P+A'
+                elif 'rebounds_assists' in file_path: prop_type = 'R+A'
+                elif 'points' in file_path or 'Points' in pick_str: prop_type = 'Pts'
                 elif 'rebounds' in file_path or 'Rebounds' in pick_str: prop_type = 'Reb'
                 elif 'assists' in file_path or 'Assists' in pick_str: prop_type = 'Ast'
                 elif '3pt' in file_path or '3PT' in pick_str: prop_type = '3PT'
-                elif 'pra' in file_path or 'PRA' in pick_str: prop_type = 'PRA'
                 elif 'steals' in file_path: prop_type = 'Stl'
                 elif 'blocks' in file_path: prop_type = 'Blk'
                 
@@ -489,23 +502,30 @@ class SportsAnalytics:
         # Use a composite score: win_rate * 0.7 + log(picks) * 0.3
         import math
         top_players.sort(key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
-        
+
         # Two lists for teams: Efficiency (Win Rate) and Profit
         top_teams_efficiency = sorted(top_teams, key=lambda x: (x['win_rate'], math.log(x['total_picks'] + 1)), reverse=True)
         top_teams_profit = sorted(top_teams, key=lambda x: x['profit_loss'], reverse=True)
-        
+
+        # Build worst performers (sorted by win rate ascending)
+        worst_players = sorted(top_players, key=lambda x: (x['win_rate'], -x['total_picks']))
+
         # Combine into single dict
         top_performers = {}
-        for i, player in enumerate(top_players[:15]):  # Increased to 15 for better selection
+        for i, player in enumerate(top_players[:15]):
             top_performers[f'player_{i}'] = player
-            
+
         for i, team in enumerate(top_teams_efficiency[:10]):
             top_performers[f'team_eff_{i}'] = team
-            
+
         for i, team in enumerate(top_teams_profit[:10]):
             top_performers[f'team_prof_{i}'] = team
-            
-        return top_performers
+
+        worst_performers = {}
+        for i, player in enumerate(worst_players[:10]):
+            worst_performers[f'player_{i}'] = player
+
+        return top_performers, worst_performers
 
     def calculate_recent_performance(self, completed_picks, count):
         """Calculate recent performance for given number of picks"""
@@ -556,11 +576,21 @@ class SportsAnalytics:
         model_mapping = {
             'nba/nba_picks_tracking.json': 'NBA Main Model',
             'nba/nba_points_props_tracking.json': 'NBA Points Props',
-            'nba/nba_rebounds_props_tracking.json': 'NBA Rebounds Props', 
+            'nba/nba_rebounds_props_tracking.json': 'NBA Rebounds Props',
             'nba/nba_assists_props_tracking.json': 'NBA Assists Props',
             'nba/nba_3pt_props_tracking.json': 'NBA 3PT Props',
+            'nba/nba_pra_props_tracking.json': 'NBA PRA Props',
+            'nba/nba_points_rebounds_props_tracking.json': 'NBA P+R Props',
+            'nba/nba_points_assists_props_tracking.json': 'NBA P+A Props',
+            'nba/nba_rebounds_assists_props_tracking.json': 'NBA R+A Props',
             'ncaa/ncaab_picks_tracking.json': 'NCAAB Main Model',
             'ncaa/cbb_rebounds_props_tracking.json': 'NCAAB Rebounds Props',
+            'ncaa/cbb_points_props_tracking.json': 'NCAAB Points Props',
+            'ncaa/cbb_assists_props_tracking.json': 'NCAAB Assists Props',
+            'ncaa/cbb_pra_props_tracking.json': 'NCAAB PRA Props',
+            'ncaa/cbb_points_rebounds_props_tracking.json': 'NCAAB P+R Props',
+            'ncaa/cbb_points_assists_props_tracking.json': 'NCAAB P+A Props',
+            'ncaa/cbb_rebounds_assists_props_tracking.json': 'NCAAB R+A Props',
             'soccer/soccer_picks_tracking.json': 'Soccer Model',
             'wnba/wnba_model_tracking.json': 'WNBA Main Model',
             'wnba/wnba_props_tracking.json': 'WNBA Props',
@@ -719,7 +749,11 @@ class SportsAnalytics:
             'nba/nba_points_props_tracking.json': 'Points Props',
             'nba/nba_rebounds_props_tracking.json': 'Rebounds Props',
             'nba/nba_assists_props_tracking.json': 'Assists Props',
-            'nba/nba_3pt_props_tracking.json': '3PT Props'
+            'nba/nba_3pt_props_tracking.json': '3PT Props',
+            'nba/nba_pra_props_tracking.json': 'PRA Props',
+            'nba/nba_points_rebounds_props_tracking.json': 'P+R Props',
+            'nba/nba_points_assists_props_tracking.json': 'P+A Props',
+            'nba/nba_rebounds_assists_props_tracking.json': 'R+A Props'
         }
         
         for file_path, prop_type in prop_mapping.items():
@@ -873,19 +907,22 @@ class SportsAnalytics:
         """Generate complete analytics data"""
         self.load_all_tracking_data()
         
+        top_performers, worst_performers = self.calculate_top_performers()
+
         analytics = {
             'overview': self.calculate_overview_metrics(),
             'by_sport': self.calculate_by_sport(),
             'by_model_type': self.calculate_by_model_type(),
             'time_series': self.calculate_time_series(),
-            'top_performers': self.calculate_top_performers(),
+            'top_performers': top_performers,
+            'worst_performers': worst_performers,
             'model_breakdown': self.calculate_model_breakdown(),
             'prop_breakdown': self.calculate_prop_breakdown(),
             'players_by_prop': self.calculate_players_by_prop_type(),
             'edge_analysis': self.calculate_edge_analysis(),
             'ai_score_analysis': self.calculate_ai_score_analysis()
         }
-        
+
         return analytics
     
     def render_dashboard(self):

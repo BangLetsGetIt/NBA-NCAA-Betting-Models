@@ -7,19 +7,20 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Sports Models Analytics Dashboard</title>
+    <title>CourtSide Analytics - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --bg-card-secondary: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --accent-blue: #60a5fa;
-            --border-color: #333333;
+            /* Palette from Prop_Model_Design.md */
+            --bg-black: #000000;
+            --card-gray: #1a1a1a;
+            --box-gray: #262626;
+            --text-white: #ffffff;
+            --text-slate: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
         }
 
         * {
@@ -29,155 +30,141 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            margin: 0;
+            padding: 24px;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--box-gray);
         }
 
-        .header h1 {
-            color: var(--text-primary);
-            font-size: 2.5em;
-            margin-bottom: 10px;
+        .brand-title {
+            font-size: 1.5rem;
             font-weight: 700;
+            color: var(--text-white);
         }
 
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1em;
+        .brand-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-slate);
+            margin-top: 4px;
+        }
+
+        .header-meta {
+            text-align: right;
+            color: var(--text-slate);
+            font-size: 0.8rem;
         }
 
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .metric-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card-gray);
+            border: 1px solid var(--box-gray);
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.2s ease;
         }
 
         .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
             border-color: var(--accent-blue);
         }
 
         .metric-value {
-            font-size: 2.2em;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 8px;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            margin-bottom: 4px;
         }
 
         .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.9em;
+            color: var(--text-slate);
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
         }
 
-        .txt-green {
-            color: var(--accent-green);
-        }
-
-        .txt-red {
-            color: var(--accent-red);
-        }
-
-        .txt-blue {
-            color: var(--accent-blue);
-        }
-
-        .txt-neutral {
-            color: var(--text-secondary);
-        }
-
-        .positive {
-            color: var(--accent-green);
-        }
-
-        .negative {
-            color: var(--accent-red);
-        }
-
-        .neutral {
-            color: var(--text-secondary);
-        }
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--text-slate); }
 
         .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card-gray);
+            border: 1px solid var(--box-gray);
             border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
         .section h2 {
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            border-bottom: 2px solid var(--accent-blue);
-            padding-bottom: 10px;
+            color: var(--text-white);
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section h3 {
+            color: var(--text-white);
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .section h4 {
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
         }
 
         .chart-container {
             position: relative;
             height: 400px;
-            margin: 20px 0;
-            background: var(--bg-card-secondary);
+            margin: 16px 0;
+            background: var(--box-gray);
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background: var(--bg-card-secondary);
-            border-radius: 8px;
-            overflow: hidden;
+            margin: 12px 0;
         }
 
         .table th,
         .table td {
-            padding: 12px;
+            padding: 10px 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--box-gray);
+            font-size: 0.875rem;
         }
 
         .table th {
-            background: var(--bg-card);
-            color: var(--text-primary);
+            color: var(--text-slate);
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -187,136 +174,86 @@
         }
 
         .table tr:hover {
-            background: rgba(96, 165, 250, 0.1);
+            background: rgba(59, 130, 246, 0.05);
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 24px;
         }
 
         .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .badge-nba {
-            background: #FF6B35;
-            color: white;
-        }
-
-        .badge-ncaab {
-            background: #1976D2;
-            color: white;
-        }
-
-        .badge-wnba {
-            background: #E91E63;
-            color: white;
-        }
-
-        .badge-soccer {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .badge-mlb {
-            background: #F44336;
-            color: white;
-        }
-
-        .badge-auto-bet {
-            background: #FFD700;
-            color: #000000;
-            margin-left: 8px;
-            font-size: 0.7em;
-            vertical-align: middle;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
-
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
-        }
+        .badge-nba { background: #FF6B35; color: white; }
+        .badge-ncaab { background: #1976D2; color: white; }
+        .badge-wnba { background: #E91E63; color: white; }
+        .badge-soccer { background: #4CAF50; color: white; }
 
         .footer {
             text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            font-size: 0.9em;
+            padding: 24px;
+            color: var(--text-slate);
+            font-size: 0.8rem;
         }
+
+        .prop-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin: 1px 2px;
+            background: var(--box-gray);
+            color: var(--text-slate);
+        }
+
+        .prop-tag.good { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .prop-tag.bad { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .overview-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section {
-                padding: 20px;
-            }
-
-            .chart-container {
-                height: 300px;
-            }
+            body { padding: 12px; }
+            .header { flex-direction: column; text-align: center; gap: 8px; }
+            .header-meta { text-align: center; }
+            .overview-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid { grid-template-columns: 1fr; }
+            .section { padding: 16px; }
+            .chart-container { height: 300px; }
         }
 
-        /* Chart.js dark theme overrides */
-        canvas {
-            background: transparent !important;
-        }
+        canvas { background: transparent !important; }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Sports Models Analytics Dashboard</h1>
-            <p>Complete Performance Analysis & Tracking</p>
-            <p><small>Last Updated: {{ last_updated }}</small></p>
+            <div>
+                <h1 class="brand-title">CourtSide Analytics</h1>
+                <p class="brand-subtitle">Complete Performance Analysis & Tracking</p>
+            </div>
+            <div class="header-meta">
+                Last Updated: {{ last_updated }}
+            </div>
         </div>
 
         <!-- Overview Metrics -->
         <div class="overview-grid">
             <div class="metric-card">
-                <div
-                    class="metric-value {{ 'positive' if analytics.overview.profit_loss > 0 else 'negative' if analytics.overview.profit_loss < 0 else 'neutral' }}">
-                    {{ "%.2f"|format(analytics.overview.profit_loss) }} units
+                <div class="metric-value {{ 'positive' if analytics.overview.profit_loss > 0 else 'negative' if analytics.overview.profit_loss < 0 else 'neutral' }}">
+                    {{ "%.2f"|format(analytics.overview.profit_loss) }}u
                 </div>
                 <div class="metric-label">Total P&L</div>
             </div>
             <div class="metric-card">
-                <div
-                    class="metric-value {{ 'positive' if analytics.overview.roi > 0 else 'negative' if analytics.overview.roi < 0 else 'neutral' }}">
+                <div class="metric-value {{ 'positive' if analytics.overview.roi > 0 else 'negative' if analytics.overview.roi < 0 else 'neutral' }}">
                     {{ "%.1f"|format(analytics.overview.roi) }}%
                 </div>
                 <div class="metric-label">ROI</div>
@@ -337,7 +274,7 @@
 
         <!-- Performance by Sport -->
         <div class="section">
-            <h2>🏈 Performance by Sport</h2>
+            <h2>Performance by Sport</h2>
             <table class="table">
                 <thead>
                     <tr>
@@ -352,17 +289,13 @@
                 <tbody>
                     {% for sport, metrics in analytics.by_sport.items() %}
                     <tr>
-                        <td>
-                            <span class="badge badge-{{ sport.lower() }}">{{ sport }}</span>
-                        </td>
+                        <td><span class="badge badge-{{ sport.lower() }}">{{ sport }}</span></td>
                         <td>{{ metrics.total_picks }}</td>
                         <td>{{ "%.1f"|format(metrics.win_rate * 100) }}%</td>
-                        <td
-                            class="{{ 'positive' if metrics.profit_loss > 0 else 'negative' if metrics.profit_loss < 0 else 'neutral' }}">
-                            {{ "%.2f"|format(metrics.profit_loss) }} units
+                        <td class="{{ 'positive' if metrics.profit_loss > 0 else 'negative' if metrics.profit_loss < 0 else 'neutral' }}">
+                            {{ "%.2f"|format(metrics.profit_loss) }}u
                         </td>
-                        <td
-                            class="{{ 'positive' if metrics.roi > 0 else 'negative' if metrics.roi < 0 else 'neutral' }}">
+                        <td class="{{ 'positive' if metrics.roi > 0 else 'negative' if metrics.roi < 0 else 'neutral' }}">
                             {{ "%.1f"|format(metrics.roi) }}%
                         </td>
                         <td>{{ "%.1f"|format(metrics.avg_edge) }}</td>
@@ -372,22 +305,18 @@
             </table>
         </div>
 
-
-
-
-
         <!-- Top Performers -->
         <div class="section">
-            <h2>🏆 Top Performers</h2>
+            <h2>Top Performers</h2>
             <div class="grid">
                 <div>
-                    <h3>Players</h3>
+                    <h3>Best Players</h3>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Player</th>
                                 <th>Picks</th>
-                                <th>Props</th>
+                                <th>Props Breakdown</th>
                                 <th>Win Rate</th>
                                 <th>Record</th>
                             </tr>
@@ -399,13 +328,13 @@
                                 <td>
                                     {% if performer.team_abbrev %}
                                     <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ performer.team_abbrev }}.png"
-                                        alt="{{ performer.team_name }} Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
+                                        alt="{{ performer.team_name }}"
+                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle;">
                                     {% endif %}
                                     {{ performer.name }}
                                 </td>
                                 <td>{{ performer.total_picks }}</td>
-                                <td style="font-size: 0.85em; color: var(--text-secondary);">
+                                <td>
                                     {{ performer.prop_summary }}
                                 </td>
                                 <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
@@ -419,78 +348,112 @@
                     </table>
                 </div>
                 <div>
-                    <div>
-                        <h3>Teams - Most Efficient (Win %)</h3>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Picks</th>
-                                    <th>Fav/Dog Splits</th>
-                                    <th>Win Rate</th>
-                                    <th>Record</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for key, performer in analytics.top_performers.items() %}
-                                {% if 'team_eff_' in key %}
-                                <tr>
-                                    <td>
-                                        {{ performer.name }}
-                                    </td>
-                                    <td>{{ performer.total_picks }}</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        {{ performer.record_split }}
-                                    </td>
-                                    <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
-                                        {{ "%.1f"|format(performer.win_rate * 100) }}%
-                                    </td>
-                                    <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div>
-                        <h3>Teams - Most Profitable ($$$)</h3>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Picks</th>
-                                    <th>Fav/Dog Splits</th>
-                                    <th>Profit</th>
-                                    <th>Record</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for key, performer in analytics.top_performers.items() %}
-                                {% if 'team_prof_' in key %}
-                                <tr>
-                                    <td>{{ performer.name }}</td>
-                                    <td>{{ performer.total_picks }}</td>
-                                    <td style="font-size: 0.85em; color: var(--text-secondary);">
-                                        {{ performer.record_split }}
-                                    </td>
-                                    <td class="positive">
-                                        +{{ "%.2f"|format(performer.profit_loss / 100) }}u
-                                    </td>
-                                    <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    <h3>Worst Players (Min 5 Picks)</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Picks</th>
+                                <th>Props Breakdown</th>
+                                <th>Win Rate</th>
+                                <th>Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, performer in analytics.worst_performers.items() %}
+                            {% if performer.type == 'player' %}
+                            <tr>
+                                <td>
+                                    {% if performer.team_abbrev %}
+                                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ performer.team_abbrev }}.png"
+                                        alt="{{ performer.team_name }}"
+                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle;">
+                                    {% endif %}
+                                    {{ performer.name }}
+                                </td>
+                                <td>{{ performer.total_picks }}</td>
+                                <td>
+                                    {{ performer.prop_summary }}
+                                </td>
+                                <td class="{{ 'negative' if performer.win_rate < 0.5 else 'neutral' }}">
+                                    {{ "%.1f"|format(performer.win_rate * 100) }}%
+                                </td>
+                                <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Model Records & Breakdown -->
+        <!-- Teams -->
         <div class="section">
-            <h2>🎯 NBA Model Records & Breakdown</h2>
+            <h2>Team Records (ATS)</h2>
+            <div class="grid">
+                <div>
+                    <h3>Most Efficient (Win %)</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>Picks</th>
+                                <th>Fav/Dog Splits</th>
+                                <th>Win Rate</th>
+                                <th>Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, performer in analytics.top_performers.items() %}
+                            {% if 'team_eff_' in key %}
+                            <tr>
+                                <td>{{ performer.name }}</td>
+                                <td>{{ performer.total_picks }}</td>
+                                <td style="font-size: 0.8em; color: var(--text-slate);">{{ performer.record_split }}</td>
+                                <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
+                                    {{ "%.1f"|format(performer.win_rate * 100) }}%
+                                </td>
+                                <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3>Most Profitable</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>Picks</th>
+                                <th>Fav/Dog Splits</th>
+                                <th>Profit</th>
+                                <th>Record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, performer in analytics.top_performers.items() %}
+                            {% if 'team_prof_' in key %}
+                            <tr>
+                                <td>{{ performer.name }}</td>
+                                <td>{{ performer.total_picks }}</td>
+                                <td style="font-size: 0.8em; color: var(--text-slate);">{{ performer.record_split }}</td>
+                                <td class="positive">+{{ "%.2f"|format(performer.profit_loss / 100) }}u</td>
+                                <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Records -->
+        <div class="section">
+            <h2>NBA Model Records & Breakdown</h2>
             <table class="table">
                 <thead>
                     <tr>
@@ -510,35 +473,29 @@
                     {% if 'NBA' in model_name %}
                     <tr>
                         <td>{{ model_name }}</td>
-                        <td>{{ metrics.total_picks }} ({{ metrics.wins }}-{{ metrics.losses }}-{{ metrics.pushes }})
-                        </td>
+                        <td>{{ metrics.total_picks }} ({{ metrics.wins }}-{{ metrics.losses }}-{{ metrics.pushes }})</td>
                         <td class="{{ 'positive' if metrics.win_rate > 0.5 else 'negative' }}">
                             {{ "%.1f"|format(metrics.win_rate * 100) }}%
                         </td>
                         <td>{{ metrics.wins }}-{{ metrics.losses }}-{{ metrics.pushes }}</td>
-                        <td
-                            class="{{ 'positive' if metrics.profit_loss > 0 else 'negative' if metrics.profit_loss < 0 else 'neutral' }}">
-                            {{ "%.2f"|format(metrics.profit_loss) }} units
+                        <td class="{{ 'positive' if metrics.profit_loss > 0 else 'negative' if metrics.profit_loss < 0 else 'neutral' }}">
+                            {{ "%.2f"|format(metrics.profit_loss) }}u
                         </td>
                         <td class="{{ 'positive' if metrics.recent_100.win_rate > 0.5 else 'negative' }}">
                             {{ "%.1f"|format(metrics.recent_100.win_rate * 100) }}%
-                            <br><small>{{ metrics.recent_100.wins }}-{{ metrics.recent_100.losses }}-{{
-                                metrics.recent_100.pushes }}</small>
+                            <br><small>{{ metrics.recent_100.wins }}-{{ metrics.recent_100.losses }}-{{ metrics.recent_100.pushes }}</small>
                         </td>
                         <td class="{{ 'positive' if metrics.recent_50.win_rate > 0.5 else 'negative' }}">
                             {{ "%.1f"|format(metrics.recent_50.win_rate * 100) }}%
-                            <br><small>{{ metrics.recent_50.wins }}-{{ metrics.recent_50.losses }}-{{
-                                metrics.recent_50.pushes }}</small>
+                            <br><small>{{ metrics.recent_50.wins }}-{{ metrics.recent_50.losses }}-{{ metrics.recent_50.pushes }}</small>
                         </td>
                         <td class="{{ 'positive' if metrics.recent_20.win_rate > 0.5 else 'negative' }}">
                             {{ "%.1f"|format(metrics.recent_20.win_rate * 100) }}%
-                            <br><small>{{ metrics.recent_20.wins }}-{{ metrics.recent_20.losses }}-{{
-                                metrics.recent_20.pushes }}</small>
+                            <br><small>{{ metrics.recent_20.wins }}-{{ metrics.recent_20.losses }}-{{ metrics.recent_20.pushes }}</small>
                         </td>
                         <td class="{{ 'positive' if metrics.recent_10.win_rate > 0.5 else 'negative' }}">
                             {{ "%.1f"|format(metrics.recent_10.win_rate * 100) }}%
-                            <br><small>{{ metrics.recent_10.wins }}-{{ metrics.recent_10.losses }}-{{
-                                metrics.recent_10.pushes }}</small>
+                            <br><small>{{ metrics.recent_10.wins }}-{{ metrics.recent_10.losses }}-{{ metrics.recent_10.pushes }}</small>
                         </td>
                     </tr>
                     {% endif %}
@@ -549,7 +506,7 @@
 
         <!-- Player Props Breakdown -->
         <div class="section">
-            <h2>👤 Player Props Breakdown</h2>
+            <h2>Player Props Breakdown</h2>
             <div class="grid">
                 <div>
                     <h3>Best Performing Players (Min 5 Picks)</h3>
@@ -571,21 +528,19 @@
                                 <td>
                                     {% if performer.team_abbrev %}
                                     <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ performer.team_abbrev }}.png"
-                                        alt="{{ performer.team_name }} Logo" class="team-logo-small"
-                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
+                                        alt="{{ performer.team_name }}"
+                                        style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle;">
                                     {% endif %}
                                     {{ performer.name }}
                                 </td>
-                                <td><span class="badge badge-{{ performer.sport.lower() }}">{{ performer.sport }}</span>
-                                </td>
+                                <td><span class="badge badge-{{ performer.sport.lower() }}">{{ performer.sport }}</span></td>
                                 <td>{{ performer.total_picks }}</td>
                                 <td class="{{ 'positive' if performer.win_rate > 0.6 else 'neutral' }}">
                                     {{ "%.1f"|format(performer.win_rate * 100) }}%
                                 </td>
                                 <td>{{ performer.wins }}-{{ performer.losses }}-{{ performer.pushes }}</td>
-                                <td
-                                    class="{{ 'positive' if performer.profit_loss > 0 else 'negative' if performer.profit_loss < 0 else 'neutral' }}">
-                                    {{ "%.2f"|format(performer.profit_loss) }} units
+                                <td class="{{ 'positive' if performer.profit_loss > 0 else 'negative' if performer.profit_loss < 0 else 'neutral' }}">
+                                    {{ "%.2f"|format(performer.profit_loss) }}u
                                 </td>
                             </tr>
                             {% endif %}
@@ -595,9 +550,9 @@
                 </div>
                 <div>
                     <h3>Top Players by Prop Type</h3>
-                    {% for prop_type in ['Points Props', 'Rebounds Props', 'Assists Props', '3PT Props'] %}
+                    {% for prop_type in ['Points Props', 'Rebounds Props', 'Assists Props', '3PT Props', 'PRA Props', 'P+R Props', 'P+A Props', 'R+A Props'] %}
                     {% if analytics.players_by_prop[prop_type] %}
-                    <div style="margin-bottom: 30px;">
+                    <div style="margin-bottom: 24px;">
                         <h4>{{ prop_type }}</h4>
                         <table class="table">
                             <thead>
@@ -615,8 +570,8 @@
                                     <td>
                                         {% if player.team_abbrev %}
                                         <img src="https://a.espncdn.com/i/teamlogos/nba/500/{{ player.team_abbrev }}.png"
-                                            alt="{{ player.team_name }} Logo" class="team-logo-small"
-                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 8px; vertical-align: middle;">
+                                            alt="{{ player.team_name }}"
+                                            style="width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle;">
                                         {% endif %}
                                         {{ player.name }}
                                     </td>
@@ -625,9 +580,8 @@
                                         {{ "%.1f"|format(player.win_rate * 100) }}%
                                     </td>
                                     <td>{{ player.wins }}-{{ player.losses }}-{{ player.pushes }}</td>
-                                    <td
-                                        class="{{ 'positive' if player.profit_loss > 0 else 'negative' if player.profit_loss < 0 else 'neutral' }}">
-                                        {{ "%.2f"|format(player.profit_loss) }} units
+                                    <td class="{{ 'positive' if player.profit_loss > 0 else 'negative' if player.profit_loss < 0 else 'neutral' }}">
+                                        {{ "%.2f"|format(player.profit_loss) }}u
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -641,13 +595,11 @@
         </div>
 
         <div class="footer">
-            <p>Generated by Sports Models Analytics Dashboard | Data from {{ analytics.overview.total_picks }} total
-                picks</p>
+            <p>CourtSide Analytics | Data from {{ analytics.overview.total_picks }} total picks</p>
         </div>
     </div>
 
     <script>
-        // Chart.js configurations
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -657,14 +609,6 @@
                 }
             }
         };
-
-
-
-
-
-
-
-
     </script>
 </body>
 

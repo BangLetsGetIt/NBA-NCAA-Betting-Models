@@ -1115,7 +1115,7 @@ def regenerate_analytics_dashboard():
     """Regenerate the analytics dashboard after updating tracking data."""
     try:
         print("\n📊 Regenerating Analytics Dashboard...")
-        dashboard_script = os.path.join(SCRIPT_DIR, "tools", "analytics_dashboard.py")
+        dashboard_script = os.path.join(SCRIPT_DIR, "generate_analytics_dashboard.py")
         if os.path.exists(dashboard_script):
             result = subprocess.run(
                 ['python3', dashboard_script],
