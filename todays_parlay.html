@@ -72,7 +72,7 @@
             white-space: nowrap;
         }
 
-        /* Strategy & Stats Banner */
+        /* Stats Banner */
         .stats-banner {
             display: flex;
             gap: 15px;
@@ -111,12 +111,46 @@
             margin-top: 2px;
         }
 
+        /* Entry Section */
+        .entry-section {
+            margin-bottom: 30px;
+        }
+
+        .entry-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .entry-number {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .strategy-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .entry-edge {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-left: auto;
+        }
+
         /* Leg Cards */
         .legs-container {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin-bottom: 30px;
+            gap: 12px;
         }
 
         .leg-card {
@@ -198,7 +232,7 @@
         }
 
         .leg-pick {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             line-height: 1.2;
         }
@@ -384,6 +418,13 @@
         .empty-text { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
         .empty-sub { font-size: 14px; color: var(--text-secondary); }
 
+        /* Divider */
+        .entry-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 10px 0 25px 0;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -411,6 +452,8 @@
             header { flex-direction: column; align-items: center; text-align: center; }
             .runners-table { font-size: 12px; }
             .runners-table th, .runners-table td { padding: 8px 6px; }
+            .entry-header { flex-direction: column; align-items: flex-start; }
+            .entry-edge { margin-left: 0; }
         }
     </style>
 </head>
@@ -419,29 +462,37 @@
         <header>
             <div class="header-left">
                 <h1>🎰 Parlay Builder</h1>
-                <div class="subtitle">Monday, February 16 &bull; 3-Pick Entry for DaBble &amp; Hard Rock</div>
+                <div class="subtitle">Monday, February 16 &bull; 3-Pick Entries for DaBble &amp; Hard Rock</div>
             </div>
-            <div class="timestamp">Generated: 2026-02-16 01:31 AM ET</div>
+            <div class="timestamp">Generated: 2026-02-16 10:37 PM ET</div>
         </header>
 
         <div class="stats-banner">
             <div class="stat-box">
-                <div class="stat-box-label">Strategy</div>
-                <div class="stat-box-value" style="font-size: 16px; color: #ff6b35;">🔗 Correlated Edge Stack</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-label">Combined Edge</div>
-                <div class="stat-box-value" style="color: var(--accent-green);">+69.1</div>
+                <div class="stat-box-label">Entries</div>
+                <div class="stat-box-value">5</div>
+                <div class="stat-box-sub">3-pick parlays</div>
             </div>
             <div class="stat-box">
                 <div class="stat-box-label">Plays Analyzed</div>
-                <div class="stat-box-value">12</div>
+                <div class="stat-box-value">89</div>
                 <div class="stat-box-sub">NCAAB</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Best Combined Edge</div>
+                <div class="stat-box-value" style="color: var(--accent-green);">+81.5</div>
             </div>
         </div>
 
-        <div class="legs-container">
-            
+        
+        <div class="entry-section">
+            <div class="entry-header">
+                <div class="entry-number">ENTRY 1</div>
+                <span class="strategy-badge" style="background: #ff6b3515; color: #ff6b35; border: 1px solid #ff6b3540;">🔗 Correlated Edge Stack</span>
+                <span class="entry-edge">Combined Edge: +60.4</span>
+            </div>
+            <div class="legs-container">
+                
             <div class="leg-card">
                 <div class="leg-number">LEG 1</div>
                 <div class="leg-body">
@@ -450,21 +501,20 @@
                         <span class="type-badge">📐 SPREAD</span>
                         <span class="tag tag-correlated">🔗 CORRELATED</span>
                     </div>
-                    <div class="leg-pick" style="color: #ffffff;">Syracuse Orange +20.5</div>
-                    <div class="leg-matchup">Syracuse Orange @ Duke Blue Devils</div>
-                    <div class="leg-time">Mon 07:00 PM</div>
-                    <div class="leg-predicted">Model: Syracuse Orange 75.3, Duke Blue Devils 81.9</div>
-                    <div class="leg-explanation">HIGH confidence (EV: +90.0% | Win: 99.5%)</div>
+                    <div class="leg-pick" style="color: #ffffff;">UCLA Bruins +8.5</div>
+                    <div class="leg-matchup">UCLA Bruins @ Michigan St Spartans</div>
+                    <div class="leg-time">Tue 08:30 PM</div>
+                    <div class="leg-predicted">Model: UCLA Bruins 77.8, Michigan St Spartans 79.9</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +61.0% | Win: 84.3%)</div>
                     <div class="edge-section">
                         <div class="edge-label">EDGE</div>
                         <div class="edge-bar-container">
-                            <div class="edge-bar" style="width: 98.78016328619475%;"></div>
+                            <div class="edge-bar" style="width: 33.49433281915313%;"></div>
                         </div>
-                        <div class="edge-value">+27.1</div>
+                        <div class="edge-value">+10.6</div>
                     </div>
                 </div>
             </div>
-            
             <div class="leg-card">
                 <div class="leg-number">LEG 2</div>
                 <div class="leg-body">
@@ -473,51 +523,354 @@
                         <span class="type-badge">📊 TOTAL</span>
                         <span class="tag tag-correlated">🔗 CORRELATED</span>
                     </div>
-                    <div class="leg-pick" style="color: #4ade80;">OVER 142.5</div>
-                    <div class="leg-matchup">Syracuse Orange @ Duke Blue Devils</div>
-                    <div class="leg-time">Mon 07:00 PM</div>
-                    <div class="leg-predicted">Model: Syracuse Orange 75.3, Duke Blue Devils 81.9</div>
-                    <div class="leg-explanation">HIGH confidence (EV: +75.3% | Win: 91.8%)</div>
+                    <div class="leg-pick" style="color: #4ade80;">OVER 139.5</div>
+                    <div class="leg-matchup">UCLA Bruins @ Michigan St Spartans</div>
+                    <div class="leg-time">Tue 08:30 PM</div>
+                    <div class="leg-predicted">Model: UCLA Bruins 77.8, Michigan St Spartans 79.9</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +82.9% | Win: 95.8%)</div>
                     <div class="edge-section">
                         <div class="edge-label">EDGE</div>
                         <div class="edge-bar-container">
-                            <div class="edge-bar" style="width: 53.43780193210258%;"></div>
+                            <div class="edge-bar" style="width: 57.449450055879005%;"></div>
                         </div>
-                        <div class="edge-value">+14.6</div>
+                        <div class="edge-value">+18.2</div>
                     </div>
                 </div>
             </div>
-            
             <div class="leg-card">
                 <div class="leg-number">LEG 3</div>
                 <div class="leg-body">
                     <div class="leg-top-row">
                         <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
-                        <span class="type-badge">📊 TOTAL</span>
+                        <span class="type-badge">📐 SPREAD</span>
                         
                     </div>
-                    <div class="leg-pick" style="color: #4ade80;">OVER 134.5</div>
-                    <div class="leg-matchup">Houston Cougars @ Iowa State Cyclones</div>
-                    <div class="leg-time">Mon 09:00 PM</div>
-                    <div class="leg-predicted">Model: Houston Cougars 79.2, Iowa State Cyclones 82.7</div>
-                    <div class="leg-explanation">HIGH confidence (EV: +90.0% | Win: 99.5%)</div>
+                    <div class="leg-pick" style="color: #ffffff;">South Carolina Gamecocks +23.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks @ Florida Gators</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    <div class="leg-predicted">Model: South Carolina Gamecocks 73.5, Florida Gators 81.6</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.7% | Win: 99.9%)</div>
                     <div class="edge-section">
                         <div class="edge-label">EDGE</div>
                         <div class="edge-bar-container">
                             <div class="edge-bar" style="width: 100.0%;"></div>
                         </div>
-                        <div class="edge-value">+27.4</div>
+                        <div class="edge-value">+31.6</div>
                     </div>
                 </div>
             </div>
-            
+            </div>
+        </div>
+        <div class="entry-section">
+            <div class="entry-header">
+                <div class="entry-number">ENTRY 2</div>
+                <span class="strategy-badge" style="background: #4ade8015; color: #4ade80; border: 1px solid #4ade8040;">🎲 Diversified Top Edge</span>
+                <span class="entry-edge">Combined Edge: +81.5</span>
+            </div>
+            <div class="legs-container">
+                
+            <div class="leg-card">
+                <div class="leg-number">LEG 1</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">South Carolina Gamecocks +23.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks @ Florida Gators</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    <div class="leg-predicted">Model: South Carolina Gamecocks 73.5, Florida Gators 81.6</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.7% | Win: 99.9%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 100.0%;"></div>
+                        </div>
+                        <div class="edge-value">+31.6</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 2</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">Air Force Falcons +26.5</div>
+                    <div class="leg-matchup">Air Force Falcons @ New Mexico Lobos</div>
+                    <div class="leg-time">Tue 09:00 PM</div>
+                    <div class="leg-predicted">Model: Air Force Falcons 66.5, New Mexico Lobos 70.6</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.6% | Win: 99.8%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 96.85675525142838%;"></div>
+                        </div>
+                        <div class="edge-value">+30.6</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 3</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">Boston College Eagles +11.5</div>
+                    <div class="leg-matchup">Boston College Eagles @ Florida St Seminoles</div>
+                    <div class="leg-time">Tue 06:00 PM</div>
+                    <div class="leg-predicted">Model: Boston College Eagles 71.4, Florida St Seminoles 79.1</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +84.5% | Win: 96.6%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 60.74791957793483%;"></div>
+                        </div>
+                        <div class="edge-value">+19.2</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="entry-section">
+            <div class="entry-header">
+                <div class="entry-number">ENTRY 3</div>
+                <span class="strategy-badge" style="background: #a78bfa15; color: #a78bfa; border: 1px solid #a78bfa40;">🎯 Props Power Play</span>
+                <span class="entry-edge">Combined Edge: +40.0</span>
+            </div>
+            <div class="legs-container">
+                
+            <div class="leg-card">
+                <div class="leg-number">LEG 1</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">🎯 PROP</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #f87171;">Tyler Perkins under 27.5</div>
+                    <div class="leg-matchup">Xavier Musketeers</div>
+                    <div class="leg-time">Tue 06:30 PM</div>
+                    
+                    <div class="leg-explanation">CBB PRA Props | Record: 3-2 (60%) | AI Score: 7.5</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 100.0%;"></div>
+                        </div>
+                        <div class="edge-value">+15.9</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 2</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">🎯 PROP</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #f87171;">Rueben Chinyelu under 26.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    
+                    <div class="leg-explanation">CBB PRA Props | Record: 3-2 (60%) | AI Score: 9.0</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 83.01886792452831%;"></div>
+                        </div>
+                        <div class="edge-value">+13.2</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 3</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">🎯 PROP</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #f87171;">Robert McCray V under 24.5</div>
+                    <div class="leg-matchup">Boston College Eagles</div>
+                    <div class="leg-time">Tue 06:00 PM</div>
+                    
+                    <div class="leg-explanation">CBB PRA Props | Record: 3-2 (60%) | AI Score: 7.5</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 68.55345911949684%;"></div>
+                        </div>
+                        <div class="edge-value">+10.9</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="entry-section">
+            <div class="entry-header">
+                <div class="entry-number">ENTRY 4</div>
+                <span class="strategy-badge" style="background: #a78bfa15; color: #a78bfa; border: 1px solid #a78bfa40;">🎯 Spread + Props Mix</span>
+                <span class="entry-edge">Combined Edge: +60.7</span>
+            </div>
+            <div class="legs-container">
+                
+            <div class="leg-card">
+                <div class="leg-number">LEG 1</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">South Carolina Gamecocks +23.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks @ Florida Gators</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    <div class="leg-predicted">Model: South Carolina Gamecocks 73.5, Florida Gators 81.6</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.7% | Win: 99.9%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 100.0%;"></div>
+                        </div>
+                        <div class="edge-value">+31.6</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 2</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">🎯 PROP</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #f87171;">Tyler Perkins under 27.5</div>
+                    <div class="leg-matchup">Xavier Musketeers</div>
+                    <div class="leg-time">Tue 06:30 PM</div>
+                    
+                    <div class="leg-explanation">CBB PRA Props | Record: 3-2 (60%) | AI Score: 7.5</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 50.27446220158826%;"></div>
+                        </div>
+                        <div class="edge-value">+15.9</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 3</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">🎯 PROP</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #f87171;">Rueben Chinyelu under 26.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    
+                    <div class="leg-explanation">CBB PRA Props | Record: 3-2 (60%) | AI Score: 9.0</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 41.73728937490346%;"></div>
+                        </div>
+                        <div class="edge-value">+13.2</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="entry-section">
+            <div class="entry-header">
+                <div class="entry-number">ENTRY 5</div>
+                <span class="strategy-badge" style="background: #ff6b3515; color: #ff6b35; border: 1px solid #ff6b3540;">🔗 Correlated Edge Stack #2</span>
+                <span class="entry-edge">Combined Edge: +60.3</span>
+            </div>
+            <div class="legs-container">
+                
+            <div class="leg-card">
+                <div class="leg-number">LEG 1</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        <span class="tag tag-correlated">🔗 CORRELATED</span>
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">Nebraska Cornhuskers +1.5</div>
+                    <div class="leg-matchup">Nebraska Cornhuskers @ Iowa Hawkeyes</div>
+                    <div class="leg-time">Tue 09:00 PM</div>
+                    <div class="leg-predicted">Model: Nebraska Cornhuskers 73.7, Iowa Hawkeyes 82.3</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +58.9% | Win: 83.2%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 31.98694002272468%;"></div>
+                        </div>
+                        <div class="edge-value">+10.1</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 2</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📊 TOTAL</span>
+                        <span class="tag tag-correlated">🔗 CORRELATED</span>
+                    </div>
+                    <div class="leg-pick" style="color: #4ade80;">OVER 137.5</div>
+                    <div class="leg-matchup">Nebraska Cornhuskers @ Iowa Hawkeyes</div>
+                    <div class="leg-time">Tue 09:00 PM</div>
+                    <div class="leg-predicted">Model: Nebraska Cornhuskers 73.7, Iowa Hawkeyes 82.3</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +83.5% | Win: 96.1%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 58.55710080140336%;"></div>
+                        </div>
+                        <div class="edge-value">+18.5</div>
+                    </div>
+                </div>
+            </div>
+            <div class="leg-card">
+                <div class="leg-number">LEG 3</div>
+                <div class="leg-body">
+                    <div class="leg-top-row">
+                        <span class="sport-badge" style="background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40;">NCAAB</span>
+                        <span class="type-badge">📐 SPREAD</span>
+                        
+                    </div>
+                    <div class="leg-pick" style="color: #ffffff;">South Carolina Gamecocks +23.5</div>
+                    <div class="leg-matchup">South Carolina Gamecocks @ Florida Gators</div>
+                    <div class="leg-time">Tue 07:00 PM</div>
+                    <div class="leg-predicted">Model: South Carolina Gamecocks 73.5, Florida Gators 81.6</div>
+                    <div class="leg-explanation">HIGH confidence (EV: +90.7% | Win: 99.9%)</div>
+                    <div class="edge-section">
+                        <div class="edge-label">EDGE</div>
+                        <div class="edge-bar-container">
+                            <div class="edge-bar" style="width: 100.0%;"></div>
+                        </div>
+                        <div class="edge-value">+31.6</div>
+                    </div>
+                </div>
+            </div>
+            </div>
         </div>
 
-        <div class="instructions"><div class="instructions-title">How to Enter</div><ol><li>Open DaBble or Hard Rock Bet</li><li>Add each leg above to your bet slip</li><li>Select 3-Pick Parlay entry type</li><li>Set your unit size and confirm</li></ol></div>
+        <div class="instructions"><div class="instructions-title">How to Enter</div><ol><li>Open DaBble or Hard Rock Bet</li><li>Choose an entry above and add its 3 legs to your bet slip</li><li>Select 3-Pick Parlay entry type</li><li>Set your unit size and confirm</li></ol></div>
 
         
             <div class="runners-section">
-                <div class="section-title">📋 Runner-Up Plays</div>
+                <div class="section-title">📋 Other Notable Plays</div>
                 <table class="runners-table">
                     <thead>
                         <tr>
@@ -532,42 +885,42 @@
                         
                 <tr>
                     <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
-                    <td class="runner-pick">Miss Valley St Delta Devils +14.5</td>
-                    <td class="runner-matchup">Miss Valley St Delta Devils @ Alabama St Hornets</td>
+                    <td class="runner-pick">Gardner-Webb Bulldogs +17.5</td>
+                    <td class="runner-matchup">Gardner-Webb Bulldogs @ Charleston Southern Buccaneers</td>
                     <td class="runner-type">Spread</td>
-                    <td class="runner-edge">+23.6</td>
+                    <td class="runner-edge">+18.9</td>
                 </tr>
                 
                 <tr>
                     <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
-                    <td class="runner-pick">Wagner Seahawks +9.5</td>
-                    <td class="runner-matchup">Wagner Seahawks @ LIU Sharks</td>
+                    <td class="runner-pick">LSU Tigers +10.5</td>
+                    <td class="runner-matchup">LSU Tigers @ Texas Longhorns</td>
                     <td class="runner-type">Spread</td>
-                    <td class="runner-edge">+17.3</td>
+                    <td class="runner-edge">+17.7</td>
                 </tr>
                 
                 <tr>
                     <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
-                    <td class="runner-pick">Lamar Cardinals +6.5</td>
-                    <td class="runner-matchup">Lamar Cardinals @ UT Rio Grande Valley Vaqueros</td>
-                    <td class="runner-type">Spread</td>
-                    <td class="runner-edge">+12.2</td>
+                    <td class="runner-pick">Tyler Perkins under 24.5</td>
+                    <td class="runner-matchup">Xavier Musketeers</td>
+                    <td class="runner-type">Prop</td>
+                    <td class="runner-edge">+13.9</td>
                 </tr>
                 
                 <tr>
                     <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
-                    <td class="runner-pick">OVER 140.5</td>
-                    <td class="runner-matchup">Miss Valley St Delta Devils @ Alabama St Hornets</td>
-                    <td class="runner-type">Total</td>
-                    <td class="runner-edge">+11.1</td>
+                    <td class="runner-pick">Georgia Bulldogs +6.5</td>
+                    <td class="runner-matchup">Georgia Bulldogs @ Kentucky Wildcats</td>
+                    <td class="runner-type">Spread</td>
+                    <td class="runner-edge">+13.7</td>
                 </tr>
                 
                 <tr>
                     <td><span class="sport-badge-sm" style="background: #f59e0b20; color: #f59e0b;">NCAAB</span></td>
-                    <td class="runner-pick">Morgan St Bears +5.5</td>
-                    <td class="runner-matchup">Morgan St Bears @ North Carolina Central Eagles</td>
+                    <td class="runner-pick">Northern Illinois Huskies +8.5</td>
+                    <td class="runner-matchup">Northern Illinois Huskies @ Buffalo Bulls</td>
                     <td class="runner-type">Spread</td>
-                    <td class="runner-edge">+10.5</td>
+                    <td class="runner-edge">+13.4</td>
                 </tr>
                 
                     </tbody>
