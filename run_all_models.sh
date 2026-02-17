@@ -102,6 +102,34 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run PRA Combo Model
+if run_model "NBA PRA Props" "nba/nba_pra_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run Points+Rebounds Combo Model
+if run_model "NBA P+R Props" "nba/nba_points_rebounds_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run Points+Assists Combo Model
+if run_model "NBA P+A Props" "nba/nba_points_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run Rebounds+Assists Combo Model
+if run_model "NBA R+A Props" "nba/nba_rebounds_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Run NCAAB Model
 if run_model "NCAAB Model" "ncaa/ncaab_model_2ndFINAL.py"; then
     ((SUCCESS_COUNT++))
@@ -189,6 +217,21 @@ else
     echo ""
 fi
 
+# Generate NBA Analysis Report
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 Generating NBA Analysis Report...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR/nba"
+if python3 generate_nba_analysis_report.py 2>&1; then
+    echo -e "${GREEN}✅ NBA Analysis Report generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  NBA Analysis Report generation failed${NC}"
+    echo ""
+fi
+cd "$SCRIPT_DIR"
+
 # Generate NCAAB Analysis Report
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}📊 Generating NCAAB Analysis Report...${NC}"
@@ -259,6 +302,34 @@ if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "$OUTPUT" 2>&1;
     echo ""
 else
     echo -e "${YELLOW}⚠️  Daily Recap generation failed${NC}"
+    echo ""
+fi
+
+# Build Parlay Entry
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🎯 Building Parlay Entry...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 parlay_builder.py 2>&1; then
+    echo -e "${GREEN}✅ Parlay Entry built successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Parlay Builder had issues (non-critical)${NC}"
+    echo ""
+fi
+
+# Generate YouTube & Social Content
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📱 Generating YouTube & Social Content...${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+cd "$SCRIPT_DIR"
+if python3 content_generator.py --type all 2>&1; then
+    echo -e "${GREEN}✅ Content generated successfully${NC}"
+    echo ""
+else
+    echo -e "${YELLOW}⚠️  Content Generator had issues (non-critical)${NC}"
     echo ""
 fi
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run NBA Models - Manual Execution
-# Runs all NBA models: Main, Rebounds, Assists, 3PT, and Points props
+# Runs all NBA models: Main, Rebounds, Assists, 3PT, Points, and Combo props
 # Perfect for running all NBA models at once!
 
 # Set PATH to include Python 3.13 installation
@@ -35,18 +35,18 @@ run_model() {
     local model_dir=$(dirname "$model_path")
     local model_file=$(basename "$model_path")
     local model_start=$(date +%s)
-    
+
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${GREEN}▶ Running: ${model_name}${NC}"
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
+
     cd "$SCRIPT_DIR/$model_dir"
-    
+
     if [ ! -f "$model_file" ]; then
         echo -e "${RED}❌ Error: $model_file not found${NC}"
         return 1
     fi
-    
+
     # Run the model
     if python3 "$model_file" 2>&1; then
         local model_end=$(date +%s)
@@ -66,6 +66,7 @@ run_model() {
 # Track results
 SUCCESS_COUNT=0
 FAIL_COUNT=0
+TOTAL_MODELS=9
 
 # Run NBA Model
 if run_model "NBA Model" "nba/nba_model_IMPROVED.py"; then
@@ -102,7 +103,33 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run PRA Combo Model
+if run_model "NBA PRA Props" "nba/nba_pra_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
 
+# Run Points+Rebounds Combo Model
+if run_model "NBA P+R Props" "nba/nba_points_rebounds_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run Points+Assists Combo Model
+if run_model "NBA P+A Props" "nba/nba_points_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+# Run Rebounds+Assists Combo Model
+if run_model "NBA R+A Props" "nba/nba_rebounds_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
 
 # Calculate total time
 END_TIME=$(date +%s)
@@ -115,9 +142,9 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║                    📊 EXECUTION SUMMARY                   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/5${NC}"
+echo -e "${GREEN}✅ Successful: ${SUCCESS_COUNT}/${TOTAL_MODELS}${NC}"
 if [ $FAIL_COUNT -gt 0 ]; then
-    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/5${NC}"
+    echo -e "${RED}❌ Failed: ${FAIL_COUNT}/${TOTAL_MODELS}${NC}"
 fi
 echo -e "${BLUE}⏱  Total Time: ${MINUTES}m ${SECONDS}s${NC}"
 echo ""
@@ -126,79 +153,89 @@ echo ""
 echo -e "${YELLOW}📁 Generated Files:${NC}"
 echo "  • NBA: nba/nba_model_output.html"
 echo "  • Rebounds: nba/nba_rebounds_props.html"
-    echo "  • Assists: nba/nba_assists_props.html"
-    echo "  • 3PT: nba/nba_3pt_props.html"
-    echo "  • Points: nba/nba_points_props.html"
-    echo "  • Analytics: analytics_dashboard.html"
+echo "  • Assists: nba/nba_assists_props.html"
+echo "  • 3PT: nba/nba_3pt_props.html"
+echo "  • Points: nba/nba_points_props.html"
+echo "  • PRA: nba/nba_pra_props.html"
+echo "  • P+R: nba/nba_points_rebounds_props.html"
+echo "  • P+A: nba/nba_points_assists_props.html"
+echo "  • R+A: nba/nba_rebounds_assists_props.html"
 echo ""
 
 if [ $SUCCESS_COUNT -gt 0 ]; then
-    if [ $FAIL_COUNT -eq 0 ]; then
-        echo -e "${GREEN}🎉 All NBA models completed successfully!${NC}"
+    # Generate Best Plays Report
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}🔥 Generating Best Plays Report...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    cd "$SCRIPT_DIR"
+    if python3 best_plays_bot.py 2>&1; then
+        echo -e "${GREEN}✅ Best Plays report generated successfully!${NC}"
     else
-        echo -e "${GREEN}✅ ${SUCCESS_COUNT} model(s) completed successfully!${NC}"
-        echo -e "${YELLOW}⚠️  ${FAIL_COUNT} model(s) failed. Check errors above.${NC}"
+        echo -e "${YELLOW}⚠️  Best Plays report generation failed${NC}"
     fi
     echo ""
 
-    # Generate Best Plays Report
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}🔥 Generating Best Plays Report...${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
-    cd "$SCRIPT_DIR"
-    if [ -f "best_plays_bot.py" ]; then
-        if python3 best_plays_bot.py 2>&1; then
-            echo -e "${GREEN}✅ Best Plays report generated successfully!${NC}"
-            echo -e "${YELLOW}📁 Generated: best_plays.html${NC}"
-        else
-            echo -e "${RED}❌ Best Plays report generation failed${NC}"
-        fi
+    # Generate NBA Analysis Report
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}📊 Generating NBA Analysis Report...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    cd "$SCRIPT_DIR/nba"
+    if python3 generate_nba_analysis_report.py 2>&1; then
+        echo -e "${GREEN}✅ NBA Analysis Report generated successfully!${NC}"
     else
-        echo -e "${YELLOW}⚠️  best_plays_bot.py not found. Skipping Best Plays.${NC}"
+        echo -e "${YELLOW}⚠️  NBA Analysis Report generation failed${NC}"
     fi
-    
-# Generate Analytics Dashboard
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    cd "$SCRIPT_DIR"
+    echo ""
+
+    # Generate Analytics Dashboard
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BLUE}📊 Generating Analytics Dashboard...${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
     cd "$SCRIPT_DIR"
-    if [ -f "generate_analytics_dashboard.py" ]; then
-        if python3 generate_analytics_dashboard.py 2>&1; then
-            echo -e "${GREEN}✅ Analytics dashboard generated successfully!${NC}"
-            echo -e "${YELLOW}📁 Generated: analytics_dashboard.html${NC}"
-        else
-            echo -e "${RED}❌ Analytics dashboard generation failed${NC}"
-        fi
+    if python3 generate_analytics_dashboard.py 2>&1; then
+        echo -e "${GREEN}✅ Analytics dashboard generated successfully!${NC}"
     else
-        echo -e "${YELLOW}⚠️  generate_analytics_dashboard.py not found. Skipping analytics.${NC}"
+        echo -e "${YELLOW}⚠️  Analytics dashboard generation failed${NC}"
     fi
-    
+    echo ""
+
     # Generate Daily Recap
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BLUE}📅 Generating Daily Recap...${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
     cd "$SCRIPT_DIR"
     RECAP_DATE=$(date -v-1d +%Y-%m-%d)
-    if [ -f "generate_daily_recap.py" ]; then
-        if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "daily_recap_$RECAP_DATE.html" 2>&1; then
-            cp "daily_recap_$RECAP_DATE.html" "daily_recap.html"
-            echo -e "${GREEN}✅ Daily recap generated for $RECAP_DATE!${NC}"
-            echo -e "${YELLOW}📁 Generated: daily_recap.html${NC}"
-        else
-            echo -e "${RED}❌ Daily recap generation failed${NC}"
-        fi
+    if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "daily_recap_$RECAP_DATE.html" 2>&1; then
+        cp "daily_recap_$RECAP_DATE.html" "daily_recap.html"
+        echo -e "${GREEN}✅ Daily recap generated for $RECAP_DATE!${NC}"
     else
-        echo -e "${YELLOW}⚠️  generate_daily_recap.py not found. Skipping daily recap.${NC}"
+        echo -e "${YELLOW}⚠️  Daily recap generation failed${NC}"
     fi
-    
-    # Auto-push to GitHub - push successful outputs even if some models failed
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+
+    # Build Parlay Entry
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}🎯 Building Parlay Entry...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+    cd "$SCRIPT_DIR"
+    if python3 parlay_builder.py 2>&1; then
+        echo -e "${GREEN}✅ Parlay Entry built successfully${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Parlay Builder had issues (non-critical)${NC}"
+    fi
+    echo ""
+
+    # Auto-push to GitHub
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BLUE}📤 Pushing updates to GitHub...${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
     cd "$SCRIPT_DIR"
     if [ -f "auto_push.sh" ]; then
         bash auto_push.sh 2>&1
@@ -212,10 +249,12 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
     else
         echo -e "${YELLOW}⚠️  auto_push.sh not found. Skipping GitHub push.${NC}"
     fi
+
+    if [ $FAIL_COUNT -eq 0 ]; then
+        echo -e "${GREEN}🎉 All NBA models completed successfully!${NC}"
     else
-        echo -e "${YELLOW}⚠️  auto_push.sh not found. Skipping GitHub push.${NC}"
+        echo -e "${YELLOW}⚠️  ${FAIL_COUNT} model(s) failed. Check errors above.${NC}"
     fi
-    
     exit 0
 else
     echo -e "${RED}❌ All models failed. No outputs generated.${NC}"
