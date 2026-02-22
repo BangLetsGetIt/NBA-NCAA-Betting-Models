@@ -29,10 +29,14 @@ class DailyRecapGenerator:
         self.all_picks = []
         self.tracking_files = [
             "nba/nba_picks_tracking.json",
-            "nba/nba_points_props_tracking.json", 
+            "nba/nba_points_props_tracking.json",
             "nba/nba_rebounds_props_tracking.json",
             "nba/nba_assists_props_tracking.json",
             "nba/nba_3pt_props_tracking.json",
+            "nba/nba_pra_props_tracking.json",
+            "nba/nba_points_rebounds_props_tracking.json",
+            "nba/nba_points_assists_props_tracking.json",
+            "nba/nba_rebounds_assists_props_tracking.json",
             "ncaa/ncaab_picks_tracking.json",
             "ncaa/cbb_points_props_tracking.json",
             "ncaa/cbb_assists_props_tracking.json",
@@ -41,6 +45,7 @@ class DailyRecapGenerator:
             "ncaa/cbb_points_rebounds_props_tracking.json",
             "ncaa/cbb_points_assists_props_tracking.json",
             "ncaa/cbb_rebounds_assists_props_tracking.json",
+            "ncaa/cbb_3pt_props_tracking.json",
             "soccer/soccer_picks_tracking.json",
             "wnba/wnba_model_tracking.json",
             "wnba/wnba_props_tracking.json",
@@ -661,21 +666,92 @@ class DailyRecapGenerator:
         </div>
         """
 
+def find_most_recent_completed_date():
+    """Scan all tracking files and return the most recent date with completed picks."""
+    base_dir = Path("/Users/rico/Dev/sports-models")
+    tracking_files = [
+        "nba/nba_picks_tracking.json",
+        "nba/nba_points_props_tracking.json",
+        "nba/nba_rebounds_props_tracking.json",
+        "nba/nba_assists_props_tracking.json",
+        "nba/nba_3pt_props_tracking.json",
+        "nba/nba_pra_props_tracking.json",
+        "nba/nba_points_rebounds_props_tracking.json",
+        "nba/nba_points_assists_props_tracking.json",
+        "nba/nba_rebounds_assists_props_tracking.json",
+        "ncaa/ncaab_picks_tracking.json",
+        "ncaa/cbb_points_props_tracking.json",
+        "ncaa/cbb_3pt_props_tracking.json",
+        "soccer/soccer_picks_tracking.json",
+        "wnba/wnba_model_tracking.json",
+        "best_plays_tracking.json",
+    ]
+
+    import pytz
+    et_tz = pytz.timezone('US/Eastern')
+    latest_date = None
+
+    for rel_path in tracking_files:
+        fpath = base_dir / rel_path
+        if not fpath.exists():
+            continue
+        try:
+            with open(fpath, 'r') as f:
+                data = json.load(f)
+            picks = data.get('picks', data) if isinstance(data, dict) else data
+            for pick in picks:
+                if pick.get('status', '').lower() not in ('win', 'loss', 'push'):
+                    continue
+                # Try to extract date
+                date_str = None
+                for field in ('game_date', 'game_time', 'date', 'tracked_at'):
+                    val = pick.get(field, '')
+                    if not val:
+                        continue
+                    try:
+                        if 'T' in val or 'Z' in val:
+                            dt = datetime.fromisoformat(val.replace('Z', '+00:00'))
+                            date_str = dt.astimezone(et_tz).strftime('%Y-%m-%d')
+                        else:
+                            date_str = val[:10]
+                        break
+                    except Exception:
+                        continue
+                if date_str and (latest_date is None or date_str > latest_date):
+                    latest_date = date_str
+        except Exception:
+            continue
+
+    return latest_date or (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate Daily Recap Report')
-    parser.add_argument('--date', type=str, default=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'), help='Date in YYYY-MM-DD format')
-    parser.add_argument('--output', type=str, default='daily_recap.html', help='Output HTML file')
+    parser.add_argument('--date', type=str, default=None, help='Date in YYYY-MM-DD format (auto-detects most recent completed date if omitted)')
+    parser.add_argument('--output', type=str, default=None, help='Output HTML file')
     
     args = parser.parse_args()
-    
+
+    # Auto-detect most recent date with completed picks if not specified
+    if args.date is None:
+        args.date = find_most_recent_completed_date()
+        print(f"Auto-detected recap date: {args.date}")
+
+    if args.output is None:
+        args.output = f"daily_recap_{args.date}.html"
+
     generator = DailyRecapGenerator(args.date)
     generator.load_data()
     stats = generator.calculate_stats()
     html = generator.generate_html(stats)
-    
+
     with open(args.output, 'w') as f:
         f.write(html)
-        
+
+    # Always keep daily_recap.html in sync
+    with open(Path("/Users/rico/Dev/sports-models") / "daily_recap.html", 'w') as f:
+        f.write(html)
+
     print(f"Report generated: {args.output}")
 
 if __name__ == "__main__":
