@@ -67,6 +67,21 @@ run_model() {
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 
+# Pre-populate NBA stats caches via shared engine (uses leagueleaders + BDL, avoids stats.nba.com)
+echo "Pre-populating NBA stats caches..."
+cd "$SCRIPT_DIR/nba"
+python3 -c "
+from nba_props_shared import NBAPropsEngine
+for pt in ['points', 'rebounds', 'assists', 'threes']:
+    try:
+        e = NBAPropsEngine(pt)
+        e.get_player_stats()
+        e.get_opponent_factors()
+    except Exception as ex:
+        print(f'  Cache warm error for {pt}: {ex}')
+" 2>&1 || true
+cd "$SCRIPT_DIR"
+
 # Run NBA Model
 if run_model "NBA Model" "nba/nba_model_IMPROVED.py"; then
     ((SUCCESS_COUNT++))

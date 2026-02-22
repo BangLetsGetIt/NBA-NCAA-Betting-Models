@@ -1802,33 +1802,37 @@ def fetch_team_schedule():
     schedule_data = {}
 
     try:
-        # Fetch scoreboard for last 7 days and next 7 days
+        # Fetch scoreboard for last 7 days and next 7 days via ESPN (no key needed)
+        import requests as _req
         for days_offset in range(-7, 8):
-            check_date = (datetime.now() + timedelta(days=days_offset)).strftime('%m/%d/%Y')
+            check_dt = datetime.now() + timedelta(days=days_offset)
+            date_compact = check_dt.strftime('%Y%m%d')   # ESPN format
+            check_date = check_dt.strftime('%m/%d/%Y')    # internal format
 
             try:
-                scoreboard = scoreboardv2.ScoreboardV2(game_date=check_date)
-                games_df = scoreboard.get_data_frames()[0]
+                url = (
+                    "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
+                    f"/scoreboard?dates={date_compact}"
+                )
+                resp = _req.get(url, timeout=10)
+                resp.raise_for_status()
+                data = resp.json()
 
-                if games_df.empty:
-                    continue
+                for event in data.get('events', []):
+                    competition = event.get('competitions', [{}])[0]
+                    for competitor in competition.get('competitors', []):
+                        team_name = normalize_team_name(
+                            competitor.get('team', {}).get('displayName', '')
+                        )
+                        if not team_name:
+                            continue
+                        if team_name not in schedule_data:
+                            schedule_data[team_name] = []
+                        schedule_data[team_name].append(check_date)
 
-                for _, game in games_df.iterrows():
-                    home_team = normalize_team_name(game.get('HOME_TEAM_NAME', ''))
-                    visitor_team = normalize_team_name(game.get('VISITOR_TEAM_NAME', ''))
-                    game_date_str = check_date
+                time.sleep(0.2)
 
-                    if home_team not in schedule_data:
-                        schedule_data[home_team] = []
-                    if visitor_team not in schedule_data:
-                        schedule_data[visitor_team] = []
-
-                    schedule_data[home_team].append(game_date_str)
-                    schedule_data[visitor_team].append(game_date_str)
-
-                time.sleep(0.6)
-
-            except Exception as e:
+            except Exception:
                 continue
 
         # Cache the schedule
