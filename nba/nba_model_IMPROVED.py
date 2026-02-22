@@ -9,12 +9,8 @@ from jinja2 import Template
 import requests
 from dotenv import load_dotenv
 import pytz
-import pandas as pd
 from collections import defaultdict
 
-# Import for the NBA's official stats API
-from nba_api.stats.endpoints import leaguedashteamstats, scoreboardv2
-from nba_api.stats.static import teams as nba_teams
 import time
 
 # =========================
@@ -26,6 +22,9 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 dotenv_path = os.path.join(root_dir, ".env")
 load_dotenv(dotenv_path, override=True)
 API_KEY = os.getenv("ODDS_API_KEY")
+BDL_API_KEY = os.getenv("BALLDONTLIE_API_KEY", "")
+BDL_BASE = "https://api.balldontlie.io/v1"
+BDL_SEASON = 2025  # 2025-26 season
 if not API_KEY:
     print("FATAL: ODDS_API_KEY not found in .env file.")
     exit()
@@ -2003,10 +2002,105 @@ def predicted_score(model_spread, model_total):
 # FETCH ADVANCED STATS
 # =========================
 
-def fetch_advanced_stats():
-    """Fetch and cache advanced team stats from stats.nba.com API with retry logic."""
+def _bdl_fetch_all_games():
+    """Fetch all 2025-26 season games from BDL, tracking home and away separately.
+    Returns {team_name: {season: {pts_for, pts_against, gp}, home: {...}, road: {...}}}
+    """
+    if not BDL_API_KEY:
+        return {}
 
-    # Check cache first
+    headers = {"Authorization": BDL_API_KEY}
+    # Accumulators: season, home, road
+    acc = {}  # team -> {s_for, s_against, s_gp, h_for, h_against, h_gp, r_for, r_against, r_gp}
+
+    cursor = None
+    print(f"  [BDL] Fetching season game results for team stats...")
+    while True:
+        params = [("seasons[]", BDL_SEASON), ("per_page", 100)]
+        if cursor:
+            params.append(("cursor", cursor))
+        try:
+            r = requests.get(f"{BDL_BASE}/games", headers=headers, params=params, timeout=15)
+            if r.status_code == 429:
+                print("  [BDL] Rate limited, waiting 5s...")
+                time.sleep(5)
+                r = requests.get(f"{BDL_BASE}/games", headers=headers, params=params, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+        except Exception as e:
+            print(f"  [BDL] Games fetch error: {e}")
+            break
+
+        for game in data.get("data", []):
+            home = (game.get("home_team") or {}).get("full_name", "")
+            away = (game.get("visitor_team") or {}).get("full_name", "")
+            hs = game.get("home_team_score")
+            vs = game.get("visitor_team_score")
+            if hs is None or vs is None or (int(hs) == 0 and int(vs) == 0):
+                continue
+            hs, vs = int(hs), int(vs)
+            if home:
+                t = acc.setdefault(home, {"s_for": 0, "s_against": 0, "s_gp": 0,
+                                          "h_for": 0, "h_against": 0, "h_gp": 0,
+                                          "r_for": 0, "r_against": 0, "r_gp": 0})
+                t["s_for"] += hs; t["s_against"] += vs; t["s_gp"] += 1
+                t["h_for"] += hs; t["h_against"] += vs; t["h_gp"] += 1
+            if away:
+                t = acc.setdefault(away, {"s_for": 0, "s_against": 0, "s_gp": 0,
+                                          "h_for": 0, "h_against": 0, "h_gp": 0,
+                                          "r_for": 0, "r_against": 0, "r_gp": 0})
+                t["s_for"] += vs; t["s_against"] += hs; t["s_gp"] += 1
+                t["r_for"] += vs; t["r_against"] += hs; t["r_gp"] += 1
+
+        cursor = (data.get("meta") or {}).get("next_cursor")
+        if not cursor:
+            break
+        time.sleep(0.6)
+
+    print(f"  [BDL] Got game data for {len(acc)} teams")
+    return acc
+
+
+def _bdl_team_stats_from_acc(acc_entry):
+    """Convert raw accumulator entry to NET_RATING/Pace/OffRtg/DefRtg."""
+    gp = acc_entry.get("s_gp", 0)
+    if gp == 0:
+        return {"NET_RATING": 0.0, "Pace": 100.0, "OffRtg": 110.0, "DefRtg": 110.0}
+    off_rtg = acc_entry["s_for"] / gp
+    def_rtg = acc_entry["s_against"] / gp
+    net_rating = round(off_rtg - def_rtg, 1)
+    pace = round(max(93.0, min(107.0, 100.0 * (off_rtg + def_rtg) / 224.0)), 1)
+    return {"NET_RATING": net_rating, "Pace": pace,
+            "OffRtg": round(off_rtg, 1), "DefRtg": round(def_rtg, 1)}
+
+
+def _bdl_split_stats(acc_entry, split):
+    """Get stats for 'home' or 'road' split."""
+    prefix = "h_" if split == "home" else "r_"
+    gp = acc_entry.get(f"{prefix}gp", 0)
+    if gp == 0:
+        return {"NET_RATING": 0.0, "Pace": 100.0, "OffRtg": 110.0, "DefRtg": 110.0}
+    off_rtg = acc_entry[f"{prefix}for"] / gp
+    def_rtg = acc_entry[f"{prefix}against"] / gp
+    net_rating = round(off_rtg - def_rtg, 1)
+    pace = round(max(93.0, min(107.0, 100.0 * (off_rtg + def_rtg) / 224.0)), 1)
+    return {"NET_RATING": net_rating, "Pace": pace,
+            "OffRtg": round(off_rtg, 1), "DefRtg": round(def_rtg, 1)}
+
+
+# Module-level cache so both fetch functions share one BDL call per run
+_BDL_GAMES_ACC = None
+
+def _get_bdl_acc():
+    global _BDL_GAMES_ACC
+    if _BDL_GAMES_ACC is None:
+        _BDL_GAMES_ACC = _bdl_fetch_all_games()
+    return _BDL_GAMES_ACC
+
+
+def fetch_advanced_stats():
+    """Fetch and cache advanced team stats via BDL game logs."""
+
     if os.path.exists(STATS_FILE):
         file_mod_time = datetime.fromtimestamp(os.path.getmtime(STATS_FILE))
         if (datetime.now() - file_mod_time) < timedelta(hours=6):
@@ -2014,95 +2108,37 @@ def fetch_advanced_stats():
             with open(STATS_FILE, 'r') as f:
                 return json.load(f)
 
-    print(f"{Colors.CYAN}🔄 Fetching new team stats from stats.nba.com...{Colors.END}")
-    
-    # Retry logic with exponential backoff
-    max_retries = 3
-    retry_delays = [2, 5, 10]  # seconds to wait between retries
-    
-    for attempt in range(max_retries):
-        try:
-            # Fetch full-season stats with increased timeout
-            season_stats_data = leaguedashteamstats.LeagueDashTeamStats(
-                measure_type_detailed_defense='Advanced',
-                season=CURRENT_SEASON,
-                timeout=60  # Increased from 30 to 60 seconds
-            )
-            season_df = season_stats_data.get_data_frames()[0]
-            time.sleep(0.6)
+    print(f"{Colors.CYAN}🔄 Fetching new team stats via BDL...{Colors.END}")
+    try:
+        acc = _get_bdl_acc()
+        if not acc:
+            raise ValueError("BDL returned no game data")
 
-            # Fetch last N games stats with increased timeout
-            form_stats_data = leaguedashteamstats.LeagueDashTeamStats(
-                measure_type_detailed_defense='Advanced',
-                season=CURRENT_SEASON,
-                last_n_games=LAST_N_GAMES,
-                timeout=60  # Increased from 30 to 60 seconds
-            )
-            form_df = form_stats_data.get_data_frames()[0]
-            time.sleep(0.6)
+        stats_dict = {}
+        for team_name, entry in acc.items():
+            stats_dict[team_name] = _bdl_team_stats_from_acc(entry)
 
-            # Blend season and form stats
-            stats_dict = {}
-            for _, row in season_df.iterrows():
-                team_name = row.get('TEAM_NAME', 'Unknown')
-                team_id = row.get('TEAM_ID', None)
+        with open(STATS_FILE, 'w') as f:
+            json.dump(stats_dict, f, indent=2)
+        print(f"{Colors.GREEN}✓ Fetched and cached stats for {len(stats_dict)} teams{Colors.END}")
+        return stats_dict
 
-                season_net_rating = row.get('NET_RATING', 0)
-                season_pace = row.get('PACE', 100)
-                season_off_rtg = row.get('OFF_RATING', 110)
-                season_def_rtg = row.get('DEF_RATING', 110)
-
-                # Get form stats for this team
-                form_row = form_df[form_df['TEAM_ID'] == team_id] if team_id else pd.DataFrame()
-                if not form_row.empty:
-                    form_net_rating = form_row.iloc[0].get('NET_RATING', season_net_rating)
-                    form_pace = form_row.iloc[0].get('PACE', season_pace)
-                    form_off_rtg = form_row.iloc[0].get('OFF_RATING', season_off_rtg)
-                    form_def_rtg = form_row.iloc[0].get('DEF_RATING', season_def_rtg)
-                else:
-                    form_net_rating, form_pace, form_off_rtg, form_def_rtg = season_net_rating, season_pace, season_off_rtg, season_def_rtg
-
-                # Blend (65% season, 35% form)
-                stats_dict[team_name] = {
-                    "NET_RATING": round(SEASON_WEIGHT * season_net_rating + FORM_WEIGHT * form_net_rating, 1),
-                    "Pace": round(SEASON_WEIGHT * season_pace + FORM_WEIGHT * form_pace, 2),
-                    "OffRtg": round(SEASON_WEIGHT * season_off_rtg + FORM_WEIGHT * form_off_rtg, 1),
-                    "DefRtg": round(SEASON_WEIGHT * season_def_rtg + FORM_WEIGHT * form_def_rtg, 1)
-                }
-
-            # Cache the results
-            with open(STATS_FILE, 'w') as f:
-                json.dump(stats_dict, f, indent=2)
-
-            print(f"{Colors.GREEN}✓ Fetched and cached stats for {len(stats_dict)} teams{Colors.END}")
-            return stats_dict
-
-        except Exception as e:
-            if attempt < max_retries - 1:
-                wait_time = retry_delays[attempt]
-                print(f"{Colors.YELLOW}⚠ Attempt {attempt + 1}/{max_retries} failed: {e}{Colors.END}")
-                print(f"{Colors.YELLOW}   Retrying in {wait_time} seconds...{Colors.END}")
-                time.sleep(wait_time)
-            else:
-                print(f"{Colors.RED}✗ Error fetching stats after {max_retries} attempts: {e}{Colors.END}")
-                # Fall back to cached data even if it's older than 6 hours
-                if os.path.exists(STATS_FILE):
-                    print(f"{Colors.YELLOW}⚠ Falling back to cached stats (may be stale){Colors.END}")
-                    try:
-                        with open(STATS_FILE, 'r') as f:
-                            cached_stats = json.load(f)
-                            if cached_stats:
-                                print(f"{Colors.GREEN}✓ Using cached stats for {len(cached_stats)} teams{Colors.END}")
-                                return cached_stats
-                    except Exception as cache_error:
-                        print(f"{Colors.RED}✗ Could not load cached stats: {cache_error}{Colors.END}")
-                traceback.print_exc()
-                return {}
+    except Exception as e:
+        print(f"{Colors.RED}✗ Error fetching stats: {e}{Colors.END}")
+        if os.path.exists(STATS_FILE):
+            print(f"{Colors.YELLOW}⚠ Falling back to cached stats (may be stale){Colors.END}")
+            try:
+                with open(STATS_FILE, 'r') as f:
+                    cached = json.load(f)
+                    if cached:
+                        return cached
+            except Exception:
+                pass
+        return {}
 
 def fetch_home_away_splits():
-    """Fetch and cache home/away split stats with retry logic."""
+    """Fetch and cache home/away split stats via BDL game logs."""
 
-    # Check cache
     if os.path.exists(SPLITS_CACHE_FILE):
         file_mod_time = datetime.fromtimestamp(os.path.getmtime(SPLITS_CACHE_FILE))
         if (datetime.now() - file_mod_time) < timedelta(hours=6):
@@ -2110,83 +2146,33 @@ def fetch_home_away_splits():
             with open(SPLITS_CACHE_FILE, 'r') as f:
                 return json.load(f)
 
-    print(f"{Colors.CYAN}🔄 Fetching home/away splits from stats.nba.com...{Colors.END}")
+    print(f"{Colors.CYAN}🔄 Fetching home/away splits via BDL...{Colors.END}")
+    try:
+        acc = _get_bdl_acc()
+        if not acc:
+            raise ValueError("BDL returned no game data")
 
-    # Retry logic with exponential backoff
-    max_retries = 3
-    retry_delays = [2, 5, 10]  # seconds to wait between retries
-    
-    for attempt in range(max_retries):
-        try:
-            # Fetch home stats with increased timeout
-            home_stats = leaguedashteamstats.LeagueDashTeamStats(
-                measure_type_detailed_defense='Advanced',
-                season=CURRENT_SEASON,
-                location_nullable='Home',
-                timeout=60  # Increased from 30 to 60 seconds
-            )
-            home_df = home_stats.get_data_frames()[0]
-            time.sleep(0.6)
+        splits_dict = {"Home": {}, "Road": {}}
+        for team_name, entry in acc.items():
+            splits_dict["Home"][team_name] = _bdl_split_stats(entry, "home")
+            splits_dict["Road"][team_name] = _bdl_split_stats(entry, "road")
 
-            # Fetch road stats with increased timeout
-            road_stats = leaguedashteamstats.LeagueDashTeamStats(
-                measure_type_detailed_defense='Advanced',
-                season=CURRENT_SEASON,
-                location_nullable='Road',
-                timeout=60  # Increased from 30 to 60 seconds
-            )
-            road_df = road_stats.get_data_frames()[0]
-            time.sleep(0.6)
+        with open(SPLITS_CACHE_FILE, 'w') as f:
+            json.dump(splits_dict, f, indent=2)
+        print(f"{Colors.GREEN}✓ Fetched and cached home/away splits{Colors.END}")
+        return splits_dict
 
-            splits_dict = {"Home": {}, "Road": {}}
-
-            # Process home stats
-            for _, row in home_df.iterrows():
-                team_name = row.get('TEAM_NAME', 'Unknown')
-                splits_dict["Home"][team_name] = {
-                    "NET_RATING": row.get('NET_RATING', 0),
-                    "Pace": row.get('PACE', 100),
-                    "OffRtg": row.get('OFF_RATING', 110),
-                    "DefRtg": row.get('DEF_RATING', 110)
-                }
-
-            # Process road stats
-            for _, row in road_df.iterrows():
-                team_name = row.get('TEAM_NAME', 'Unknown')
-                splits_dict["Road"][team_name] = {
-                    "NET_RATING": row.get('NET_RATING', 0),
-                    "Pace": row.get('PACE', 100),
-                    "OffRtg": row.get('OFF_RATING', 110),
-                    "DefRtg": row.get('DEF_RATING', 110)
-                }
-
-            # Cache
-            with open(SPLITS_CACHE_FILE, 'w') as f:
-                json.dump(splits_dict, f, indent=2)
-
-            print(f"{Colors.GREEN}✓ Fetched and cached home/away splits{Colors.END}")
-            return splits_dict
-
-        except Exception as e:
-            if attempt < max_retries - 1:
-                wait_time = retry_delays[attempt]
-                print(f"{Colors.YELLOW}⚠ Attempt {attempt + 1}/{max_retries} failed: {e}{Colors.END}")
-                print(f"{Colors.YELLOW}   Retrying in {wait_time} seconds...{Colors.END}")
-                time.sleep(wait_time)
-            else:
-                print(f"{Colors.YELLOW}⚠ Could not fetch splits after {max_retries} attempts: {e}{Colors.END}")
-                # Fall back to cached data even if it's older than 6 hours
-                if os.path.exists(SPLITS_CACHE_FILE):
-                    print(f"{Colors.YELLOW}⚠ Falling back to cached splits (may be stale){Colors.END}")
-                    try:
-                        with open(SPLITS_CACHE_FILE, 'r') as f:
-                            cached_splits = json.load(f)
-                            if cached_splits:
-                                print(f"{Colors.GREEN}✓ Using cached splits{Colors.END}")
-                                return cached_splits
-                    except Exception as cache_error:
-                        print(f"{Colors.YELLOW}⚠ Could not load cached splits: {cache_error}{Colors.END}")
-                return None
+    except Exception as e:
+        print(f"{Colors.YELLOW}⚠ Could not fetch splits: {e}{Colors.END}")
+        if os.path.exists(SPLITS_CACHE_FILE):
+            try:
+                with open(SPLITS_CACHE_FILE, 'r') as f:
+                    cached = json.load(f)
+                    if cached:
+                        return cached
+            except Exception:
+                pass
+        return None
 
 # =========================
 # FETCH ODDS
