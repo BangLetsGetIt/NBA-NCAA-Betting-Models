@@ -137,6 +137,55 @@ else
     ((FAIL_COUNT++))
 fi
 
+# Run CBB Props Models
+if run_model "CBB Points Props" "ncaa/cbb_points_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB Rebounds Props" "ncaa/cbb_rebounds_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB Assists Props" "ncaa/cbb_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB 3PT Props" "ncaa/cbb_3pt_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB PRA Props" "ncaa/cbb_pra_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB P+R Props" "ncaa/cbb_points_rebounds_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB P+A Props" "ncaa/cbb_points_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
+if run_model "CBB R+A Props" "ncaa/cbb_rebounds_assists_props_model.py"; then
+    ((SUCCESS_COUNT++))
+else
+    ((FAIL_COUNT++))
+fi
+
 # Run UFC Model
 if run_model "UFC Model" "ufc/ufc_model_runner.py"; then
     ((SUCCESS_COUNT++))
@@ -293,12 +342,8 @@ echo -e "${BLUE}📅 Generating Daily Recap...${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 cd "$SCRIPT_DIR"
-RECAP_DATE=$(date -v-1d +%Y-%m-%d)
-OUTPUT="daily_recap_${RECAP_DATE}.html"
-if python3 generate_daily_recap.py --date "$RECAP_DATE" --output "$OUTPUT" 2>&1; then
-    # Create persistent link
-    cp "$OUTPUT" daily_recap.html
-    echo -e "${GREEN}✅ Daily Recap generated for $RECAP_DATE!${NC}"
+if python3 generate_daily_recap.py 2>&1; then
+    echo -e "${GREEN}✅ Daily Recap generated!${NC}"
     echo ""
 else
     echo -e "${YELLOW}⚠️  Daily Recap generation failed${NC}"
