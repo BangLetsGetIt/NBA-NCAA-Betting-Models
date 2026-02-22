@@ -17,10 +17,12 @@
       "edge": 2.0,
       "ev": 23.85,
       "tracked_at": "2026-02-16T21:30:32.802302-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_r+a": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_r+a": 5.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-02-22T00:54:55.260030-05:00"
     },
     {
       "pick_id": "Domantas Sabonis_11.5_over_2026-02-20T03:10:00Z",
@@ -39,10 +41,11 @@
       "edge": 4.0,
       "ev": 38.63,
       "tracked_at": "2026-02-16T21:30:32.802338-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_r+a": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     }
   ],
   "summary": {}
