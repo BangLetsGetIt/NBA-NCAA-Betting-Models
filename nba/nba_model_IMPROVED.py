@@ -488,85 +488,73 @@ def calculate_clv_status(opening_line, closing_line, pick_type, pick_text):
         return "neutral"
 
 def fetch_completed_scores_nba():
-    """Fetch NBA scores for recently completed games using FREE NBA API (ScoreboardV2)"""
-    print(f"{Colors.CYAN}Fetching completed NBA game scores (via NBA API)...{Colors.END}")
+    """Fetch NBA scores for recently completed games using ESPN hidden API (no key needed)"""
+    print(f"{Colors.CYAN}Fetching completed NBA game scores (via ESPN)...{Colors.END}")
 
     completed_games = []
-    
+
     # Check last 3 days
     from datetime import datetime, timedelta
+    import requests as _requests
     dates_to_check = []
     for i in range(3):
         d = datetime.now() - timedelta(days=i)
-        dates_to_check.append(d.strftime('%m/%d/%Y'))
-    
-    try:
-        from nba_api.stats.endpoints import scoreboardv2
-        
-        for date_str in dates_to_check:
-            try:
-                # Add delay to avoid rate limits
-                time.sleep(0.6)
-                
-                board = scoreboardv2.ScoreboardV2(game_date=date_str, timeout=30)
-                dfs = board.get_data_frames()
-                games_df = dfs[0] # GameHeader
-                lines_df = dfs[1] # LineScore
-                
-                if games_df.empty:
+        dates_to_check.append(d.strftime('%Y%m%d'))  # YYYYMMDD for ESPN
+
+    for date_compact in dates_to_check:
+        try:
+            url = (
+                f"https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
+                f"/scoreboard?dates={date_compact}"
+            )
+            resp = _requests.get(url, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+
+            for event in data.get('events', []):
+                is_completed = event.get('status', {}).get('type', {}).get('completed', False)
+                if not is_completed:
                     continue
-                    
-                for _, game in games_df.iterrows():
-                    # Only collect completed games
-                    status = game['GAME_STATUS_TEXT']
-                    if 'Final' not in status and 'FINAL' not in status.upper():
-                        continue
-                        
-                    game_id = game['GAME_ID']
-                    home_id = game['HOME_TEAM_ID']
-                    away_id = game['VISITOR_TEAM_ID']
-                    
-                    # Get scores
-                    home_row = lines_df[lines_df['TEAM_ID'] == home_id]
-                    away_row = lines_df[lines_df['TEAM_ID'] == away_id]
-                    
-                    if home_row.empty or away_row.empty:
-                        continue
-                        
-                    home_score = int(home_row['PTS'].values[0])
-                    away_score = int(away_row['PTS'].values[0])
-                    
-                    # Manual Lookup for 30 teams (reliable)
-                    try:
-                        home_info = nba_teams.find_team_name_by_id(home_id)
-                        away_info = nba_teams.find_team_name_by_id(away_id)
-                        home_name = home_info['full_name']
-                        away_name = away_info['full_name']
-                    except:
-                        continue
 
-                    game_obj = {
-                        'id': game_id,
-                        'home_team': home_name,
-                        'away_team': away_name,
-                        'completed': True,
-                        'scores': [
-                            {'name': home_name, 'score': str(home_score)},
-                            {'name': away_name, 'score': str(away_score)}
-                        ]
-                    }
-                    completed_games.append(game_obj)
-                    
-            except Exception as e:
-                print(f"{Colors.YELLOW}  ⚠️  Error fetching for {date_str}: {e}{Colors.END}")
-                continue
+                competition = event.get('competitions', [{}])[0]
+                competitors = competition.get('competitors', [])
+                if len(competitors) < 2:
+                    continue
 
-        print(f"{Colors.GREEN}✓ Found {len(completed_games)} completed games (Free API){Colors.END}")
-        return completed_games
+                home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
+                away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
+                if not home or not away:
+                    continue
 
-    except Exception as e:
-        print(f"{Colors.RED}Error fetching NBA scores: {e}{Colors.END}")
-        return []
+                home_name = home.get('team', {}).get('displayName', '')
+                away_name = away.get('team', {}).get('displayName', '')
+                home_score = int(home.get('score', 0))
+                away_score = int(away.get('score', 0))
+
+                if not home_name or not away_name:
+                    continue
+
+                game_obj = {
+                    'id': event.get('id', ''),
+                    'home_team': home_name,
+                    'away_team': away_name,
+                    'completed': True,
+                    'scores': [
+                        {'name': home_name, 'score': str(home_score)},
+                        {'name': away_name, 'score': str(away_score)},
+                    ]
+                }
+                completed_games.append(game_obj)
+
+            time.sleep(0.3)
+
+        except Exception as e:
+            date_fmt = f"{date_compact[:4]}-{date_compact[4:6]}-{date_compact[6:]}"
+            print(f"{Colors.YELLOW}  ⚠️  Error fetching for {date_fmt}: {e}{Colors.END}")
+            continue
+
+    print(f"{Colors.GREEN}✓ Found {len(completed_games)} completed games (ESPN){Colors.END}")
+    return completed_games
 
 def update_pick_results():
     """Check for completed games and update pick results"""
@@ -2395,12 +2383,15 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 ats_pick = f"✅ BET: {home_team} {home_spread:+.1f}"
 
                 if home_spread < 0:
-                    ats_explanation = f"Model projects {home_team} to win by {abs(model_spread):.1f}, covering {home_spread}."
+                    if model_spread >= abs(home_spread):
+                        ats_explanation = f"Model projects {home_team} to win by {abs(model_spread):.1f}, covering {home_spread}."
+                    else:
+                        ats_explanation = f"Model gives edge to {home_team} to cover {home_spread}."
                 else:
                     if model_spread > 0:
                         ats_explanation = f"Model projects {home_team} to win outright, easily covering {home_spread:+.1f}."
                     else:
-                        ats_explanation = f"Model projects {home_team} to lose by only {abs(model_spread):.1f}, covering {home_spread:+.1f}."
+                        ats_explanation = f"Model projects {home_team} to keep it close, covering {home_spread:+.1f}."
 
             elif spread_edge < -SPREAD_THRESHOLD:
                 # Home team DOESN'T COVER
@@ -2408,9 +2399,12 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
                 ats_pick = f"✅ BET: {away_team} {away_spread:+.1f}"
 
                 if home_spread < 0:
-                    ats_explanation = f"Model projects {home_team} to win by only {abs(model_spread):.1f}, not enough to cover {home_spread}."
+                    if model_spread >= 0:
+                        ats_explanation = f"Model projects {home_team} to win by only {abs(model_spread):.1f}, not enough to cover {home_spread}. {away_team} covers {away_spread:+.1f}."
+                    else:
+                        ats_explanation = f"Model projects {away_team} to win outright. {away_team} covers {away_spread:+.1f}."
                 else:
-                    ats_explanation = f"Model projects {home_team} to lose by {abs(model_spread):.1f}, {away_team} covers {away_spread:+.1f}."
+                    ats_explanation = f"Model projects {away_team} to win this matchup. {away_team} covers {away_spread:+.1f}."
 
             else:
                 ats_pick = "⚠️ NO BET - Too close to call"
