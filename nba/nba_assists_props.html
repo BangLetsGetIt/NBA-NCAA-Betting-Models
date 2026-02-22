@@ -6,232 +6,71 @@
     <title>CourtSide Analytics - NBA Assists</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-
         :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --bg-card-secondary: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --accent-blue: #60a5fa;
+            --bg-main: #121212; --bg-card: #1e1e1e; --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff; --text-secondary: #b3b3b3;
+            --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
             --border-color: #333333;
         }
-
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased;
-        }
-
+        body { margin: 0; padding: 20px; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
         .container { max-width: 650px; margin: 0 auto; }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         h1 { margin: 0; font-size: 22px; font-weight: 700; margin-bottom: 5px; }
         .subheader { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
         .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .stat-box {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .stat-box { background-color: var(--bg-card); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--border-color); }
         .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; }
         .stat-value { font-size: 18px; font-weight: 700; }
-
-        .section-title {
-            font-size: 16px;
-            margin-bottom: 12px;
-            display: flex; align-items: center;
-        }
+        .section-title { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; }
         .section-title span.highlight { color: var(--accent-green); margin-left: 8px; font-size: 13px; }
-
-        .prop-card {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        }
-
-        .card-header {
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-card-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        .prop-card { background-color: var(--bg-card); border-radius: 16px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+        .card-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-card-secondary); border-bottom: 1px solid var(--border-color); }
         .header-left { display: flex; align-items: center; gap: 10px; }
         .team-logo { width: 40px; height: 40px; border-radius: 50%; padding: 2px; object-fit: contain; }
         .player-info h2 { margin: 0; font-size: 16px; line-height: 1.2; }
         .matchup-info { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         .game-meta { text-align: right; }
         .game-date-time { font-size: 11px; color: var(--text-secondary); background: #333; padding: 4px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
-
         .card-body { padding: 16px; }
         .bet-main-row { margin-bottom: 12px; }
         .bet-selection { font-size: 20px; font-weight: 800; }
         .bet-selection .line { color: var(--text-primary); }
         .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
-
         .model-subtext { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
         .model-subtext strong { color: var(--text-primary); }
-
         .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
         .metric-item { background-color: var(--bg-main); padding: 8px; border-radius: 8px; text-align: center; }
         .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 2px; }
         .metric-val { font-size: 14px; font-weight: 700; }
-
-        .player-stats { background-color: var(--bg-card-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); }
-        .player-stats-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .player-stats-value { font-size: 14px; font-weight: 700; }
-        .player-stats-item { text-align: center; flex: 1; }
-        .player-stats-divider { width: 1px; height: 30px; background-color: var(--border-color); }
-
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background-color: var(--bg-main); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .stat-item { text-align: center; }
+        .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .stat-val { font-size: 15px; font-weight: 700; }
         .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
-
         .txt-green { color: var(--accent-green); }
         .txt-red { color: var(--accent-red); }
-        
         .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
         .tag-red { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
         .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
-        
-        .metric-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
+        .metric-title { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
+        .metric-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
+        .metric-value { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+        .metric-value.good { color: var(--accent-green); }
         .text-red { color: var(--accent-red); }
         .tracking-section { margin-top: 2.5rem; }
-        .tracking-header { 
-            font-size: 1.25rem; 
-            font-weight: 700; 
-            color: var(--text-primary); 
-            margin-bottom: 1.25rem; 
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-        .metrics-row {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-        .metric-title {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-        .metric-value {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-        .metric-value.good { color: var(--accent-green); }
-
-        @media (max-width: 600px) {
-            .summary-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-box:last-child { grid-column: span 2; }
-            .card-header { padding: 12px 15px; }
-            .team-logo { width: 38px; height: 38px; }
-            .player-info h2 { font-size: 16px; }
-        }
-
-        /* Navigation */
-        .nav-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-        .nav-pill {
-            padding: 8px 16px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .nav-pill:hover, .nav-pill.active {
-            background-color: var(--bg-card-secondary);
-            color: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        /* Stats Row */
-        .stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            background-color: var(--bg-main);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-title {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            letter-spacing: 0.5px;
-        }
-        .stat-val {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        /* Glow Effects */
-        .glow-green {
-            box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
-            border: 1px solid rgba(74, 222, 128, 0.3);
-        }
-        .glow-blue {
-            box-shadow: 0 0 15px rgba(96, 165, 250, 0.15);
-            border: 1px solid rgba(96, 165, 250, 0.3);
-        }
-    
+        .tracking-header { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.25rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        .metrics-row { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+        .nav-bar { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+        .nav-pill { padding: 8px 16px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
+        .nav-pill:hover, .nav-pill.active { background-color: var(--bg-card-secondary); color: var(--text-primary); border-color: var(--text-primary); }
+        .glow-green { box-shadow: 0 0 15px rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .glow-blue { box-shadow: 0 0 15px rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); }
+        @media (max-width: 600px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } .stat-box:last-child { grid-column: span 2; } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <div>
@@ -242,10 +81,10 @@
         <div style="text-align: right;">
             <div class="metric-title">SEASON RECORD</div>
             <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">
-                72-60 (54.5%)
+                75-63 (54.4%)
             </div>
             <div style="font-size: 0.9rem; color: var(--accent-red);">
-                 -12.5u
+                 -13.6u
             </div>
         </div>
     </header>
@@ -255,201 +94,332 @@
         <a href="nba_assists_props.html" class="nav-pill active">Assists</a>
         <a href="nba_rebounds_props.html" class="nav-pill">Rebounds</a>
         <a href="nba_3pt_props.html" class="nav-pill">3-Pointers</a>
+        <a href="nba_pra_props.html" class="nav-pill">PRA</a>
+        <a href="nba_points_rebounds_props.html" class="nav-pill">P+R</a>
+        <a href="nba_points_assists_props.html" class="nav-pill">P+A</a>
+        <a href="nba_rebounds_assists_props.html" class="nav-pill">R+A</a>
     </div>
 
     <section>
         <div class="summary-grid">
-            <div class="stat-box">
-                <div class="stat-label">Season ROI</div>
-                <div class="stat-value txt-red">-9.5%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Win Rate</div>
-                <div class="stat-value">54.5%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Record</div>
-                <div class="stat-value">72-60</div>
-            </div>
+            <div class="stat-box"><div class="stat-label">Season ROI</div><div class="stat-value txt-red">-9.9%</div></div>
+            <div class="stat-box"><div class="stat-label">Win Rate</div><div class="stat-value">54.4%</div></div>
+            <div class="stat-box"><div class="stat-label">Record</div><div class="stat-value">75-63</div></div>
         </div>
-    </section><section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 10.0</span></div>
+    </section>
+<section><div class="section-title">Top Value Plays <span class="highlight">Min AI Score: 10.0</span></div>
         <div class="prop-card glow-green">
             <div class="card-header">
                 <div class="header-left">
-                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" alt="Cleveland Cavaliers Logo" class="team-logo">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" alt="" class="team-logo">
                     <div class="player-info">
                         <h2>Evan Mobley</h2>
                         <div class="matchup-info">Cavaliers @ Thunder</div>
                     </div>
                 </div>
-                <div class="game-meta">
-                    <div class="game-date-time">Sun 02/22 01:10 PM ET</div>
-                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 1:10 PM ET</div></div>
             </div>
             <div class="card-body">
                 <div class="bet-main-row">
                     <div class="bet-selection">
-                        <span class="txt-green">OVER</span> 
-                        <span class="line">2.5 AST</span> 
+                        <span class="txt-green">OVER</span>
+                        <span class="line">2.5 AST</span>
                         <span class="bet-odds">-102</span>
                     </div>
                 </div>
                 <div class="model-subtext">
                     Model Predicts: <strong>5.5 AST</strong> (Edge: +1.5)
                 </div>
-                
-                <!-- TALE OF THE TAPE -->
                 <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="stat-title">Season Avg</div>
-                        <div class="stat-val">4.0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-title">Last 10 Avg</div>
-                        <div class="stat-val txt-red">4.0</div>
-                    </div>
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">4.0</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">4.0</div></div>
                 </div>
-
                 <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">AI SCORE</span>
-                        <span class="metric-val txt-green">10.0</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EV</span>
-                        <span class="metric-val txt-green">+38.6%</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">WIN %</span>
-                        <span class="metric-val">51%</span>
-                    </div>
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+38.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
                 </div>
-                
-                <div class="tags-container">
-                    <span class="tag tag-green">Premium Pick</span>
-<span class="tag tag-blue">⏳ CLV: Tracking</span>
-
-                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 4.0 L10</span>
+</div>
             </div>
-        </div></section>
+        </div>
+
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/lal.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>LeBron James</h2>
+                        <div class="matchup-info">Lakers @ Celtics</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 6:40 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">6.5 AST</span>
+                        <span class="bet-odds">+120</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>9.9 AST</strong> (Edge: +1.7)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">8.2</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">8.2</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+54.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 8.2 L10</span>
+</div>
+            </div>
+        </div>
+</section><section><div class="section-title">Under Plays</div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>Cason Wallace</h2>
+                        <div class="matchup-info">Thunder @ Cavaliers</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 1:10 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span>
+                        <span class="line">3.5 AST</span>
+                        <span class="bet-odds">-102</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>1.1 AST</strong> (Edge: +1.2)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">2.3</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">2.3</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+38.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 2.3 L10</span>
+</div>
+            </div>
+        </div>
+
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>Grayson Allen</h2>
+                        <div class="matchup-info">Suns @ Trail Blazers</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 8:10 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span>
+                        <span class="line">3.5 AST</span>
+                        <span class="bet-odds">+114</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>0.5 AST</strong> (Edge: +1.5)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">2.0</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">2.0</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+49.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 2.0 L10</span>
+</div>
+            </div>
+        </div>
+
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>Jalen Green</h2>
+                        <div class="matchup-info">Suns @ Trail Blazers</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 8:10 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span>
+                        <span class="line">3.5 AST</span>
+                        <span class="bet-odds">+122</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>0.7 AST</strong> (Edge: +1.4)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">2.1</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">2.1</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+55.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 2.1 L10</span>
+</div>
+            </div>
+        </div>
+
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>Kevin Porter Jr.</h2>
+                        <div class="matchup-info">Bucks @ Raptors</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 3:40 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span>
+                        <span class="line">7.5 AST</span>
+                        <span class="bet-odds">-138</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>-1.1 AST</strong> (Edge: +4.3)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">3.2</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">3.2</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+20.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 3.2 L10</span>
+<span class="tag tag-green">Strong Edge +4.3</span>
+</div>
+            </div>
+        </div>
+
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/nba/500/phi.png" alt="" class="team-logo">
+                    <div class="player-info">
+                        <h2>Joel Embiid</h2>
+                        <div class="matchup-info">76ers @ Timberwolves</div>
+                    </div>
+                </div>
+                <div class="game-meta"><div class="game-date-time">Sun, Feb 22 • 7:10 PM ET</div></div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-red">UNDER</span>
+                        <span class="line">4.5 AST</span>
+                        <span class="bet-odds">-154</span>
+                    </div>
+                </div>
+                <div class="model-subtext">
+                    Model Predicts: <strong>-1.7 AST</strong> (Edge: +3.1)
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><div class="stat-title">Season Avg</div><div class="stat-val">1.4</div></div>
+                    <div class="stat-item"><div class="stat-title">Last 10 Avg</div><div class="stat-val txt-red">1.4</div></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">AI SCORE</span><span class="metric-val txt-green">10.0</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+15.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val">51%</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-blue">Avg 1.4 L10</span>
+<span class="tag tag-green">Edge +3.1</span>
+</div>
+            </div>
+        </div>
+</section>
         <section style="margin-top: 2rem;">
-            <div class="section-title">📅 Daily Performance</div>
+            <div class="section-title">Daily Performance</div>
             <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <!-- Today -->
                 <div class="prop-card" style="padding: 1rem; margin:0;">
                     <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">TODAY</div>
-                    <div style="text-align:center;">
-                        <div style="font-weight:700; font-size:1.1rem;">0-0</div>
-                        <div class="">+0.0u</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">0.0% ROI</div>
-                    </div>
+                    <div style="text-align:center;"><div style="font-weight:700; font-size:1.1rem;">0-0</div>
+                    <div class="">+0.0u</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">0.0% ROI</div></div>
                 </div>
-                <!-- Yesterday -->
                 <div class="prop-card" style="padding: 1rem; margin:0;">
                     <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-bottom:0.5rem;">YESTERDAY</div>
-                    <div style="text-align:center;">
-                        <div style="font-weight:700; font-size:1.1rem;">0-0</div>
-                        <div class="">+0.0u</div>
-                         <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">0.0% ROI</div>
-                    </div>
+                    <div style="text-align:center;"><div style="font-weight:700; font-size:1.1rem;">2-2</div>
+                    <div class="txt-red">-0.6u</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">-16.0% ROI</div></div>
                 </div>
             </div>
         </section>
-        
-        <!-- PERFORMANCE STATS (Last 10/20/50) -->
+
         <div class="tracking-section">
-            <div class="tracking-header">🔥 Recent Form</div>
-            
+            <div class="tracking-header">Recent Form</div>
             <div class="metrics-row" style="margin-bottom: 1.5rem;">
-                <!-- Last 10 -->
                 <div class="prop-card" style="flex: 1; padding: 1.5rem;">
                     <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 10</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
-                        <div>
-                            <div class="metric-label">Record</div>
-                            <div class="metric-value">6-4</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Win Rate</div>
-                            <div class="metric-value good">60%</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Profit</div>
-                            <div class="metric-value good">+0.1u</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">ROI</div>
-                            <div class="metric-value good">+0.5%</div>
-                        </div>
+                        <div><div class="metric-label">Record</div><div class="metric-value">6-4</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value good">60%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-0.3u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-3.5%</div></div>
                     </div>
                 </div>
-
-                <!-- Last 20 -->
                 <div class="prop-card" style="flex: 1; padding: 1.5rem;">
                     <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 20</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
-                        <div>
-                            <div class="metric-label">Record</div>
-                            <div class="metric-value">10-10</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Win Rate</div>
-                            <div class="metric-value ">50%</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Profit</div>
-                            <div class="metric-value text-red">-3.3u</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">ROI</div>
-                            <div class="metric-value text-red">-16.4%</div>
-                        </div>
+                        <div><div class="metric-label">Record</div><div class="metric-value">9-11</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value ">45%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-5.0u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-25.1%</div></div>
                     </div>
                 </div>
-
-                <!-- Last 50 -->
                 <div class="prop-card" style="flex: 1; padding: 1.5rem;">
                     <div class="metric-title" style="margin-bottom: 0.5rem; text-align: center;">LAST 50</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
-                        <div>
-                            <div class="metric-label">Record</div>
-                            <div class="metric-value">28-22</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Win Rate</div>
-                            <div class="metric-value good">56%</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">Profit</div>
-                            <div class="metric-value text-red">-3.6u</div>
-                        </div>
-                        <div>
-                            <div class="metric-label">ROI</div>
-                            <div class="metric-value text-red">-7.2%</div>
-                        </div>
+                        <div><div class="metric-label">Record</div><div class="metric-value">27-23</div></div>
+                        <div><div class="metric-label">Win Rate</div><div class="metric-value ">54%</div></div>
+                        <div><div class="metric-label">Profit</div><div class="metric-value text-red">-5.3u</div></div>
+                        <div><div class="metric-label">ROI</div><div class="metric-value text-red">-10.6%</div></div>
                     </div>
                 </div>
             </div>
         </div>
-        
+    
     <section>
         <div class="section-title">NBA Assists Model Performance</div>
         <div class="summary-grid">
-            <div class="stat-box">
-                <div class="stat-label">Overall Record</div>
-                <div class="stat-value">72-60</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">ROI</div>
-                <div class="stat-value txt-red">-9.5%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">OVER: 29-26</div>
-                <div class="stat-value txt-red">-12.2% ROI</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">UNDER: 43-34</div>
-                <div class="stat-value txt-red">-7.5% ROI</div>
-            </div>
+            <div class="stat-box"><div class="stat-label">Overall Record</div><div class="stat-value">75-63</div></div>
+            <div class="stat-box"><div class="stat-label">ROI</div><div class="stat-value txt-red">-9.9%</div></div>
+            <div class="stat-box"><div class="stat-label">OVER: 30-28</div><div class="stat-value txt-red">-13.8% ROI</div></div>
+            <div class="stat-box"><div class="stat-label">UNDER: 45-35</div><div class="stat-value txt-red">-7.0% ROI</div></div>
         </div>
-    </section></div></body></html>
+    </section>
+</div></body></html>
