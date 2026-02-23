@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>CourtSide Analytics - Player Props Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #000000;
+            --card-gray: #1a1a1a;
+            --box-gray: #262626;
+            --text-white: #ffffff;
+            --text-slate: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-black);
+            color: var(--text-white);
+            padding: 24px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--box-gray);
+        }
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand-subtitle { color: var(--text-slate); font-size: 1rem; margin-top: 6px; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            background: var(--card-gray);
+            border: 1px solid var(--box-gray);
+            color: var(--text-slate);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+        .tab-btn:hover { border-color: var(--text-slate); color: var(--text-white); }
+        .tab-btn.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: #000;
+        }
+
+        /* Card section */
+        .card {
+            background: var(--card-gray);
+            border: 1px solid var(--box-gray);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        /* Mini stats */
+        .mini-stat {
+            background: var(--bg-black);
+            border: 1px solid var(--box-gray);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .mini-val { font-size: 1.5rem; font-weight: 700; }
+        .mini-lbl { color: var(--text-slate); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-top: 4px; }
+
+        /* Table headers */
+        .table-header {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 0;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .table-header::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 18px;
+            border-radius: 2px;
+        }
+        .table-header-green { color: var(--accent-green); }
+        .table-header-green::before { background: var(--accent-green); }
+        .table-header-red { color: var(--accent-red); }
+        .table-header-red::before { background: var(--accent-red); }
+
+        /* Tables */
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--box-gray); }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 10px 14px;
+            color: var(--text-slate);
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--box-gray);
+            background: rgba(255,255,255,0.02);
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #1f1f1f;
+            font-size: 0.875rem;
+            vertical-align: middle;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Utilities */
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+        .text-slate { color: var(--text-slate); }
+        .prop-tag {
+            display: inline-block;
+            background: var(--box-gray);
+            color: var(--text-slate);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin: 1px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-slate);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 900px) {
+            .brand-title { font-size: 1.8rem; }
+            body { padding: 12px; }
+            [style*="grid-template-columns:1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+            [style*="grid-template-columns:repeat(4"] {
+                grid-template-columns: repeat(2,1fr) !important;
+            }
+            [style*="grid-template-columns:repeat(5"] {
+                grid-template-columns: repeat(2,1fr) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1 class="brand-title">CourtSide Analytics</h1>
+        <p class="brand-subtitle">Player Props Intelligence Report &bull; Generated February 22, 2026 at 10:55 PM</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('all')" id="btn-all">All Props</button>
+<button class="tab-btn " onclick="showTab('points')" id="btn-points">Points</button>
+<button class="tab-btn " onclick="showTab('rebounds')" id="btn-rebounds">Rebounds</button>
+<button class="tab-btn " onclick="showTab('assists')" id="btn-assists">Assists</button>
+<button class="tab-btn " onclick="showTab('threes')" id="btn-threes">3-Pointers</button>
+<button class="tab-btn " onclick="showTab('pra')" id="btn-pra">PRA</button>
+<button class="tab-btn " onclick="showTab('points_rebounds')" id="btn-points_rebounds">P+R</button>
+<button class="tab-btn " onclick="showTab('points_assists')" id="btn-points_assists">P+A</button>
+<button class="tab-btn " onclick="showTab('rebounds_assists')" id="btn-rebounds_assists">R+A</button>
+    </div>
+
+    <div class="card">
+        <div id="tab-all" class="tab-content" style="display:block"><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px">
+        <div class="mini-stat"><div class="mini-val">1754</div><div class="mini-lbl">Total Props</div></div>
+        <div class="mini-stat"><div class="mini-val">149</div><div class="mini-lbl">Players Tracked</div></div>
+        <div class="mini-stat"><div class="mini-val">950-804</div><div class="mini-lbl">Record</div></div>
+        <div class="mini-stat"><div class="mini-val text-green">54.2%</div><div class="mini-lbl">Win Rate</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">-80.1u</div><div class="mini-lbl">Total P&L</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+            <div class="table-header table-header-green">Top Performers (All Props)</div>
+            <div class="table-container"><table><thead><tr><th>#</th><th>Player</th><th>Record</th><th>Win %</th><th>Props Breakdown</th><th>P&L</th></tr></thead><tbody><tr>
+            <td style="color:#10b981;font-weight:700;width:36px">1</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/dal.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Naji Marshall</span></div></td>
+            <td style="font-weight:600">6-0</td>
+            <td class="text-green" style="font-weight:700">100.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 3-0</span> <span class="prop-tag">Points 2-0</span> <span class="prop-tag">Rebounds 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.73u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">2</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phi.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Joel Embiid</span></div></td>
+            <td style="font-weight:600">5-0</td>
+            <td class="text-green" style="font-weight:700">100.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 2-0</span> <span class="prop-tag">3-Pointers 2-0</span> <span class="prop-tag">Points 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.19u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">3</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Keon Ellis</span></div></td>
+            <td style="font-weight:600">5-0</td>
+            <td class="text-green" style="font-weight:700">100.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 4-0</span> <span class="prop-tag">3-Pointers 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.46u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">4</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Landry Shamet</span></div></td>
+            <td style="font-weight:600">6-1</td>
+            <td class="text-green" style="font-weight:700">85.7%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 4-0</span> <span class="prop-tag">Points 2-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.02u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">5</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Coby White</span></div></td>
+            <td style="font-weight:600">5-1</td>
+            <td class="text-green" style="font-weight:700">83.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Assists 3-1</span> <span class="prop-tag">Points 2-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+2.65u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">6</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">De'Anthony Melton</span></div></td>
+            <td style="font-weight:600">5-1</td>
+            <td class="text-green" style="font-weight:700">83.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 5-0</span> <span class="prop-tag">Rebounds 0-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+1.23u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">7</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tyus Jones</span></div></td>
+            <td style="font-weight:600">5-1</td>
+            <td class="text-green" style="font-weight:700">83.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 4-0</span> <span class="prop-tag">Assists 1-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+1.56u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">8</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ajay Mitchell</span></div></td>
+            <td style="font-weight:600">12-3</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 10-2</span> <span class="prop-tag">Rebounds 1-0</span> <span class="prop-tag">Assists 0-1</span> <span class="prop-tag">3-Pointers 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+6.96u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">9</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Dylan Harper</span></div></td>
+            <td style="font-weight:600">4-1</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 3-0</span> <span class="prop-tag">Points 1-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+0.97u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">10</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Santi Aldama</span></div></td>
+            <td style="font-weight:600">4-1</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 2-0</span> <span class="prop-tag">3-Pointers 2-0</span> <span class="prop-tag">Rebounds 0-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+1.60u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">11</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/tor.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ochai Agbaji</span></div></td>
+            <td style="font-weight:600">4-1</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 4-0</span> <span class="prop-tag">Points 0-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+1.50u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">12</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Amen Thompson</span></div></td>
+            <td style="font-weight:600">4-1</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 4-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+2.54u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">13</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jalen Smith</span></div></td>
+            <td style="font-weight:600">4-1</td>
+            <td class="text-green" style="font-weight:700">80.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 2-1</span> <span class="prop-tag">Points 1-0</span> <span class="prop-tag">Assists 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+1.81u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">14</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Isaiah Hartenstein</span></div></td>
+            <td style="font-weight:600">7-2</td>
+            <td class="text-green" style="font-weight:700">77.8%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 3-2</span> <span class="prop-tag">Points 3-0</span> <span class="prop-tag">Assists 1-0</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.26u</td>
+        </tr>
+<tr>
+            <td style="color:#10b981;font-weight:700;width:36px">15</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tyler Herro</span></div></td>
+            <td style="font-weight:600">7-2</td>
+            <td class="text-green" style="font-weight:700">77.8%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 4-1</span> <span class="prop-tag">Assists 2-0</span> <span class="prop-tag">Rebounds 1-0</span> <span class="prop-tag">3-Pointers 0-1</span></td>
+            <td class="text-green" style="font-weight:700;font-family:monospace">+3.17u</td>
+        </tr></tbody></table></div>
+        </div>
+        <div>
+            <div class="table-header table-header-red">Struggling Players (All Props)</div>
+            <div class="table-container"><table><thead><tr><th>#</th><th>Player</th><th>Record</th><th>Win %</th><th>Props Breakdown</th><th>P&L</th></tr></thead><tbody><tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">1</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/lal.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Austin Reaves</span></div></td>
+            <td style="font-weight:600">0-7</td>
+            <td class="text-red" style="font-weight:700">0.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 0-3</span> <span class="prop-tag">Assists 0-2</span> <span class="prop-tag">Rebounds 0-1</span> <span class="prop-tag">3-Pointers 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-7.00u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">2</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/por.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jerami Grant</span></div></td>
+            <td style="font-weight:600">0-6</td>
+            <td class="text-red" style="font-weight:700">0.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 0-4</span> <span class="prop-tag">3-Pointers 0-2</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-6.00u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">3</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Maxime Raynaud</span></div></td>
+            <td style="font-weight:600">1-9</td>
+            <td class="text-red" style="font-weight:700">10.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 0-5</span> <span class="prop-tag">Rebounds 1-4</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-8.36u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">4</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Cam Thomas</span></div></td>
+            <td style="font-weight:600">1-9</td>
+            <td class="text-red" style="font-weight:700">10.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 1-7</span> <span class="prop-tag">Rebounds 0-1</span> <span class="prop-tag">3-Pointers 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-8.20u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">5</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Miles Bridges</span></div></td>
+            <td style="font-weight:600">1-7</td>
+            <td class="text-red" style="font-weight:700">12.5%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 1-5</span> <span class="prop-tag">3-Pointers 0-2</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-6.11u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">6</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Moe Wagner</span></div></td>
+            <td style="font-weight:600">1-6</td>
+            <td class="text-red" style="font-weight:700">14.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 1-3</span> <span class="prop-tag">Points 0-3</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-4.95u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">7</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/por.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Deni Avdija</span></div></td>
+            <td style="font-weight:600">1-4</td>
+            <td class="text-red" style="font-weight:700">20.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 0-3</span> <span class="prop-tag">Rebounds 1-0</span> <span class="prop-tag">Assists 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-3.34u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">8</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Domantas Sabonis</span></div></td>
+            <td style="font-weight:600">1-4</td>
+            <td class="text-red" style="font-weight:700">20.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 1-2</span> <span class="prop-tag">Points 0-2</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-3.17u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">9</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/por.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Brook Lopez</span></div></td>
+            <td style="font-weight:600">1-4</td>
+            <td class="text-red" style="font-weight:700">20.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 1-4</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-3.36u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">10</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/was.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Carlton Carrington</span></div></td>
+            <td style="font-weight:600">1-4</td>
+            <td class="text-red" style="font-weight:700">20.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 1-4</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-3.36u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">11</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kyle Kuzma</span></div></td>
+            <td style="font-weight:600">3-9</td>
+            <td class="text-red" style="font-weight:700">25.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Rebounds 2-4</span> <span class="prop-tag">Points 1-4</span> <span class="prop-tag">Assists 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-6.55u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">12</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Devin Vassell</span></div></td>
+            <td style="font-weight:600">2-6</td>
+            <td class="text-red" style="font-weight:700">25.0%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 2-2</span> <span class="prop-tag">3-Pointers 0-3</span> <span class="prop-tag">Rebounds 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-4.10u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">13</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kevin Porter Jr.</span></div></td>
+            <td style="font-weight:600">3-8</td>
+            <td class="text-red" style="font-weight:700">27.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 2-4</span> <span class="prop-tag">Points 1-2</span> <span class="prop-tag">Rebounds 0-1</span> <span class="prop-tag">Assists 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-5.17u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">14</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phi.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Quentin Grimes</span></div></td>
+            <td style="font-weight:600">3-8</td>
+            <td class="text-red" style="font-weight:700">27.3%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">Points 3-7</span> <span class="prop-tag">Assists 0-1</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-5.48u</td>
+        </tr>
+<tr>
+            <td style="color:#ef4444;font-weight:700;width:36px">15</td>
+            <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/orl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Paolo Banchero</span></div></td>
+            <td style="font-weight:600">2-5</td>
+            <td class="text-red" style="font-weight:700">28.6%</td>
+            <td style="font-size:0.8rem"><span class="prop-tag">3-Pointers 2-1</span> <span class="prop-tag">Points 0-2</span> <span class="prop-tag">Assists 0-2</span></td>
+            <td class="text-red" style="font-weight:700;font-family:monospace">-3.84u</td>
+        </tr></tbody></table></div>
+        </div>
+    </div></div>
+<div id="tab-points" class="tab-content" style="display:none"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="mini-stat"><div class="mini-val">897</div><div class="mini-lbl">Total Picks</div></div>
+        <div class="mini-stat"><div class="mini-val">455-442</div><div class="mini-lbl">Record</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">50.7%</div><div class="mini-lbl">Win Rate</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">-44.7u</div><div class="mini-lbl">Total P&L</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+            <div class="table-header table-header-green">Top Performers</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#10b981;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Onyeka Okongwu</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Atlanta Hawks</td>
+        <td style="font-weight:600">7-1</td>
+        <td class="text-green" style="font-weight:700">87.5%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span> / <span style="color:#a78bfa">▼2-0</span></td>
+        <td><span class="text-green">+2.4</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+5.38u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Grayson Allen</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">6-1</td>
+        <td class="text-green" style="font-weight:700">85.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span> / <span style="color:#a78bfa">▼1-0</span></td>
+        <td><span class="text-green">+2.1</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+5.19u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ajay Mitchell</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Oklahoma City Thunder</td>
+        <td style="font-weight:600">10-2</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲10-2</span></td>
+        <td><span class="text-green">+2.7</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+6.49u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Bobby Portis</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Milwaukee Bucks</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-1</span> / <span style="color:#a78bfa">▼1-0</span></td>
+        <td><span class="text-green">+4.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+3.71u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/tor.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Immanuel Quickley</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Toronto Raptors</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-1</span></td>
+        <td><span class="text-green">+4.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.25u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Amen Thompson</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Houston Rockets</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-1</span></td>
+        <td><span class="text-green">+5.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.54u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tyler Herro</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Miami Heat</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-1</span></td>
+        <td><span class="text-green">+1.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.22u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jaylon Tyson</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New York Knicks</td>
+        <td style="font-weight:600">10-3</td>
+        <td class="text-green" style="font-weight:700">76.9%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲10-3</span></td>
+        <td><span class="text-green">+4.2</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+5.99u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/no.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Saddiq Bey</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New Orleans Pelicans</td>
+        <td style="font-weight:600">9-3</td>
+        <td class="text-green" style="font-weight:700">75.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲9-3</span></td>
+        <td><span class="text-green">+7.1</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+4.50u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Andrew Nembhard</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Indiana Pacers</td>
+        <td style="font-weight:600">5-2</td>
+        <td class="text-green" style="font-weight:700">71.4%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-2</span></td>
+        <td><span class="text-green">+3.6</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.22u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+        <div>
+            <div class="table-header table-header-red">Struggling Players</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Maxime Raynaud</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Sacramento Kings</td>
+        <td style="font-weight:600">0-5</td>
+        <td class="text-red" style="font-weight:700">0.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲0-4</span> / <span style="color:#a78bfa">▼0-1</span></td>
+        <td><span class="text-red">-3.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-5.00u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ryan Rollins</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Milwaukee Bucks</td>
+        <td style="font-weight:600">0-5</td>
+        <td class="text-red" style="font-weight:700">0.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲0-5</span></td>
+        <td><span class="text-red">-4.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-5.00u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Cam Thomas</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Brooklyn Nets</td>
+        <td style="font-weight:600">1-7</td>
+        <td class="text-red" style="font-weight:700">12.5%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-7</span></td>
+        <td><span class="text-red">-3.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-6.20u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Miles Bridges</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Charlotte Hornets</td>
+        <td style="font-weight:600">1-5</td>
+        <td class="text-red" style="font-weight:700">16.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-4</span> / <span style="color:#a78bfa">▼0-1</span></td>
+        <td><span class="text-red">-3.7</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-4.11u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Deandre Ayton</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">1-5</td>
+        <td class="text-red" style="font-weight:700">16.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-4</span> / <span style="color:#a78bfa">▼0-1</span></td>
+        <td><span class="text-red">-2.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-4.20u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kyle Kuzma</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Milwaukee Bucks</td>
+        <td style="font-weight:600">1-4</td>
+        <td class="text-red" style="font-weight:700">20.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-4</span></td>
+        <td><span class="text-red">-3.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.10u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Mark Williams</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">3-10</td>
+        <td class="text-red" style="font-weight:700">23.1%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-9</span> / <span style="color:#a78bfa">▼0-1</span></td>
+        <td><span class="text-red">-4.0</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-7.29u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">VJ Edgecombe</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Atlanta Hawks</td>
+        <td style="font-weight:600">3-8</td>
+        <td class="text-red" style="font-weight:700">27.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-7</span> / <span style="color:#a78bfa">▼0-1</span></td>
+        <td><span class="text-red">-1.4</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-5.47u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Alperen Sengun</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Houston Rockets</td>
+        <td style="font-weight:600">3-8</td>
+        <td class="text-red" style="font-weight:700">27.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-8</span></td>
+        <td><span class="text-red">-3.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-5.63u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/chi.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Zion Williamson</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Chicago Bulls</td>
+        <td style="font-weight:600">2-5</td>
+        <td class="text-red" style="font-weight:700">28.6%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲2-5</span></td>
+        <td><span class="text-red">-5.2</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.30u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+    </div></div>
+<div id="tab-rebounds" class="tab-content" style="display:none"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="mini-stat"><div class="mini-val">332</div><div class="mini-lbl">Total Picks</div></div>
+        <div class="mini-stat"><div class="mini-val">186-146</div><div class="mini-lbl">Record</div></div>
+        <div class="mini-stat"><div class="mini-val text-green">56.0%</div><div class="mini-lbl">Win Rate</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">-9.0u</div><div class="mini-lbl">Total P&L</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+            <div class="table-header table-header-green">Top Performers</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#10b981;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jay Huff</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Indiana Pacers</td>
+        <td style="font-weight:600">5-1</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼5-1</span></td>
+        <td><span class="text-green">+1.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.74u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Mark Williams</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-1</span></td>
+        <td><span class="text-green">+1.9</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.79u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Brice Sensabaugh</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">San Antonio Spurs</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-1</span></td>
+        <td><span class="text-green">+0.9</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.32u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/bkn.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Danny Wolf</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Brooklyn Nets</td>
+        <td style="font-weight:600">4-2</td>
+        <td class="text-green" style="font-weight:700">66.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-2</span></td>
+        <td><span class="text-green">+0.7</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.60u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mia.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kel'el Ware</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Miami Heat</td>
+        <td style="font-weight:600">5-3</td>
+        <td class="text-green" style="font-weight:700">62.5%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-3</span> / <span style="color:#a78bfa">▼1-0</span></td>
+        <td><span class="text-green">+0.2</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.10u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/utah.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ace Bailey</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Utah Jazz</td>
+        <td style="font-weight:600">3-2</td>
+        <td class="text-green" style="font-weight:700">60.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼3-2</span></td>
+        <td><span class="text-red">-0.3</span></td>
+        <td class="text-slate" style="font-weight:700;font-family:monospace">+0.00u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/dal.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Daniel Gafford</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Dallas Mavericks</td>
+        <td style="font-weight:600">3-2</td>
+        <td class="text-green" style="font-weight:700">60.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-2</span></td>
+        <td><span class="text-green">+0.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.10u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/okc.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Isaiah Hartenstein</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Oklahoma City Thunder</td>
+        <td style="font-weight:600">3-2</td>
+        <td class="text-green" style="font-weight:700">60.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-2</span></td>
+        <td><span class="text-green">+0.1</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.28u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Sandro Mamukelashvili</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Milwaukee Bucks</td>
+        <td style="font-weight:600">4-3</td>
+        <td class="text-green" style="font-weight:700">57.1%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-3</span></td>
+        <td><span class="text-green">+0.2</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.33u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Peyton Watson</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Denver Nuggets</td>
+        <td style="font-weight:600">4-3</td>
+        <td class="text-green" style="font-weight:700">57.1%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-3</span></td>
+        <td><span class="text-green">+0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.44u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+        <div>
+            <div class="table-header table-header-red">Struggling Players</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sac.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Maxime Raynaud</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Sacramento Kings</td>
+        <td style="font-weight:600">1-4</td>
+        <td class="text-red" style="font-weight:700">20.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-0</span> / <span style="color:#a78bfa">▼0-4</span></td>
+        <td><span class="text-red">-3.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.36u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/por.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Brook Lopez</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Portland Trail Blazers</td>
+        <td style="font-weight:600">1-4</td>
+        <td class="text-red" style="font-weight:700">20.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼1-4</span></td>
+        <td><span class="text-red">-0.7</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.36u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ind.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kyle Kuzma</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Indiana Pacers</td>
+        <td style="font-weight:600">2-4</td>
+        <td class="text-red" style="font-weight:700">33.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼2-4</span></td>
+        <td><span class="text-red">-1.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-2.45u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/utah.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kyle Filipowski</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Utah Jazz</td>
+        <td style="font-weight:600">4-7</td>
+        <td class="text-red" style="font-weight:700">36.4%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲0-2</span> / <span style="color:#a78bfa">▼4-5</span></td>
+        <td><span class="text-green">+0.2</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.32u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Onyeka Okongwu</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Atlanta Hawks</td>
+        <td style="font-weight:600">2-3</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼2-3</span></td>
+        <td><span class="text-red">-1.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.58u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Julian Champagnie</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Atlanta Hawks</td>
+        <td style="font-weight:600">3-3</td>
+        <td class="text-slate" style="font-weight:700">50.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-3</span></td>
+        <td><span class="text-green">+1.2</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.82u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Victor Wembanyama</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">San Antonio Spurs</td>
+        <td style="font-weight:600">3-3</td>
+        <td class="text-slate" style="font-weight:700">50.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-3</span></td>
+        <td><span class="text-green">+1.0</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.93u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jarrett Allen</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Cleveland Cavaliers</td>
+        <td style="font-weight:600">5-4</td>
+        <td class="text-slate" style="font-weight:700">55.6%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼5-4</span></td>
+        <td><span class="text-green">+0.1</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.55u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mil.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Sandro Mamukelashvili</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Milwaukee Bucks</td>
+        <td style="font-weight:600">4-3</td>
+        <td class="text-green" style="font-weight:700">57.1%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-3</span></td>
+        <td><span class="text-green">+0.2</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.33u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Peyton Watson</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Denver Nuggets</td>
+        <td style="font-weight:600">4-3</td>
+        <td class="text-green" style="font-weight:700">57.1%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-3</span></td>
+        <td><span class="text-green">+0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.44u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+    </div></div>
+<div id="tab-assists" class="tab-content" style="display:none"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="mini-stat"><div class="mini-val">142</div><div class="mini-lbl">Total Picks</div></div>
+        <div class="mini-stat"><div class="mini-val">75-67</div><div class="mini-lbl">Record</div></div>
+        <div class="mini-stat"><div class="mini-val text-green">52.8%</div><div class="mini-lbl">Win Rate</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">-17.6u</div><div class="mini-lbl">Total P&L</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+            <div class="table-header table-header-green">Top Performers</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#10b981;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tre Jones</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Cleveland Cavaliers</td>
+        <td style="font-weight:600">6-0</td>
+        <td class="text-green" style="font-weight:700">100.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-0</span> / <span style="color:#a78bfa">▼1-0</span></td>
+        <td><span class="text-green">+2.0</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+4.16u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Keyonte George</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Golden State Warriors</td>
+        <td style="font-weight:600">5-1</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span></td>
+        <td><span class="text-green">+1.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.52u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mem.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ryan Rollins</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Memphis Grizzlies</td>
+        <td style="font-weight:600">3-2</td>
+        <td class="text-green" style="font-weight:700">60.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-1</span> / <span style="color:#a78bfa">▼2-1</span></td>
+        <td><span class="text-green">+1.7</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.03u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">LaMelo Ball</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Charlotte Hornets</td>
+        <td style="font-weight:600">2-3</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲2-3</span></td>
+        <td><span class="text-red">-0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.46u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+        <div>
+            <div class="table-header table-header-red">Struggling Players</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">LaMelo Ball</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Charlotte Hornets</td>
+        <td style="font-weight:600">2-3</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲2-3</span></td>
+        <td><span class="text-red">-0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.46u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/mem.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Ryan Rollins</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Memphis Grizzlies</td>
+        <td style="font-weight:600">3-2</td>
+        <td class="text-green" style="font-weight:700">60.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-1</span> / <span style="color:#a78bfa">▼2-1</span></td>
+        <td><span class="text-green">+1.7</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-0.03u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Keyonte George</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Golden State Warriors</td>
+        <td style="font-weight:600">5-1</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span></td>
+        <td><span class="text-green">+1.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.52u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tre Jones</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Cleveland Cavaliers</td>
+        <td style="font-weight:600">6-0</td>
+        <td class="text-green" style="font-weight:700">100.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-0</span> / <span style="color:#a78bfa">▼1-0</span></td>
+        <td><span class="text-green">+2.0</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+4.16u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+    </div></div>
+<div id="tab-threes" class="tab-content" style="display:none"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+        <div class="mini-stat"><div class="mini-val">371</div><div class="mini-lbl">Total Picks</div></div>
+        <div class="mini-stat"><div class="mini-val">230-141</div><div class="mini-lbl">Record</div></div>
+        <div class="mini-stat"><div class="mini-val text-green">62.0%</div><div class="mini-lbl">Win Rate</div></div>
+        <div class="mini-stat"><div class="mini-val text-red">-4.3u</div><div class="mini-lbl">Total P&L</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+            <div class="table-header table-header-green">Top Performers</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#10b981;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/gsw.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">De'Anthony Melton</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Golden State Warriors</td>
+        <td style="font-weight:600">5-0</td>
+        <td class="text-green" style="font-weight:700">100.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼5-0</span></td>
+        <td><span class="text-green">+1.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.23u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">LaMelo Ball</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Charlotte Hornets</td>
+        <td style="font-weight:600">8-1</td>
+        <td class="text-green" style="font-weight:700">88.9%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲8-1</span></td>
+        <td><span class="text-green">+1.9</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+4.29u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Mikal Bridges</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New York Knicks</td>
+        <td style="font-weight:600">5-1</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span></td>
+        <td><span class="text-green">+0.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.62u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Anthony Edwards</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Minnesota Timberwolves</td>
+        <td style="font-weight:600">5-1</td>
+        <td class="text-green" style="font-weight:700">83.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-1</span></td>
+        <td><span class="text-green">+1.0</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.01u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cha.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kon Knueppel</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Charlotte Hornets</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-1</span></td>
+        <td><span class="text-green">+0.9</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.34u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Devin Booker</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">4-1</td>
+        <td class="text-green" style="font-weight:700">80.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#a78bfa">▼4-1</span></td>
+        <td><span class="text-green">+1.1</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+0.98u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/no.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jordan Poole</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New Orleans Pelicans</td>
+        <td style="font-weight:600">7-2</td>
+        <td class="text-green" style="font-weight:700">77.8%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲6-1</span> / <span style="color:#a78bfa">▼1-1</span></td>
+        <td><span class="text-green">+1.3</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.91u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/atl.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Nickeil Alexander-Walker</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Atlanta Hawks</td>
+        <td style="font-weight:600">6-2</td>
+        <td class="text-green" style="font-weight:700">75.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲6-2</span></td>
+        <td><span class="text-green">+1.4</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.57u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/den.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Jamal Murray</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Denver Nuggets</td>
+        <td style="font-weight:600">8-3</td>
+        <td class="text-green" style="font-weight:700">72.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲8-3</span></td>
+        <td><span class="text-green">+1.5</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+1.91u</td>
+    </tr>
+<tr>
+        <td style="color:#10b981;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/ny.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Miles McBride</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New York Knicks</td>
+        <td style="font-weight:600">6-3</td>
+        <td class="text-green" style="font-weight:700">66.7%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲6-3</span></td>
+        <td><span class="text-green">+0.7</span></td>
+        <td class="text-green" style="font-weight:700;font-family:monospace">+2.34u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+        <div>
+            <div class="table-header table-header-red">Struggling Players</div>
+            <div class="table-container">
+                <table><thead><tr>
+        <th>#</th><th>Player</th><th>Team</th><th>Record</th>
+        <th>Win %</th><th>Over / Under</th><th>Avg Margin</th><th>P&L</th>
+    </tr></thead><tbody><tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">1</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/was.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Carlton Carrington</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Washington Wizards</td>
+        <td style="font-weight:600">1-4</td>
+        <td class="text-red" style="font-weight:700">20.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲1-4</span></td>
+        <td><span class="text-red">-0.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.36u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">2</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Kevin Porter Jr.</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Minnesota Timberwolves</td>
+        <td style="font-weight:600">2-4</td>
+        <td class="text-red" style="font-weight:700">33.3%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲2-4</span></td>
+        <td><span class="text-red">-0.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-2.97u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">3</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/min.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Donte DiVincenzo</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Minnesota Timberwolves</td>
+        <td style="font-weight:600">4-6</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-6</span></td>
+        <td><span class="text-red">-0.2</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-3.50u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">4</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Sam Merrill</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Cleveland Cavaliers</td>
+        <td style="font-weight:600">4-6</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-6</span></td>
+        <td><span class="text-green">+0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-2.96u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">5</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Harrison Barnes</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">San Antonio Spurs</td>
+        <td style="font-weight:600">2-3</td>
+        <td class="text-red" style="font-weight:700">40.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲2-3</span></td>
+        <td><span class="text-red">-0.1</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.91u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">6</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/cle.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Donovan Mitchell</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Cleveland Cavaliers</td>
+        <td style="font-weight:600">3-4</td>
+        <td class="text-red" style="font-weight:700">42.9%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-4</span></td>
+        <td><span class="text-red">-0.2</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.91u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">7</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/sa.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">C.J. McCollum</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">San Antonio Spurs</td>
+        <td style="font-weight:600">3-4</td>
+        <td class="text-red" style="font-weight:700">42.9%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲3-4</span></td>
+        <td><span class="text-red">-0.4</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-2.40u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">8</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/hou.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Tari Eason</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Houston Rockets</td>
+        <td style="font-weight:600">4-5</td>
+        <td class="text-red" style="font-weight:700">44.4%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-5</span></td>
+        <td><span class="text-green">+0.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.61u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">9</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/phx.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Collin Gillespie</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">Phoenix Suns</td>
+        <td style="font-weight:600">5-6</td>
+        <td class="text-slate" style="font-weight:700">45.5%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲5-6</span></td>
+        <td><span class="text-green">+0.3</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-2.99u</td>
+    </tr>
+<tr>
+        <td style="color:#ef4444;font-weight:700;width:36px">10</td>
+        <td><div style="display:flex;align-items:center"><img src="https://a.espncdn.com/i/teamlogos/nba/500/no.png" style="width:22px;height:22px;border-radius:50%;vertical-align:middle;margin-right:6px;"><span style="font-weight:600">Trey Murphy III</span></div></td>
+        <td style="color:var(--text-slate);font-size:0.8rem">New Orleans Pelicans</td>
+        <td style="font-weight:600">4-4</td>
+        <td class="text-slate" style="font-weight:700">50.0%</td>
+        <td style="font-size:0.85rem"><span style="color:#60a5fa">▲4-4</span></td>
+        <td><span class="text-green">+0.5</span></td>
+        <td class="text-red" style="font-weight:700;font-family:monospace">-1.36u</td>
+    </tr></tbody></table>
+            </div>
+        </div>
+    </div></div>
+<div id="tab-pra" class="tab-content" style="display:none"><div style="color:var(--text-slate);padding:20px">Not enough data yet (need 2+ picks per player).</div></div>
+<div id="tab-points_rebounds" class="tab-content" style="display:none"><div style="color:var(--text-slate);padding:20px">Not enough data yet (need 2+ picks per player).</div></div>
+<div id="tab-points_assists" class="tab-content" style="display:none"><div style="color:var(--text-slate);padding:20px">Not enough data yet (need 2+ picks per player).</div></div>
+<div id="tab-rebounds_assists" class="tab-content" style="display:none"><div style="color:var(--text-slate);padding:20px">Not enough data yet (need 2+ picks per player).</div></div>
+    </div>
+
+    <div class="footer">
+        CourtSide Analytics &bull; NBA Player Props Performance Report<br>
+        <span style="font-size:0.75rem">▲ = Over bets &nbsp;&bull;&nbsp; ▼ = Under bets &nbsp;&bull;&nbsp; Avg Margin = avg units over/under the line when correct direction</span>
+    </div>
+
+</div>
+<script>
+    function showTab(key) {
+        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + key).style.display = 'block';
+        document.getElementById('btn-' + key).classList.add('active');
+    }
+</script>
+</body>
+</html>
