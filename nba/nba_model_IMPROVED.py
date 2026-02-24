@@ -63,11 +63,13 @@ TOTAL_THRESHOLD = 10.0      # Increased from 8.0 - only bet on higher confidence
 
 # Stricter thresholds for LOGGING picks (these are the bets we actually track)
 CONFIDENT_SPREAD_EDGE = 6.0  # MATCHES VISUAL THRESHOLD (was 5.0)
-CONFIDENT_TOTAL_EDGE = 10.0  # Increased from 8.0 - only track higher confidence totals
+CONFIDENT_TOTAL_EDGE = 12.0  # Raised from 10.0 - skip losing 10-14.9 edge zone
+CLV_NEGATIVE_RATE_THRESHOLD = 0.45  # If >45% of OVER picks got negative CLV, require more edge
+OVER_CLV_EDGE_PENALTY = 4.0         # Extra edge required when CLV negative rate is high
 
 # CALIBRATION: Model projects ~13.6 points lower than actual game totals (verified via performance data)
 # Reduced calibration to 6.0 to fix systematic OVER bias (was 13.6)
-TOTAL_CALIBRATION = 6.0     # Fixed: Reduced to 6.0 to correct recent Over bias
+TOTAL_CALIBRATION = 8.0     # Raised from 6.0 to further reduce OVER bias (-31.59u on overs)
 UNIT_SIZE = 100
 
 # Standard deviations for NBA margins/totals (approximate)
@@ -813,6 +815,19 @@ def get_historical_performance_by_edge(tracking_data):
     
     return performance_by_edge
 
+def get_historical_clv_rate_for_overs(tracking_data, min_sample=20):
+    """Calculate what fraction of historical OVER picks received negative CLV."""
+    picks = tracking_data.get('picks', [])
+    over_picks_with_clv = [
+        p for p in picks
+        if 'OVER' in p.get('pick', '')
+        and p.get('clv_status') in ('positive', 'negative', 'neutral')
+    ]
+    if len(over_picks_with_clv) < min_sample:
+        return None
+    negative_count = sum(1 for p in over_picks_with_clv if p.get('clv_status') == 'negative')
+    return negative_count / len(over_picks_with_clv)
+
 def calculate_ai_rating(game_data, team_performance, historical_edge_performance):
     """
     Calculate A.I. Rating that supplements edge-based approach
@@ -871,7 +886,9 @@ def calculate_ai_rating(game_data, team_performance, historical_edge_performance
     confidence = 1.0
     
     # Larger edges suggest stronger model confidence
-    if max_edge >= 12:
+    if max_edge > 20:
+        confidence = 0.90  # Extreme edges are unreliable (43.8% WR historically)
+    elif max_edge >= 12:
         confidence = 1.10  # Very large edges
     elif max_edge >= 8:
         confidence = 1.05  # Large edges
@@ -1954,25 +1971,32 @@ def calculate_model_total(home_team, away_team, stats, splits_data=None):
             print(f"{Colors.RED}❌ Missing stats for {home_team_name} or {away_team_name}{Colors.END}")
             return None
 
-        # Use composite stats for totals
         home_stats = stats[home_team_name]
         away_stats = stats[away_team_name]
 
-        # IMPROVED FORMULA: Account for both offense AND defense
-        # Expected home team points = (Home OffRtg + Away DefRtg) / 2
-        # Expected away team points = (Away OffRtg + Home DefRtg) / 2
+        # Use home/road split DefRtg for matchup-specific accuracy when available
+        if splits_data and splits_data.get('Home') and splits_data.get('Road'):
+            home_home_stats = splits_data['Home'].get(home_team_name)
+            away_road_stats = splits_data['Road'].get(away_team_name)
+        else:
+            home_home_stats = None
+            away_road_stats = None
 
-        home_expected = (home_stats['OffRtg'] + away_stats['DefRtg']) / 2
-        away_expected = (away_stats['OffRtg'] + home_stats['DefRtg']) / 2
+        away_def_rtg = away_road_stats['DefRtg'] if away_road_stats else away_stats['DefRtg']
+        home_def_rtg = home_home_stats['DefRtg'] if home_home_stats else home_stats['DefRtg']
 
-        # Adjust for pace
-        avg_pace = (home_stats['Pace'] + away_stats['Pace']) / 2
-        pace_factor = avg_pace / 100.0  # NBA average pace ~100
+        # Offense: composite season-long (more stable)
+        home_expected = (home_stats['OffRtg'] + away_def_rtg) / 2
+        away_expected = (away_stats['OffRtg'] + home_def_rtg) / 2
+
+        # Pace: use splits when available
+        if home_home_stats and away_road_stats:
+            avg_pace = (home_home_stats['Pace'] + away_road_stats['Pace']) / 2
+        else:
+            avg_pace = (home_stats['Pace'] + away_stats['Pace']) / 2
+        pace_factor = avg_pace / 100.0
 
         total = (home_expected + away_expected) * pace_factor
-
-        # Apply calibration to reduce UNDER bias
-        # Model projects ~13.6 points below actual game totals (verified from 102 graded picks)
         total += TOTAL_CALIBRATION
 
         # Sanity check with wider bounds
@@ -2255,7 +2279,6 @@ def fetch_odds():
 
     except Exception as e:
         print(f"{Colors.RED}✗ Error fetching odds: {e}{Colors.END}")
-        save_error_html(f"The model failed to fetch new data. Error details: <br><strong>{str(e)}</strong><br><br>Please check your API Key and connection.")
         return []
 
 # =========================
@@ -2293,7 +2316,10 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
     # Load historical edge performance for A.I. Rating calculation
     tracking_data = load_picks_tracking()
     historical_edge_performance = get_historical_performance_by_edge(tracking_data)
-    
+    over_clv_negative_rate = get_historical_clv_rate_for_overs(tracking_data)
+    if over_clv_negative_rate is not None:
+        print(f"{Colors.CYAN}  CLV filter: {over_clv_negative_rate:.1%} of OVER picks historically get negative CLV{Colors.END}")
+
     # NEW: Get Top 10 / Bottom 10 teams for Auto-Bet/Fade tags
     top_10_teams, bottom_10_teams = get_nba_team_rankings()
     
@@ -2528,11 +2554,21 @@ def process_games(games, stats, splits_data=None, schedule_data=None):
 
             if '✅' in total_pick and abs(total_edge) >= CONFIDENT_TOTAL_EDGE:
                 ev_percent, win_prob_percent = calculate_ev(model_total, market_total, 'total', -110)
-                if ev_percent > 0 and win_prob_percent >= 55:
-                    log_confident_pick(result, 'total', total_edge, model_total, market_total,
-                                       ev_percent=ev_percent, win_prob_percent=win_prob_percent)
-                else:
-                    print(f"{Colors.YELLOW}↩ Skipped total pick (EV {ev_percent:+.2f}%, WP {win_prob_percent:.1f}%) {result.get('matchup','')}{Colors.END}")
+
+                clv_filtered_out = False
+                if 'OVER' in total_pick and over_clv_negative_rate is not None:
+                    if over_clv_negative_rate > CLV_NEGATIVE_RATE_THRESHOLD:
+                        required_edge = CONFIDENT_TOTAL_EDGE + OVER_CLV_EDGE_PENALTY
+                        if abs(total_edge) < required_edge:
+                            clv_filtered_out = True
+                            print(f"{Colors.YELLOW}↩ Skipped OVER (CLV filter: {over_clv_negative_rate:.1%} neg rate, need {required_edge:.0f}, have {abs(total_edge):.1f}) {result.get('matchup','')}{Colors.END}")
+
+                if not clv_filtered_out:
+                    if ev_percent > 0 and win_prob_percent >= 55:
+                        log_confident_pick(result, 'total', total_edge, model_total, market_total,
+                                           ev_percent=ev_percent, win_prob_percent=win_prob_percent)
+                    else:
+                        print(f"{Colors.YELLOW}↩ Skipped total pick (EV {ev_percent:+.2f}%, WP {win_prob_percent:.1f}%) {result.get('matchup','')}{Colors.END}")
 
         except Exception as e:
             print(f"{Colors.YELLOW}⚠ Error processing game: {e}{Colors.END}")
