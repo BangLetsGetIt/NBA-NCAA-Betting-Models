@@ -699,9 +699,10 @@ def find_most_recent_completed_date():
             with open(fpath, 'r') as f:
                 data = json.load(f)
             picks = data.get('picks', data) if isinstance(data, dict) else data
+            today_str = datetime.now(et_tz).strftime('%Y-%m-%d')
             for pick in picks:
-                if pick.get('status', '').lower() not in ('win', 'loss', 'push'):
-                    continue
+                # Include all picks (pending too) so today's date is detected
+                # before all games are graded
                 # Try to extract date
                 date_str = None
                 for field in ('game_date', 'game_time', 'date', 'tracked_at'):
@@ -717,7 +718,8 @@ def find_most_recent_completed_date():
                         break
                     except Exception:
                         continue
-                if date_str and (latest_date is None or date_str > latest_date):
+                # Cap at today — don't let tomorrow's pre-tracked games shift the date
+                if date_str and date_str <= today_str and (latest_date is None or date_str > latest_date):
                     latest_date = date_str
         except Exception:
             continue
