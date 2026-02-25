@@ -104,9 +104,9 @@ def retrieve_active_plays(tracking_data, stat_type="PTS"):
             is_today = (p_date == today_date)
             is_future = (p_date > today_date)
             
-            if is_today:
+            if status == 'pending':
                 should_show = True
-            elif is_future and status == 'pending':
+            elif is_today:
                 should_show = True
             
             if should_show:
@@ -519,6 +519,18 @@ def run_nba_grading(force=False, grade_only=False):
         except Exception as e:
             log(f"Error processing {mod_name}: {e}", "error")
 
+    # Regenerate NBA analysis report (team records, trends)
+    try:
+        subprocess.run(
+            ["python3", "generate_nba_analysis_report.py"],
+            cwd=os.path.join(os.getcwd(), "nba"),
+            check=False, capture_output=True
+        )
+        log("Regenerated nba_analysis_report.html", "success")
+        any_updates = True
+    except Exception as e:
+        log(f"Error regenerating NBA analysis report: {e}", "warning")
+
     return any_updates
 
 def run_nfl_grading(force=False, grade_only=False):
@@ -839,6 +851,19 @@ def run_ncaab_grading(force=False, grade_only=False):
                      log(f"Regenerated HTML output for {mod_name} with {len(active_results)} plays", "success")
                  except Exception as e:
                      log(f"Error regenerating HTML output for {mod_name}: {e}", "warning")
+
+             # Regenerate analysis report (team records, trends)
+             try:
+                 subprocess.run(
+                     ["python3", "generate_analysis_report.py"],
+                     cwd=os.path.join(os.getcwd(), "ncaa"),
+                     check=False, capture_output=True
+                 )
+                 log("Regenerated ncaab_analysis_report.html", "success")
+                 any_updates = True
+             except Exception as e:
+                 log(f"Error regenerating analysis report: {e}", "warning")
+
         else:
             if hasattr(mod, 'main'):
                 mod.main()
@@ -853,7 +878,7 @@ def run_ncaab_grading(force=False, grade_only=False):
                             any_updates = True
                     except Exception as e:
                         log(f"Error updating NCAAB model: {e}", "error")
-                
+
                 # ALWAYS regenerate HTML to refresh date-dependent stats
                 if hasattr(mod, 'generate_tracking_html'):
                     try:
@@ -862,10 +887,22 @@ def run_ncaab_grading(force=False, grade_only=False):
                         any_updates = True
                     except Exception as e:
                         log(f"HTML generation failed for {mod_name}: {e}", "warning")
-                
+
+            # Regenerate analysis report (team records, trends)
+            try:
+                subprocess.run(
+                    ["python3", "generate_analysis_report.py"],
+                    cwd=os.path.join(os.getcwd(), "ncaa"),
+                    check=False, capture_output=True
+                )
+                log("Regenerated ncaab_analysis_report.html", "success")
+                any_updates = True
+            except Exception as e:
+                log(f"Error regenerating analysis report: {e}", "warning")
+
     except Exception as e:
         log(f"Error processing {mod_name}: {e}", "error")
-        
+
     return any_updates
 
 def run_cbb_props_grading(force=False, grade_only=False):
@@ -1073,32 +1110,28 @@ def main():
                 except Exception as e:
                     log(f"Best plays generation failed: {e}", "warning")
                 
-                # Generate Daily Recap for yesterday
+                # Generate Daily Recap for most recent completed date
                 try:
-                    from datetime import datetime, timedelta
-                    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
                     import generate_daily_recap
                     import importlib
                     importlib.reload(generate_daily_recap)
-                    
-                    generator = generate_daily_recap.DailyRecapGenerator(yesterday)
+
+                    recap_date = generate_daily_recap.find_most_recent_completed_date()
+                    generator = generate_daily_recap.DailyRecapGenerator(recap_date)
                     generator.load_data()
                     stats = generator.calculate_stats()
                     html = generator.generate_html(stats)
-                    
-                    # Save dated version
-                    dated_output = f"daily_recap_{yesterday}.html"
+
+                    dated_output = f"daily_recap_{recap_date}.html"
                     with open(dated_output, 'w') as f:
                         f.write(html)
-                    
-                    # Update the main daily_recap.html
                     with open('daily_recap.html', 'w') as f:
                         f.write(html)
-                    
-                    log(f"Generated daily recap for {yesterday}", "success")
+
+                    log(f"Generated daily recap for {recap_date}", "success")
                 except Exception as e:
                     log(f"Daily recap generation failed: {e}", "warning")
-                
+
                 trigger_git_push()
             else:
                 log("No updates found.", "info")
@@ -1128,29 +1161,25 @@ def main():
             except Exception as e:
                 log(f"Best plays generation failed: {e}", "warning")
             
-            # Generate Daily Recap for yesterday
+            # Generate Daily Recap for most recent completed date
             try:
-                from datetime import datetime, timedelta
-                yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
                 import generate_daily_recap
                 import importlib
                 importlib.reload(generate_daily_recap)
-                
-                generator = generate_daily_recap.DailyRecapGenerator(yesterday)
+
+                recap_date = generate_daily_recap.find_most_recent_completed_date()
+                generator = generate_daily_recap.DailyRecapGenerator(recap_date)
                 generator.load_data()
                 stats = generator.calculate_stats()
                 html = generator.generate_html(stats)
-                
-                # Save dated version
-                dated_output = f"daily_recap_{yesterday}.html"
+
+                dated_output = f"daily_recap_{recap_date}.html"
                 with open(dated_output, 'w') as f:
                     f.write(html)
-                
-                # Update the main daily_recap.html
                 with open('daily_recap.html', 'w') as f:
                     f.write(html)
-                
-                log(f"Generated daily recap for {yesterday}", "success")
+
+                log(f"Generated daily recap for {recap_date}", "success")
             except Exception as e:
                 log(f"Daily recap generation failed: {e}", "warning")
             
