@@ -87946,10 +87946,11 @@
       "win_prob_percent": 93.40214046403237,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-02-27T23:20:57.959486-05:00"
+      "status": "loss",
+      "result": "Lost by 11.5",
+      "profit": -25.0,
+      "logged_at": "2026-02-27T23:20:57.959486-05:00",
+      "actual_score": "Sacramento St Hornets 61, Montana St Bobcats 82"
     },
     {
       "pick_id": "Western Kentucky Hilltoppers_UTEP Miners_2026-02-28T20:00:00Z_spread",
@@ -87965,10 +87966,11 @@
       "win_prob_percent": 85.92887124411804,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-02-27T23:20:58.040852-05:00"
+      "status": "loss",
+      "result": "Lost by 22.5",
+      "profit": -25.0,
+      "logged_at": "2026-02-27T23:20:58.040852-05:00",
+      "actual_score": "UTEP Miners 65, Western Kentucky Hilltoppers 97"
     },
     {
       "pick_id": "Arizona St Sun Devils_Utah Utes_2026-02-28T20:30:19Z_spread",
@@ -88693,13 +88695,32 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-02-28T15:25:07.607457-05:00"
+    },
+    {
+      "pick_id": "SE Missouri St Redhawks_Tennessee Tech Golden Eagles_2026-02-28T22:10:00Z_spread",
+      "game_date": "2026-02-28T22:10:00Z",
+      "home_team": "SE Missouri St Redhawks",
+      "away_team": "Tennessee Tech Golden Eagles",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Tennessee Tech Golden Eagles +7.5",
+      "model_line": 10.142749999999992,
+      "market_line": -7.5,
+      "edge": 17.642749999999992,
+      "ev_percent": 82.04075563311636,
+      "win_prob_percent": 95.35468152210858,
+      "stake_units": 0.25,
+      "stake": 25.0,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-02-28T17:06:14.809174-05:00"
     }
   ],
   "summary": {
-    "total_picks": 5183,
+    "total_picks": 5184,
     "wins": 2695,
-    "losses": 2426,
+    "losses": 2428,
     "pushes": 7,
-    "pending": 55
+    "pending": 54
   }
 }
