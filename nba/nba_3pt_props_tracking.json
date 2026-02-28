@@ -10226,10 +10226,12 @@
       "edge": 1.5,
       "ev": 56.8,
       "tracked_at": "2026-02-26T00:51:21.404006-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 0.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-02-27T23:28:39.075312-05:00"
     },
     {
       "pick_id": "Dejounte Murray_1.5_over_2026-02-27T02:10:00Z",
@@ -10248,10 +10250,12 @@
       "edge": 1.7,
       "ev": 20.72,
       "tracked_at": "2026-02-26T00:51:21.404046-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 2.0,
+      "clv_status": null,
+      "profit_loss": 72,
+      "updated_at": "2026-02-27T23:28:39.075462-05:00"
     },
     {
       "pick_id": "Kelly Oubre Jr_1.5_over_2026-02-27T00:10:00Z",
@@ -10340,10 +10344,11 @@
       "edge": 1.0,
       "ev": 4.15,
       "tracked_at": "2026-02-26T00:51:21.404188-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Herb Jones_1.5_under_2026-02-27T02:10:00Z",
@@ -10362,10 +10367,11 @@
       "edge": 1.0,
       "ev": 18.61,
       "tracked_at": "2026-02-26T00:51:21.404222-05:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Grayson Allen_3.5_under_2026-02-27T02:10:00Z",
@@ -10384,10 +10390,12 @@
       "edge": 3.5,
       "ev": 13.75,
       "tracked_at": "2026-02-26T00:51:21.404258-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 6.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-02-27T23:28:39.075782-05:00"
     },
     {
       "pick_id": "Derrick Jones_1.5_under_2026-02-27T03:10:00Z",
@@ -10428,6 +10436,30 @@
       "edge": 1.9,
       "ev": 66.6,
       "tracked_at": "2026-02-26T23:12:56.589267-05:00",
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-02-27T23:28:41.462466-05:00"
+    },
+    {
+      "pick_id": "LeBron James_1.5_over_2026-03-01T01:40:00Z",
+      "player": "LeBron James",
+      "prop_line": 1.5,
+      "bet_type": "over",
+      "team": "Los Angeles Lakers",
+      "opponent": "Golden State Warriors",
+      "ai_score": 10.0,
+      "odds": 134,
+      "opening_odds": 134,
+      "latest_odds": 134,
+      "game_time": "2026-03-01T01:40:00Z",
+      "season_avg": 3.0,
+      "recent_avg": 3.0,
+      "edge": 1.5,
+      "ev": 63.8,
+      "tracked_at": "2026-02-27T23:29:38.740276-05:00",
       "status": "pending",
       "result": null,
       "actual_3pm": null,
