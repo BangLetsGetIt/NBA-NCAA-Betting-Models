@@ -13377,11 +13377,11 @@
       "stake": 100,
       "pick": "\u2705 BET: Charlotte Hornets -8.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 109,
+      "actual_away_score": 93,
       "clv_status": "negative"
     },
     {
@@ -13403,11 +13403,11 @@
       "stake": 100,
       "pick": "\u2705 BET: OVER 230.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 109,
+      "actual_away_score": 93,
       "clv_status": "negative"
     },
     {
@@ -13473,7 +13473,7 @@
       "model_line": 11.8,
       "market_line": 3.0,
       "opening_line": 3.0,
-      "closing_line": 3.5,
+      "closing_line": 3.0,
       "edge": 8.8,
       "ev_percent": 46.68,
       "win_prob_percent": 76.8,
@@ -13486,7 +13486,7 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": "negative"
+      "clv_status": "neutral"
     },
     {
       "pick_id": "New York Knicks_San Antonio Spurs_2026-03-01T18:10:00Z_spread",
@@ -13621,9 +13621,9 @@
   ],
   "summary": {
     "total_picks": 620,
-    "wins": 305,
-    "losses": 289,
+    "wins": 306,
+    "losses": 290,
     "pushes": 4,
-    "pending": 22
+    "pending": 20
   }
 }
