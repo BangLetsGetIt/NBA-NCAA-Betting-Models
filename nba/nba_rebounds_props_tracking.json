@@ -9646,11 +9646,13 @@
       "edge": 2.8,
       "ev": 17.95,
       "tracked_at": "2026-02-28T00:31:45.203578-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_reb": null,
+      "status": "win",
+      "result": "WIN",
+      "actual_reb": 15.0,
       "clv_status": "negative",
-      "last_updated": "2026-02-28T12:49:47.109770-05:00"
+      "last_updated": "2026-02-28T12:49:47.109770-05:00",
+      "profit_loss": 68,
+      "updated_at": "2026-02-28T22:56:56.911900-05:00"
     },
     {
       "pick_id": "DeAndre Jordan_6.5_under_2026-03-01T02:40:00Z",
@@ -9764,11 +9766,13 @@
       "edge": 1.1,
       "ev": 61.0,
       "tracked_at": "2026-02-28T15:48:15.820840-05:00",
-      "status": "pending",
-      "result": null,
-      "actual_reb": null,
+      "status": "loss",
+      "result": "LOSS",
+      "actual_reb": 4.0,
       "clv_status": "positive",
-      "last_updated": "2026-02-28T17:31:55.137476-05:00"
+      "last_updated": "2026-02-28T17:31:55.137476-05:00",
+      "profit_loss": -100,
+      "updated_at": "2026-02-28T22:56:56.912649-05:00"
     },
     {
       "pick_id": "Keldon Johnson_3.5_over_2026-03-01T18:10:00Z",
@@ -9982,7 +9986,7 @@
       "ai_score": 10.0,
       "odds": -115,
       "opening_odds": -115,
-      "latest_odds": 100,
+      "latest_odds": -115,
       "game_time": "2026-03-01T22:10:00Z",
       "season_avg": 4.9,
       "recent_avg": 4.9,
@@ -9992,8 +9996,8 @@
       "status": "pending",
       "result": null,
       "actual_reb": null,
-      "clv_status": "negative",
-      "last_updated": "2026-02-28T22:04:35.255699-05:00"
+      "clv_status": "neutral",
+      "last_updated": "2026-02-28T22:56:56.970205-05:00"
     },
     {
       "pick_id": "Michael Porter Jr_5.5_over_2026-03-01T20:40:00Z",
@@ -10005,7 +10009,7 @@
       "ai_score": 10.0,
       "odds": -130,
       "opening_odds": -130,
-      "latest_odds": -130,
+      "latest_odds": -114,
       "game_time": "2026-03-01T20:40:00Z",
       "season_avg": 7.0,
       "recent_avg": 7.0,
@@ -10015,7 +10019,8 @@
       "status": "pending",
       "result": null,
       "actual_reb": null,
-      "clv_status": null
+      "clv_status": "negative",
+      "last_updated": "2026-02-28T22:56:56.969876-05:00"
     }
   ]
 }
