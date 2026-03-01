@@ -88329,10 +88329,11 @@
       "win_prob_percent": 94.71638982256533,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-02-27T23:20:59.557666-05:00"
+      "status": "loss",
+      "result": "Lost by 2.5",
+      "profit": -25.0,
+      "logged_at": "2026-02-27T23:20:59.557666-05:00",
+      "actual_score": "Omaha Mavericks 53, St. Thomas (MN) Tommies 68"
     },
     {
       "pick_id": "Santa Clara Broncos_Oregon St Beavers_2026-03-01T01:00:00Z_spread",
@@ -88758,12 +88759,31 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-02-28T20:39:46.273437-05:00"
+    },
+    {
+      "pick_id": "Utah State Aggies_Grand Canyon Antelopes_2026-03-01T03:07:00Z_spread",
+      "game_date": "2026-03-01T03:07:00Z",
+      "home_team": "Utah State Aggies",
+      "away_team": "Grand Canyon Antelopes",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Grand Canyon Antelopes +9.5",
+      "model_line": 9.559549999999987,
+      "market_line": -9.5,
+      "edge": 19.059549999999987,
+      "ev_percent": 84.27558119941244,
+      "win_prob_percent": 96.52530443778747,
+      "stake_units": 0.25,
+      "stake": 25.0,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-02-28T22:06:14.395352-05:00"
     }
   ],
   "summary": {
-    "total_picks": 5185,
+    "total_picks": 5186,
     "wins": 2709,
-    "losses": 2439,
+    "losses": 2440,
     "pushes": 7,
     "pending": 30
   }
