@@ -13585,11 +13585,11 @@
       "stake": 100,
       "pick": "\u2705 BET: OVER 221.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 92,
+      "actual_away_score": 106,
       "clv_status": "positive"
     },
     {
@@ -13741,11 +13741,11 @@
       "stake": 100,
       "pick": "\u2705 BET: Atlanta Hawks -6.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 135,
+      "actual_away_score": 101,
       "clv_status": "positive"
     },
     {
@@ -13759,7 +13759,7 @@
       "model_line": 11.0,
       "market_line": -13.5,
       "opening_line": -13.5,
-      "closing_line": -12.0,
+      "closing_line": -12.5,
       "edge": 24.5,
       "ev_percent": 86.98,
       "win_prob_percent": 97.9,
@@ -13785,7 +13785,7 @@
       "model_line": 257.3,
       "market_line": 231.5,
       "opening_line": 231.5,
-      "closing_line": 234.5,
+      "closing_line": 235.0,
       "edge": 25.8,
       "ev_percent": 89.1,
       "win_prob_percent": 99.0,
@@ -13959,9 +13959,9 @@
   ],
   "summary": {
     "total_picks": 633,
-    "wins": 309,
-    "losses": 298,
+    "wins": 310,
+    "losses": 299,
     "pushes": 4,
-    "pending": 22
+    "pending": 20
   }
 }
