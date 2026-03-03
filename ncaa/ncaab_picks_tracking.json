@@ -88870,10 +88870,11 @@
       "win_prob_percent": 91.6206706908465,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-03-01T15:44:55.898100-05:00"
+      "status": "loss",
+      "result": "Lost by 5.5",
+      "profit": -25.0,
+      "logged_at": "2026-03-01T15:44:55.898100-05:00",
+      "actual_score": "East Texas A&M Lions 71, Texas A&M-CC Islanders 84"
     },
     {
       "pick_id": "New Orleans Privateers_SE Louisiana Lions_2026-03-03T01:00:00Z_spread",
@@ -88889,10 +88890,11 @@
       "win_prob_percent": 86.59994954659814,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-03-01T15:44:55.982161-05:00"
+      "status": "win",
+      "result": "Won by 11.0",
+      "profit": 22.75,
+      "logged_at": "2026-03-01T15:44:55.982161-05:00",
+      "actual_score": "SE Louisiana Lions 82, New Orleans Privateers 78"
     },
     {
       "pick_id": "Delaware St Hornets_South Carolina St Bulldogs_2026-03-03T00:00:00Z_spread",
@@ -89600,13 +89602,32 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-03-02T16:31:48.636259-05:00"
+    },
+    {
+      "pick_id": "Green Bay Phoenix_Fort Wayne Mastodons_2026-03-04T01:00:30Z_spread",
+      "game_date": "2026-03-04T01:00:30Z",
+      "home_team": "Green Bay Phoenix",
+      "away_team": "Fort Wayne Mastodons",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Fort Wayne Mastodons +5.5",
+      "model_line": 4.147419999999997,
+      "market_line": -5.5,
+      "edge": 9.647419999999997,
+      "ev_percent": 56.71734947212311,
+      "win_prob_percent": 82.09004019968353,
+      "stake_units": 0.25,
+      "stake": 25.0,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-03-02T22:16:07.604262-05:00"
     }
   ],
   "summary": {
-    "total_picks": 5228,
-    "wins": 2722,
-    "losses": 2451,
+    "total_picks": 5229,
+    "wins": 2723,
+    "losses": 2452,
     "pushes": 7,
-    "pending": 48
+    "pending": 47
   }
 }
