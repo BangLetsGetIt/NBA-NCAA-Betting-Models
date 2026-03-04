@@ -89591,10 +89591,11 @@
       "win_prob_percent": 95.33287744819341,
       "stake_units": 0.25,
       "stake": 25.0,
-      "status": "pending",
-      "result": null,
-      "profit": null,
-      "logged_at": "2026-03-02T16:06:22.958118-05:00"
+      "status": "loss",
+      "result": "Lost by 5.0",
+      "profit": -25.0,
+      "logged_at": "2026-03-02T16:06:22.958118-05:00",
+      "actual_score": "LSU Tigers 74, Auburn Tigers 88"
     },
     {
       "pick_id": "UCLA Bruins_Nebraska Cornhuskers_2026-03-04T04:00:00Z_total",
@@ -90281,12 +90282,31 @@
       "result": null,
       "profit": null,
       "logged_at": "2026-03-03T20:44:18.528978-05:00"
+    },
+    {
+      "pick_id": "James Madison Dukes_Louisiana Ragin' Cajuns_2026-03-04T23:00:00Z_spread",
+      "game_date": "2026-03-04T23:00:00Z",
+      "home_team": "James Madison Dukes",
+      "away_team": "Louisiana Ragin' Cajuns",
+      "pick_type": "spread",
+      "pick_text": "\u2705 BET: Louisiana Ragin' Cajuns +4.5",
+      "model_line": 7.607398938808487,
+      "market_line": -4.5,
+      "edge": 12.107398938808487,
+      "ev_percent": 67.1528174173723,
+      "win_prob_percent": 87.55623769481406,
+      "stake_units": 0.25,
+      "stake": 25.0,
+      "status": "pending",
+      "result": null,
+      "profit": null,
+      "logged_at": "2026-03-04T00:28:24.116721-05:00"
     }
   ],
   "summary": {
-    "total_picks": 5262,
+    "total_picks": 5263,
     "wins": 2738,
-    "losses": 2470,
+    "losses": 2471,
     "pushes": 7,
     "pending": 47
   }
