@@ -135,7 +135,7 @@ class CBBOddsClient:
             odds_url = f"{self.base_url}/events/{event_id}/odds"
             params = {
                 "apiKey": self.api_key,
-                "regions": "us,us2,eu",
+                "regions": "us,us2",
                 "markets": markets_str,
                 "oddsFormat": "american"
             }
