@@ -11682,10 +11682,12 @@
       "edge": 1.9,
       "ev": 72.2,
       "tracked_at": "2026-03-17T12:50:47.377587-04:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-03-18T13:37:04.086357-04:00"
     },
     {
       "pick_id": "Kevin Porter Jr._1.5_over_2026-03-18T00:10:00Z",
@@ -11704,10 +11706,12 @@
       "edge": 1.9,
       "ev": 105.8,
       "tracked_at": "2026-03-17T12:50:47.377676-04:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_3pm": 1.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-03-18T13:37:04.094682-04:00"
     },
     {
       "pick_id": "Grayson Allen_2.5_under_2026-03-18T00:10:00Z",
@@ -11726,10 +11730,11 @@
       "edge": 2.5,
       "ev": 34.81,
       "tracked_at": "2026-03-17T12:50:47.377733-04:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_3pm": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Grant Williams_1.5_under_2026-03-17T23:10:00Z",
@@ -11748,10 +11753,12 @@
       "edge": 1.5,
       "ev": 0.43,
       "tracked_at": "2026-03-17T12:50:47.377783-04:00",
-      "status": "pending",
-      "result": null,
-      "actual_3pm": null,
-      "clv_status": null
+      "status": "win",
+      "result": "WIN",
+      "actual_3pm": 1.0,
+      "clv_status": null,
+      "profit_loss": 43,
+      "updated_at": "2026-03-18T13:37:04.095009-04:00"
     }
   ]
 }
