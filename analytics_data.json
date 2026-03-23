@@ -1,36 +1,36 @@
 {
   "overview": {
-    "total_picks": 10372,
-    "completed_picks": 9459,
-    "wins": 4953,
-    "losses": 4480,
+    "total_picks": 10440,
+    "completed_picks": 9528,
+    "wins": 4989,
+    "losses": 4513,
     "pushes": 26,
-    "win_rate": 0.523628290516968,
-    "profit_loss": -168.25,
-    "roi": -1.778729252563696
+    "win_rate": 0.5236146095717884,
+    "profit_loss": -155.42,
+    "roi": -1.6311922753988246
   },
   "by_sport": {
     "NBA": {
-      "total_picks": 3566,
-      "completed_picks": 3019,
-      "wins": 1581,
-      "losses": 1433,
+      "total_picks": 3582,
+      "completed_picks": 3034,
+      "wins": 1590,
+      "losses": 1439,
       "pushes": 5,
-      "win_rate": 0.5236833388539252,
-      "profit_loss": -155.34,
-      "roi": -5.145412388208015,
-      "avg_edge": 3.3175754981460712
+      "win_rate": 0.5240606460118655,
+      "profit_loss": -153.01,
+      "roi": -5.0431773236651285,
+      "avg_edge": 3.3673294881041005
     },
     "NCAAB": {
-      "total_picks": 6056,
-      "completed_picks": 5876,
-      "wins": 3081,
-      "losses": 2788,
+      "total_picks": 6108,
+      "completed_picks": 5930,
+      "wins": 3108,
+      "losses": 2815,
       "pushes": 7,
-      "win_rate": 0.5243362831858407,
-      "profit_loss": -20.54,
-      "roi": -0.3495575221238938,
-      "avg_edge": 1.8621394223668735
+      "win_rate": 0.524114671163575,
+      "profit_loss": -10.04,
+      "roi": -0.16930860033726813,
+      "avg_edge": 1.894604257431335
     },
     "Soccer": {
       "total_picks": 734,
@@ -57,24 +57,24 @@
   },
   "by_model_type": {
     "Main": {
-      "total_picks": 6893,
-      "completed_picks": 6587,
-      "wins": 3439,
-      "losses": 3123,
+      "total_picks": 6911,
+      "completed_picks": 6621,
+      "wins": 3450,
+      "losses": 3146,
       "pushes": 25,
-      "win_rate": 0.5220889631091544,
-      "profit_loss": -5.63,
-      "roi": -0.08547138302717475
+      "win_rate": 0.5210693248753965,
+      "profit_loss": -3.83,
+      "roi": -0.057846246790515025
     },
     "Props": {
-      "total_picks": 3344,
-      "completed_picks": 2861,
-      "wins": 1511,
-      "losses": 1350,
+      "total_picks": 3394,
+      "completed_picks": 2896,
+      "wins": 1536,
+      "losses": 1360,
       "pushes": 0,
-      "win_rate": 0.5281370150297099,
-      "profit_loss": -160.17,
-      "roi": -5.598392170569731
+      "win_rate": 0.5303867403314917,
+      "profit_loss": -149.14,
+      "roi": -5.149861878453039
     }
   },
   "time_series": {
@@ -1088,23 +1088,45 @@
     },
     "2026-03-20": {
       "picks": 27,
-      "wins": 3150,
-      "losses": 2867,
+      "wins": 3153,
+      "losses": 2878,
       "pushes": 12,
       "profit_loss": -12.31,
-      "win_rate": 0.52247470558965
+      "win_rate": 0.5217607148767168
     },
     "2026-03-21": {
       "picks": 17,
-      "wins": 3151,
-      "losses": 2871,
+      "wins": 3158,
+      "losses": 2890,
       "pushes": 12,
       "profit_loss": -15.71,
-      "win_rate": 0.5222074908849851
+      "win_rate": 0.5211221122112211
+    },
+    "2026-03-22": {
+      "picks": 15,
+      "wins": 3162,
+      "losses": 2892,
+      "pushes": 12,
+      "profit_loss": -11.71,
+      "win_rate": 0.5212660731948566
     }
   },
   "top_performers": {
     "player_0": {
+      "name": "Alex Karaban",
+      "type": "player",
+      "total_picks": 8,
+      "wins": 8,
+      "losses": 0,
+      "pushes": 0,
+      "win_rate": 1.0,
+      "profit_loss": 5.94,
+      "sport": "NCAAB",
+      "team_abbrev": "",
+      "team_name": "UConn Huskies",
+      "prop_summary": "Pts (3-0-0), Reb (1-0-0), Ast (1-0-0)"
+    },
+    "player_1": {
       "name": "Naji Marshall",
       "type": "player",
       "total_picks": 7,
@@ -1118,21 +1140,21 @@
       "team_name": "Dallas Mavericks",
       "prop_summary": "Pts (3-0-0), 3PT (3-0-0), Reb (1-0-0)"
     },
-    "player_1": {
-      "name": "Alex Karaban",
+    "player_2": {
+      "name": "Tyler Perkins",
       "type": "player",
       "total_picks": 7,
       "wins": 7,
       "losses": 0,
       "pushes": 0,
       "win_rate": 1.0,
-      "profit_loss": 5.08,
+      "profit_loss": 5.87,
       "sport": "NCAAB",
       "team_abbrev": "",
-      "team_name": "UConn Huskies",
-      "prop_summary": "Pts (2-0-0), Reb (1-0-0), Ast (1-0-0)"
+      "team_name": "Villanova Wildcats",
+      "prop_summary": "Reb (2-0-0), Ast (1-0-0), PRA (1-0-0)"
     },
-    "player_2": {
+    "player_3": {
       "name": "C.J. Cox",
       "type": "player",
       "total_picks": 7,
@@ -1146,7 +1168,7 @@
       "team_name": "Purdue Boilermakers",
       "prop_summary": "Pts (2-0-0), PRA (2-0-0), P+A (2-0-0)"
     },
-    "player_3": {
+    "player_4": {
       "name": "Ven-Allen Lubin",
       "type": "player",
       "total_picks": 6,
@@ -1159,20 +1181,6 @@
       "team_abbrev": "",
       "team_name": "North Carolina Tar Heels",
       "prop_summary": "Reb (1-0-0), Pts (1-0-0), PRA (1-0-0)"
-    },
-    "player_4": {
-      "name": "Tyler Perkins",
-      "type": "player",
-      "total_picks": 6,
-      "wins": 6,
-      "losses": 0,
-      "pushes": 0,
-      "win_rate": 1.0,
-      "profit_loss": 4.87,
-      "sport": "NCAAB",
-      "team_abbrev": "",
-      "team_name": "Villanova Wildcats",
-      "prop_summary": "Reb (1-0-0), Ast (1-0-0), PRA (1-0-0)"
     },
     "player_5": {
       "name": "Donovan Clingan",
@@ -1394,13 +1402,13 @@
     "team_eff_7": {
       "name": "UConn Huskies",
       "type": "team",
-      "total_picks": 12,
-      "wins": 10,
+      "total_picks": 13,
+      "wins": 11,
       "losses": 2,
       "pushes": 0,
-      "win_rate": 0.8333333333333334,
+      "win_rate": 0.8461538461538461,
       "profit_loss": 173.0,
-      "record_split": "Dog: 10-2-0"
+      "record_split": "Dog: 11-2-0"
     },
     "team_eff_8": {
       "name": "Drake Bulldogs",
@@ -1713,19 +1721,19 @@
       }
     },
     "NBA Rebounds Props": {
-      "total_picks": 602,
-      "completed_picks": 505,
-      "wins": 267,
-      "losses": 238,
+      "total_picks": 603,
+      "completed_picks": 509,
+      "wins": 269,
+      "losses": 240,
       "pushes": 0,
-      "win_rate": 0.5287128712871287,
-      "profit_loss": -31.75,
-      "roi": -6.287128712871287,
+      "win_rate": 0.5284872298624754,
+      "profit_loss": -32.36,
+      "roi": -6.357563850687622,
       "recent_100": {
-        "wins": 48,
-        "losses": 52,
+        "wins": 47,
+        "losses": 53,
         "pushes": 0,
-        "win_rate": 0.48
+        "win_rate": 0.47
       },
       "recent_50": {
         "wins": 27,
@@ -1740,21 +1748,21 @@
         "win_rate": 0.55
       },
       "recent_10": {
-        "wins": 5,
-        "losses": 5,
+        "wins": 6,
+        "losses": 4,
         "pushes": 0,
-        "win_rate": 0.5
+        "win_rate": 0.6
       }
     },
     "NBA Points Props": {
-      "total_picks": 1279,
-      "completed_picks": 1116,
-      "wins": 568,
-      "losses": 548,
+      "total_picks": 1282,
+      "completed_picks": 1120,
+      "wins": 570,
+      "losses": 550,
       "pushes": 0,
-      "win_rate": 0.5089605734767025,
-      "profit_loss": -53.2,
-      "roi": -4.767025089605735,
+      "win_rate": 0.5089285714285714,
+      "profit_loss": -53.54,
+      "roi": -4.780357142857143,
       "recent_100": {
         "wins": 52,
         "losses": 48,
@@ -1762,33 +1770,33 @@
         "win_rate": 0.52
       },
       "recent_50": {
-        "wins": 23,
-        "losses": 27,
+        "wins": 25,
+        "losses": 25,
         "pushes": 0,
-        "win_rate": 0.46
+        "win_rate": 0.5
       },
       "recent_20": {
-        "wins": 11,
-        "losses": 9,
+        "wins": 10,
+        "losses": 10,
         "pushes": 0,
-        "win_rate": 0.55
+        "win_rate": 0.5
       },
       "recent_10": {
-        "wins": 4,
-        "losses": 6,
+        "wins": 5,
+        "losses": 5,
         "pushes": 0,
-        "win_rate": 0.4
+        "win_rate": 0.5
       }
     },
     "NBA Main Model": {
-      "total_picks": 752,
-      "completed_picks": 739,
-      "wins": 372,
-      "losses": 362,
+      "total_picks": 762,
+      "completed_picks": 745,
+      "wins": 376,
+      "losses": 364,
       "pushes": 5,
-      "win_rate": 0.503382949932341,
-      "profit_loss": -27.04,
-      "roi": -3.658998646820027,
+      "win_rate": 0.5046979865771812,
+      "profit_loss": -25.24,
+      "roi": -3.3879194630872482,
       "recent_100": {
         "wins": 51,
         "losses": 48,
@@ -1815,14 +1823,14 @@
       }
     },
     "NBA Assists Props": {
-      "total_picks": 286,
-      "completed_picks": 233,
-      "wins": 117,
+      "total_picks": 288,
+      "completed_picks": 234,
+      "wins": 118,
       "losses": 116,
       "pushes": 0,
-      "win_rate": 0.5021459227467812,
-      "profit_loss": -32.5,
-      "roi": -13.948497854077251,
+      "win_rate": 0.5042735042735043,
+      "profit_loss": -31.02,
+      "roi": -13.256410256410255,
       "recent_100": {
         "wins": 45,
         "losses": 55,
@@ -1830,22 +1838,22 @@
         "win_rate": 0.45
       },
       "recent_50": {
-        "wins": 21,
-        "losses": 29,
+        "wins": 22,
+        "losses": 28,
         "pushes": 0,
-        "win_rate": 0.42
+        "win_rate": 0.44
       },
       "recent_20": {
-        "wins": 6,
-        "losses": 14,
+        "wins": 7,
+        "losses": 13,
         "pushes": 0,
-        "win_rate": 0.3
+        "win_rate": 0.35
       },
       "recent_10": {
-        "wins": 3,
-        "losses": 7,
+        "wins": 4,
+        "losses": 6,
         "pushes": 0,
-        "win_rate": 0.3
+        "win_rate": 0.4
       }
     },
     "NBA PRA Props": {
@@ -1953,40 +1961,40 @@
   },
   "prop_breakdown": {
     "Main Bets": {
-      "total_picks": 3438,
-      "wins": 1812,
-      "losses": 1608,
+      "total_picks": 3460,
+      "wins": 1819,
+      "losses": 1623,
       "pushes": 18,
-      "win_rate": 0.5270506108202443,
-      "profit_loss": -3.07,
-      "roi": -8.929610238510762
+      "win_rate": 0.5257225433526012,
+      "profit_loss": -2.17,
+      "roi": -6.271676300578035
     },
     "Unknown": {
-      "total_picks": 3223,
-      "wins": 1663,
-      "losses": 1552,
+      "total_picks": 3235,
+      "wins": 1667,
+      "losses": 1560,
       "pushes": 8,
-      "win_rate": 0.5159789016444306,
-      "profit_loss": -7.8,
-      "roi": -24.201054917778468
+      "win_rate": 0.5153013910355487,
+      "profit_loss": -6.9,
+      "roi": -21.32921174652241
     },
     "Points": {
-      "total_picks": 1448,
-      "wins": 732,
-      "losses": 716,
+      "total_picks": 1467,
+      "wins": 745,
+      "losses": 722,
       "pushes": 0,
-      "win_rate": 0.505524861878453,
-      "profit_loss": -83.82,
-      "roi": -578.867403314917
+      "win_rate": 0.5078391274710293,
+      "profit_loss": -78.99,
+      "roi": -538.4458077709612
     },
     "Rebounds": {
-      "total_picks": 639,
-      "wins": 336,
-      "losses": 303,
+      "total_picks": 653,
+      "wins": 346,
+      "losses": 307,
       "pushes": 0,
-      "win_rate": 0.5258215962441315,
-      "profit_loss": -39.93,
-      "roi": -624.8826291079812
+      "win_rate": 0.5298621745788668,
+      "profit_loss": -36.05,
+      "roi": -552.0673813169985
     },
     "3-Pointers": {
       "total_picks": 414,
@@ -1998,13 +2006,13 @@
       "roi": -153.3816425120773
     },
     "Assists": {
-      "total_picks": 297,
-      "wins": 157,
+      "total_picks": 299,
+      "wins": 159,
       "losses": 140,
       "pushes": 0,
-      "win_rate": 0.5286195286195287,
-      "profit_loss": -27.28,
-      "roi": -918.5185185185185
+      "win_rate": 0.5317725752508361,
+      "profit_loss": -24.96,
+      "roi": -834.7826086956521
     }
   },
   "players_by_prop": {
@@ -2461,25 +2469,25 @@
     "R+A Props": []
   },
   "edge_analysis": {
-    "avg_edge": 2.4469626370314628,
+    "avg_edge": 2.484125416058989,
     "median_edge": 2.7,
     "edge_ranges": {
       "negative": 2524,
-      "0-5": 2969,
-      "5-10": 1601,
-      "10-15": 1334,
-      "15+": 1192
+      "0-5": 3004,
+      "5-10": 1617,
+      "10-15": 1339,
+      "15+": 1204
     }
   },
   "ai_score_analysis": {
-    "avg_ai_score": 9.559074588455385,
+    "avg_ai_score": 9.54715188600246,
     "max_ai_score": 10.0,
     "score_distribution": {
       "0-2": 0,
       "2-4": 0,
       "4-6": 0,
-      "6-8": 219,
-      "8-10": 3124
+      "6-8": 228,
+      "8-10": 3165
     }
   }
 }
