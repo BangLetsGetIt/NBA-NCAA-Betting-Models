@@ -17433,11 +17433,11 @@
       "stake": 100,
       "pick": "\u2705 BET: Cleveland Cavaliers -10.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 136,
+      "actual_away_score": 131,
       "clv_status": null
     },
     {
@@ -17459,11 +17459,11 @@
       "stake": 100,
       "pick": "\u2705 BET: OVER 231.0",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 136,
+      "actual_away_score": 131,
       "clv_status": null
     },
     {
@@ -17485,11 +17485,11 @@
       "stake": 100,
       "pick": "\u2705 BET: OVER 233.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 123,
+      "actual_away_score": 125,
       "clv_status": "negative"
     },
     {
@@ -17529,7 +17529,7 @@
       "model_line": 244.9,
       "market_line": 223.5,
       "opening_line": 223.5,
-      "closing_line": 222.0,
+      "closing_line": 224.0,
       "edge": 21.4,
       "ev_percent": 85.97,
       "win_prob_percent": 97.4,
@@ -17542,14 +17542,14 @@
       "profit_loss": 0,
       "actual_home_score": null,
       "actual_away_score": null,
-      "clv_status": "negative"
+      "clv_status": "positive"
     }
   ],
   "summary": {
     "total_picks": 771,
-    "wins": 386,
-    "losses": 368,
+    "wins": 388,
+    "losses": 369,
     "pushes": 5,
-    "pending": 12
+    "pending": 9
   }
 }
