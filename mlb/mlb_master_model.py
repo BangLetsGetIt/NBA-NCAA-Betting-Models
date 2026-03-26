@@ -13,9 +13,11 @@ import os
 import json
 import time
 import pytz
+import requests
+import difflib
 
 # --- CONFIGURATION ---
-SEASON = 2025
+SEASON = 2026
 MIN_INN = 50  # Minimum innings for pitchers
 MIN_PA = 150  # Minimum plate appearances for batters
 BANKROLL = 10000
@@ -394,7 +396,80 @@ def generate_html(results, stats):
     return html
 
 # ==========================================
-# 5. EXECUTION CORE
+# 5. LIVE SCHEDULE INTEGRATION
+# ==========================================
+def get_schedule(date_str=None):
+    """Fetch today's MLB schedule with probable pitchers from MLB Stats API (free, no key)."""
+    if date_str is None:
+        date_str = datetime.now().strftime('%Y-%m-%d')
+    url = (
+        f"https://statsapi.mlb.com/api/v1/schedule"
+        f"?sportId=1&date={date_str}&hydrate=probablePitcher,team&gameType=R"
+    )
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        print(f"{Colors.YELLOW}Warning: Could not fetch schedule: {e}{Colors.END}")
+        return []
+
+    games = []
+    for date_block in data.get('dates', []):
+        for game in date_block.get('games', []):
+            away = game['teams']['away']
+            home = game['teams']['home']
+            games.append({
+                'gamePk': game['gamePk'],
+                'away_team': away['team']['abbreviation'],
+                'home_team': home['team']['abbreviation'],
+                'away_pitcher': away.get('probablePitcher', {}).get('fullName'),
+                'home_pitcher': home.get('probablePitcher', {}).get('fullName'),
+                'game_time': game.get('gameDate', ''),
+            })
+    return games
+
+
+def find_player(name, df, name_col='Name'):
+    """Fuzzy-match a player name to a row in a DataFrame."""
+    if name is None or df.empty:
+        return None
+    # Exact match
+    exact = df[df[name_col] == name]
+    if not exact.empty:
+        return exact.iloc[0]
+    # Last-name contains match
+    last = name.split()[-1]
+    contains = df[df[name_col].str.contains(last, case=False, na=False)]
+    if not contains.empty:
+        return contains.iloc[0]
+    # Fuzzy match
+    names = df[name_col].tolist()
+    matches = difflib.get_close_matches(name, names, n=1, cutoff=0.6)
+    if matches:
+        return df[df[name_col] == matches[0]].iloc[0]
+    return None
+
+
+def get_team_wrc(team_abbr, batters):
+    """Average wRC+ for a team's qualified batters (falls back to league avg 100)."""
+    team_batters = batters[batters['Team'] == team_abbr]
+    if team_batters.empty:
+        return 100
+    return team_batters['wRC+'].mean()
+
+
+def get_team_k_rate(team_abbr, batters):
+    """Average K% for a team's batters (falls back to league avg 0.22)."""
+    team_batters = batters[batters['Team'] == team_abbr]
+    if team_batters.empty or 'K%' not in team_batters.columns:
+        return 0.22
+    rate = team_batters['K%'].mean()
+    return rate if not pd.isna(rate) else 0.22
+
+
+# ==========================================
+# 6. EXECUTION CORE
 # ==========================================
 def main():
     # 1. Load Data
@@ -404,112 +479,86 @@ def main():
     stats = calculate_tracking_stats()
     
     new_picks = []
-    
-    print("\n--- RUNNING ANALYSIS ---")
-    
-    # --- SIMULATION (Since we are likely off-season or just testing) ---
-    # In production, iterate through today's schedule
-    
-    # GAME 1: NYY vs LAD
-    try:
-        p_nyy = pitchers[pitchers['Name'].str.contains("Cole")].iloc[0]
-        p_lad = pitchers[pitchers['Name'].str.contains("Glasnow")].iloc[0]
-        batter_judge = batters[batters['Name'].str.contains("Judge")].iloc[0]
-        batter_ohtani = batters[batters['Name'].str.contains("Ohtani")].iloc[0]
-        
-        # Mocks
-        odds_nyy_f5 = 2.05 # (+105)
-        nyy_wrc = 115
-        lad_wrc = 118
-        
-        # --- F5 BET ---
-        f5_prob = calculate_f5_probability(p_nyy, p_lad, nyy_wrc, lad_wrc)
-        # Assuming NYY is Selection
-        edge = f5_prob - (1/odds_nyy_f5)
-        if edge > 0.02: # Small threshold for demo
-            kel = kelly_criterion(f5_prob, odds_nyy_f5) * KELLY_MULTIPLIER
-            new_picks.append({
-                'id': f"F5_NYY_LAD_{datetime.now().strftime('%Y%m%d')}",
-                'type': 'First 5 Innings',
-                'matchup': 'NYY @ LAD',
-                'selection': 'NYY ML',
-                'line': 'Moneyline',
-                'odds_str': '+105',
-                'odds_dec': 2.05,
-                'prob': f5_prob,
-                'edge': edge,
-                'wager': f"{kel:.1%} Unit",
-                'kel': kel,
-                'score': f5_prob * 10 
-            })
-            
-        # --- K PROP: Glasnow ---
-        k_line = 7.5
-        exp_k, prob_over, _ = calculate_k_prop_probability(p_lad, 0.21, k_line)
-        k_odds = 1.91 # (-110)
-        edge_k = prob_over - (1/k_odds)
-        if edge_k > MIN_EDGE:
-            kel_k = kelly_criterion(prob_over, k_odds) * KELLY_MULTIPLIER
-            new_picks.append({
-                'id': f"K_Glasnow_{datetime.now().strftime('%Y%m%d')}",
-                'type': 'Player Props - Strikeouts',
-                'matchup': 'NYY @ LAD',
-                'selection': 'Tyler Glasnow',
-                'line': f'Over {k_line} Ks',
-                'odds_str': '-110',
-                'odds_dec': 1.91,
-                'prob': prob_over,
-                'edge': edge_k,
-                'wager': f"{kel_k:.1%} Unit",
-                'kel': kel_k,
-                'score': prob_over * 10
-            })
-            
-        # --- HR PROP: Judge ---
-        hr_prob = calculate_hr_probability(batter_judge, p_lad)
-        hr_odds = 3.50 # (+250)
-        edge_hr = hr_prob - (1/hr_odds)
-        # Force add for demo if close
-        if edge_hr > -0.1: 
-            new_picks.append({
-                'id': f"HR_Judge_{datetime.now().strftime('%Y%m%d')}",
-                'type': 'Player Props - Home Run',
-                'matchup': 'NYY @ LAD',
-                'selection': 'Aaron Judge',
-                'line': 'To Hit a HR',
-                'odds_str': '+250',
-                'odds_dec': 3.50,
-                'prob': hr_prob,
-                'edge': edge_hr,
-                'wager': "0.2% Unit",
-                'kel': 0.002,
-                'score': hr_prob * 20 # Scale up for HRs
-            })
+    today_str = datetime.now().strftime('%Y%m%d')
 
-        # --- H+R+RBI PROP: Ohtani (NEW) ---
-        hrr_line = 1.5
-        hrr_exp, hrr_prob = calculate_h_r_rbi_probability(batter_ohtani, p_nyy, nyy_wrc)
-        hrr_odds = 1.87 # (-115)
-        edge_hrr = hrr_prob - (1/hrr_odds)
-        
-        if edge_hrr > 0 or True: # Force for demo
-             new_picks.append({
-                'id': f"HRR_Ohtani_{datetime.now().strftime('%Y%m%d')}",
-                'type': 'Player Props - H+R+RBI',
-                'matchup': 'NYY @ LAD',
-                'selection': 'Shohei Ohtani',
-                'line': f'Over {hrr_line}',
-                'odds_str': '-115',
-                'odds_dec': 1.87,
-                'prob': hrr_prob,
-                'edge': edge_hrr,
-                'wager': "1.0% Unit",
-                'kel': 0.01,
-                'score': hrr_prob * 10
-            })
-            
-    except Exception as e:
-        print(f"{Colors.RED}Simulation Error: {e}{Colors.END}")
+    print("\n--- FETCHING TODAY'S SCHEDULE ---")
+    games = get_schedule()
+
+    if not games:
+        print(f"{Colors.YELLOW}No regular season games today (pre-season or off day).{Colors.END}")
+    else:
+        print(f"{Colors.GREEN}Found {len(games)} games today.{Colors.END}")
+
+    print("\n--- RUNNING ANALYSIS ---")
+
+    for game in games:
+        away = game['away_team']
+        home = game['home_team']
+        matchup = f"{away} @ {home}"
+        away_pitcher_name = game['away_pitcher'] or 'TBD'
+        home_pitcher_name = game['home_pitcher'] or 'TBD'
+        print(f"  {matchup}  |  {away_pitcher_name} vs {home_pitcher_name}")
+
+        p_away = find_player(game['away_pitcher'], pitchers)
+        p_home = find_player(game['home_pitcher'], pitchers)
+        away_wrc = get_team_wrc(away, batters)
+        home_wrc = get_team_wrc(home, batters)
+
+        # --- F5 ML (requires both pitchers in stats) ---
+        if p_away is not None and p_home is not None:
+            try:
+                f5_prob_away = calculate_f5_probability(p_away, p_home, away_wrc, home_wrc)
+                f5_odds = 1.91  # -110 both sides baseline
+                edge = f5_prob_away - (1 / f5_odds)
+                if edge > MIN_EDGE:
+                    kel = kelly_criterion(f5_prob_away, f5_odds) * KELLY_MULTIPLIER
+                    new_picks.append({
+                        'id': f"F5_{away}_{home}_{today_str}",
+                        'type': 'First 5 Innings ML',
+                        'matchup': matchup,
+                        'selection': f'{away} F5 ML',
+                        'line': 'Moneyline',
+                        'odds_str': '-110',
+                        'odds_dec': f5_odds,
+                        'prob': f5_prob_away,
+                        'edge': edge,
+                        'wager': f"{kel:.1%} Unit",
+                        'kel': kel,
+                        'score': f5_prob_away * 10,
+                    })
+            except Exception as e:
+                print(f"    F5 error {matchup}: {e}")
+
+        # --- K Props (one per pitcher if found) ---
+        for pitcher_row, opp_team in [(p_away, home), (p_home, away)]:
+            if pitcher_row is None:
+                continue
+            try:
+                opp_k_rate = get_team_k_rate(opp_team, batters)
+                # Line set ~10% below expected so model has something to beat
+                raw_exp = pitcher_row['K/9'] * (5.5 / 9)
+                k_line = round(raw_exp * 0.9 - 0.5) + 0.5
+                exp_k, prob_over, _ = calculate_k_prop_probability(pitcher_row, opp_k_rate, k_line)
+                k_odds = 1.91
+                edge_k = prob_over - (1 / k_odds)
+                if edge_k > MIN_EDGE:
+                    kel_k = kelly_criterion(prob_over, k_odds) * KELLY_MULTIPLIER
+                    new_picks.append({
+                        'id': f"K_{pitcher_row['Name'].replace(' ','_')}_{today_str}",
+                        'type': 'Player Props - Strikeouts',
+                        'matchup': matchup,
+                        'selection': pitcher_row['Name'],
+                        'line': f"Over {k_line} Ks",
+                        'odds_str': '-110',
+                        'odds_dec': k_odds,
+                        'prob': prob_over,
+                        'edge': edge_k,
+                        'wager': f"{kel_k:.1%} Unit",
+                        'kel': kel_k,
+                        'score': prob_over * 10,
+                    })
+            except Exception as e:
+                print(f"    K prop error {pitcher_row.get('Name','?')}: {e}")
 
     # 3. Output
     track_new_picks(new_picks)
@@ -518,7 +567,7 @@ def main():
     with open(OUTPUT_HTML, 'w') as f:
         f.write(html_content)
         
-    print(f"\n{Colors.GREEN}✅ Analysis Complete. Report generated at: {OUTPUT_HTML}{Colors.END}")
+    print(f"\n{Colors.GREEN}✅ Analysis Complete. {len(new_picks)} plays found. Report: {OUTPUT_HTML}{Colors.END}")
 
 if __name__ == "__main__":
     main()
