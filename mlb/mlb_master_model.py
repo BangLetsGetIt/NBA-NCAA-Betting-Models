@@ -560,6 +560,72 @@ def main():
             except Exception as e:
                 print(f"    K prop error {pitcher_row.get('Name','?')}: {e}")
 
+        # --- HR Props & H+R+RBI Props (top 5 batters per team vs opposing pitcher) ---
+        for batting_team, opp_pitcher_row, team_wrc_val in [
+            (away, p_home, away_wrc),
+            (home, p_away, home_wrc),
+        ]:
+            if opp_pitcher_row is None:
+                continue
+            team_bats = batters[batters['Team'] == batting_team]
+            if team_bats.empty:
+                continue
+            top_bats = team_bats.nlargest(5, 'wRC+')
+
+            for _, batter_row in top_bats.iterrows():
+                batter_name = batter_row['Name']
+                batter_id = batter_name.replace(' ', '_')
+
+                # HR prop (~+200 market standard)
+                try:
+                    prob_hr = calculate_hr_probability(batter_row, opp_pitcher_row)
+                    hr_odds = 3.00
+                    edge_hr = prob_hr - (1 / hr_odds)
+                    if edge_hr > MIN_EDGE:
+                        kel_hr = kelly_criterion(prob_hr, hr_odds) * KELLY_MULTIPLIER
+                        new_picks.append({
+                            'id': f"HR_{batter_id}_{today_str}",
+                            'type': 'Player Props - Home Run',
+                            'matchup': matchup,
+                            'selection': batter_name,
+                            'line': 'To Hit HR',
+                            'odds_str': '+200',
+                            'odds_dec': hr_odds,
+                            'prob': prob_hr,
+                            'edge': edge_hr,
+                            'wager': f"{kel_hr:.1%} Unit",
+                            'kel': kel_hr,
+                            'score': prob_hr * 10,
+                        })
+                except Exception as e:
+                    print(f"    HR prop error {batter_name}: {e}")
+
+                # H+R+RBI prop (Over 1.5, ~-110 market standard)
+                try:
+                    exp_val, prob_over_hrbi = calculate_h_r_rbi_probability(
+                        batter_row, opp_pitcher_row, team_wrc_val
+                    )
+                    hrbi_odds = 1.91
+                    edge_hrbi = prob_over_hrbi - (1 / hrbi_odds)
+                    if edge_hrbi > MIN_EDGE:
+                        kel_hrbi = kelly_criterion(prob_over_hrbi, hrbi_odds) * KELLY_MULTIPLIER
+                        new_picks.append({
+                            'id': f"HRBI_{batter_id}_{today_str}",
+                            'type': 'Player Props - H+R+RBI',
+                            'matchup': matchup,
+                            'selection': batter_name,
+                            'line': f"Over 1.5 (Exp: {exp_val:.2f})",
+                            'odds_str': '-110',
+                            'odds_dec': hrbi_odds,
+                            'prob': prob_over_hrbi,
+                            'edge': edge_hrbi,
+                            'wager': f"{kel_hrbi:.1%} Unit",
+                            'kel': kel_hrbi,
+                            'score': prob_over_hrbi * 10,
+                        })
+                except Exception as e:
+                    print(f"    H+R+RBI prop error {batter_name}: {e}")
+
     # 3. Output
     track_new_picks(new_picks)
     html_content = generate_html(new_picks, stats)
