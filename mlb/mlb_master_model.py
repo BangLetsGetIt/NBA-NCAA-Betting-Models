@@ -112,14 +112,23 @@ def calculate_tracking_stats():
 # ==========================================
 def get_data():
     print("1. Fetching Advanced Stats from FanGraphs & Statcast...")
-    
-    # Pitching: SIERA, xFIP, K/9
-    try:
-        pitching = pitching_stats(SEASON, qual=MIN_INN)
-        pitching = pitching[['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%']]
-    except:
-        print(f"{Colors.YELLOW}Warning: Pitching stats fetch failed (Off-season?). Using Mock Data.{Colors.END}")
-        # Mock Data Structure
+
+    # Pitching: SIERA, xFIP, K/9 — try current season first, fall back to prior season
+    pitching = None
+    for season_try in [SEASON, SEASON - 1]:
+        try:
+            pitching = pitching_stats(season_try, qual=MIN_INN)
+            pitching = pitching[['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%']]
+            if season_try < SEASON:
+                print(f"{Colors.YELLOW}   Using {season_try} pitching stats (2026 data not yet available).{Colors.END}")
+            else:
+                print(f"   Pitching stats loaded ({SEASON}).")
+            break
+        except Exception as e:
+            if season_try == SEASON:
+                print(f"   {SEASON} pitching unavailable, trying {SEASON - 1}...")
+    if pitching is None:
+        print(f"{Colors.YELLOW}Warning: Pitching stats unavailable. Using mock data.{Colors.END}")
         pitching = pd.DataFrame({
             'Name': ['Gerrit Cole', 'Tyler Glasnow', 'Zack Wheeler'],
             'Team': ['NYY', 'LAD', 'PHI'],
@@ -129,22 +138,34 @@ def get_data():
             'HR/9': [1.0, 0.9, 0.8]
         })
 
-    # Batting: wRC+, ISO
-    try:
-        batting = batting_stats(SEASON, qual=MIN_PA)
-        batting = batting[['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%']]
-        
-        # Statcast Barrels
+    # Batting: wRC+, ISO — same fallback pattern
+    batting = None
+    for season_try in [SEASON, SEASON - 1]:
         try:
-            barrels = statcast_batter_exitvelo_barrels(SEASON, MIN_PA)
-            barrels = barrels[['last_name, first_name', 'brl_percent']]
-            barrels['Name'] = barrels['last_name, first_name'].apply(lambda x: f"{x.split(', ')[1]} {x.split(', ')[0]}")
-            batting = batting.merge(barrels[['Name', 'brl_percent']], on='Name', how='left').fillna(0)
-        except:
-            print("   ! Statcast Barrel data unavailable, using ISO proxy.")
-            batting['brl_percent'] = batting['ISO'] * 10 
-    except:
-        print(f"{Colors.YELLOW}Warning: Batting stats fetch failed. Using Mock Data.{Colors.END}")
+            batting = batting_stats(season_try, qual=MIN_PA)
+            batting = batting[['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%']]
+            if season_try < SEASON:
+                print(f"{Colors.YELLOW}   Using {season_try} batting stats (2026 data not yet available).{Colors.END}")
+            else:
+                print(f"   Batting stats loaded ({SEASON}).")
+
+            # Statcast Barrels
+            try:
+                barrels = statcast_batter_exitvelo_barrels(season_try, MIN_PA)
+                barrels = barrels[['last_name, first_name', 'brl_percent']]
+                barrels['Name'] = barrels['last_name, first_name'].apply(
+                    lambda x: f"{x.split(', ')[1]} {x.split(', ')[0]}"
+                )
+                batting = batting.merge(barrels[['Name', 'brl_percent']], on='Name', how='left').fillna(0)
+            except:
+                print("   ! Statcast barrel data unavailable, using ISO proxy.")
+                batting['brl_percent'] = batting['ISO'] * 10
+            break
+        except Exception as e:
+            if season_try == SEASON:
+                print(f"   {SEASON} batting unavailable, trying {SEASON - 1}...")
+    if batting is None:
+        print(f"{Colors.YELLOW}Warning: Batting stats unavailable. Using mock data.{Colors.END}")
         batting = pd.DataFrame({
             'Name': ['Aaron Judge', 'Shohei Ohtani', 'Juan Soto'],
             'Team': ['NYY', 'LAD', 'NYY'],
