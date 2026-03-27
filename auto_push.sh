@@ -23,7 +23,7 @@ git pull --rebase origin main 2>/dev/null || git pull origin main 2>/dev/null
 git stash pop -q 2>/dev/null  # Restore stashed changes
 
 # Add all HTML, CSV, and JSON output files (including root dashboards)
-git add *.html *.json nba/*.html nba/*.csv ncaa/*.html ncaa/*.csv nfl/*.html nfl/*.json soccer/*.html soccer/*.json nba/*.json ncaa/*.json ufc/*.html ufc/data/*.json 2>/dev/null
+git add *.html *.json nba/*.html nba/*.csv ncaa/*.html ncaa/*.csv nfl/*.html nfl/*.json soccer/*.html soccer/*.json nba/*.json ncaa/*.json mlb/*.html mlb/*.json ufc/*.html ufc/data/*.json 2>/dev/null
 
 # Check if there are changes to commit
 if git diff --staged --quiet; then

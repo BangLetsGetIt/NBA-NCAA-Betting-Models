@@ -29,6 +29,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'nfl'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'soccer'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'wnba'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ncaa'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'mlb'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ufc'))
 
 # ANSI Colors
@@ -1026,6 +1027,218 @@ def run_soccer_grading(force=False, grade_only=False):
     
     return any_updates
 
+def run_mlb_grading(force=False, grade_only=False):
+    """Grade MLB picks (F5 ML + K props) using ESPN free API."""
+    import requests as _req
+    import re
+
+    TRACKING_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_master_model_tracking.json')
+    OUTPUT_HTML   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_master_model.html')
+
+    log("Starting MLB Grading...", "info")
+
+    if not os.path.exists(TRACKING_FILE):
+        log("MLB tracking file not found, skipping.", "warning")
+        return False
+
+    with open(TRACKING_FILE, 'r') as f:
+        tracking = json.load(f)
+
+    picks = tracking.get('picks', [])
+    pending = [p for p in picks if p.get('status', 'pending').lower() == 'pending']
+
+    if not pending:
+        log("No pending MLB picks to grade.", "info")
+        return False
+
+    # Fetch completed games for the last 4 days
+    et_tz = pytz.timezone('US/Eastern')
+    completed_events = {}
+
+    for i in range(4):
+        date_compact = (datetime.now(et_tz) - timedelta(days=i)).strftime('%Y%m%d')
+        try:
+            url = f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates={date_compact}"
+            resp = _req.get(url, timeout=15)
+            resp.raise_for_status()
+            for event in resp.json().get('events', []):
+                if event.get('status', {}).get('type', {}).get('completed', False):
+                    completed_events[event['id']] = event
+            time.sleep(0.3)
+        except Exception as e:
+            log(f"MLB scoreboard fetch error ({date_compact}): {e}", "warning")
+
+    if not completed_events:
+        log("No completed MLB games found in last 4 days.", "info")
+        return False
+
+    log(f"Found {len(completed_events)} completed MLB games.", "info")
+
+    # Build "AWAY @ HOME" -> event info lookup
+    game_lookup = {}
+    for event_id, event in completed_events.items():
+        comp = event.get('competitions', [{}])[0]
+        competitors = comp.get('competitors', [])
+        away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
+        home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
+        if away and home:
+            away_abbr = away.get('team', {}).get('abbreviation', '')
+            home_abbr = home.get('team', {}).get('abbreviation', '')
+            game_lookup[f"{away_abbr} @ {home_abbr}"] = {
+                'event_id': event_id, 'away_abbr': away_abbr, 'home_abbr': home_abbr
+            }
+
+    graded_count = 0
+
+    for pick in picks:
+        if pick.get('status', 'pending').lower() != 'pending':
+            continue
+
+        matchup      = pick.get('matchup', '')
+        pick_type    = pick.get('type', '')
+        pick_line    = pick.get('line', '')
+        pick_sel     = pick.get('selection', '')
+
+        game = game_lookup.get(matchup)
+        if not game:
+            continue
+
+        event_id = game['event_id']
+        away_abbr = game['away_abbr']
+        home_abbr = game['home_abbr']
+
+        try:
+            sresp = _req.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event={event_id}",
+                timeout=15
+            )
+            sresp.raise_for_status()
+            sdata = sresp.json()
+        except Exception as e:
+            log(f"MLB summary fetch error {matchup}: {e}", "warning")
+            continue
+
+        # --- F5 ML ---
+        if 'First 5' in pick_type:
+            try:
+                header_comp = sdata.get('header', {}).get('competitions', [{}])[0]
+                competitors = header_comp.get('competitors', [])
+                away_c = next((c for c in competitors if c.get('homeAway') == 'away'), None)
+                home_c = next((c for c in competitors if c.get('homeAway') == 'home'), None)
+                if not away_c or not home_c:
+                    continue
+
+                away_ls = away_c.get('linescores', [])
+                home_ls = home_c.get('linescores', [])
+                if len(away_ls) < 5 or len(home_ls) < 5:
+                    continue  # game not finished enough
+
+                away_f5 = sum(int(inn.get('displayValue', 0) or 0) for inn in away_ls[:5])
+                home_f5 = sum(int(inn.get('displayValue', 0) or 0) for inn in home_ls[:5])
+
+                selected = away_abbr if away_abbr in pick_sel else home_abbr
+                sel_runs = away_f5 if selected == away_abbr else home_f5
+                opp_runs = home_f5 if selected == away_abbr else away_f5
+                result_str = f"{away_abbr} {away_f5} - {home_abbr} {home_f5} after 5"
+
+                if sel_runs > opp_runs:
+                    pick['status'] = 'Win'
+                    pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                elif sel_runs < opp_runs:
+                    pick['status'] = 'Loss'
+                    pick['profit'] = -1.0
+                else:
+                    pick['status'] = 'Push'
+                    pick['profit'] = 0.0
+
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB F5 {matchup}: {pick['status']} | {result_str}", "success")
+
+            except Exception as e:
+                log(f"F5 grading error {matchup}: {e}", "warning")
+
+        # --- K Props ---
+        elif 'Strikeout' in pick_type:
+            try:
+                m = re.search(r'(Over|Under)\s+([\d.]+)', pick_line)
+                if not m:
+                    continue
+                direction = m.group(1)
+                line_val  = float(m.group(2))
+
+                pitcher_ks = None
+                bs = sdata.get('boxscore', {})
+                for team_data in bs.get('players', []):
+                    for cat in team_data.get('statistics', []):
+                        labels = cat.get('labels', [])
+                        if 'K' not in labels:
+                            continue
+                        k_idx = labels.index('K')
+                        for ath in cat.get('athletes', []):
+                            ath_name = ath.get('athlete', {}).get('displayName', '')
+                            if pick_sel.split()[-1].lower() in ath_name.lower():
+                                stats = ath.get('stats', [])
+                                if len(stats) > k_idx:
+                                    try:
+                                        pitcher_ks = int(stats[k_idx])
+                                    except:
+                                        pass
+                                break
+                        if pitcher_ks is not None:
+                            break
+
+                if pitcher_ks is None:
+                    log(f"K stats not found for {pick_sel} in {matchup}", "warning")
+                    continue
+
+                result_str = f"{pick_sel}: {pitcher_ks} Ks (line {line_val})"
+                if (direction == 'Over' and pitcher_ks > line_val) or \
+                   (direction == 'Under' and pitcher_ks < line_val):
+                    pick['status'] = 'Win'
+                    pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                elif pitcher_ks == line_val:
+                    pick['status'] = 'Push'
+                    pick['profit'] = 0.0
+                else:
+                    pick['status'] = 'Loss'
+                    pick['profit'] = -1.0
+
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB K {pick_sel}: {pick['status']} | {result_str}", "success")
+
+            except Exception as e:
+                log(f"K grading error {pick_sel}: {e}", "warning")
+
+    if graded_count > 0:
+        tracking['picks'] = picks
+        with open(TRACKING_FILE, 'w') as f:
+            json.dump(tracking, f, indent=2)
+        log(f"MLB: Saved {graded_count} graded picks.", "success")
+
+        # Regenerate HTML
+        try:
+            spec = importlib.util.spec_from_file_location(
+                'mlb_master_model',
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_master_model.py')
+            )
+            mlb_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mlb_mod)
+            stats = mlb_mod.calculate_tracking_stats()
+            html = mlb_mod.generate_html([], stats)
+            with open(OUTPUT_HTML, 'w') as f:
+                f.write(html)
+            log("Regenerated mlb_master_model.html", "success")
+        except Exception as e:
+            log(f"MLB HTML regeneration error: {e}", "warning")
+
+        return True
+
+    log("MLB: No picks graded.", "info")
+    return False
+
+
 def run_ufc_grading(force=False, grade_only=False):
     """
     Grades UFC pending picks and regenerates dashboard.
@@ -1098,8 +1311,9 @@ def main():
             updates_cbb_props = run_cbb_props_grading(force=args.force, grade_only=args.grade_only)
             updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
             updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
+            updates_mlb = run_mlb_grading(force=args.force, grade_only=args.grade_only)
 
-            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc:
+            if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc or updates_mlb:
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
@@ -1149,8 +1363,9 @@ def main():
         updates_cbb_props = run_cbb_props_grading(force=args.force, grade_only=args.grade_only)
         updates_soccer = run_soccer_grading(force=args.force, grade_only=args.grade_only)
         updates_ufc = run_ufc_grading(force=args.force, grade_only=args.grade_only)
+        updates_mlb = run_mlb_grading(force=args.force, grade_only=args.grade_only)
 
-        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc:
+        if updates_nba or updates_nfl or updates_wnba or updates_ncaab or updates_cbb_props or updates_soccer or updates_ufc or updates_mlb:
             # Regenerate Best Plays aggregator
             try:
                 import best_plays_bot
