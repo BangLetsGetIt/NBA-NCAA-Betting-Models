@@ -19227,11 +19227,11 @@
       "stake": 100,
       "pick": "\u2705 BET: Boston Celtics -9.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "win",
+      "result": "Win",
+      "profit_loss": 100,
+      "actual_home_score": 115,
+      "actual_away_score": 101,
       "clv_status": null
     },
     {
@@ -19253,11 +19253,11 @@
       "stake": 100,
       "pick": "\u2705 BET: OVER 221.5",
       "units": 1,
-      "status": "Pending",
-      "result": null,
-      "profit_loss": 0,
-      "actual_home_score": null,
-      "actual_away_score": null,
+      "status": "loss",
+      "result": "Loss",
+      "profit_loss": -110,
+      "actual_home_score": 115,
+      "actual_away_score": 101,
       "clv_status": "negative"
     },
     {
@@ -19315,9 +19315,9 @@
   ],
   "summary": {
     "total_picks": 839,
-    "wins": 425,
-    "losses": 401,
+    "wins": 426,
+    "losses": 402,
     "pushes": 6,
-    "pending": 7
+    "pending": 5
   }
 }
