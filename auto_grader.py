@@ -1035,6 +1035,12 @@ def run_mlb_grading(force=False, grade_only=False):
     TRACKING_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_master_model_tracking.json')
     OUTPUT_HTML   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_master_model.html')
 
+    # MLB Stats API abbrs -> ESPN abbrs
+    ABBR_MAP = {
+        'AZ': 'ARI', 'CWS': 'CHW', 'KC': 'KC', 'TB': 'TB',
+        'SF': 'SF', 'NYY': 'NYY', 'NYM': 'NYM',
+    }
+
     log("Starting MLB Grading...", "info")
 
     if not os.path.exists(TRACKING_FILE):
@@ -1074,19 +1080,23 @@ def run_mlb_grading(force=False, grade_only=False):
 
     log(f"Found {len(completed_events)} completed MLB games.", "info")
 
-    # Build "AWAY @ HOME" -> event info lookup
+    # Build "AWAY @ HOME" -> event info lookup (both ESPN abbrs and mapped abbrs)
     game_lookup = {}
+    REV_MAP = {v: k for k, v in ABBR_MAP.items()}  # ESPN -> tracking abbr
+
     for event_id, event in completed_events.items():
         comp = event.get('competitions', [{}])[0]
         competitors = comp.get('competitors', [])
         away = next((c for c in competitors if c.get('homeAway') == 'away'), None)
         home = next((c for c in competitors if c.get('homeAway') == 'home'), None)
         if away and home:
-            away_abbr = away.get('team', {}).get('abbreviation', '')
-            home_abbr = home.get('team', {}).get('abbreviation', '')
-            game_lookup[f"{away_abbr} @ {home_abbr}"] = {
-                'event_id': event_id, 'away_abbr': away_abbr, 'home_abbr': home_abbr
-            }
+            away_espn = away.get('team', {}).get('abbreviation', '')
+            home_espn = home.get('team', {}).get('abbreviation', '')
+            away_track = REV_MAP.get(away_espn, away_espn)
+            home_track = REV_MAP.get(home_espn, home_espn)
+            entry = {'event_id': event_id, 'away_abbr': away_track, 'home_abbr': home_track}
+            game_lookup[f"{away_espn} @ {home_espn}"] = entry
+            game_lookup[f"{away_track} @ {home_track}"] = entry
 
     graded_count = 0
 

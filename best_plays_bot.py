@@ -20,9 +20,9 @@ import pytz
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "best_plays.html")
 FIRE_TRACKING_FILE = os.path.join(SCRIPT_DIR, "best_plays_tracking.json")
-FIRE_SCORE_THRESHOLD = 80  # Minimum score for FIRE
-SOLID_SCORE_THRESHOLD = 70 # Minimum score for SOLID
-VALUE_SCORE_THRESHOLD = 50 # Minimum score for VALUE
+FIRE_SCORE_THRESHOLD = 70  # Minimum score for FIRE
+SOLID_SCORE_THRESHOLD = 62 # Minimum score for SOLID
+VALUE_SCORE_THRESHOLD = 55 # Minimum score for VALUE
 
 # Timezone
 ET = pytz.timezone('US/Eastern')
@@ -316,11 +316,11 @@ def get_team_logo_url(team_name, sport):
 
 def get_confidence_tier(score):
     """Get tier label and color based on confidence score"""
-    if score >= 80:
+    if score >= 70:
         return '🔥 FIRE', '#ff6b35'
-    elif score >= 65:
+    elif score >= 62:
         return '✅ SOLID', '#4ade80'
-    elif score >= 50:
+    elif score >= 55:
         return '⚡ VALUE', '#60a5fa'
     else:
         return '📊 PLAY', '#8e8e93'
@@ -616,21 +616,21 @@ def generate_html(plays, fire_record=None, breakdown=None):
         fire_stats_content = f'''
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
                 <div class="fire-stats-box">
-                    <div class="fire-title">🔥 Fire Plays (80+)</div>
+                    <div class="fire-title">🔥 Fire Plays (70+)</div>
                     <div class="fire-record">
                         {fire_data.get('wins',0)}-{fire_data.get('losses',0)} 
                         <span style="color: {fire_color}; font-size: 0.8em;">({fire_wr:.1f}%)</span>
                     </div>
                 </div>
                 <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
-                    <div class="fire-title" style="color: #60a5fa;">💎 Solid Plays (70+)</div>
+                    <div class="fire-title" style="color: #60a5fa;">💎 Solid Plays (62+)</div>
                     <div class="fire-record">
                         {solid_data.get('wins',0)}-{solid_data.get('losses',0)} 
                         <span style="color: {solid_color}; font-size: 0.8em;">({solid_wr:.1f}%)</span>
                     </div>
                 </div>
                 <div class="fire-stats-box" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1);">
-                    <div class="fire-title" style="color: #60a5fa;">⚡ Value Plays (50+)</div>
+                    <div class="fire-title" style="color: #60a5fa;">⚡ Value Plays (55+)</div>
                     <div class="fire-record">
                         {value_data.get('wins',0)}-{value_data.get('losses',0)} 
                         <span style="color: {value_color}; font-size: 0.8em;">({value_wr:.1f}%)</span>
