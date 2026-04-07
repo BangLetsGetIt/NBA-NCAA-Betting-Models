@@ -368,11 +368,25 @@ def generate_html(results, stats):
         if res.get('kel', 0) > 0.05:
             tags_html += '<span class="tag tag-green">Max Bet</span>'
             
+        game_date = ''
+        if res.get('game_time'):
+            try:
+                import datetime as _dt, pytz as _pytz
+                gt = res['game_time']
+                if 'Z' in str(gt):
+                    _d = _dt.datetime.fromisoformat(str(gt).replace('Z', '+00:00'))
+                    game_date = _d.astimezone(_pytz.timezone('US/Eastern')).strftime('%b %d, %Y')
+                else:
+                    game_date = str(gt)[:10]
+            except:
+                game_date = str(res['game_time'])[:10]
+
         html += f"""
         <div class="prop-card">
             <div class="card-header">
                 <span class="bet-type">{res['type']}</span>
                 <span>{res['matchup']}</span>
+                {f'<span style="color:var(--text-secondary);font-size:12px;">{game_date}</span>' if game_date else ''}
             </div>
             <div class="card-body">
                 <div class="bet-main-row">
