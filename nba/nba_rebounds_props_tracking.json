@@ -17130,10 +17130,11 @@
       "edge": 2.4,
       "ev": 59.6,
       "tracked_at": "2026-04-09T01:25:12.055193-04:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_reb": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     },
     {
       "pick_id": "Leonard Miller_8.5_under_2026-04-09T23:10:00Z",
@@ -17152,10 +17153,12 @@
       "edge": 2.2,
       "ev": 26.0,
       "tracked_at": "2026-04-09T01:25:12.055419-04:00",
-      "status": "pending",
-      "result": null,
-      "actual_reb": null,
-      "clv_status": null
+      "status": "loss",
+      "result": "LOSS",
+      "actual_reb": 11.0,
+      "clv_status": null,
+      "profit_loss": -100,
+      "updated_at": "2026-04-10T01:17:45.462037-04:00"
     },
     {
       "pick_id": "Joel Embiid_8.5_under_2026-04-10T00:10:00Z",
@@ -17174,10 +17177,11 @@
       "edge": 6.0,
       "ev": 34.81,
       "tracked_at": "2026-04-09T01:25:12.055573-04:00",
-      "status": "pending",
-      "result": null,
+      "status": "void",
+      "result": "DNP",
       "actual_reb": null,
-      "clv_status": null
+      "clv_status": null,
+      "profit_loss": 0
     }
   ]
 }
