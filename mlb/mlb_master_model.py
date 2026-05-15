@@ -254,90 +254,269 @@ def kelly_criterion(true_prob, decimal_odds):
 # ==========================================
 # 4. HTML GENERATION (CourtSide Analytics)
 # ==========================================
-def generate_html(results, stats):
-    """Generates the modern CourtSide Analytics HTML report."""
-    
-    # Helper for formatting
-    def fmt_odds(odds_str):
-        return odds_str
 
-    # CSS Styles (CourtSide Dark Theme)
+ESPN_MLB_SLUGS = {
+    'AZ': 'ari', 'ATH': 'oak', 'CWS': 'chw', 'WSH': 'wsh',
+    'TB': 'tb', 'SD': 'sd', 'SF': 'sf', 'KC': 'kc',
+    'NYY': 'nyy', 'NYM': 'nym', 'LAD': 'lad', 'LAA': 'laa',
+    'CHC': 'chc',
+}
+
+def team_logo_url(abbr):
+    slug = ESPN_MLB_SLUGS.get(abbr, abbr.lower())
+    return f"https://a.espncdn.com/i/teamlogos/mlb/500/{slug}.png"
+
+def fmt_game_time(game_time_str):
+    if not game_time_str:
+        return ''
+    try:
+        import pytz as _pytz
+        gt = str(game_time_str).replace('Z', '+00:00')
+        dt = datetime.fromisoformat(gt).astimezone(_pytz.timezone('US/Eastern'))
+        day = dt.strftime('%a, %b %-d')
+        t = dt.strftime('%-I:%M %p ET')
+        return f"{day} • {t}"
+    except Exception:
+        return str(game_time_str)[:10]
+
+def render_card(res):
+    bet_type = res['type']
+    is_batter = bet_type in ('Player Props - H+R+RBI', 'Player Props - Home Run')
+    is_k = bet_type == 'Player Props - Strikeouts'
+    is_f5 = bet_type == 'First 5 Innings ML'
+
+    # --- Logo & team ---
+    if is_batter:
+        logo = team_logo_url(res.get('batting_team', ''))
+    elif is_k:
+        logo = team_logo_url(res.get('pitcher_team', ''))
+    elif is_f5:
+        logo = team_logo_url(res.get('away_team', ''))
+    else:
+        logo = ''
+
+    game_time_str = fmt_game_time(res.get('game_time', ''))
+
+    # --- Bet direction / line display ---
+    if is_f5:
+        direction = res['selection']
+        line_display = ''
+    elif is_k:
+        direction = 'OVER'
+        line_display = res['line'].replace('Over ', '')
+    elif bet_type == 'Player Props - Home Run':
+        direction = 'TO HIT HR'
+        line_display = '+200'
+    else:
+        direction = 'OVER'
+        exp = res.get('exp_val')
+        line_display = f"1.5 H+R+RBI  (Exp: {exp})" if exp else res['line']
+
+    # --- Model subtext ---
+    if is_f5:
+        subtext = f"Win Probability: <strong>{res['prob']:.1%}</strong>"
+    elif is_k:
+        subtext = f"Model Expects: <strong>{res.get('exp_k', '?')} Ks</strong>"
+    elif bet_type == 'Player Props - Home Run':
+        subtext = f"HR Probability: <strong>{res['prob']:.1%}</strong>"
+    else:
+        subtext = f"Model Expects: <strong>{res.get('exp_val', '?')} H+R+RBI</strong>"
+
+    # --- Stats row ---
+    if is_batter:
+        stats_row = f"""
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">{int(res.get('batter_wrc', 0))}</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">{res.get('batter_barrel', 0):.1f}%</div></div>
+            </div>"""
+    elif is_k:
+        stats_row = f"""
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">SIERA</div><div class="stat-val">{res.get('pitcher_siera', '—')}</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">{res.get('pitcher_k9', '—')}</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">{res.get('opp_k_rate', 0):.1f}%</div></div>
+            </div>"""
+    elif is_f5:
+        stats_row = f"""
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">{res.get('away_pitcher_name','Away SP')}</div><div class="stat-val">SIERA {res.get('away_pitcher_siera','—')}</div></div>
+                <div class="stat-item"><div class="stat-title">{res.get('home_pitcher_name','Home SP')}</div><div class="stat-val">SIERA {res.get('home_pitcher_siera','—')}</div></div>
+            </div>"""
+    else:
+        stats_row = ''
+
+    # --- Pitcher matchup section (batter props only) ---
+    if is_batter and res.get('pitcher_name'):
+        p = res['pitcher_name']
+        siera = res.get('pitcher_siera', '—')
+        xfip = res.get('pitcher_xfip', '—')
+        hr9 = res.get('pitcher_hr9', '—')
+        pitcher_section = f"""
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. {p}</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;{siera}</span>
+                    <span>xFIP&nbsp;{xfip}</span>
+                    <span>HR/9&nbsp;{hr9}</span>
+                </div>
+            </div>"""
+    else:
+        pitcher_section = ''
+
+    # --- Tags ---
+    tags_html = ''
+    if res['edge'] > 0.1:
+        tags_html += '<span class="tag tag-green">High Value</span>'
+    if res.get('kel', 0) > 0.05:
+        tags_html += '<span class="tag tag-green">Max Bet</span>'
+    tags_html += f'<span class="tag tag-blue">Score: {res["score"]:.1f}</span>'
+
+    logo_html = f'<img src="{logo}" alt="" class="team-logo" onerror="this.style.display=\'none\'">' if logo else ''
+    odds_display = res['odds_str'] if is_f5 else res['odds_str']
+
+    return f"""
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    {logo_html}
+                    <div class="player-info">
+                        <h2>{res['selection']}</h2>
+                        <div class="matchup-info">{res['matchup']}</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">{bet_type.replace('Player Props - ','').replace('First 5 Innings ','F5 ')}</div>
+                    {f'<div class="game-date-time">{game_time_str}</div>' if game_time_str else ''}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">{direction}</span>
+                        {f'<span class="line">{line_display}</span>' if line_display else ''}
+                        <span class="bet-odds">{odds_display}</span>
+                    </div>
+                </div>
+                <div class="model-subtext">{subtext}</div>
+                {stats_row}
+                {pitcher_section}
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">{res['prob']:.0%}</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+{res['edge']:.1%}</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">{res['wager']}</span></div>
+                </div>
+                <div class="tags-container">{tags_html}</div>
+            </div>
+        </div>"""
+
+
+def generate_html(results, stats):
     css = """
     :root {
-        --bg-main: #121212;
-        --bg-card: #1e1e1e;
-        --bg-card-secondary: #2a2a2a;
+        --bg-main: #0a0a0a;
+        --bg-card: #1a1a1a;
+        --bg-card-secondary: #222222;
         --text-primary: #ffffff;
-        --text-secondary: #b3b3b3;
+        --text-secondary: #94a3b8;
         --accent-green: #4ade80;
         --accent-red: #f87171;
         --accent-blue: #60a5fa;
-        --border-color: #333333;
+        --border-color: #2a2a2a;
+        --glow-green: rgba(74,222,128,0.15);
     }
-    body {
-        margin: 0; padding: 20px; font-family: 'Inter', sans-serif;
-        background-color: var(--bg-main); color: var(--text-primary);
-    }
-    .container { max-width: 800px; margin: 0 auto; }
-    header {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
-    }
-    h1 { margin: 0; font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-    .subheader { font-size: 18px; font-weight: 600; color: var(--text-primary); }
-    .date-sub { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
-    
-    .summary-grid {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px;
-    }
-    .stat-box {
-        background-color: var(--bg-card); border-radius: 12px; padding: 15px;
-        text-align: center; border: 1px solid var(--border-color);
-    }
-    .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-    .stat-value { font-size: 20px; font-weight: 700; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }
+    .container { max-width: 820px; margin: 0 auto; }
+
+    header { display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 28px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
+    .subheader { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .stat-box { background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; }
     .txt-green { color: var(--accent-green); }
-    .txt-red { color: var(--accent-red); }
-    
-    .prop-card {
-        background-color: var(--bg-card); border-radius: 16px; overflow: hidden;
-        margin-bottom: 20px; border: 1px solid var(--border-color);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-    }
-    .card-header {
-        padding: 15px 20px; background-color: var(--bg-card-secondary);
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid var(--border-color);
-    }
-    .card-body { padding: 20px; }
-    .bet-main-row { margin-bottom: 15px; display: flex; align-items: baseline; gap: 10px; }
-    .bet-type { font-size: 14px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
-    .bet-selection { font-size: 22px; font-weight: 800; color: var(--accent-green); }
-    .bet-line { font-size: 20px; color: var(--text-primary); margin-left: 5px; }
-    .bet-odds { font-size: 18px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
-    
-    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .metric-item { background-color: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
-    .metric-lbl { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-    .metric-val { font-size: 16px; font-weight: 700; }
-    
-    .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-    .tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
-    .tag-green { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
-    .tag-blue { background-color: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
-    
-    .no-bets { text-align: center; color: var(--text-secondary); padding: 30px; font-style: italic; }
-    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px; }
+    .txt-red   { color: var(--accent-red); }
+
+    /* ---- Card ---- */
+    .prop-card { background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .prop-card.glow-green { border-color: rgba(74,222,128,0.25); }
+
+    .card-header { padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .player-info h2 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .matchup-info { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .game-meta { text-align: right; flex-shrink: 0; }
+    .bet-type-badge { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }
+    .game-date-time { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+    .card-body { padding: 18px; }
+
+    /* ---- Bet row ---- */
+    .bet-main-row { margin-bottom: 10px; }
+    .bet-selection { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .txt-green { color: var(--accent-green); }
+    .bet-selection .txt-green { font-size: 20px; font-weight: 800; }
+    .line { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+
+    .model-subtext { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .model-subtext strong { color: var(--text-primary); }
+
+    /* ---- Stats row ---- */
+    .stats-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-item { background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }
+    .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: 700; }
+
+    /* ---- Pitcher matchup ---- */
+    .pitcher-matchup { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2);
+                       border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+    .pitcher-vs { font-size: 13px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .pitcher-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+    .pitcher-stats span strong { color: var(--text-primary); }
+
+    /* ---- Metrics ---- */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric-item { background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .metric-val { font-size: 15px; font-weight: 700; }
+
+    /* ---- Tags ---- */
+    .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+    .tag-blue  { background: rgba(96,165,250,0.12); color: var(--accent-blue); }
+
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px; padding-top: 20px;
+             border-top: 1px solid var(--border-color); }
     """
 
-    # Build HTML
-    html = f"""<!DOCTYPE html>
+    roi_class = 'txt-green' if stats['roi'] > 0 else 'txt-red'
+    cards_html = ''.join(render_card(r) for r in results) if results else '<div class="no-bets">No high-value plays found for today.</div>'
+
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourtSide Analytics MLB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>CourtSide Analytics — MLB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>{css}</style>
 </head>
 <body>
@@ -349,11 +528,10 @@ def generate_html(results, stats):
             <div class="date-sub">{datetime.now().strftime('%B %d, %Y')} • Alpha V2.0</div>
         </div>
     </header>
-    
     <div class="summary-grid">
         <div class="stat-box">
             <div class="stat-label">Season ROI</div>
-            <div class="stat-value {'txt-green' if stats['roi'] > 0 else 'txt-red'}">{stats['roi']:.1f}%</div>
+            <div class="stat-value {roi_class}">{stats['roi']:.1f}%</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Win Rate</div>
@@ -364,82 +542,15 @@ def generate_html(results, stats):
             <div class="stat-value">{stats['wins']}-{stats['losses']}</div>
         </div>
     </div>
-    
     <div class="picks-section">
-"""
-    
-    if not results:
-        html += '<div class="no-bets">No high-value plays found for today.</div>'
-    
-    for res in results:
-        # Determine tags
-        tags_html = ""
-        if res['edge'] > 0.1:
-            tags_html += '<span class="tag tag-green">High Value</span>'
-        if res.get('kel', 0) > 0.05:
-            tags_html += '<span class="tag tag-green">Max Bet</span>'
-            
-        game_date = ''
-        if res.get('game_time'):
-            try:
-                import datetime as _dt, pytz as _pytz
-                gt = res['game_time']
-                if 'Z' in str(gt):
-                    _d = _dt.datetime.fromisoformat(str(gt).replace('Z', '+00:00'))
-                    game_date = _d.astimezone(_pytz.timezone('US/Eastern')).strftime('%b %d, %Y')
-                else:
-                    game_date = str(gt)[:10]
-            except:
-                game_date = str(res['game_time'])[:10]
-
-        html += f"""
-        <div class="prop-card">
-            <div class="card-header">
-                <span class="bet-type">{res['type']}</span>
-                <span>{res['matchup']}</span>
-                {f'<span style="color:var(--text-secondary);font-size:12px;">{game_date}</span>' if game_date else ''}
-            </div>
-            <div class="card-body">
-                <div class="bet-main-row">
-                    <span class="bet-selection">{res['selection']}</span>
-                    <span class="bet-line">{res['line']}</span>
-                    <span class="bet-odds">{res['odds_str']}</span>
-                </div>
-                
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <span class="metric-lbl">MODEL PROB</span>
-                        <span class="metric-val txt-green">{res['prob']:.1%}</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">EDGE</span>
-                        <span class="metric-val txt-green">+{res['edge']:.1%}</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-lbl">KELLY BET</span>
-                        <span class="metric-val">{res['wager']}</span>
-                    </div>
-                </div>
-                
-                <div class="tags-container">
-                    {tags_html}
-                    <span class="tag tag-blue">Model Score: {res['score']:.1f}</span>
-                </div>
-            </div>
-        </div>
-        """
-        
-    html += """
+        {cards_html}
     </div>
     <footer>
-        Model based on SIERA, xFIP, wRC+ & Statcast Data.<br>
-        Always bet responsibly. Past performance doesn't guarantee future results.
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
     </footer>
 </div>
 </body>
-</html>
-"""
-    return html
+</html>"""
 
 # ==========================================
 # 5. LIVE SCHEDULE INTEGRATION
@@ -550,11 +661,13 @@ def main():
         away_wrc = get_team_wrc(away, batters)
         home_wrc = get_team_wrc(home, batters)
 
+        game_time = game.get('game_time', '')
+
         # --- F5 ML (requires both pitchers in stats) ---
         if p_away is not None and p_home is not None:
             try:
                 f5_prob_away = calculate_f5_probability(p_away, p_home, away_wrc, home_wrc)
-                f5_odds = 1.91  # -110 both sides baseline
+                f5_odds = 1.91
                 edge = f5_prob_away - (1 / f5_odds)
                 if edge > MIN_EDGE:
                     kel = kelly_criterion(f5_prob_away, f5_odds) * KELLY_MULTIPLIER
@@ -571,6 +684,15 @@ def main():
                         'wager': f"{kel:.1%} Unit",
                         'kel': kel,
                         'score': f5_prob_away * 10,
+                        'game_time': game_time,
+                        'away_team': away,
+                        'home_team': home,
+                        'away_pitcher_name': game['away_pitcher'] or 'TBD',
+                        'away_pitcher_siera': round(float(p_away.get('SIERA', 0) or 0), 2),
+                        'away_pitcher_xfip': round(float(p_away.get('xFIP', 0) or 0), 2),
+                        'home_pitcher_name': game['home_pitcher'] or 'TBD',
+                        'home_pitcher_siera': round(float(p_home.get('SIERA', 0) or 0), 2),
+                        'home_pitcher_xfip': round(float(p_home.get('xFIP', 0) or 0), 2),
                     })
             except Exception as e:
                 print(f"    F5 error {matchup}: {e}")
@@ -580,8 +702,8 @@ def main():
             if pitcher_row is None:
                 continue
             try:
+                pitcher_team = away if opp_team == home else home
                 opp_k_rate = get_team_k_rate(opp_team, batters)
-                # Line set ~10% below expected so model has something to beat
                 raw_exp = pitcher_row['K/9'] * (5.5 / 9)
                 k_line = round(raw_exp * 0.9 - 0.5) + 0.5
                 exp_k, prob_over, _ = calculate_k_prop_probability(pitcher_row, opp_k_rate, k_line)
@@ -602,6 +724,13 @@ def main():
                         'wager': f"{kel_k:.1%} Unit",
                         'kel': kel_k,
                         'score': prob_over * 10,
+                        'game_time': game_time,
+                        'pitcher_team': pitcher_team,
+                        'pitcher_siera': round(float(pitcher_row.get('SIERA', 0) or 0), 2),
+                        'pitcher_xfip': round(float(pitcher_row.get('xFIP', 0) or 0), 2),
+                        'pitcher_k9': round(float(pitcher_row.get('K/9', 0) or 0), 1),
+                        'opp_k_rate': round(opp_k_rate * 100, 1),
+                        'exp_k': round(exp_k, 1),
                     })
             except Exception as e:
                 print(f"    K prop error {pitcher_row.get('Name','?')}: {e}")
@@ -621,6 +750,12 @@ def main():
             for _, batter_row in top_bats.iterrows():
                 batter_name = batter_row['Name']
                 batter_id = batter_name.replace(' ', '_')
+                batter_wrc = round(float(batter_row.get('wRC+', 100) or 100), 0)
+                batter_barrel = round(float(batter_row.get('brl_percent', 0) or 0), 1)
+                p_siera = round(float(opp_pitcher_row.get('SIERA', 0) or 0), 2)
+                p_xfip = round(float(opp_pitcher_row.get('xFIP', 0) or 0), 2)
+                p_hr9 = round(float(opp_pitcher_row.get('HR/9', 0) or 0), 2)
+                p_name = opp_pitcher_row['Name']
 
                 # HR prop (~+200 market standard)
                 try:
@@ -642,6 +777,14 @@ def main():
                             'wager': f"{kel_hr:.1%} Unit",
                             'kel': kel_hr,
                             'score': prob_hr * 10,
+                            'game_time': game_time,
+                            'batting_team': batting_team,
+                            'batter_wrc': batter_wrc,
+                            'batter_barrel': batter_barrel,
+                            'pitcher_name': p_name,
+                            'pitcher_siera': p_siera,
+                            'pitcher_xfip': p_xfip,
+                            'pitcher_hr9': p_hr9,
                         })
                 except Exception as e:
                     print(f"    HR prop error {batter_name}: {e}")
@@ -668,6 +811,15 @@ def main():
                             'wager': f"{kel_hrbi:.1%} Unit",
                             'kel': kel_hrbi,
                             'score': prob_over_hrbi * 10,
+                            'game_time': game_time,
+                            'batting_team': batting_team,
+                            'batter_wrc': batter_wrc,
+                            'batter_barrel': batter_barrel,
+                            'pitcher_name': p_name,
+                            'pitcher_siera': p_siera,
+                            'pitcher_xfip': p_xfip,
+                            'pitcher_hr9': p_hr9,
+                            'exp_val': round(exp_val, 2),
                         })
                 except Exception as e:
                     print(f"    H+R+RBI prop error {batter_name}: {e}")
