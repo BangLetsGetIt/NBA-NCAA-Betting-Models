@@ -7,7 +7,7 @@ Features: CourtSide Analytics Styling, Automated Tracking, Kelly Criterion.
 import pandas as pd
 import numpy as np
 from scipy.stats import poisson
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 import time
@@ -105,6 +105,52 @@ def calculate_tracking_stats():
         'roi': roi,
         'profit': net_units
     }
+
+
+def _calc_mlb_perf(picks, n):
+    subset = picks[:n]
+    wins = sum(1 for p in subset if p.get('status', '').lower() == 'win')
+    losses = sum(1 for p in subset if p.get('status', '').lower() == 'loss')
+    total = wins + losses
+    profit = 0.0
+    for p in subset:
+        s = p.get('status', '').lower()
+        odds = p.get('odds_dec', 1.91)
+        if s == 'win':
+            profit += odds - 1
+        elif s == 'loss':
+            profit -= 1.0
+    win_rate = (wins / total * 100) if total > 0 else 0
+    roi = (profit / total * 100) if total > 0 else 0
+    return {'record': f"{wins}-{losses}", 'win_rate': win_rate, 'profit': profit, 'roi': roi}
+
+
+def _calc_mlb_by_type(completed):
+    types = {
+        'First 5 Innings ML': 'F5 ML',
+        'Player Props - Strikeouts': 'Strikeouts',
+        'Player Props - Home Run': 'Home Run',
+        'Player Props - H+R+RBI': 'H+R+RBI',
+    }
+    result = {}
+    for raw_type, label in types.items():
+        subset = [p for p in completed if p.get('type') == raw_type]
+        wins = sum(1 for p in subset if p.get('status', '').lower() == 'win')
+        losses = sum(1 for p in subset if p.get('status', '').lower() == 'loss')
+        total = wins + losses
+        profit = 0.0
+        for p in subset:
+            s = p.get('status', '').lower()
+            if s == 'win':
+                profit += p.get('odds_dec', 1.91) - 1
+            elif s == 'loss':
+                profit -= 1.0
+        win_rate = (wins / total * 100) if total > 0 else 0
+        roi = (profit / total * 100) if total > 0 else 0
+        result[label] = {'record': f"{wins}-{losses}", 'total': total,
+                         'profit': profit, 'win_rate': win_rate, 'roi': roi}
+    return result
+
 
 # ==========================================
 # 2. DATA INGESTION ENGINE
@@ -410,7 +456,7 @@ def render_card(res):
         </div>"""
 
 
-def generate_html(results, stats):
+def generate_html(results, stats, tracking_data=None):
     css = """
     :root {
         --bg-main: #0a0a0a;
@@ -505,10 +551,136 @@ def generate_html(results, stats):
     .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
     footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px; padding-top: 20px;
              border-top: 1px solid var(--border-color); }
+
+    .tracking-section { margin-top: 2.5rem; }
+    .tracking-header { font-size: 15px; font-weight: 700; margin-bottom: 1rem;
+                       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+    .perf-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .perf-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);
+                 padding: 1.2rem; flex: 1; min-width: 140px; }
+    .perf-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+    .perf-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; }
+    .perf-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; margin-bottom: 2px; }
+    .perf-value { font-size: 0.95rem; font-weight: 800; }
+    .type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .type-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 1rem; }
+    .type-name { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+                 margin-bottom: 0.7rem; color: var(--accent-blue); }
+    .type-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+    .type-stat { text-align: center; }
+    .type-stat-lbl { font-size: 0.6rem; text-transform: uppercase; color: var(--text-secondary); }
+    .type-stat-val { font-size: 0.9rem; font-weight: 700; }
     """
 
     roi_class = 'txt-green' if stats['roi'] > 0 else 'txt-red'
     cards_html = ''.join(render_card(r) for r in results) if results else '<div class="no-bets">No high-value plays found for today.</div>'
+
+    performance_html = ''
+    if tracking_data:
+        all_picks = tracking_data.get('picks', [])
+        completed = [p for p in all_picks if p.get('status', '').lower() in ('win', 'loss')]
+        completed.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        yesterday_str = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        today_done = [p for p in completed if p.get('created_at', '')[:10] == today_str]
+        yest_done = [p for p in completed if p.get('created_at', '')[:10] == yesterday_str]
+
+        def _day_stats(picks):
+            w = sum(1 for p in picks if p.get('status', '').lower() == 'win')
+            l = sum(1 for p in picks if p.get('status', '').lower() == 'loss')
+            tot = w + l
+            profit = sum((p.get('odds_dec', 1.91) - 1) if p.get('status', '').lower() == 'win' else -1.0
+                         for p in picks)
+            roi = (profit / tot * 100) if tot > 0 else 0
+            return {'record': f"{w}-{l}", 'profit': profit, 'roi': roi}
+
+        t = _day_stats(today_done)
+        y = _day_stats(yest_done)
+        tc = 'txt-green' if t['profit'] > 0 else ('txt-red' if t['profit'] < 0 else '')
+        yc = 'txt-green' if y['profit'] > 0 else ('txt-red' if y['profit'] < 0 else '')
+
+        l10 = _calc_mlb_perf(completed, 10)
+        l20 = _calc_mlb_perf(completed, 20)
+        l50 = _calc_mlb_perf(completed, 50)
+        by_type = _calc_mlb_by_type(completed)
+
+        def _cc(val, threshold=0):
+            return 'txt-green' if val > threshold else ('txt-red' if val < 0 else '')
+
+        type_cards_html = ''
+        for label, d in by_type.items():
+            type_cards_html += f'''
+            <div class="type-card">
+                <div class="type-name">{label}</div>
+                <div class="type-stats">
+                    <div class="type-stat"><div class="type-stat-lbl">Record</div><div class="type-stat-val">{d["record"]}</div></div>
+                    <div class="type-stat"><div class="type-stat-lbl">Win %</div><div class="type-stat-val {_cc(d["win_rate"], 50)}">{d["win_rate"]:.0f}%</div></div>
+                    <div class="type-stat"><div class="type-stat-lbl">Profit</div><div class="type-stat-val {_cc(d["profit"])}">{d["profit"]:+.1f}u</div></div>
+                    <div class="type-stat"><div class="type-stat-lbl">ROI</div><div class="type-stat-val {_cc(d["roi"])}">{d["roi"]:+.1f}%</div></div>
+                </div>
+            </div>'''
+
+        performance_html = f'''
+    <div class="tracking-section">
+        <div class="tracking-header">Daily Performance</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Today</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">{t["record"]}</div>
+                    <div class="{tc}" style="font-weight:600;">{t["profit"]:+.1f}u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">{t["roi"]:.1f}% ROI</div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Yesterday</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">{y["record"]}</div>
+                    <div class="{yc}" style="font-weight:600;">{y["profit"]:+.1f}u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">{y["roi"]:.1f}% ROI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">Recent Form</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Last 10</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l10["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l10["win_rate"], 50)}">{l10["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l10["profit"])}">{l10["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l10["roi"])}">{l10["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 20</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l20["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l20["win_rate"], 50)}">{l20["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l20["profit"])}">{l20["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l20["roi"])}">{l20["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 50</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l50["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l50["win_rate"], 50)}">{l50["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l50["profit"])}">{l50["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l50["roi"])}">{l50["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">MLB Model Performance — By Bet Type</div>
+        <div class="type-grid">{type_cards_html}</div>
+    </div>'''
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -545,6 +717,7 @@ def generate_html(results, stats):
     <div class="picks-section">
         {cards_html}
     </div>
+    {performance_html}
     <footer>
         Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
     </footer>
@@ -826,7 +999,8 @@ def main():
 
     # 3. Output
     track_new_picks(new_picks)
-    html_content = generate_html(new_picks, stats)
+    tracking_data = load_tracking_data()
+    html_content = generate_html(new_picks, stats, tracking_data)
     
     with open(OUTPUT_HTML, 'w') as f:
         f.write(html_content)
