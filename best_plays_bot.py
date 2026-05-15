@@ -60,6 +60,7 @@ TRACKING_SOURCES = [
     ('CBB P+A Props', 'ncaa/cbb_points_assists_props_tracking.json', 'NCAAB', 'Props'),
     ('CBB R+A Props', 'ncaa/cbb_rebounds_assists_props_tracking.json', 'NCAAB', 'Props'),
     ('Soccer', 'soccer/soccer_picks_tracking.json', 'Soccer', 'Total'),
+    ('MLB Master', 'mlb/mlb_master_model_tracking.json', 'MLB', 'Props'),
 ]
 
 
@@ -164,7 +165,8 @@ def calculate_confidence_score(play, model_stats, bet_type_rate):
     bet_type_score = (bet_type_rate / 100) * 25
     
     # AI Score (typically 8-10) -> scaled to 0-20
-    ai_score = play.get('ai_score', 8.0)
+    # MLB uses 'score' (prob*10, range ~5-9.5) as proxy
+    ai_score = play.get('ai_score') or play.get('score') or 8.0
     ai_component = ((ai_score - 7) / 3) * 20  # 7=0, 10=20
     ai_component = max(0, min(20, ai_component))
     
@@ -213,32 +215,40 @@ def get_pending_plays():
             if game_time < now:
                 continue  # Skip past games
             
-            # Get bet type
-            bet_type = p.get('bet_type', p.get('pick_type', 'unknown'))
+            # Get bet type — MLB uses 'type', NBA uses 'bet_type'/'pick_type'
+            bet_type = p.get('bet_type') or p.get('pick_type') or p.get('type') or 'unknown'
             bet_type_rate = calculate_bet_type_stats(picks, bet_type)
-            
+
             # Calculate confidence score
             confidence = calculate_confidence_score(p, model_stats, bet_type_rate)
-            
+
+            # Normalize player name — MLB uses 'selection'
+            player = p.get('player') or p.get('selection') or p.get('team', 'Unknown')
+
+            # Normalize team for logo — MLB stores in batting_team/pitcher_team/away_team
+            team = (p.get('team') or p.get('batting_team') or
+                    p.get('pitcher_team') or p.get('away_team', ''))
+
             # Build play object
             play = {
                 'model': model_name,
                 'sport': sport,
                 'category': category,
-                'player': p.get('player', p.get('team', 'Unknown')),
+                'player': player,
                 'bet_type': bet_type.upper() if bet_type else 'N/A',
                 'line': p.get('prop_line', p.get('line', '')),
-                'odds': p.get('odds', '-110'),
+                'odds': p.get('odds') or p.get('odds_str', '-110'),
                 'edge': p.get('edge', 0),
                 'ai_score': p.get('ai_score', 0),
+                'score': p.get('score', 0),
                 'game_time': game_time,
                 'game_time_str': game_time.strftime('%a %I:%M %p') if game_time else 'TBD',
                 'matchup': p.get('matchup', p.get('opponent', '')),
-                'source_pick_id': p.get('pick_id'),
+                'source_pick_id': p.get('pick_id') or p.get('id'),
                 'model_record': model_stats['record'],
                 'model_win_rate': model_stats['win_rate'],
                 'confidence': confidence,
-                'team': p.get('team', ''),
+                'team': team,
                 'season_avg': p.get('season_avg', 0),
                 'recent_avg': p.get('recent_avg', 0),
                 'season_record': p.get('season_record', ''),
@@ -269,11 +279,23 @@ def get_pending_plays():
     return unique_plays
 
 
+_MLB_SLUGS = {
+    'AZ': 'ari', 'ATH': 'oak', 'CWS': 'chw', 'WSH': 'wsh',
+    'TB': 'tb', 'SD': 'sd', 'SF': 'sf', 'KC': 'kc',
+    'NYY': 'nyy', 'NYM': 'nym', 'LAD': 'lad', 'LAA': 'laa', 'CHC': 'chc',
+}
+
 def get_team_logo_url(team_name, sport):
     """Get ESPN logo URL for team"""
     if not team_name or team_name == 'UNK':
         return "https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nba.png" # Default
-    
+
+    # MLB: use abbreviation-based ESPN CDN
+    if sport == 'MLB':
+        abbr = team_name.upper()
+        slug = _MLB_SLUGS.get(abbr, abbr.lower())
+        return f"https://a.espncdn.com/i/teamlogos/mlb/500/{slug}.png"
+
     # Normalize
     t = team_name.lower().replace('76ers', 'sixers')
     
@@ -470,8 +492,8 @@ def update_fire_tracking(current_plays):
         for _, filepath, _, _ in TRACKING_SOURCES:
             picks = load_tracking_data(filepath)
             for p in picks:
-                # If source id exists, prefer exact match
-                p_src = p.get('pick_id') or p.get('pickId')
+                # If source id exists, prefer exact match — MLB uses 'id' not 'pick_id'
+                p_src = p.get('pick_id') or p.get('pickId') or p.get('id')
                 if tp_src and p_src and tp_src == p_src:
                     status = (p.get('status') or 'pending').lower()
                     if status in ['win', 'won']:
@@ -485,11 +507,12 @@ def update_fire_tracking(current_plays):
                 # Fallback matching: normalize player, bet type, date, and line
                 if not matched:
                     try:
-                        p_player = (p.get('player') or p.get('team') or '').strip().lower()
+                        # MLB uses 'selection' for player, 'type' for bet type
+                        p_player = (p.get('player') or p.get('selection') or p.get('team') or '').strip().lower()
                         tp_player = (tp.get('player') or '').strip().lower()
-                        
+
                         # Primary bet type (OVER/UNDER/SPREAD/TOTAL)
-                        p_bet = (p.get('bet_type') or p.get('pick_type') or '').strip().upper()
+                        p_bet = (p.get('bet_type') or p.get('pick_type') or p.get('type') or '').strip().upper()
                         tp_bet = (tp.get('bet_type') or '').strip().upper()
 
                         # Compare game dates (YYYY-MM-DD) to avoid timezone mismatches
