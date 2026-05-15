@@ -6,7 +6,6 @@ Features: CourtSide Analytics Styling, Automated Tracking, Kelly Criterion.
 
 import pandas as pd
 import numpy as np
-from pybaseball import pitching_stats, batting_stats, statcast_batter_exitvelo_barrels
 from scipy.stats import poisson
 from datetime import datetime
 import os
@@ -110,70 +109,82 @@ def calculate_tracking_stats():
 # ==========================================
 # 2. DATA INGESTION ENGINE
 # ==========================================
-def get_data():
-    print("1. Fetching Advanced Stats from FanGraphs & Statcast...")
+_FG_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    'Referer': 'https://www.fangraphs.com/leaders/major-league',
+    'Accept': 'application/json, text/plain, */*',
+}
+_FG_BASE = 'https://www.fangraphs.com/api/leaders/major-league/data'
 
-    # Pitching: SIERA, xFIP, K/9 — try current season first, fall back to prior season
+
+def _fetch_fangraphs(stats_type, season, qual, stat_type=8):
+    url = (
+        f"{_FG_BASE}?pos=all&stats={stats_type}&lg=all&qual={qual}"
+        f"&season={season}&season1={season}&month=0&team=0"
+        f"&pageitems=2000&pagenum=1&ind=0&type={stat_type}"
+        f"&postseason=&sortdir=default&sortstat=ERA"
+    )
+    resp = requests.get(url, headers=_FG_HEADERS, timeout=15)
+    resp.raise_for_status()
+    return resp.json().get('data', [])
+
+
+def get_data():
+    print("1. Fetching Advanced Stats from FanGraphs API...")
+
+    # --- Pitching ---
     pitching = None
     for season_try in [SEASON, SEASON - 1]:
         try:
-            pitching = pitching_stats(season_try, qual=MIN_INN)
-            pitching = pitching[['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%']]
-            if season_try < SEASON:
-                print(f"{Colors.YELLOW}   Using {season_try} pitching stats (2026 data not yet available).{Colors.END}")
-            else:
-                print(f"   Pitching stats loaded ({SEASON}).")
+            rows = _fetch_fangraphs('pit', season_try, qual=20)
+            if not rows:
+                raise ValueError("empty response")
+            pitching = pd.DataFrame([{
+                'Name': r['PlayerName'],
+                'Team': r['TeamNameAbb'],
+                'SIERA': r.get('SIERA') or 4.50,
+                'xFIP': r.get('xFIP') or 4.20,
+                'K/9': r.get('K/9') or 8.0,
+                'BB/9': r.get('BB/9') or 3.0,
+                'HR/9': r.get('HR/9') or 1.2,
+                'K%': r.get('K%') or 0.22,
+                'BB%': r.get('BB%') or 0.09,
+            } for r in rows])
+            label = f"{season_try}" if season_try == SEASON else f"{season_try} (fallback)"
+            print(f"   Pitching stats loaded ({label}): {len(pitching)} pitchers.")
             break
         except Exception as e:
             if season_try == SEASON:
-                print(f"   {SEASON} pitching unavailable, trying {SEASON - 1}...")
+                print(f"   {SEASON} pitching unavailable ({e}), trying {SEASON - 1}...")
     if pitching is None:
-        print(f"{Colors.YELLOW}Warning: Pitching stats unavailable. Using mock data.{Colors.END}")
-        pitching = pd.DataFrame({
-            'Name': ['Gerrit Cole', 'Tyler Glasnow', 'Zack Wheeler'],
-            'Team': ['NYY', 'LAD', 'PHI'],
-            'SIERA': [3.10, 2.95, 3.20],
-            'xFIP': [3.20, 2.80, 3.15],
-            'K/9': [10.5, 11.5, 9.8],
-            'HR/9': [1.0, 0.9, 0.8]
-        })
+        print(f"{Colors.RED}Error: Pitching stats unavailable. Cannot run model.{Colors.END}")
+        pitching = pd.DataFrame(columns=['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%'])
 
-    # Batting: wRC+, ISO — same fallback pattern
+    # --- Batting (barrel% included in same advanced endpoint) ---
     batting = None
     for season_try in [SEASON, SEASON - 1]:
         try:
-            batting = batting_stats(season_try, qual=MIN_PA)
-            batting = batting[['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%']]
-            if season_try < SEASON:
-                print(f"{Colors.YELLOW}   Using {season_try} batting stats (2026 data not yet available).{Colors.END}")
-            else:
-                print(f"   Batting stats loaded ({SEASON}).")
-
-            # Statcast Barrels
-            try:
-                barrels = statcast_batter_exitvelo_barrels(season_try, MIN_PA)
-                barrels = barrels[['last_name, first_name', 'brl_percent']]
-                barrels['Name'] = barrels['last_name, first_name'].apply(
-                    lambda x: f"{x.split(', ')[1]} {x.split(', ')[0]}"
-                )
-                batting = batting.merge(barrels[['Name', 'brl_percent']], on='Name', how='left').fillna(0)
-            except:
-                print("   ! Statcast barrel data unavailable, using ISO proxy.")
-                batting['brl_percent'] = batting['ISO'] * 10
+            rows = _fetch_fangraphs('bat', season_try, qual=100)
+            if not rows:
+                raise ValueError("empty response")
+            batting = pd.DataFrame([{
+                'Name': r['PlayerName'],
+                'Team': r['TeamNameAbb'],
+                'wRC+': r.get('wRC+') or 100,
+                'ISO': r.get('ISO') or 0.150,
+                'K%': r.get('K%') or 0.22,
+                'BB%': r.get('BB%') or 0.09,
+                'brl_percent': (r.get('Barrel%') or 0) * 100,
+            } for r in rows])
+            label = f"{season_try}" if season_try == SEASON else f"{season_try} (fallback)"
+            print(f"   Batting stats loaded ({label}): {len(batting)} batters.")
             break
         except Exception as e:
             if season_try == SEASON:
-                print(f"   {SEASON} batting unavailable, trying {SEASON - 1}...")
+                print(f"   {SEASON} batting unavailable ({e}), trying {SEASON - 1}...")
     if batting is None:
-        print(f"{Colors.YELLOW}Warning: Batting stats unavailable. Using mock data.{Colors.END}")
-        batting = pd.DataFrame({
-            'Name': ['Aaron Judge', 'Shohei Ohtani', 'Juan Soto'],
-            'Team': ['NYY', 'LAD', 'NYY'],
-            'wRC+': [160, 155, 150],
-            'ISO': [0.300, 0.280, 0.250],
-            'brl_percent': [20.0, 18.0, 15.0],
-            'K%': [0.25, 0.22, 0.18]
-        })
+        print(f"{Colors.RED}Error: Batting stats unavailable. Cannot run model.{Colors.END}")
+        batting = pd.DataFrame(columns=['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%', 'brl_percent'])
 
     return pitching, batting
 
