@@ -50,6 +50,7 @@ class DailyRecapGenerator:
             "wnba/wnba_model_tracking.json",
             "wnba/wnba_props_tracking.json",
             "ufc/data/ufc_picks.json",
+            "mlb/mlb_master_model_tracking.json",
             "best_plays_tracking.json"
         ]
         
@@ -101,6 +102,8 @@ class DailyRecapGenerator:
                                 pick_date_str = parse_iso(pick.get('game_date'))
                             elif pick.get('date'):
                                 pick_date_str = pick.get('date')
+                            elif pick.get('created_at'):
+                                pick_date_str = pick['created_at'][:10]
                                 
                             if pick_date_str == self.target_date:
                                 pick['sport'] = self.get_sport(file_path)
@@ -138,7 +141,9 @@ class DailyRecapGenerator:
                  # For game picks, maybe Team + Opponent + Model + Type?
                  # Or just pick_id if available? 
                  # Let's use pick_id if available, otherwise construct key
-                 if pick.get('pick_id'):
+                 if pick.get('id') and not pick.get('pick_id'):
+                     key = pick['id']
+                 elif pick.get('pick_id'):
                      # Normalize pick_id: convert UTC timestamp to ET date to avoid near-midnight duplicates
                      # e.g., "Team1_Team2_2026-01-30T00:00:29Z_spread" -> "Team1_Team2_2026-01-29_spread" (in ET)
                      raw_id = pick['pick_id']
@@ -202,6 +207,7 @@ class DailyRecapGenerator:
         if 'soccer' in file_path: return 'Soccer'
         if 'ufc' in file_path: return 'UFC'
         if 'wnba' in file_path: return 'WNBA'
+        if 'mlb' in file_path: return 'MLB'
         return 'Other'
 
     def get_model_name(self, file_path):
@@ -239,27 +245,29 @@ class DailyRecapGenerator:
         
         for pick in self.all_picks:
             status = pick.get('status', 'pending')
-            # Count pending? Maybe separate bucket. For now just completed.
+            model = pick['model']
+
+            # Always add to by_model picks for display (pending or completed)
+            stats['by_model'][model]['picks'].append(pick)
+
+            # Only count completed picks toward win/loss stats
             if status not in ['win', 'loss', 'push', 'void']: continue
-            
+
             pl = float(pick.get('profit_loss', 0)) / 100.0 # Convert to units
-            
+
             # Total
             if status == 'win': stats['total']['wins'] += 1
             elif status == 'loss': stats['total']['losses'] += 1
             elif status == 'push': stats['total']['pushes'] += 1
             elif status == 'void': stats['total']['voids'] += 1
             stats['total']['units'] += pl
-            
+
             # By Model
-            model = pick['model']
             if status == 'win': stats['by_model'][model]['wins'] += 1
             elif status == 'loss': stats['by_model'][model]['losses'] += 1
             elif status == 'push': stats['by_model'][model]['pushes'] += 1
             elif status == 'void': stats['by_model'][model]['voids'] += 1
             stats['by_model'][model]['units'] += pl
-            # Enriched Pick Data for Display
-            stats['by_model'][model]['picks'].append(pick)
             
             # By Sport
             sport = pick['sport']
@@ -557,15 +565,15 @@ class DailyRecapGenerator:
         card_class = f"pick-card {status}"
         badge_class = f"badge-{status}"
         
-        # Extract display fields
-        player = pick.get('player')
+        # Extract display fields — handle both NBA/NCAAB field names and MLB field names
+        player = pick.get('player') or pick.get('selection')
         team = pick.get('team')
         opponent = pick.get('opponent')
-        
+
         # If no player/team/opponent (e.g. main model pick), try to parse from text description
-        text = pick.get('pick') or pick.get('pick_text') or "Unknown Pick"
+        text = pick.get('pick') or pick.get('pick_text') or pick.get('type') or "Unknown Pick"
         text = text.replace("✅ BET:", "").replace("❌ BET:", "").strip()
-        
+
         # Determine "Matchup" string
         matchup = ""
         if team and opponent:
@@ -574,10 +582,10 @@ class DailyRecapGenerator:
             matchup = pick.get('matchup')
         elif pick.get('home_team') and pick.get('away_team'):
             matchup = f"{pick['away_team']} @ {pick['home_team']}"
-            
+
         # Determine "Header" (Player Name or Team Name)
         header_text = player if player else text
-        
+
         # Determine "Line" details
         line_text = ""
         if pick.get('bet_type') and pick.get('prop_line'):
@@ -591,20 +599,24 @@ class DailyRecapGenerator:
             elif 'rebounds' in fp: unit = "Reb"
             elif 'assists' in fp: unit = "Ast"
             elif '3pt' in fp: unit = "3PT"
-            
             line_text = f"{bet_type} {line} {unit}"
+        elif pick.get('line'):
+            # MLB-style picks store the line directly
+            line_text = pick['line']
         else:
             # Fallback to description line (Main model picks)
             line_text = text
-            # If line_text became same as header, maybe header should be Team
             if line_text == header_text and (pick.get('team') or pick.get('home_team')):
-                 # If it's a spread pick, header is team, line is spread
-                 pass
+                pass
 
-        # Odds
-        odds = pick.get('odds')
+        # Odds — support both 'odds' (int) and 'odds_str' (string like '-110')
+        odds = pick.get('odds') or pick.get('odds_str')
         odds_text = f"{odds}" if odds else ""
-        if odds and float(odds) > 0: odds_text = f"+{odds}"
+        try:
+            if odds and float(str(odds).replace('+', '')) > 0 and not str(odds).startswith('+'):
+                odds_text = f"+{odds}"
+        except (ValueError, TypeError):
+            pass
         
         # Result Score
         result_display = ""
@@ -684,6 +696,7 @@ def find_most_recent_completed_date():
         "ncaa/cbb_3pt_props_tracking.json",
         "soccer/soccer_picks_tracking.json",
         "wnba/wnba_model_tracking.json",
+        "mlb/mlb_master_model_tracking.json",
         "best_plays_tracking.json",
     ]
 
