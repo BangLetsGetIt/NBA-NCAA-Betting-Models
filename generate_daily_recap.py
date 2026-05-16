@@ -217,14 +217,18 @@ class DailyRecapGenerator:
     def normalize_pick(self, pick):
         # Normalize Status
         status = pick.get('status', 'pending').lower()
-        if status == 'won': pick['status'] = 'win'
-        elif status == 'lost': pick['status'] = 'loss'
-        elif status == 'void': pick['status'] = 'void'  # Keep void separate
+        if status in ('won', 'win'): pick['status'] = 'win'
+        elif status in ('lost', 'loss'): pick['status'] = 'loss'
+        elif status == 'void': pick['status'] = 'void'
         elif status == 'push': pick['status'] = 'push'
-        
+        else: pick['status'] = 'pending'
+
         # Calculate Profit/Loss if missing
         if 'profit_loss' not in pick:
-            if pick['status'] in ['win', 'loss']:
+            if 'profit' in pick:
+                # MLB stores profit already in units — convert to cents to match NBA format
+                pick['profit_loss'] = float(pick['profit']) * 100
+            elif pick['status'] in ['win', 'loss']:
                 units = float(pick.get('recommended_bet_size_unit', 1))
                 odds = float(pick.get('odds', -110))
                 if pick['status'] == 'win':

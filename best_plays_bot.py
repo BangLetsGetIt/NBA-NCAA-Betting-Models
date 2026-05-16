@@ -204,15 +204,25 @@ def get_pending_plays():
         # Get pending plays
         pending = [p for p in picks if p.get('status', 'pending').lower() == 'pending']
         
+        today_date = now.strftime('%Y%m%d')
+        tomorrow_date = (now + timedelta(days=1)).strftime('%Y%m%d')
+
         for p in pending:
             # Parse game time - only include future games
             game_time = parse_game_time(p.get('game_time') or p.get('game_date'))
-            
-            # Require valid game time to be displayed in Pending
+
             if not game_time:
-                continue
-                
-            if game_time < now:
+                if sport == 'MLB':
+                    # MLB picks have no game_time; use date encoded in pick ID
+                    pick_id = p.get('id', '')
+                    id_date = pick_id.split('_')[-1] if pick_id else ''
+                    if id_date not in (today_date, tomorrow_date):
+                        continue
+                    game_time = None
+                else:
+                    continue
+
+            if game_time and game_time < now:
                 continue  # Skip past games
             
             # Get bet type — MLB uses 'type', NBA uses 'bet_type'/'pick_type'
@@ -242,7 +252,7 @@ def get_pending_plays():
                 'ai_score': p.get('ai_score', 0),
                 'score': p.get('score', 0),
                 'game_time': game_time,
-                'game_time_str': game_time.strftime('%a %I:%M %p') if game_time else 'TBD',
+                'game_time_str': game_time.strftime('%a %I:%M %p') if game_time else p.get('matchup', 'TBD'),
                 'matchup': p.get('matchup', p.get('opponent', '')),
                 'source_pick_id': p.get('pick_id') or p.get('id'),
                 'model_record': model_stats['record'],
@@ -703,10 +713,16 @@ def generate_html(plays, fire_record=None, breakdown=None):
         tier_label, tier_color = get_confidence_tier(play['confidence'])
         
         # Format bet display
-        if play['line']:
-            bet_display = f"{play['bet_type']} {play['line']}"
+        # Strip verbose "PLAYER PROPS - " prefix from MLB bet types
+        bet_type_display = play['bet_type'].replace('PLAYER PROPS - ', '')
+        line_str = str(play['line']) if play['line'] else ''
+        # If line already includes direction (e.g. "Over 18.5 Outs"), show it alone
+        if line_str.startswith(('Over ', 'Under ')):
+            bet_display = line_str
+        elif line_str:
+            bet_display = f"{bet_type_display} {line_str}"
         else:
-            bet_display = play['bet_type']
+            bet_display = bet_type_display
         
         # Bet color: green for OVER, red for UNDER
         bet_class = "play-bet-under" if "UNDER" in play['bet_type'].upper() else "play-bet-over"

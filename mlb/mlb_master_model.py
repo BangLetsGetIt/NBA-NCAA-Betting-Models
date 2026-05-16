@@ -864,15 +864,23 @@ def main():
     stats = calculate_tracking_stats()
     
     new_picks = []
-    today_str = datetime.now().strftime('%Y%m%d')
+    # Before noon ET → today's games haven't started, use today.
+    # Noon ET or later → today's games are underway, look ahead to tomorrow.
+    _et_now = datetime.now(pytz.timezone('US/Eastern'))
+    if _et_now.hour < 12:
+        target_date = _et_now
+    else:
+        target_date = _et_now + timedelta(days=1)
+    today_str = target_date.strftime('%Y%m%d')
+    target_date_str = target_date.strftime('%Y-%m-%d')
 
-    print("\n--- FETCHING TODAY'S SCHEDULE ---")
-    games = get_schedule()
+    print(f"\n--- FETCHING SCHEDULE FOR {target_date_str} ---")
+    games = get_schedule(target_date_str)
 
     if not games:
-        print(f"{Colors.YELLOW}No regular season games today (pre-season or off day).{Colors.END}")
+        print(f"{Colors.YELLOW}No regular season games on {target_date_str} (pre-season or off day).{Colors.END}")
     else:
-        print(f"{Colors.GREEN}Found {len(games)} games today.{Colors.END}")
+        print(f"{Colors.GREEN}Found {len(games)} games on {target_date_str}.{Colors.END}")
 
     print("\n--- RUNNING ANALYSIS ---")
 
