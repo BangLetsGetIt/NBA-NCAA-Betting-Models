@@ -1099,6 +1099,48 @@ def run_mlb_grading(force=False, grade_only=False):
             game_lookup[f"{away_track} @ {home_track}"] = entry
 
     graded_count = 0
+    summary_cache = {}  # event_id -> sdata, avoid re-fetching same game
+
+    def get_summary(event_id):
+        if event_id not in summary_cache:
+            r = _req.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event={event_id}",
+                timeout=15
+            )
+            r.raise_for_status()
+            summary_cache[event_id] = r.json()
+        return summary_cache[event_id]
+
+    def find_batter(bs, last_name, target_labels):
+        """Return (labels, stats) for a batter row matching last_name."""
+        for team_data in bs.get('players', []):
+            for cat in team_data.get('statistics', []):
+                labels = cat.get('labels', [])
+                if not all(lbl in labels for lbl in target_labels):
+                    continue
+                for ath in cat.get('athletes', []):
+                    name = ath.get('athlete', {}).get('displayName', '')
+                    if last_name.lower() in name.lower():
+                        return labels, ath.get('stats', [])
+        return None, None
+
+    def find_pitcher(bs, last_name):
+        """Return (labels, stats) for a pitcher row matching last_name."""
+        for team_data in bs.get('players', []):
+            for cat in team_data.get('statistics', []):
+                labels = cat.get('labels', [])
+                if 'IP' not in labels:
+                    continue
+                for ath in cat.get('athletes', []):
+                    name = ath.get('athlete', {}).get('displayName', '')
+                    if last_name.lower() in name.lower():
+                        return labels, ath.get('stats', [])
+        return None, None
+
+    def ip_to_outs(ip_str):
+        """Convert ESPN IP string (e.g. '5.2' = 5 innings + 2 outs) to total outs."""
+        parts = str(ip_str).split('.')
+        return int(parts[0]) * 3 + (int(parts[1]) if len(parts) > 1 else 0)
 
     for pick in picks:
         if pick.get('status', 'pending').lower() != 'pending':
@@ -1118,12 +1160,7 @@ def run_mlb_grading(force=False, grade_only=False):
         home_abbr = game['home_abbr']
 
         try:
-            sresp = _req.get(
-                f"https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?event={event_id}",
-                timeout=15
-            )
-            sresp.raise_for_status()
-            sdata = sresp.json()
+            sdata = get_summary(event_id)
         except Exception as e:
             log(f"MLB summary fetch error {matchup}: {e}", "warning")
             continue
@@ -1221,6 +1258,91 @@ def run_mlb_grading(force=False, grade_only=False):
             except Exception as e:
                 log(f"K grading error {pick_sel}: {e}", "warning")
 
+        # --- HR Props ---
+        elif 'Home Run' in pick_type:
+            try:
+                last = pick_sel.split()[-1]
+                bs = sdata.get('boxscore', {})
+                labels, stats = find_batter(bs, last, ['HR', 'H'])
+                if labels is None:
+                    log(f"HR batter not found: {pick_sel} in {matchup}", "warning")
+                    continue
+                hr_val = int(stats[labels.index('HR')])
+                result_str = f"{pick_sel}: {hr_val} HR"
+                if hr_val >= 1:
+                    pick['status'] = 'Win'
+                    pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                else:
+                    pick['status'] = 'Loss'
+                    pick['profit'] = -1.0
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB HR {pick_sel}: {pick['status']} | {result_str}", "success")
+            except Exception as e:
+                log(f"HR grading error {pick_sel}: {e}", "warning")
+
+        # --- H+R+RBI Props ---
+        elif 'H+R+RBI' in pick_type:
+            try:
+                m = re.search(r'Over\s+([\d.]+)', pick_line)
+                line_val = float(m.group(1)) if m else 1.5
+                last = pick_sel.split()[-1]
+                bs = sdata.get('boxscore', {})
+                labels, stats = find_batter(bs, last, ['H', 'R', 'RBI'])
+                if labels is None:
+                    log(f"H+R+RBI batter not found: {pick_sel} in {matchup}", "warning")
+                    continue
+                h   = int(stats[labels.index('H')])
+                r   = int(stats[labels.index('R')])
+                rbi = int(stats[labels.index('RBI')])
+                total = h + r + rbi
+                result_str = f"{pick_sel}: {h}H {r}R {rbi}RBI = {total} (line {line_val})"
+                if total > line_val:
+                    pick['status'] = 'Win'
+                    pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                elif total == line_val:
+                    pick['status'] = 'Push'
+                    pick['profit'] = 0.0
+                else:
+                    pick['status'] = 'Loss'
+                    pick['profit'] = -1.0
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB H+R+RBI {pick_sel}: {pick['status']} | {result_str}", "success")
+            except Exception as e:
+                log(f"H+R+RBI grading error {pick_sel}: {e}", "warning")
+
+        # --- Pitching Outs ---
+        elif 'Pitching Outs' in pick_type:
+            try:
+                m = re.search(r'Over\s+([\d.]+)', pick_line)
+                if not m:
+                    continue
+                line_val = float(m.group(1))
+                last = pick_sel.split()[-1]
+                bs = sdata.get('boxscore', {})
+                labels, stats = find_pitcher(bs, last)
+                if labels is None:
+                    log(f"Pitcher not found: {pick_sel} in {matchup}", "warning")
+                    continue
+                ip_str = stats[labels.index('IP')]
+                total_outs = ip_to_outs(ip_str)
+                result_str = f"{pick_sel}: {ip_str} IP = {total_outs} outs (line {line_val})"
+                if total_outs > line_val:
+                    pick['status'] = 'Win'
+                    pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                elif total_outs == line_val:
+                    pick['status'] = 'Push'
+                    pick['profit'] = 0.0
+                else:
+                    pick['status'] = 'Loss'
+                    pick['profit'] = -1.0
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB Outs {pick_sel}: {pick['status']} | {result_str}", "success")
+            except Exception as e:
+                log(f"Pitching Outs grading error {pick_sel}: {e}", "warning")
+
     if graded_count > 0:
         tracking['picks'] = picks
         with open(TRACKING_FILE, 'w') as f:
@@ -1235,8 +1357,9 @@ def run_mlb_grading(force=False, grade_only=False):
             )
             mlb_mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mlb_mod)
+            tracking_data = mlb_mod.load_tracking_data()
             stats = mlb_mod.calculate_tracking_stats()
-            html = mlb_mod.generate_html([], stats)
+            html = mlb_mod.generate_html([], stats, tracking_data)
             with open(OUTPUT_HTML, 'w') as f:
                 f.write(html)
             log("Regenerated mlb_master_model.html", "success")
