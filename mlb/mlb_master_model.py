@@ -23,6 +23,7 @@ BANKROLL = 10000
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TRACKING_FILE = os.path.join(SCRIPT_DIR, "mlb_master_model_tracking.json")
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "mlb_master_model.html")
+RESULTS_CACHE = os.path.join(SCRIPT_DIR, "mlb_today_results.json")
 
 # Constants
 MIN_EDGE = 0.05  # 5% edge required to bet
@@ -512,6 +513,13 @@ def render_card(res):
 
 
 def generate_html(results, stats, tracking_data=None):
+    if not results and os.path.exists(RESULTS_CACHE):
+        try:
+            import json as _json
+            with open(RESULTS_CACHE) as _f:
+                results = _json.load(_f)
+        except Exception:
+            pass
     css = """
     :root {
         --bg-main: #0a0a0a;
@@ -1114,6 +1122,9 @@ def main():
 
     # 3. Output
     track_new_picks(new_picks)
+    with open(RESULTS_CACHE, 'w') as f:
+        import json as _json
+        _json.dump(new_picks, f)
     tracking_data = load_tracking_data()
     html_content = generate_html(new_picks, stats, tracking_data)
     
