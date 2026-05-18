@@ -39,6 +39,8 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .player-card:last-child { border-bottom: none; }
 .player-rank { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center;
     justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+.team-logo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+.team-logo-placeholder { width: 36px; height: 36px; flex-shrink: 0; }
 .player-info { flex: 1; min-width: 0; }
 .player-name { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
 .player-types { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -103,6 +105,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#1</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" class="team-logo" alt="PHI">
         <div class="player-info">
             <div class="player-name">Kyle Schwarber</div>
             <div class="player-types">
@@ -136,6 +139,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#2</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" class="team-logo" alt="ATL">
         <div class="player-info">
             <div class="player-name">Drake Baldwin</div>
             <div class="player-types">
@@ -169,6 +173,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#3</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" class="team-logo" alt="MIL">
         <div class="player-info">
             <div class="player-name">Brice Turang</div>
             <div class="player-types">
@@ -196,6 +201,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#4</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" class="team-logo" alt="SEA">
         <div class="player-info">
             <div class="player-name">Dominic Canzone</div>
             <div class="player-types">
@@ -229,6 +235,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#5</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" class="team-logo" alt="CLE">
         <div class="player-info">
             <div class="player-name">Rhys Hoskins</div>
             <div class="player-types">
@@ -262,6 +269,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#6</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" class="team-logo" alt="MIL">
         <div class="player-info">
             <div class="player-name">Jake Bauers</div>
             <div class="player-types">
@@ -289,6 +297,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#7</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" class="team-logo" alt="LAD">
         <div class="player-info">
             <div class="player-name">Max Muncy</div>
             <div class="player-types">
@@ -316,6 +325,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#8</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" class="team-logo" alt="ATL">
         <div class="player-info">
             <div class="player-name">Michael Harris II</div>
             <div class="player-types">
@@ -349,6 +359,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#9</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" class="team-logo" alt="NYY">
         <div class="player-info">
             <div class="player-name">Aaron Judge</div>
             <div class="player-types">
@@ -376,6 +387,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#10</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" class="team-logo" alt="LAD">
         <div class="player-info">
             <div class="player-name">Andy Pages</div>
             <div class="player-types">
@@ -411,6 +423,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#1</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/hou.png" class="team-logo" alt="HOU">
         <div class="player-info">
             <div class="player-name">Yordan Alvarez</div>
             <div class="player-types">
@@ -444,6 +457,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#2</div>
+        <div class="team-logo-placeholder"></div>
         <div class="player-info">
             <div class="player-name">Cal Raleigh</div>
             <div class="player-types">
@@ -477,6 +491,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#3</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/laa.png" class="team-logo" alt="LAA">
         <div class="player-info">
             <div class="player-name">Mike Trout</div>
             <div class="player-types">
@@ -510,6 +525,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#4</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/bal.png" class="team-logo" alt="BAL">
         <div class="player-info">
             <div class="player-name">Adley Rutschman</div>
             <div class="player-types">
@@ -543,6 +559,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#5</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/laa.png" class="team-logo" alt="LAA">
         <div class="player-info">
             <div class="player-name">Zach Neto</div>
             <div class="player-types">
@@ -576,6 +593,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#6</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/col.png" class="team-logo" alt="COL">
         <div class="player-info">
             <div class="player-name">Mickey Moniak</div>
             <div class="player-types">
@@ -609,6 +627,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#7</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/tex.png" class="team-logo" alt="TEX">
         <div class="player-info">
             <div class="player-name">Josh Jung</div>
             <div class="player-types">
@@ -636,6 +655,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#8</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" class="team-logo" alt="CHC">
         <div class="player-info">
             <div class="player-name">Moisés Ballesteros</div>
             <div class="player-types">
@@ -669,6 +689,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#9</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" class="team-logo" alt="CLE">
         <div class="player-info">
             <div class="player-name">Chase DeLauter</div>
             <div class="player-types">
@@ -696,6 +717,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="player-card">
         <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#10</div>
+        <img src="https://a.espncdn.com/i/teamlogos/mlb/500/bal.png" class="team-logo" alt="BAL">
         <div class="player-info">
             <div class="player-name">Pete Alonso</div>
             <div class="player-types">

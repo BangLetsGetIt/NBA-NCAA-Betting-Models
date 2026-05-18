@@ -4,6 +4,7 @@ Reads mlb_master_model_tracking.json and generates a player hit-rate leaderboard
 """
 import json
 import os
+import requests
 from collections import defaultdict
 from datetime import datetime
 
@@ -28,6 +29,53 @@ TYPE_COLORS = {
     'F5 ML':         '#ec4899',
 }
 
+# ESPN CDN slug overrides (abbr → slug)
+_ESPN_SLUGS = {
+    'ARI': 'ari', 'ATL': 'atl', 'BAL': 'bal', 'BOS': 'bos',
+    'CHC': 'chc', 'CWS': 'chw', 'CIN': 'cin', 'CLE': 'cle',
+    'COL': 'col', 'DET': 'det', 'HOU': 'hou', 'KC':  'kc',
+    'LAA': 'laa', 'LAD': 'lad', 'MIA': 'mia', 'MIL': 'mil',
+    'MIN': 'min', 'NYM': 'nym', 'NYY': 'nyy', 'ATH': 'oak',
+    'PHI': 'phi', 'PIT': 'pit', 'SD':  'sd',  'SF':  'sf',
+    'SEA': 'sea', 'STL': 'stl', 'TB':  'tb',  'TEX': 'tex',
+    'TOR': 'tor', 'WSH': 'wsh',
+}
+
+
+def team_logo_url(abbr):
+    if not abbr:
+        return ''
+    slug = _ESPN_SLUGS.get(abbr.upper(), abbr.lower())
+    return f"https://a.espncdn.com/i/teamlogos/mlb/500/{slug}.png"
+
+
+def build_player_team_map(picks):
+    """Extract player→team from tracking picks; fill gaps from MLB Stats API."""
+    mapping = {}
+    for p in picks:
+        name = p.get('selection', '').strip()
+        team = (p.get('pitcher_team') or p.get('batting_team') or
+                p.get('away_team') or p.get('home_team'))
+        if name and team:
+            mapping[name] = team
+
+    # Fill remaining players from MLB Stats API (free, no key)
+    try:
+        r = requests.get(
+            'https://statsapi.mlb.com/api/v1/sports/1/players?season=2026',
+            timeout=10
+        )
+        if r.status_code == 200:
+            for player in r.json().get('people', []):
+                full_name = player.get('fullName', '')
+                abbr = (player.get('currentTeam') or {}).get('abbreviation', '')
+                if full_name and abbr and full_name not in mapping:
+                    mapping[full_name] = abbr
+    except Exception:
+        pass
+
+    return mapping
+
 
 def load_picks():
     with open(TRACKING_FILE) as f:
@@ -35,10 +83,11 @@ def load_picks():
     return data.get('picks', [])
 
 
-def build_player_stats(picks):
+def build_player_stats(picks, team_map):
     players = defaultdict(lambda: {
         'wins': 0, 'losses': 0, 'pushes': 0,
         'profit': 0.0,
+        'team': '',
         'by_type': defaultdict(lambda: {'wins': 0, 'losses': 0, 'pushes': 0}),
         'lines': [],
     })
@@ -66,6 +115,8 @@ def build_player_stats(picks):
 
         players[name]['profit'] += float(p.get('profit', 0))
         players[name]['lines'].append(p.get('line', ''))
+        if not players[name]['team']:
+            players[name]['team'] = team_map.get(name, '')
 
     return players
 
@@ -109,6 +160,10 @@ def render_player_card(name, stats, rank, best=True):
     color  = '#10b981' if best else '#ef4444'
     rank_bg = 'rgba(16,185,129,0.15)' if best else 'rgba(239,68,68,0.15)'
 
+    logo_url = team_logo_url(stats.get('team', ''))
+    logo_html = (f'<img src="{logo_url}" class="team-logo" alt="{stats["team"]}">'
+                 if logo_url else '<div class="team-logo-placeholder"></div>')
+
     by_type_html = ''
     for ptype, ts in sorted(stats['by_type'].items()):
         tw, tl = ts['wins'], ts['losses']
@@ -128,6 +183,7 @@ def render_player_card(name, stats, rank, best=True):
     return f"""
     <div class="player-card">
         <div class="player-rank" style="background:{rank_bg}; color:{color}">#{rank}</div>
+        {logo_html}
         <div class="player-info">
             <div class="player-name">{name}</div>
             <div class="player-types">{by_type_html}</div>
@@ -234,6 +290,8 @@ body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--te
 .player-card:last-child {{ border-bottom: none; }}
 .player-rank {{ width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center;
     justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }}
+.team-logo {{ width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }}
+.team-logo-placeholder {{ width: 36px; height: 36px; flex-shrink: 0; }}
 .player-info {{ flex: 1; min-width: 0; }}
 .player-name {{ font-weight: 700; font-size: 1rem; margin-bottom: 6px; }}
 .player-types {{ display: flex; flex-wrap: wrap; gap: 6px; }}
@@ -323,7 +381,8 @@ body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--te
 
 def main():
     picks = load_picks()
-    players = build_player_stats(picks)
+    team_map = build_player_team_map(picks)
+    players = build_player_stats(picks, team_map)
     type_summary = build_type_summary(picks)
     html = generate_html(players, type_summary, picks)
     with open(OUTPUT_HTML, 'w') as f:
