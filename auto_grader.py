@@ -1349,7 +1349,7 @@ def run_mlb_grading(force=False, grade_only=False):
             json.dump(tracking, f, indent=2)
         log(f"MLB: Saved {graded_count} graded picks.", "success")
 
-        # Regenerate HTML — generate_html loads today's plays from cache
+        # Regenerate model HTML — generate_html loads today's plays from cache
         try:
             spec = importlib.util.spec_from_file_location(
                 'mlb_master_model',
@@ -1365,6 +1365,19 @@ def run_mlb_grading(force=False, grade_only=False):
             log("Regenerated mlb_master_model.html", "success")
         except Exception as e:
             log(f"MLB HTML regeneration error: {e}", "warning")
+
+        # Regenerate player report
+        try:
+            spec2 = importlib.util.spec_from_file_location(
+                'mlb_player_report',
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlb', 'mlb_player_report.py')
+            )
+            rpt_mod = importlib.util.module_from_spec(spec2)
+            spec2.loader.exec_module(rpt_mod)
+            rpt_mod.main()
+            log("Regenerated mlb_player_report.html", "success")
+        except Exception as e:
+            log(f"MLB player report error: {e}", "warning")
 
         return True
 
