@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLB Player Report – CourtSide Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0a0a0a;
+    --card: #1a1a1a;
+    --box: #262626;
+    --text: #ffffff;
+    --muted: #94a3b8;
+    --green: #10b981;
+    --red: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+
+.header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--box); }
+.brand { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sub { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.summary-card { background: var(--card); border: 1px solid var(--box); border-radius: 12px; padding: 20px; text-align: center; }
+.summary-val { font-size: 2rem; font-weight: 800; }
+.summary-lbl { font-size: 0.8rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.section { background: var(--card); border: 1px solid var(--box); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+.section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.section-title .bar { width: 4px; height: 20px; border-radius: 2px; }
+
+.player-card { display: flex; align-items: center; gap: 16px; padding: 14px 0;
+    border-bottom: 1px solid var(--box); }
+.player-card:last-child { border-bottom: none; }
+.player-rank { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+.player-info { flex: 1; min-width: 0; }
+.player-name { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+.player-types { display: flex; flex-wrap: wrap; gap: 6px; }
+.type-chip { display: flex; align-items: center; gap: 4px; background: var(--box);
+    border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.chip-label { color: var(--muted); }
+.chip-record { font-weight: 600; margin-left: 2px; }
+.chip-rate { font-weight: 700; margin-left: 4px; }
+.player-stats { display: flex; gap: 20px; flex-shrink: 0; }
+.stat-block { text-align: center; }
+.stat-val { display: block; font-size: 1.1rem; font-weight: 800; }
+.stat-lbl { display: block; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+
+.type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.type-card { background: var(--box); border-radius: 12px; padding: 16px; }
+.type-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.type-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.type-name { font-weight: 700; flex: 1; }
+.type-record { color: var(--muted); font-size: 0.85rem; }
+.type-bar-bg { background: #333; border-radius: 4px; height: 6px; margin-bottom: 10px; }
+.type-bar-fill { height: 6px; border-radius: 4px; transition: width 0.3s; }
+.type-footer { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
+
+@media (max-width: 640px) {
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .type-grid { grid-template-columns: 1fr; }
+    .player-stats { gap: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+    <div class="brand">⚾ MLB Player Report</div>
+    <div class="sub">CourtSide Analytics &bull; May 17, 2026 &bull; Min. 3 graded picks</div>
+</div>
+
+<div class="summary-grid">
+    <div class="summary-card">
+        <div class="summary-val">427</div>
+        <div class="summary-lbl">Graded Picks</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-val" style="color:var(--green)">
+            53.1%
+        </div>
+        <div class="summary-lbl">Overall Hit Rate</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-val">49</div>
+        <div class="summary-lbl">Qualified Players</div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">
+        <span class="bar" style="background:var(--green)"></span>
+        🔥 Top Players — Fade the Under
+    </div>
+    
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#1</div>
+        <div class="player-info">
+            <div class="player-name">Kyle Schwarber</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">4-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">3-0</span>
+            <span class="chip-rate" style="color:#f59e0b">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">7-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+9.64u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#2</div>
+        <div class="player-info">
+            <div class="player-name">Drake Baldwin</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">5-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">1-0</span>
+            <span class="chip-rate" style="color:#f59e0b">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">6-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+6.55u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#3</div>
+        <div class="player-info">
+            <div class="player-name">Brice Turang</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">6-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">6-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+5.46u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#4</div>
+        <div class="player-info">
+            <div class="player-name">Dominic Canzone</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">3-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">1-0</span>
+            <span class="chip-rate" style="color:#f59e0b">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">4-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+4.73u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#5</div>
+        <div class="player-info">
+            <div class="player-name">Rhys Hoskins</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">3-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">1-0</span>
+            <span class="chip-rate" style="color:#f59e0b">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">4-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+4.73u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#6</div>
+        <div class="player-info">
+            <div class="player-name">Jake Bauers</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">5-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">5-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+4.55u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#7</div>
+        <div class="player-info">
+            <div class="player-name">Max Muncy</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">5-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">5-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+4.55u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#8</div>
+        <div class="player-info">
+            <div class="player-name">Michael Harris II</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">2-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">1-0</span>
+            <span class="chip-rate" style="color:#f59e0b">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">3-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+3.82u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#9</div>
+        <div class="player-info">
+            <div class="player-name">Aaron Judge</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">4-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">4-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+3.64u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(16,185,129,0.15); color:#10b981">#10</div>
+        <div class="player-info">
+            <div class="player-name">Andy Pages</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">4-0</span>
+            <span class="chip-rate" style="color:#10b981">100%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">100%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">4-0</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#10b981">+3.64u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">
+        <span class="bar" style="background:var(--red)"></span>
+        ❄️ Fade These Players
+    </div>
+    
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#1</div>
+        <div class="player-info">
+            <div class="player-name">Yordan Alvarez</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-4</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-6</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-6.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#2</div>
+        <div class="player-info">
+            <div class="player-name">Cal Raleigh</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-3</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-5</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-5.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#3</div>
+        <div class="player-info">
+            <div class="player-name">Mike Trout</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-4</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-4.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#4</div>
+        <div class="player-info">
+            <div class="player-name">Adley Rutschman</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-3</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-1</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-4</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-4.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#5</div>
+        <div class="player-info">
+            <div class="player-name">Zach Neto</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-1</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#6</div>
+        <div class="player-info">
+            <div class="player-name">Mickey Moniak</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-1</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#7</div>
+        <div class="player-info">
+            <div class="player-name">Josh Jung</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-3</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#8</div>
+        <div class="player-info">
+            <div class="player-name">Moisés Ballesteros</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-1</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#9</div>
+        <div class="player-info">
+            <div class="player-name">Chase DeLauter</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-3</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+    <div class="player-card">
+        <div class="player-rank" style="background:rgba(239,68,68,0.15); color:#ef4444">#10</div>
+        <div class="player-info">
+            <div class="player-name">Pete Alonso</div>
+            <div class="player-types">
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#10b981"></span>
+            <span class="chip-label">H+R+RBI</span>
+            <span class="chip-record">0-1</span>
+            <span class="chip-rate" style="color:#10b981">0%</span>
+        </div>
+        <div class="type-chip">
+            <span class="chip-dot" style="background:#f59e0b"></span>
+            <span class="chip-label">Home Run</span>
+            <span class="chip-record">0-2</span>
+            <span class="chip-rate" style="color:#f59e0b">0%</span>
+        </div></div>
+        </div>
+        <div class="player-stats">
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">0%</span>
+                <span class="stat-lbl">Hit Rate</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val">0-3</span>
+                <span class="stat-lbl">Record</span>
+            </div>
+            <div class="stat-block">
+                <span class="stat-val" style="color:#ef4444">-3.00u</span>
+                <span class="stat-lbl">Profit</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">
+        <span class="bar" style="background:#3b82f6"></span>
+        📊 By Prop Type
+    </div>
+    <div class="type-grid">
+        
+    <div class="type-card">
+        <div class="type-header">
+            <span class="type-dot" style="background:#10b981"></span>
+            <span class="type-name">H+R+RBI</span>
+            <span class="type-record">114-95</span>
+        </div>
+        <div class="type-bar-bg">
+            <div class="type-bar-fill" style="width:54%; background:#10b981"></div>
+        </div>
+        <div class="type-footer">
+            <span style="color:#10b981; font-weight:700">54.5% hit rate</span>
+            <span style="color:#10b981">+8.74u</span>
+        </div>
+    </div>
+    <div class="type-card">
+        <div class="type-header">
+            <span class="type-dot" style="background:#3b82f6"></span>
+            <span class="type-name">Strikeouts</span>
+            <span class="type-record">73-48</span>
+        </div>
+        <div class="type-bar-bg">
+            <div class="type-bar-fill" style="width:60%; background:#3b82f6"></div>
+        </div>
+        <div class="type-footer">
+            <span style="color:#3b82f6; font-weight:700">60.3% hit rate</span>
+            <span style="color:#10b981">+18.43u</span>
+        </div>
+    </div>
+    <div class="type-card">
+        <div class="type-header">
+            <span class="type-dot" style="background:#8b5cf6"></span>
+            <span class="type-name">Pitching Outs</span>
+            <span class="type-record">11-7</span>
+        </div>
+        <div class="type-bar-bg">
+            <div class="type-bar-fill" style="width:61%; background:#8b5cf6"></div>
+        </div>
+        <div class="type-footer">
+            <span style="color:#8b5cf6; font-weight:700">61.1% hit rate</span>
+            <span style="color:#10b981">+3.01u</span>
+        </div>
+    </div>
+    <div class="type-card">
+        <div class="type-header">
+            <span class="type-dot" style="background:#f59e0b"></span>
+            <span class="type-name">Home Run</span>
+            <span class="type-record">10-31</span>
+        </div>
+        <div class="type-bar-bg">
+            <div class="type-bar-fill" style="width:24%; background:#f59e0b"></div>
+        </div>
+        <div class="type-footer">
+            <span style="color:#f59e0b; font-weight:700">24.4% hit rate</span>
+            <span style="color:#ef4444">-11.00u</span>
+        </div>
+    </div>
+    </div>
+</div>
+
+</div>
+</body>
+</html>
