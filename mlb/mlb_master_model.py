@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """MLB Master Model - Sharp Plus Version
-Includes: Moneyline, F5, Strikeout Props, HR Props, and Hits+Runs+RBI Props.
+Includes: Strikeout Props, Pitching Outs Props, H+R+RBI Props, and Total Bases Props.
 Features: CourtSide Analytics Styling, Automated Tracking, Kelly Criterion.
 """
 
@@ -26,7 +26,7 @@ OUTPUT_HTML = os.path.join(SCRIPT_DIR, "mlb_master_model.html")
 RESULTS_CACHE = os.path.join(SCRIPT_DIR, "mlb_today_results.json")
 
 # Constants
-MIN_EDGE = 0.05  # 5% edge required to bet
+MIN_EDGE = 0.08  # 8% edge required to bet
 KELLY_MULTIPLIER = 0.5  # Half-Kelly for safety
 
 class Colors:
@@ -128,11 +128,11 @@ def _calc_mlb_perf(picks, n):
 
 def _calc_mlb_by_type(completed):
     types = {
-        'First 5 Innings ML': 'F5 ML',
         'Player Props - Strikeouts': 'Strikeouts',
-        'Player Props - Home Run': 'Home Run',
-        'Player Props - H+R+RBI': 'H+R+RBI',
         'Player Props - Pitching Outs': 'Pitching Outs',
+        'Player Props - Hits Allowed': 'Hits Allowed',
+        'Player Props - H+R+RBI': 'H+R+RBI',
+        'Player Props - Total Bases': 'Total Bases',
     }
     result = {}
     for raw_type, label in types.items():
@@ -195,6 +195,7 @@ def get_data():
                 'K/9': r.get('K/9') or 8.0,
                 'BB/9': r.get('BB/9') or 3.0,
                 'HR/9': r.get('HR/9') or 1.2,
+                'H/9': r.get('H/9') or 8.5,
                 'K%': r.get('K%') or 0.22,
                 'BB%': r.get('BB%') or 0.09,
             } for r in rows])
@@ -206,7 +207,7 @@ def get_data():
                 print(f"   {SEASON} pitching unavailable ({e}), trying {SEASON - 1}...")
     if pitching is None:
         print(f"{Colors.RED}Error: Pitching stats unavailable. Cannot run model.{Colors.END}")
-        pitching = pd.DataFrame(columns=['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'K%', 'BB%'])
+        pitching = pd.DataFrame(columns=['Name', 'Team', 'SIERA', 'xFIP', 'K/9', 'BB/9', 'HR/9', 'H/9', 'K%', 'BB%'])
 
     # --- IP/GS (basic stats for Pitching Outs prop) ---
     try:
@@ -236,6 +237,8 @@ def get_data():
                 'Team': r['TeamNameAbb'],
                 'wRC+': r.get('wRC+') or 100,
                 'ISO': r.get('ISO') or 0.150,
+                'SLG': r.get('SLG') or 0.400,
+                'AVG': r.get('AVG') or 0.250,
                 'K%': r.get('K%') or 0.22,
                 'BB%': r.get('BB%') or 0.09,
                 'brl_percent': (r.get('Barrel%') or 0) * 100,
@@ -248,7 +251,7 @@ def get_data():
                 print(f"   {SEASON} batting unavailable ({e}), trying {SEASON - 1}...")
     if batting is None:
         print(f"{Colors.RED}Error: Batting stats unavailable. Cannot run model.{Colors.END}")
-        batting = pd.DataFrame(columns=['Name', 'Team', 'wRC+', 'ISO', 'K%', 'BB%', 'brl_percent'])
+        batting = pd.DataFrame(columns=['Name', 'Team', 'wRC+', 'ISO', 'SLG', 'AVG', 'K%', 'BB%', 'brl_percent'])
 
     return pitching, batting
 
@@ -332,6 +335,38 @@ def calculate_pitching_outs_probability(pitcher, opp_k_rate, line):
     return exp_outs, prob_over
 
 
+def calculate_total_bases_probability(batter, pitcher, line=1.5):
+    """Estimate P(total bases > line) using batter SLG × avg ABs, adjusted for pitcher xFIP."""
+    import math
+    avg_ab_per_game = 3.7
+    slg = float(batter.get('SLG', 0.400) or 0.400)
+    xfip = float(pitcher.get('xFIP', 4.20) or 4.20)
+    league_avg_xfip = 4.20
+    pitcher_adj = xfip / league_avg_xfip
+    exp_tb = slg * avg_ab_per_game * pitcher_adj
+    exp_tb = max(exp_tb, 0.01)
+    # Poisson: P(TB > line) = 1 - sum P(TB=k) for k=0..floor(line)
+    cutoff = int(line)
+    prob_under = sum((exp_tb**k * math.exp(-exp_tb)) / math.factorial(k) for k in range(cutoff + 1))
+    prob = max(0.0, min(1.0, 1.0 - prob_under))
+    return round(exp_tb, 2), prob
+
+
+def calculate_hits_allowed_probability(pitcher, opp_team_avg, ip_per_gs, line):
+    """Estimate P(hits allowed < line) using pitcher H/9 adjusted for opponent AVG and expected IP."""
+    import math
+    h9 = float(pitcher.get('H/9', 8.5) or 8.5)
+    league_avg_avg = 0.248
+    opp_adj = opp_team_avg / league_avg_avg
+    exp_hits = (h9 / 9.0) * ip_per_gs * opp_adj
+    exp_hits = max(exp_hits, 0.01)
+    # We bet UNDER — P(hits <= floor(line))
+    cutoff = int(line)
+    prob_under = sum((exp_hits**k * math.exp(-exp_hits)) / math.factorial(k) for k in range(cutoff + 1))
+    prob_under = max(0.0, min(1.0, prob_under))
+    return round(exp_hits, 2), prob_under
+
+
 def kelly_criterion(true_prob, decimal_odds):
     b = decimal_odds - 1
     q = 1 - true_prob
@@ -368,15 +403,17 @@ def fmt_game_time(game_time_str):
 
 def render_card(res):
     bet_type = res['type']
-    is_batter = bet_type in ('Player Props - H+R+RBI', 'Player Props - Home Run')
+    is_batter = bet_type in ('Player Props - H+R+RBI', 'Player Props - Home Run', 'Player Props - Total Bases')
+    is_tb = bet_type == 'Player Props - Total Bases'
     is_k = bet_type == 'Player Props - Strikeouts'
     is_f5 = bet_type == 'First 5 Innings ML'
     is_outs = bet_type == 'Player Props - Pitching Outs'
+    is_ha = bet_type == 'Player Props - Hits Allowed'
 
     # --- Logo & team ---
     if is_batter:
         logo = team_logo_url(res.get('batting_team', ''))
-    elif is_k or is_outs:
+    elif is_k or is_outs or is_ha:
         logo = team_logo_url(res.get('pitcher_team', ''))
     elif is_f5:
         logo = team_logo_url(res.get('away_team', ''))
@@ -395,9 +432,15 @@ def render_card(res):
     elif is_outs:
         direction = 'OVER'
         line_display = res['line'].replace('Over ', '')
+    elif is_ha:
+        direction = 'UNDER'
+        line_display = res['line'].replace('Under ', '')
     elif bet_type == 'Player Props - Home Run':
         direction = 'TO HIT HR'
         line_display = '+200'
+    elif is_tb:
+        direction = 'OVER'
+        line_display = f"1.5 Total Bases  (Exp: {res.get('exp_tb', '?')})"
     else:
         direction = 'OVER'
         exp = res.get('exp_val')
@@ -411,13 +454,24 @@ def render_card(res):
     elif is_outs:
         ip_est = round(res.get('exp_outs', 0) / 3, 1)
         subtext = f"Model Expects: <strong>{res.get('exp_outs', '?')} Outs</strong> (~{ip_est} IP)"
+    elif is_ha:
+        subtext = f"Model Expects: <strong>{res.get('exp_hits', '?')} Hits Allowed</strong>"
     elif bet_type == 'Player Props - Home Run':
         subtext = f"HR Probability: <strong>{res['prob']:.1%}</strong>"
+    elif is_tb:
+        subtext = f"Model Expects: <strong>{res.get('exp_tb', '?')} Total Bases</strong>"
     else:
         subtext = f"Model Expects: <strong>{res.get('exp_val', '?')} H+R+RBI</strong>"
 
     # --- Stats row ---
-    if is_batter:
+    if is_tb:
+        stats_row = f"""
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">{int(res.get('batter_wrc', 0))}</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">{res.get('batter_slg', 0):.3f}</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">{res.get('pitcher_xfip', '—')}</div></div>
+            </div>"""
+    elif is_batter:
         stats_row = f"""
             <div class="stats-row">
                 <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">{int(res.get('batter_wrc', 0))}</div></div>
@@ -438,6 +492,14 @@ def render_card(res):
                 <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">{res.get('pitcher_bb9', '—')}</div></div>
                 <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">{res.get('opp_k_rate', 0):.1f}%</div></div>
             </div>"""
+    elif is_ha:
+        stats_row = f"""
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">H/9</div><div class="stat-val">{res.get('pitcher_h9', '—')}</div></div>
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">{res.get('pitcher_ip_per_gs', '—')}</div></div>
+                <div class="stat-item"><div class="stat-title">SIERA</div><div class="stat-val">{res.get('pitcher_siera', '—')}</div></div>
+                <div class="stat-item"><div class="stat-title">Opp AVG</div><div class="stat-val">{res.get('opp_avg', 0):.3f}</div></div>
+            </div>"""
     elif is_f5:
         stats_row = f"""
             <div class="stats-row">
@@ -448,7 +510,7 @@ def render_card(res):
         stats_row = ''
 
     # --- Pitcher matchup section (batter props only) ---
-    if is_batter and res.get('pitcher_name'):
+    if (is_batter or is_tb) and res.get('pitcher_name'):
         p = res['pitcher_name']
         siera = res.get('pitcher_siera', '—')
         xfip = res.get('pitcher_xfip', '—')
@@ -646,10 +708,15 @@ def generate_html(results, stats, tracking_data=None):
         completed = [p for p in all_picks if p.get('status', '').lower() in ('win', 'loss')]
         completed.sort(key=lambda x: x.get('created_at', ''), reverse=True)
 
-        today_str = datetime.now().strftime('%Y-%m-%d')
-        yesterday_str = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-        today_done = [p for p in completed if p.get('created_at', '')[:10] == today_str]
-        yest_done = [p for p in completed if p.get('created_at', '')[:10] == yesterday_str]
+        today_str = datetime.now().strftime('%Y%m%d')
+        yesterday_str = (datetime.now() - timedelta(days=1)).strftime('%Y%m%d')
+
+        def _pick_game_date(p):
+            pid = p.get('id', '')
+            return pid.split('_')[-1] if pid else ''
+
+        today_done = [p for p in completed if _pick_game_date(p) == today_str]
+        yest_done = [p for p in completed if _pick_game_date(p) == yesterday_str]
 
         def _day_stats(picks):
             w = sum(1 for p in picks if p.get('status', '').lower() == 'win')
@@ -852,6 +919,14 @@ def get_team_wrc(team_abbr, batters):
     return team_batters['wRC+'].mean()
 
 
+def get_team_avg(team_abbr, batters):
+    """Average batting AVG for a team's qualified batters (falls back to league avg .248)."""
+    team_batters = batters[batters['Team'] == team_abbr]
+    if team_batters.empty or 'AVG' not in team_batters.columns:
+        return 0.248
+    return team_batters['AVG'].mean()
+
+
 def get_team_k_rate(team_abbr, batters):
     """Average K% for a team's batters (falls back to league avg 0.22)."""
     team_batters = batters[batters['Team'] == team_abbr]
@@ -906,40 +981,6 @@ def main():
         home_wrc = get_team_wrc(home, batters)
 
         game_time = game.get('game_time', '')
-
-        # --- F5 ML (requires both pitchers in stats) ---
-        if p_away is not None and p_home is not None:
-            try:
-                f5_prob_away = calculate_f5_probability(p_away, p_home, away_wrc, home_wrc)
-                f5_odds = 1.91
-                edge = f5_prob_away - (1 / f5_odds)
-                if edge > MIN_EDGE:
-                    kel = kelly_criterion(f5_prob_away, f5_odds) * KELLY_MULTIPLIER
-                    new_picks.append({
-                        'id': f"F5_{away}_{home}_{today_str}",
-                        'type': 'First 5 Innings ML',
-                        'matchup': matchup,
-                        'selection': f'{away} F5 ML',
-                        'line': 'Moneyline',
-                        'odds_str': '-110',
-                        'odds_dec': f5_odds,
-                        'prob': f5_prob_away,
-                        'edge': edge,
-                        'wager': f"{kel:.1%} Unit",
-                        'kel': kel,
-                        'score': f5_prob_away * 10,
-                        'game_time': game_time,
-                        'away_team': away,
-                        'home_team': home,
-                        'away_pitcher_name': game['away_pitcher'] or 'TBD',
-                        'away_pitcher_siera': round(float(p_away.get('SIERA', 0) or 0), 2),
-                        'away_pitcher_xfip': round(float(p_away.get('xFIP', 0) or 0), 2),
-                        'home_pitcher_name': game['home_pitcher'] or 'TBD',
-                        'home_pitcher_siera': round(float(p_home.get('SIERA', 0) or 0), 2),
-                        'home_pitcher_xfip': round(float(p_home.get('xFIP', 0) or 0), 2),
-                    })
-            except Exception as e:
-                print(f"    F5 error {matchup}: {e}")
 
         # --- K Props (one per pitcher if found) ---
         for pitcher_row, opp_team in [(p_away, home), (p_home, away)]:
@@ -1031,7 +1072,63 @@ def main():
             except Exception as e:
                 print(f"    Pitching outs error {pitcher_name}: {e}")
 
-        # --- HR Props & H+R+RBI Props (top 5 batters per team vs opposing pitcher) ---
+        # --- Hits Allowed Props (Under, one per starter if found) ---
+        for pitcher_row, pitcher_name, opp_team in [
+            (p_away, away_pitcher_name, home),
+            (p_home, home_pitcher_name, away),
+        ]:
+            if pitcher_row is None:
+                continue
+            try:
+                pitcher_team = away if opp_team == home else home
+                ip_per_gs = float(pitcher_row.get('IP_per_GS', 5.0) or 5.0)
+                opp_avg = get_team_avg(opp_team, batters)
+                exp_hits, prob_under = calculate_hits_allowed_probability(
+                    pitcher_row, opp_avg, ip_per_gs, line=0
+                )
+                # Set line one step above expected hits
+                if exp_hits <= 4.0:
+                    line_val = 4.5
+                elif exp_hits <= 5.0:
+                    line_val = 5.5
+                elif exp_hits <= 6.0:
+                    line_val = 6.5
+                else:
+                    line_val = 7.5
+
+                exp_hits, prob_under = calculate_hits_allowed_probability(
+                    pitcher_row, opp_avg, ip_per_gs, line=line_val
+                )
+                ha_odds = 1.91
+                edge_ha = prob_under - (1 / ha_odds)
+                if edge_ha > MIN_EDGE:
+                    kel_ha = kelly_criterion(prob_under, ha_odds) * KELLY_MULTIPLIER
+                    new_picks.append({
+                        'id': f"HA_{pitcher_name.replace(' ','_')}_{today_str}",
+                        'type': 'Player Props - Hits Allowed',
+                        'matchup': matchup,
+                        'selection': pitcher_name,
+                        'line': f"Under {line_val} Hits",
+                        'odds_str': '-110',
+                        'odds_dec': ha_odds,
+                        'prob': prob_under,
+                        'edge': edge_ha,
+                        'wager': f"{kel_ha:.1%} Unit",
+                        'kel': kel_ha,
+                        'score': prob_under * 10,
+                        'game_time': game_time,
+                        'pitcher_team': pitcher_team,
+                        'pitcher_h9': round(float(pitcher_row.get('H/9', 0) or 0), 2),
+                        'pitcher_siera': round(float(pitcher_row.get('SIERA', 0) or 0), 2),
+                        'pitcher_xfip': round(float(pitcher_row.get('xFIP', 0) or 0), 2),
+                        'pitcher_ip_per_gs': round(ip_per_gs, 2),
+                        'opp_avg': round(opp_avg, 3),
+                        'exp_hits': exp_hits,
+                    })
+            except Exception as e:
+                print(f"    Hits allowed error {pitcher_name}: {e}")
+
+        # --- H+R+RBI Props (top 3 batters per team vs opposing pitcher) ---
         for batting_team, opp_pitcher_row, team_wrc_val in [
             (away, p_home, away_wrc),
             (home, p_away, home_wrc),
@@ -1041,7 +1138,7 @@ def main():
             team_bats = batters[batters['Team'] == batting_team]
             if team_bats.empty:
                 continue
-            top_bats = team_bats.nlargest(5, 'wRC+')
+            top_bats = team_bats.nlargest(3, 'wRC+')
 
             for _, batter_row in top_bats.iterrows():
                 batter_name = batter_row['Name']
@@ -1052,38 +1149,6 @@ def main():
                 p_xfip = round(float(opp_pitcher_row.get('xFIP', 0) or 0), 2)
                 p_hr9 = round(float(opp_pitcher_row.get('HR/9', 0) or 0), 2)
                 p_name = opp_pitcher_row['Name']
-
-                # HR prop (~+200 market standard)
-                try:
-                    prob_hr = calculate_hr_probability(batter_row, opp_pitcher_row)
-                    hr_odds = 3.00
-                    edge_hr = prob_hr - (1 / hr_odds)
-                    if edge_hr > MIN_EDGE:
-                        kel_hr = kelly_criterion(prob_hr, hr_odds) * KELLY_MULTIPLIER
-                        new_picks.append({
-                            'id': f"HR_{batter_id}_{today_str}",
-                            'type': 'Player Props - Home Run',
-                            'matchup': matchup,
-                            'selection': batter_name,
-                            'line': 'To Hit HR',
-                            'odds_str': '+200',
-                            'odds_dec': hr_odds,
-                            'prob': prob_hr,
-                            'edge': edge_hr,
-                            'wager': f"{kel_hr:.1%} Unit",
-                            'kel': kel_hr,
-                            'score': prob_hr * 10,
-                            'game_time': game_time,
-                            'batting_team': batting_team,
-                            'batter_wrc': batter_wrc,
-                            'batter_barrel': batter_barrel,
-                            'pitcher_name': p_name,
-                            'pitcher_siera': p_siera,
-                            'pitcher_xfip': p_xfip,
-                            'pitcher_hr9': p_hr9,
-                        })
-                except Exception as e:
-                    print(f"    HR prop error {batter_name}: {e}")
 
                 # H+R+RBI prop (Over 1.5, ~-110 market standard)
                 try:
@@ -1119,6 +1184,41 @@ def main():
                         })
                 except Exception as e:
                     print(f"    H+R+RBI prop error {batter_name}: {e}")
+
+                # Total Bases prop (Over 1.5, ~-110 market standard)
+                try:
+                    exp_tb, prob_over_tb = calculate_total_bases_probability(
+                        batter_row, opp_pitcher_row, line=1.5
+                    )
+                    tb_odds = 1.91
+                    edge_tb = prob_over_tb - (1 / tb_odds)
+                    if edge_tb > MIN_EDGE:
+                        kel_tb = kelly_criterion(prob_over_tb, tb_odds) * KELLY_MULTIPLIER
+                        new_picks.append({
+                            'id': f"TB_{batter_id}_{today_str}",
+                            'type': 'Player Props - Total Bases',
+                            'matchup': matchup,
+                            'selection': batter_name,
+                            'line': f"Over 1.5 (Exp: {exp_tb:.2f})",
+                            'odds_str': '-110',
+                            'odds_dec': tb_odds,
+                            'prob': prob_over_tb,
+                            'edge': edge_tb,
+                            'wager': f"{kel_tb:.1%} Unit",
+                            'kel': kel_tb,
+                            'score': prob_over_tb * 10,
+                            'game_time': game_time,
+                            'batting_team': batting_team,
+                            'batter_wrc': batter_wrc,
+                            'batter_barrel': batter_barrel,
+                            'batter_slg': round(float(batter_row.get('SLG', 0.400) or 0.400), 3),
+                            'pitcher_name': p_name,
+                            'pitcher_siera': p_siera,
+                            'pitcher_xfip': p_xfip,
+                            'exp_tb': exp_tb,
+                        })
+                except Exception as e:
+                    print(f"    Total Bases prop error {batter_name}: {e}")
 
     # 3. Output
     track_new_picks(new_picks)

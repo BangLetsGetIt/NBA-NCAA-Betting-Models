@@ -716,9 +716,16 @@ def generate_html(plays, fire_record=None, breakdown=None):
         # Strip verbose "PLAYER PROPS - " prefix from MLB bet types
         bet_type_display = play['bet_type'].replace('PLAYER PROPS - ', '')
         line_str = str(play['line']) if play['line'] else ''
-        # If line already includes direction (e.g. "Over 18.5 Outs"), show it alone
+        # For batter props where the line alone doesn't describe what's being bet,
+        # prepend the type so "Over 1.5" becomes "H+R+RBI — Over 1.5"
+        _needs_label = bet_type_display in ('H+R+RBI', 'TOTAL BASES', 'HITS ALLOWED')
         if line_str.startswith(('Over ', 'Under ')):
-            bet_display = line_str
+            if _needs_label:
+                # Strip the "(Exp: X.XX)" suffix for cleaner display
+                clean_line = line_str.split(' (Exp:')[0]
+                bet_display = f"{bet_type_display} — {clean_line}"
+            else:
+                bet_display = line_str
         elif line_str:
             bet_display = f"{bet_type_display} {line_str}"
         else:
