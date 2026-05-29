@@ -1204,6 +1204,10 @@ def run_mlb_grading(force=False, grade_only=False):
         pick_id   = pick.get('id', '')
         pick_date = pick_id.split('_')[-1] if pick_id else ''
 
+        # Never grade picks for today or future — game hasn't finished yet
+        if pick_date >= now_et.strftime('%Y%m%d'):
+            continue
+
         game = game_lookup.get((matchup, pick_date))
         if not game:
             continue
@@ -1493,7 +1497,7 @@ def run_mlb_grading(force=False, grade_only=False):
             json.dump(tracking, f, indent=2)
         log(f"MLB: Saved {graded_count} graded picks.", "success")
 
-        # Regenerate model HTML — generate_html loads today's plays from cache
+        # Regenerate all prop pages + hub
         try:
             spec = importlib.util.spec_from_file_location(
                 'mlb_master_model',
@@ -1502,11 +1506,14 @@ def run_mlb_grading(force=False, grade_only=False):
             mlb_mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mlb_mod)
             tracking_data = mlb_mod.load_tracking_data()
-            stats = mlb_mod.calculate_tracking_stats()
-            html = mlb_mod.generate_html([], stats, tracking_data)
+            for pt_key, pt_info in mlb_mod.PROP_PAGES.items():
+                prop_html = mlb_mod.generate_prop_html(pt_key, [], tracking_data)
+                with open(pt_info['file'], 'w') as f:
+                    f.write(prop_html)
+            hub_html = mlb_mod.generate_hub_html(tracking_data)
             with open(OUTPUT_HTML, 'w') as f:
-                f.write(html)
-            log("Regenerated mlb_master_model.html", "success")
+                f.write(hub_html)
+            log("Regenerated MLB prop pages + hub", "success")
         except Exception as e:
             log(f"MLB HTML regeneration error: {e}", "warning")
 

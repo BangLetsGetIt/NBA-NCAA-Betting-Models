@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics — MLB Pitching Outs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-main: #0a0a0a; --bg-card: #1a1a1a; --bg-card-secondary: #222222;
+        --text-primary: #ffffff; --text-secondary: #94a3b8;
+        --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+        --border-color: #2a2a2a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }
+    .container { max-width: 820px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
+    .subheader { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+    .nav-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .nav-link { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                text-decoration: none; border: 1px solid var(--border-color);
+                color: var(--text-secondary); background: var(--bg-card); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+    .nav-link.active { color: var(--accent-blue); border-color: var(--accent-blue);
+                       background: rgba(96,165,250,0.1); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .stat-box { background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red   { color: var(--accent-red); }
+    .prop-card { background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .prop-card.glow-green { border-color: rgba(74,222,128,0.25); }
+    .card-header { padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .player-info h2 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .matchup-info { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .game-meta { text-align: right; flex-shrink: 0; }
+    .bet-type-badge { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }
+    .game-date-time { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .card-body { padding: 18px; }
+    .bet-main-row { margin-bottom: 10px; }
+    .bet-selection { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .bet-selection .txt-green { font-size: 20px; font-weight: 800; }
+    .line { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    .model-subtext { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .model-subtext strong { color: var(--text-primary); }
+    .stats-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-item { background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }
+    .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: 700; }
+    .pitcher-matchup { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2);
+                       border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+    .pitcher-vs { font-size: 13px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .pitcher-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+    .pitcher-stats span strong { color: var(--text-primary); }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric-item { background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .metric-val { font-size: 15px; font-weight: 700; }
+    .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+    .tag-blue  { background: rgba(96,165,250,0.12); color: var(--accent-blue); }
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px;
+             padding-top: 20px; border-top: 1px solid var(--border-color); }
+    .tracking-section { margin-top: 2.5rem; }
+    .tracking-header { font-size: 15px; font-weight: 700; margin-bottom: 1rem;
+                       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+    .perf-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .perf-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);
+                 padding: 1.2rem; flex: 1; min-width: 140px; }
+    .perf-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+    .perf-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; }
+    .perf-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; margin-bottom: 2px; }
+    .perf-value { font-size: 0.95rem; font-weight: 800; }
+    /* hub-specific */
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .hub-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+                padding: 20px; text-decoration: none; color: inherit; display: block;
+                transition: border-color 0.15s, transform 0.15s; }
+    .hub-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
+    .hub-card-emoji { font-size: 28px; margin-bottom: 10px; }
+    .hub-card-label { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+    .hub-card-record { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hub-card-meta { font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">🎯 MLB Pitching Outs</div>
+            <div class="date-sub">May 29, 2026 • Alpha V2.0</div>
+        </div>
+    </header>
+    <div class="nav-bar"><a href="mlb_master_model.html" class="nav-link">⚾ Hub</a><a href="mlb_strikeouts.html" class="nav-link ">⚡ Strikeouts</a><a href="mlb_pitching_outs.html" class="nav-link active">🎯 Pitching Outs</a><a href="mlb_hits_allowed.html" class="nav-link ">🛡️ Hits Allowed</a><a href="mlb_hrbi.html" class="nav-link ">💥 H+R+RBI</a><a href="mlb_total_bases.html" class="nav-link ">💪 Total Bases</a></div>
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value txt-green">9.0%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">57.1%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">129-97</div>
+        </div>
+    </div>
+    <div class="picks-section">
+        
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Grant Holmes</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">14.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>15.3 Outs</strong> (~5.1 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.21</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">8.3</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">4.1</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">23.0%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.2% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/min.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Taj Bradley</h2>
+                        <div class="matchup-info">MIN @ PIT</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 6:45 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>17.5 Outs</strong> (~5.8 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.78</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">10.2</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">3.3</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.5%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">75%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+22.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">23.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/bos.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Tyler Samaniego</h2>
+                        <div class="matchup-info">BOS @ CLE</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>17.0 Outs</strong> (~5.7 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.6</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">11.1</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">2.9</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">19.3%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">69%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+16.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">17.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.9</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cle.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Slade Cecconi</h2>
+                        <div class="matchup-info">BOS @ CLE</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">14.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>15.3 Outs</strong> (~5.1 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.19</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">7.4</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">3.1</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.2%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">8.7% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/laa.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Walbert Ureña</h2>
+                        <div class="matchup-info">LAA @ TB</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">14.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>15.8 Outs</strong> (~5.3 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.44</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">8.5</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">5.2</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.0%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">67%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+14.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">15.2% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/tb.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Nick Martinez</h2>
+                        <div class="matchup-info">LAA @ TB</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>17.6 Outs</strong> (~5.9 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.92</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">5.4</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">1.8</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">24.8%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">76%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+23.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">24.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.6</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mia.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Max Meyer</h2>
+                        <div class="matchup-info">MIA @ NYM</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>16.4 Outs</strong> (~5.5 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.47</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">10.1</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">3.3</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">19.9%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nym.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Freddy Peralta</h2>
+                        <div class="matchup-info">MIA @ NYM</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>16.4 Outs</strong> (~5.5 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.55</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">9.2</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">4.0</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">21.0%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+10.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Shota Imanaga</h2>
+                        <div class="matchup-info">CHC @ STL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>17.7 Outs</strong> (~5.9 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.84</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">9.3</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">2.4</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">21.8%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">77%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+24.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">25.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Troy Melton</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">17.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>19.5 Outs</strong> (~6.5 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.67</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">9.9</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">6.3</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.0%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">75%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+22.2%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">23.3% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chw.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Erick Fedde</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">18.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>20.4 Outs</strong> (~6.8 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">7.01</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">5.7</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">3.6</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">21.5%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">73%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+21.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">22.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/kc.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Stephen Kolek</h2>
+                        <div class="matchup-info">KC @ TEX</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 8:05 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">17.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>19.2 Outs</strong> (~6.4 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.5</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">4.8</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">1.7</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.7%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">71%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+18.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">19.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/hou.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Kai-Wei Teng</h2>
+                        <div class="matchup-info">MIL @ HOU</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 8:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">18.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>27.0 Outs</strong> (~9.0 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">9.25</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">8.8</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">3.6</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">20.3%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">100%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+47.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">49.8% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 10.0</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sf.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Logan Webb</h2>
+                        <div class="matchup-info">SF @ COL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 8:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>18.0 Outs</strong> (~6.0 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.0</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">7.9</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">2.8</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">24.3%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">80%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+27.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">28.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 8.0</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/oak.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Luis Severino</h2>
+                        <div class="matchup-info">NYY @ ATH</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 9:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">15.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>16.5 Outs</strong> (~5.5 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">5.56</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">9.3</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">4.5</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.8%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">63%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+10.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.8% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>George Kirby</h2>
+                        <div class="matchup-info">AZ @ SEA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 10:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">17.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>18.5 Outs</strong> (~6.2 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.2</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">7.2</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">2.1</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">22.0%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">63%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+10.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">11.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Zack Wheeler</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">17.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>18.7 Outs</strong> (~6.2 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.2</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">8.6</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">1.9</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">21.8%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">66%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+13.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">14.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.6</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Justin Wrobleski</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Pitching Outs</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">18.5 Outs</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>20.2 Outs</strong> (~6.7 IP)</div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">IP/Start</div><div class="stat-val">6.9</div></div>
+                <div class="stat-item"><div class="stat-title">K/9</div><div class="stat-val">5.0</div></div>
+                <div class="stat-item"><div class="stat-title">BB/9</div><div class="stat-val">2.3</div></div>
+                <div class="stat-item"><div class="stat-title">Opp K%</div><div class="stat-val">21.1%</div></div>
+            </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">72%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+19.2%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">20.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.2</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tracking-section">
+        <div class="tracking-header">Daily Performance</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Today</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-0</div>
+                    <div class="" style="font-weight:600;">+0.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">0.0% ROI</div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Yesterday</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-0</div>
+                    <div class="" style="font-weight:600;">+0.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">0.0% ROI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">Recent Form</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Last 10</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">6-4</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">60%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+1.5u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+14.6%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 20</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">12-8</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">60%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+2.9u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+14.6%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 50</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">29-21</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">58%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+5.4u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+10.8%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
+    </footer>
+</div>
+</body>
+</html>

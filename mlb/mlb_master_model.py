@@ -25,6 +25,14 @@ TRACKING_FILE = os.path.join(SCRIPT_DIR, "mlb_master_model_tracking.json")
 OUTPUT_HTML = os.path.join(SCRIPT_DIR, "mlb_master_model.html")
 RESULTS_CACHE = os.path.join(SCRIPT_DIR, "mlb_today_results.json")
 
+PROP_PAGES = {
+    'Player Props - Strikeouts':    {'label': 'Strikeouts',    'emoji': '⚡', 'file': os.path.join(SCRIPT_DIR, 'mlb_strikeouts.html')},
+    'Player Props - Pitching Outs': {'label': 'Pitching Outs', 'emoji': '🎯', 'file': os.path.join(SCRIPT_DIR, 'mlb_pitching_outs.html')},
+    'Player Props - Hits Allowed':  {'label': 'Hits Allowed',  'emoji': '🛡️', 'file': os.path.join(SCRIPT_DIR, 'mlb_hits_allowed.html')},
+    'Player Props - H+R+RBI':       {'label': 'H+R+RBI',       'emoji': '💥', 'file': os.path.join(SCRIPT_DIR, 'mlb_hrbi.html')},
+    'Player Props - Total Bases':   {'label': 'Total Bases',   'emoji': '💪', 'file': os.path.join(SCRIPT_DIR, 'mlb_total_bases.html')},
+}
+
 # Constants
 MIN_EDGE = 0.08  # 8% edge required to bet
 KELLY_MULTIPLIER = 0.5  # Half-Kelly for safety
@@ -855,6 +863,364 @@ def generate_html(results, stats, tracking_data=None):
 </body>
 </html>"""
 
+
+_MLB_CSS = """
+    :root {
+        --bg-main: #0a0a0a; --bg-card: #1a1a1a; --bg-card-secondary: #222222;
+        --text-primary: #ffffff; --text-secondary: #94a3b8;
+        --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+        --border-color: #2a2a2a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }
+    .container { max-width: 820px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
+    .subheader { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+    .nav-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .nav-link { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                text-decoration: none; border: 1px solid var(--border-color);
+                color: var(--text-secondary); background: var(--bg-card); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+    .nav-link.active { color: var(--accent-blue); border-color: var(--accent-blue);
+                       background: rgba(96,165,250,0.1); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .stat-box { background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red   { color: var(--accent-red); }
+    .prop-card { background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .prop-card.glow-green { border-color: rgba(74,222,128,0.25); }
+    .card-header { padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .player-info h2 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .matchup-info { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .game-meta { text-align: right; flex-shrink: 0; }
+    .bet-type-badge { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }
+    .game-date-time { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .card-body { padding: 18px; }
+    .bet-main-row { margin-bottom: 10px; }
+    .bet-selection { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .bet-selection .txt-green { font-size: 20px; font-weight: 800; }
+    .line { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    .model-subtext { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .model-subtext strong { color: var(--text-primary); }
+    .stats-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-item { background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }
+    .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: 700; }
+    .pitcher-matchup { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2);
+                       border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+    .pitcher-vs { font-size: 13px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .pitcher-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+    .pitcher-stats span strong { color: var(--text-primary); }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric-item { background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .metric-val { font-size: 15px; font-weight: 700; }
+    .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+    .tag-blue  { background: rgba(96,165,250,0.12); color: var(--accent-blue); }
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px;
+             padding-top: 20px; border-top: 1px solid var(--border-color); }
+    .tracking-section { margin-top: 2.5rem; }
+    .tracking-header { font-size: 15px; font-weight: 700; margin-bottom: 1rem;
+                       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+    .perf-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .perf-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);
+                 padding: 1.2rem; flex: 1; min-width: 140px; }
+    .perf-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+    .perf-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; }
+    .perf-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; margin-bottom: 2px; }
+    .perf-value { font-size: 0.95rem; font-weight: 800; }
+    /* hub-specific */
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .hub-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+                padding: 20px; text-decoration: none; color: inherit; display: block;
+                transition: border-color 0.15s, transform 0.15s; }
+    .hub-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
+    .hub-card-emoji { font-size: 28px; margin-bottom: 10px; }
+    .hub-card-label { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+    .hub-card-record { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hub-card-meta { font-size: 12px; color: var(--text-secondary); }
+"""
+
+
+def _nav_html(active_key=None):
+    links = '<a href="mlb_master_model.html" class="nav-link">⚾ Hub</a>'
+    for pt_key, info in PROP_PAGES.items():
+        fname = os.path.basename(info['file'])
+        active = 'active' if pt_key == active_key else ''
+        links += f'<a href="{fname}" class="nav-link {active}">{info["emoji"]} {info["label"]}</a>'
+    return f'<div class="nav-bar">{links}</div>'
+
+
+def _perf_html_for_picks(completed):
+    def _pick_game_date(p):
+        pid = p.get('id', '')
+        return pid.split('_')[-1] if pid else ''
+
+    today_str = datetime.now().strftime('%Y%m%d')
+    yesterday_str = (datetime.now() - timedelta(days=1)).strftime('%Y%m%d')
+    today_done = [p for p in completed if _pick_game_date(p) == today_str]
+    yest_done  = [p for p in completed if _pick_game_date(p) == yesterday_str]
+
+    def _day_stats(picks):
+        w = sum(1 for p in picks if p.get('status','').lower() == 'win')
+        l = sum(1 for p in picks if p.get('status','').lower() == 'loss')
+        tot = w + l
+        profit = sum((p.get('odds_dec', 1.91) - 1) if p.get('status','').lower() == 'win' else -1.0
+                     for p in picks)
+        roi = (profit / tot * 100) if tot > 0 else 0
+        return {'record': f"{w}-{l}", 'profit': profit, 'roi': roi}
+
+    def _cc(val, threshold=0):
+        return 'txt-green' if val > threshold else ('txt-red' if val < 0 else '')
+
+    t = _day_stats(today_done)
+    y = _day_stats(yest_done)
+    tc = _cc(t['profit'])
+    yc = _cc(y['profit'])
+    l10 = _calc_mlb_perf(completed, 10)
+    l20 = _calc_mlb_perf(completed, 20)
+    l50 = _calc_mlb_perf(completed, 50)
+
+    return f'''
+    <div class="tracking-section">
+        <div class="tracking-header">Daily Performance</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Today</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">{t["record"]}</div>
+                    <div class="{tc}" style="font-weight:600;">{t["profit"]:+.1f}u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">{t["roi"]:.1f}% ROI</div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Yesterday</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">{y["record"]}</div>
+                    <div class="{yc}" style="font-weight:600;">{y["profit"]:+.1f}u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">{y["roi"]:.1f}% ROI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">Recent Form</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Last 10</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l10["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l10["win_rate"],50)}">{l10["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l10["profit"])}">{l10["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l10["roi"])}">{l10["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 20</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l20["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l20["win_rate"],50)}">{l20["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l20["profit"])}">{l20["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l20["roi"])}">{l20["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 50</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">{l50["record"]}</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value {_cc(l50["win_rate"],50)}">{l50["win_rate"]:.0f}%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value {_cc(l50["profit"])}">{l50["profit"]:+.1f}u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value {_cc(l50["roi"])}">{l50["roi"]:+.1f}%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>'''
+
+
+def generate_prop_html(prop_type_key, all_results, tracking_data):
+    info = PROP_PAGES[prop_type_key]
+    label = info['label']
+    emoji = info['emoji']
+
+    # Filter today's picks to this prop type
+    if not all_results and os.path.exists(RESULTS_CACHE):
+        try:
+            with open(RESULTS_CACHE) as _f:
+                all_results = json.load(_f)
+        except Exception:
+            all_results = []
+    results = [r for r in all_results if r.get('type') == prop_type_key]
+
+    # Filter tracking to this prop type
+    all_picks = tracking_data.get('picks', [])
+    completed = [p for p in all_picks
+                 if p.get('type') == prop_type_key and p.get('status','').lower() in ('win','loss')]
+    completed.sort(key=lambda x: x.get('created_at',''), reverse=True)
+
+    # Overall stats for this type
+    wins = sum(1 for p in completed if p['status'].lower() == 'win')
+    losses = len(completed) - wins
+    total = wins + losses
+    profit = sum((p.get('odds_dec',1.91)-1) if p['status'].lower()=='win' else -1.0 for p in completed)
+    roi = (profit / total * 100) if total > 0 else 0.0
+    win_rate = (wins / total * 100) if total > 0 else 0.0
+    roi_class = 'txt-green' if roi > 0 else 'txt-red'
+
+    cards_html = (''.join(render_card(r) for r in results)
+                  if results else '<div class="no-bets">No high-value plays found for today.</div>')
+    perf_html = _perf_html_for_picks(completed) if completed else ''
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics — MLB {label}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>{_MLB_CSS}</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">{emoji} MLB {label}</div>
+            <div class="date-sub">{datetime.now().strftime('%B %d, %Y')} • Alpha V2.0</div>
+        </div>
+    </header>
+    {_nav_html(prop_type_key)}
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value {roi_class}">{roi:.1f}%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">{win_rate:.1f}%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">{wins}-{losses}</div>
+        </div>
+    </div>
+    <div class="picks-section">
+        {cards_html}
+    </div>
+    {perf_html}
+    <footer>
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
+    </footer>
+</div>
+</body>
+</html>"""
+
+
+def generate_hub_html(tracking_data):
+    all_picks = tracking_data.get('picks', [])
+    completed = [p for p in all_picks if p.get('status','').lower() in ('win','loss')]
+
+    # Overall stats
+    wins = sum(1 for p in completed if p['status'].lower() == 'win')
+    losses = len(completed) - wins
+    total = wins + losses
+    profit = sum((p.get('odds_dec',1.91)-1) if p['status'].lower()=='win' else -1.0 for p in completed)
+    roi = (profit / total * 100) if total > 0 else 0.0
+    win_rate = (wins / total * 100) if total > 0 else 0.0
+    roi_class = 'txt-green' if roi > 0 else 'txt-red'
+
+    # Per-prop cards
+    by_type = _calc_mlb_by_type(completed)
+    hub_cards = ''
+    for pt_key, info in PROP_PAGES.items():
+        label = info['label']
+        emoji = info['emoji']
+        fname = os.path.basename(info['file'])
+        d = by_type.get(label, {'record': '0-0', 'win_rate': 0, 'profit': 0, 'roi': 0})
+        rec_color = '#4ade80' if d['win_rate'] >= 55 else ('#f87171' if d['win_rate'] < 50 and d['win_rate'] > 0 else '#ffffff')
+        roi_c = '#4ade80' if d['roi'] > 0 else ('#f87171' if d['roi'] < 0 else '#ffffff')
+        hub_cards += f'''
+        <a href="{fname}" class="hub-card">
+            <div class="hub-card-emoji">{emoji}</div>
+            <div class="hub-card-label">{label}</div>
+            <div class="hub-card-record" style="color:{rec_color};">{d["record"]}</div>
+            <div class="hub-card-meta">
+                {d["win_rate"]:.0f}% Win &nbsp;|&nbsp;
+                <span style="color:{roi_c};">{d["roi"]:+.1f}% ROI</span>
+            </div>
+        </a>'''
+
+    nav = '<div class="nav-bar">' + ''.join(
+        f'<a href="{os.path.basename(i["file"])}" class="nav-link">{i["emoji"]} {i["label"]}</a>'
+        for i in PROP_PAGES.values()
+    ) + '</div>'
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics — MLB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>{_MLB_CSS}</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">⚾ MLB Models</div>
+            <div class="date-sub">{datetime.now().strftime('%B %d, %Y')} • Alpha V2.0</div>
+        </div>
+    </header>
+    {nav}
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value {roi_class}">{roi:.1f}%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">{win_rate:.1f}%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Overall Record</div>
+            <div class="stat-value">{wins}-{losses}</div>
+        </div>
+    </div>
+    <div class="hub-grid">
+        {hub_cards}
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
+    </footer>
+</div>
+</body>
+</html>"""
+
+
 # ==========================================
 # 5. LIVE SCHEDULE INTEGRATION
 # ==========================================
@@ -1226,12 +1592,20 @@ def main():
         import json as _json
         _json.dump(new_picks, f)
     tracking_data = load_tracking_data()
-    html_content = generate_html(new_picks, stats, tracking_data)
-    
+
+    # Generate per-prop pages
+    for pt_key, pt_info in PROP_PAGES.items():
+        prop_html = generate_prop_html(pt_key, new_picks, tracking_data)
+        with open(pt_info['file'], 'w') as f:
+            f.write(prop_html)
+        print(f"{Colors.CYAN}  → {os.path.basename(pt_info['file'])}{Colors.END}")
+
+    # Hub page replaces mlb_master_model.html
+    hub_html = generate_hub_html(tracking_data)
     with open(OUTPUT_HTML, 'w') as f:
-        f.write(html_content)
-        
-    print(f"\n{Colors.GREEN}✅ Analysis Complete. {len(new_picks)} plays found. Report: {OUTPUT_HTML}{Colors.END}")
+        f.write(hub_html)
+
+    print(f"\n{Colors.GREEN}✅ Analysis Complete. {len(new_picks)} plays found. Hub: {OUTPUT_HTML}{Colors.END}")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics — MLB H+R+RBI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-main: #0a0a0a; --bg-card: #1a1a1a; --bg-card-secondary: #222222;
+        --text-primary: #ffffff; --text-secondary: #94a3b8;
+        --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+        --border-color: #2a2a2a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }
+    .container { max-width: 820px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
+    .subheader { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+    .nav-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .nav-link { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                text-decoration: none; border: 1px solid var(--border-color);
+                color: var(--text-secondary); background: var(--bg-card); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+    .nav-link.active { color: var(--accent-blue); border-color: var(--accent-blue);
+                       background: rgba(96,165,250,0.1); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .stat-box { background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red   { color: var(--accent-red); }
+    .prop-card { background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .prop-card.glow-green { border-color: rgba(74,222,128,0.25); }
+    .card-header { padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .player-info h2 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .matchup-info { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .game-meta { text-align: right; flex-shrink: 0; }
+    .bet-type-badge { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }
+    .game-date-time { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .card-body { padding: 18px; }
+    .bet-main-row { margin-bottom: 10px; }
+    .bet-selection { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .bet-selection .txt-green { font-size: 20px; font-weight: 800; }
+    .line { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    .model-subtext { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .model-subtext strong { color: var(--text-primary); }
+    .stats-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-item { background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }
+    .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: 700; }
+    .pitcher-matchup { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2);
+                       border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+    .pitcher-vs { font-size: 13px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .pitcher-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+    .pitcher-stats span strong { color: var(--text-primary); }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric-item { background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .metric-val { font-size: 15px; font-weight: 700; }
+    .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+    .tag-blue  { background: rgba(96,165,250,0.12); color: var(--accent-blue); }
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px;
+             padding-top: 20px; border-top: 1px solid var(--border-color); }
+    .tracking-section { margin-top: 2.5rem; }
+    .tracking-header { font-size: 15px; font-weight: 700; margin-bottom: 1rem;
+                       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+    .perf-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .perf-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);
+                 padding: 1.2rem; flex: 1; min-width: 140px; }
+    .perf-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+    .perf-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; }
+    .perf-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; margin-bottom: 2px; }
+    .perf-value { font-size: 0.95rem; font-weight: 800; }
+    /* hub-specific */
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .hub-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+                padding: 20px; text-decoration: none; color: inherit; display: block;
+                transition: border-color 0.15s, transform 0.15s; }
+    .hub-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
+    .hub-card-emoji { font-size: 28px; margin-bottom: 10px; }
+    .hub-card-label { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+    .hub-card-record { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hub-card-meta { font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">💥 MLB H+R+RBI</div>
+            <div class="date-sub">May 29, 2026 • Alpha V2.0</div>
+        </div>
+    </header>
+    <div class="nav-bar"><a href="mlb_master_model.html" class="nav-link">⚾ Hub</a><a href="mlb_strikeouts.html" class="nav-link ">⚡ Strikeouts</a><a href="mlb_pitching_outs.html" class="nav-link ">🎯 Pitching Outs</a><a href="mlb_hits_allowed.html" class="nav-link ">🛡️ Hits Allowed</a><a href="mlb_hrbi.html" class="nav-link active">💥 H+R+RBI</a><a href="mlb_total_bases.html" class="nav-link ">💪 Total Bases</a></div>
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value txt-red">-9.5%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">47.4%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">260-289</div>
+        </div>
+    </div>
+    <div class="picks-section">
+        
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Drake Baldwin</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 3.17)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>3.17 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">162</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">18.6%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Chris Paddack</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.29</span>
+                    <span>xFIP&nbsp;4.35</span>
+                    <span>HR/9&nbsp;1.33</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">82%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+30.1%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">31.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 8.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Matt Olson</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.83)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.83 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">145</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">16.1%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Chris Paddack</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.29</span>
+                    <span>xFIP&nbsp;4.35</span>
+                    <span>HR/9&nbsp;1.33</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">77%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+25.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">26.2% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Dominic Smith</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.73)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.73 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">140</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">9.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Chris Paddack</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.29</span>
+                    <span>xFIP&nbsp;4.35</span>
+                    <span>HR/9&nbsp;1.33</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">76%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+23.3%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">24.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.6</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>JJ Bleday</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.45)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.45 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">158</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">12.8%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Grant Holmes</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.35</span>
+                    <span>xFIP&nbsp;4.16</span>
+                    <span>HR/9&nbsp;1.55</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">70%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+17.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">18.7% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.0</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Nathaniel Lowe</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.32)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.32 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">151</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">14.1%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Grant Holmes</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.35</span>
+                    <span>xFIP&nbsp;4.16</span>
+                    <span>HR/9&nbsp;1.55</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">67%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+15.1%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">15.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Elly De La Cruz</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.09)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.09 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">135</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">14.6%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Grant Holmes</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.35</span>
+                    <span>xFIP&nbsp;4.16</span>
+                    <span>HR/9&nbsp;1.55</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/pit.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Brandon Lowe</h2>
+                        <div class="matchup-info">MIN @ PIT</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:45 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.25)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.25 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">153</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">13.9%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Taj Bradley</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.54</span>
+                    <span>xFIP&nbsp;3.73</span>
+                    <span>HR/9&nbsp;0.87</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">66%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+13.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">14.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.6</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/pit.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Spencer Horwitz</h2>
+                        <div class="matchup-info">MIN @ PIT</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 6:45 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.06)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.06 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">140</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">5.9%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Taj Bradley</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.54</span>
+                    <span>xFIP&nbsp;3.73</span>
+                    <span>HR/9&nbsp;0.87</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Vladimir Guerrero Jr.</h2>
+                        <div class="matchup-info">TOR @ BAL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:05 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.21)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.21 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">120</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">7.1%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Trevor Rogers</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.61</span>
+                    <span>xFIP&nbsp;4.7</span>
+                    <span>HR/9&nbsp;1.27</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">65%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">13.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Jesús Sánchez</h2>
+                        <div class="matchup-info">TOR @ BAL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:05 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.1)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.1 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">114</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">8.7%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Trevor Rogers</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.61</span>
+                    <span>xFIP&nbsp;4.7</span>
+                    <span>HR/9&nbsp;1.27</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/tor.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Ernie Clement</h2>
+                        <div class="matchup-info">TOR @ BAL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:05 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.08)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.08 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">113</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">3.1%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Trevor Rogers</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.61</span>
+                    <span>xFIP&nbsp;4.7</span>
+                    <span>HR/9&nbsp;1.27</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.2%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.7% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/laa.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Mike Trout</h2>
+                        <div class="matchup-info">LAA @ TB</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.19)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.19 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">144</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">20.0%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Nick Martinez</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.49</span>
+                    <span>xFIP&nbsp;4.3</span>
+                    <span>HR/9&nbsp;0.6</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">64%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+11.9%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">12.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.4</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mia.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Xavier Edwards</h2>
+                        <div class="matchup-info">MIA @ NYM</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.21)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.21 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">149</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">6.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Freddy Peralta</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.02</span>
+                    <span>xFIP&nbsp;3.92</span>
+                    <span>HR/9&nbsp;1.17</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">65%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">13.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mia.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Otto Lopez</h2>
+                        <div class="matchup-info">MIA @ NYM</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.07)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.07 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">139</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">7.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Freddy Peralta</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.02</span>
+                    <span>xFIP&nbsp;3.92</span>
+                    <span>HR/9&nbsp;1.17</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.9%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nym.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Juan Soto</h2>
+                        <div class="matchup-info">MIA @ NYM</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.04)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.04 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">173</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">19.2%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Max Meyer</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.45</span>
+                    <span>xFIP&nbsp;3.45</span>
+                    <span>HR/9&nbsp;0.59</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">60%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">8.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.0</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Carson Kelly</h2>
+                        <div class="matchup-info">CHC @ STL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.21)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.21 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">131</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">7.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Kyle Leahy</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.44</span>
+                    <span>xFIP&nbsp;4.19</span>
+                    <span>HR/9&nbsp;1.42</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">65%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">13.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Ian Happ</h2>
+                        <div class="matchup-info">CHC @ STL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.09)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.09 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">123</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">15.8%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Kyle Leahy</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.44</span>
+                    <span>xFIP&nbsp;4.19</span>
+                    <span>HR/9&nbsp;1.42</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/chc.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Michael Busch</h2>
+                        <div class="matchup-info">CHC @ STL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.05)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.05 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">121</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">12.9%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Kyle Leahy</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.44</span>
+                    <span>xFIP&nbsp;4.19</span>
+                    <span>HR/9&nbsp;1.42</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">8.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/stl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Jordan Walker</h2>
+                        <div class="matchup-info">CHC @ STL</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.27)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.27 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">167</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">15.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Shota Imanaga</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.43</span>
+                    <span>xFIP&nbsp;3.52</span>
+                    <span>HR/9&nbsp;1.39</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">66%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+13.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">14.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.6</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Riley Greene</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.7)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.7 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">142</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">12.6%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Erick Fedde</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;5.07</span>
+                    <span>xFIP&nbsp;5.22</span>
+                    <span>HR/9&nbsp;2.19</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">75%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+22.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">23.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Kevin McGonigle</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.65)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.65 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">140</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">9.3%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Erick Fedde</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;5.07</span>
+                    <span>xFIP&nbsp;5.22</span>
+                    <span>HR/9&nbsp;2.19</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">74%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+21.9%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">23.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.4</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Dillon Dingler</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.29)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.29 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">121</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">13.0%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Erick Fedde</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;5.07</span>
+                    <span>xFIP&nbsp;5.22</span>
+                    <span>HR/9&nbsp;2.19</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">67%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+14.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">15.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/mil.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Brice Turang</h2>
+                        <div class="matchup-info">MIL @ HOU</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 8:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.13)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.13 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">146</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">8.2%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Kai-Wei Teng</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.71</span>
+                    <span>xFIP&nbsp;3.79</span>
+                    <span>HR/9&nbsp;0.73</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">63%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+10.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">11.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Ben Rice</h2>
+                        <div class="matchup-info">NYY @ ATH</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 9:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 3.15)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>3.15 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">177</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">17.6%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Luis Severino</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.16</span>
+                    <span>xFIP&nbsp;4.03</span>
+                    <span>HR/9&nbsp;1.17</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">82%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+29.9%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">31.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 8.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Aaron Judge</h2>
+                        <div class="matchup-info">NYY @ ATH</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 9:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.82)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.82 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">158</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">22.1%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Luis Severino</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.16</span>
+                    <span>xFIP&nbsp;4.03</span>
+                    <span>HR/9&nbsp;1.17</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">77%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+24.8%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">26.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.7</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Paul Goldschmidt</h2>
+                        <div class="matchup-info">NYY @ ATH</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 9:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.58)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.58 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">144</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">14.5%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Luis Severino</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.16</span>
+                    <span>xFIP&nbsp;4.03</span>
+                    <span>HR/9&nbsp;1.17</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">73%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+20.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">21.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Luke Raley</h2>
+                        <div class="matchup-info">AZ @ SEA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.58)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.58 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">149</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">20.2%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Zac Gallen</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.34</span>
+                    <span>xFIP&nbsp;4.24</span>
+                    <span>HR/9&nbsp;1.16</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">73%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+20.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">21.5% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Randy Arozarena</h2>
+                        <div class="matchup-info">AZ @ SEA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.54)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.54 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">146</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">7.2%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Zac Gallen</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.34</span>
+                    <span>xFIP&nbsp;4.24</span>
+                    <span>HR/9&nbsp;1.16</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">72%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+19.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">20.7% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Brendan Donovan</h2>
+                        <div class="matchup-info">AZ @ SEA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.54)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.54 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">146</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">4.3%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Zac Gallen</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.34</span>
+                    <span>xFIP&nbsp;4.24</span>
+                    <span>HR/9&nbsp;1.16</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">72%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+19.7%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">20.7% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Kyle Schwarber</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.95)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.95 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">164</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">23.6%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Justin Wrobleski</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.88</span>
+                    <span>xFIP&nbsp;4.8</span>
+                    <span>HR/9&nbsp;0.49</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">79%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+26.9%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">28.2% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.9</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Bryce Harper</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.58)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.58 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">144</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">14.4%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Justin Wrobleski</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.88</span>
+                    <span>xFIP&nbsp;4.8</span>
+                    <span>HR/9&nbsp;0.49</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">73%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+20.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">21.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Brandon Marsh</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.37)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.37 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">132</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">6.3%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Justin Wrobleski</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.88</span>
+                    <span>xFIP&nbsp;4.8</span>
+                    <span>HR/9&nbsp;0.49</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">68%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+16.1%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">16.9% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.8</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/lad.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Andy Pages</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">H+R+RBI</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 H+R+RBI  (Exp: 2.05)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.05 H+R+RBI</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">151</div></div>
+                <div class="stat-item"><div class="stat-title">Barrel%</div><div class="stat-val">9.0%</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Zack Wheeler</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;3.17</span>
+                    <span>xFIP&nbsp;2.99</span>
+                    <span>HR/9&nbsp;0.24</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.4%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">8.8% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tracking-section">
+        <div class="tracking-header">Daily Performance</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Today</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-2</div>
+                    <div class="txt-red" style="font-weight:600;">-2.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">-100.0% ROI</div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Yesterday</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-0</div>
+                    <div class="" style="font-weight:600;">+0.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">0.0% ROI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">Recent Form</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Last 10</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">4-6</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value ">40%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-red">-2.4u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-red">-23.6%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 20</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">11-9</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">55%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+1.0u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+5.0%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 50</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">24-26</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value ">48%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-red">-4.2u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-red">-8.3%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
+    </footer>
+</div>
+</body>
+</html>

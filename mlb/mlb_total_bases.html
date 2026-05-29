@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtSide Analytics — MLB Total Bases</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-main: #0a0a0a; --bg-card: #1a1a1a; --bg-card-secondary: #222222;
+        --text-primary: #ffffff; --text-secondary: #94a3b8;
+        --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+        --border-color: #2a2a2a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }
+    .container { max-width: 820px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; font-weight: 800; }
+    .subheader { font-size: 15px; font-weight: 600; margin-top: 2px; }
+    .date-sub { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+    .nav-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .nav-link { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                text-decoration: none; border: 1px solid var(--border-color);
+                color: var(--text-secondary); background: var(--bg-card); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+    .nav-link.active { color: var(--accent-blue); border-color: var(--accent-blue);
+                       background: rgba(96,165,250,0.1); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .stat-box { background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; }
+    .txt-green { color: var(--accent-green); }
+    .txt-red   { color: var(--accent-red); }
+    .prop-card { background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .prop-card.glow-green { border-color: rgba(74,222,128,0.25); }
+    .card-header { padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+    .player-info h2 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .matchup-info { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .game-meta { text-align: right; flex-shrink: 0; }
+    .bet-type-badge { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }
+    .game-date-time { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .card-body { padding: 18px; }
+    .bet-main-row { margin-bottom: 10px; }
+    .bet-selection { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .bet-selection .txt-green { font-size: 20px; font-weight: 800; }
+    .line { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .bet-odds { font-size: 16px; color: var(--text-secondary); font-weight: 500; margin-left: auto; }
+    .model-subtext { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .model-subtext strong { color: var(--text-primary); }
+    .stats-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-item { background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }
+    .stat-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: 700; }
+    .pitcher-matchup { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2);
+                       border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+    .pitcher-vs { font-size: 13px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px; }
+    .pitcher-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
+    .pitcher-stats span strong { color: var(--text-primary); }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric-item { background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }
+    .metric-lbl { display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+    .metric-val { font-size: 15px; font-weight: 700; }
+    .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+    .tag-green { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+    .tag-blue  { background: rgba(96,165,250,0.12); color: var(--accent-blue); }
+    .no-bets { text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic; }
+    footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px;
+             padding-top: 20px; border-top: 1px solid var(--border-color); }
+    .tracking-section { margin-top: 2.5rem; }
+    .tracking-header { font-size: 15px; font-weight: 700; margin-bottom: 1rem;
+                       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+    .perf-row { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .perf-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);
+                 padding: 1.2rem; flex: 1; min-width: 140px; }
+    .perf-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+    .perf-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; }
+    .perf-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary);
+                  letter-spacing: 0.05em; margin-bottom: 2px; }
+    .perf-value { font-size: 0.95rem; font-weight: 800; }
+    /* hub-specific */
+    .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+    .hub-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
+                padding: 20px; text-decoration: none; color: inherit; display: block;
+                transition: border-color 0.15s, transform 0.15s; }
+    .hub-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
+    .hub-card-emoji { font-size: 28px; margin-bottom: 10px; }
+    .hub-card-label { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+    .hub-card-record { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hub-card-meta { font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">💪 MLB Total Bases</div>
+            <div class="date-sub">May 29, 2026 • Alpha V2.0</div>
+        </div>
+    </header>
+    <div class="nav-bar"><a href="mlb_master_model.html" class="nav-link">⚾ Hub</a><a href="mlb_strikeouts.html" class="nav-link ">⚡ Strikeouts</a><a href="mlb_pitching_outs.html" class="nav-link ">🎯 Pitching Outs</a><a href="mlb_hits_allowed.html" class="nav-link ">🛡️ Hits Allowed</a><a href="mlb_hrbi.html" class="nav-link ">💥 H+R+RBI</a><a href="mlb_total_bases.html" class="nav-link active">💪 Total Bases</a></div>
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Season ROI</div>
+            <div class="stat-value txt-green">54.9%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">81.1%</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Record</div>
+            <div class="stat-value">30-7</div>
+        </div>
+    </div>
+    <div class="picks-section">
+        
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Drake Baldwin</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.08)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.08 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">162</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.543</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.35</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Chris Paddack</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.29</span>
+                    <span>xFIP&nbsp;4.35</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.2%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.6% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/atl.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Matt Olson</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.09)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.09 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">145</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.546</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.35</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Chris Paddack</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.29</span>
+                    <span>xFIP&nbsp;4.35</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>JJ Bleday</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.09)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.09 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">158</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.571</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.16</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Grant Holmes</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.35</span>
+                    <span>xFIP&nbsp;4.16</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">62%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+9.6%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">10.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/cin.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Nathaniel Lowe</h2>
+                        <div class="matchup-info">ATL @ CIN</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 6:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.04)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.04 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">151</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.556</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.16</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Grant Holmes</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.35</span>
+                    <span>xFIP&nbsp;4.16</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">60%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">8.4% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.0</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/det.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Dillon Dingler</h2>
+                        <div class="matchup-info">DET @ CWS</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 7:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.13)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.13 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">121</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.464</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">5.22</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Erick Fedde</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;5.07</span>
+                    <span>xFIP&nbsp;5.22</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">63%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+10.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">11.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.3</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Ben Rice</h2>
+                        <div class="matchup-info">NYY @ ATH</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 9:40 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.21)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.21 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">177</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.623</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.03</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Luis Severino</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.16</span>
+                    <span>xFIP&nbsp;4.03</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">65%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">13.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.5</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/sea.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Luke Raley</h2>
+                        <div class="matchup-info">AZ @ SEA</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 10:10 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.06)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.06 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">149</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.550</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.24</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Zac Gallen</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.34</span>
+                    <span>xFIP&nbsp;4.24</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">61%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+8.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">9.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.1</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Kyle Schwarber</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.56)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.56 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">164</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.604</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.8</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Justin Wrobleski</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.88</span>
+                    <span>xFIP&nbsp;4.8</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">72%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+20.0%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">21.0% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 7.2</span></div>
+            </div>
+        </div>
+        <div class="prop-card glow-green">
+            <div class="card-header">
+                <div class="header-left">
+                    <img src="https://a.espncdn.com/i/teamlogos/mlb/500/phi.png" alt="" class="team-logo" onerror="this.style.display='none'">
+                    <div class="player-info">
+                        <h2>Bryce Harper</h2>
+                        <div class="matchup-info">PHI @ LAD</div>
+                    </div>
+                </div>
+                <div class="game-meta">
+                    <div class="bet-type-badge">Total Bases</div>
+                    <div class="game-date-time">Fri, May 29 • 10:15 PM ET</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bet-main-row">
+                    <div class="bet-selection">
+                        <span class="txt-green">OVER</span>
+                        <span class="line">1.5 Total Bases  (Exp: 2.21)</span>
+                        <span class="bet-odds">-110</span>
+                    </div>
+                </div>
+                <div class="model-subtext">Model Expects: <strong>2.21 Total Bases</strong></div>
+                
+            <div class="stats-row">
+                <div class="stat-item"><div class="stat-title">wRC+</div><div class="stat-val">144</div></div>
+                <div class="stat-item"><div class="stat-title">SLG</div><div class="stat-val">0.523</div></div>
+                <div class="stat-item"><div class="stat-title">xFIP</div><div class="stat-val">4.8</div></div>
+            </div>
+                
+            <div class="pitcher-matchup">
+                <div class="pitcher-vs">vs. Justin Wrobleski</div>
+                <div class="pitcher-stats">
+                    <span>SIERA&nbsp;4.88</span>
+                    <span>xFIP&nbsp;4.8</span>
+                    <span>HR/9&nbsp;—</span>
+                </div>
+            </div>
+                <div class="metrics-grid">
+                    <div class="metric-item"><span class="metric-lbl">WIN %</span><span class="metric-val txt-green">65%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">EV</span><span class="metric-val txt-green">+12.5%</span></div>
+                    <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">13.1% Unit</span></div>
+                </div>
+                <div class="tags-container"><span class="tag tag-green">High Value</span><span class="tag tag-green">Max Bet</span><span class="tag tag-blue">Score: 6.5</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tracking-section">
+        <div class="tracking-header">Daily Performance</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Today</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-0</div>
+                    <div class="" style="font-weight:600;">+0.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">0.0% ROI</div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Yesterday</div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:700;">0-0</div>
+                    <div class="" style="font-weight:600;">+0.0u</div>
+                    <div style="font-size:0.8rem;color:var(--text-secondary);">0.0% ROI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tracking-section">
+        <div class="tracking-header">Recent Form</div>
+        <div class="perf-row">
+            <div class="perf-card">
+                <div class="perf-title">Last 10</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">9-1</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">90%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+7.2u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+71.9%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 20</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">19-1</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">95%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+16.3u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+81.5%</div></div>
+                </div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-title">Last 50</div>
+                <div class="perf-grid-inner">
+                    <div><div class="perf-label">Record</div><div class="perf-value">30-7</div></div>
+                    <div><div class="perf-label">Win %</div><div class="perf-value txt-green">81%</div></div>
+                    <div><div class="perf-label">Profit</div><div class="perf-value txt-green">+20.3u</div></div>
+                    <div><div class="perf-label">ROI</div><div class="perf-value txt-green">+54.9%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Model based on SIERA, xFIP, wRC+ &amp; Statcast Data. Always bet responsibly.
+    </footer>
+</div>
+</body>
+</html>
