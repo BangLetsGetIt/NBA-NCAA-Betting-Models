@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +13,7 @@
             padding: 20px;
             line-height: 1.5;
         }
-        .container {
-            max_width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1100px; margin: 0 auto; }
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -34,14 +30,12 @@
             margin-bottom: 10px;
         }
         h1 { margin: 10px 0; font-size: 2rem; }
-        
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
-        
         .stat-card {
             background-color: #1a1a1a;
             border-radius: 12px;
@@ -49,133 +43,100 @@
             text-align: center;
             border: 1px solid #262626;
         }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            display: block;
-        }
+        .stat-value { font-size: 2rem; font-weight: bold; display: block; }
         .stat-label {
             color: #94a3b8;
             font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
-        .win-text { color: #10b981; }
-        .loss-text { color: #ef4444; }
-        
-        .section-title {
-            border-left: 4px solid #10b981;
-            padding-left: 10px;
-            margin: 40px 0 20px 0;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .model-section {
+        .sport-section {
             margin-bottom: 40px;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            overflow: hidden;
         }
-        
-        .model-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+        .sport-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #262626;
-            padding: 10px 15px;
-            border-radius: 8px;
+            background: #1e293b;
+            padding: 14px 18px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #262626;
         }
-        
+        .sport-record { font-size: 1rem; font-weight: normal; }
+        .prop-section { padding: 16px 18px; border-top: 1px solid #262626; }
+        .prop-section:first-of-type { border-top: none; }
+        .prop-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
         .picks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
         }
-        
         .pick-card {
             background-color: #1a1a1a;
             border-radius: 8px;
-            padding: 15px;
+            padding: 14px;
             border: 1px solid #262626;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
-            overflow: hidden;
         }
-        
         .pick-card.win { border-top: 3px solid #10b981; }
         .pick-card.loss { border-top: 3px solid #ef4444; }
         .pick-card.push { border-top: 3px solid #3b82f6; }
         .pick-card.void { border-top: 3px solid #9ca3af; }
-        
         .pick-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-size: 0.8em;
             color: #94a3b8;
         }
-        
-        .player-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #ffffff;
-        }
-        
-        .matchup {
-            font-size: 0.9em;
-            color: #94a3b8;
-            margin-bottom: 15px;
-        }
-        
+        .player-name { font-size: 1rem; font-weight: bold; margin-bottom: 4px; }
+        .matchup { font-size: 0.85em; color: #94a3b8; margin-bottom: 10px; }
         .pick-details {
             background-color: #262626;
-            padding: 10px;
+            padding: 8px 10px;
             border-radius: 6px;
             margin-bottom: 10px;
         }
-        
-        .pick-line {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 4px;
-        }
-        
-        .pick-odds {
-            font-size: 0.9em;
-            color: #94a3b8;
-        }
-        
+        .pick-line { font-weight: bold; display: block; margin-bottom: 3px; font-size: 0.95em; }
+        .pick-odds { font-size: 0.85em; color: #94a3b8; }
         .pick-result {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: auto;
-            padding-top: 10px;
+            padding-top: 8px;
             border-top: 1px solid #262626;
+            margin-top: auto;
         }
-        
+        .result-score { font-family: monospace; font-size: 0.85em; color: #94a3b8; }
         .badge {
-            padding: 4px 8px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.8em;
+            font-size: 0.75em;
             font-weight: bold;
             text-transform: uppercase;
         }
-        .badge-win { background-color: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .badge-loss { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .badge-push { background-color: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .badge-void { background-color: rgba(156, 163, 175, 0.2); color: #9ca3af; }
-        
-        .result-score {
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
+        .badge-win { background-color: rgba(16,185,129,0.2); color: #10b981; }
+        .badge-loss { background-color: rgba(239,68,68,0.2); color: #ef4444; }
+        .badge-push { background-color: rgba(59,130,246,0.2); color: #3b82f6; }
+        .badge-void { background-color: rgba(156,163,175,0.2); color: #9ca3af; }
+        .badge-pending { background-color: rgba(148,163,184,0.15); color: #94a3b8; }
     </style>
 </head>
 <body>
@@ -184,1950 +145,1679 @@
             <span class="date-badge">2026-05-29</span>
             <h1>Daily Recap</h1>
         </div>
-
         <div class="summary-grid">
             <div class="stat-card">
-                <span class="stat-value">50-34-0 <span style="font-size:0.6em; color:#9ca3af">(6 void)</span></span>
+                <span class="stat-value">50-34 <span style="font-size:0.65em;color:#9ca3af">(6v)</span></span>
                 <span class="stat-label">Daily Record</span>
             </div>
             <div class="stat-card">
-                <span class="stat-value win-text">
-                    +11.50u
-                </span>
+                <span class="stat-value" style="color:#10b981">+11.50u</span>
                 <span class="stat-label">Total Profit</span>
             </div>
         </div>
         
-        <!-- Highlights -->
-        <div class="summary-grid">
-            <div class="stat-card">
-                <span class="stat-label">Top Performer</span>
-                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
-                    Mlb Master Model
-                </div>
-                <div class="win-text" style="font-size: 1.1rem;">
-                    +11.50u
-                </div>
+        <div class="sport-section">
+            <div class="sport-header">
+                <span>⚾ MLB</span>
+                <span class="sport-record">50-34 <span style="font-size:0.8em;color:#9ca3af">(6v)</span> <span style="color:#10b981;font-size:0.9em">(+11.50u)</span></span>
             </div>
-             <div class="stat-card">
-                <span class="stat-label">Needs Improvement</span>
-                <div style="margin-top:10px; font-weight:bold; font-size: 1.2rem;">
-                    Mlb Master Model
-                </div>
-                <div class="loss-text" style="font-size: 1.1rem;">
-                    +11.50u
-                </div>
-            </div>
-        </div>
-
-        <div class="section-title">Model Breakdown</div>
-        
-        <!-- Iterate Models -->
-        
-        <div class="model-section">
-            <div class="model-title">
-                <span>Mlb Master Model</span>
-                <span class="win-text">
-                    50-34-0 <span style="font-size:0.8em; color:#9ca3af">(6 void)</span> (+11.50u)
-                </span>
+            
+        <div class="prop-section">
+            <div class="prop-title">
+                <span>H+R+RBI</span>
+                <span>19-11 <span style="font-size:0.8em;color:#9ca3af">(3v)</span> <span style="color:#10b981">(+6.29u)</span></span>
             </div>
             <div class="picks-grid">
-                
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">Matt Olson</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.83)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Matt Olson: 2H 0R 0RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Matt Olson</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">Dominic Smith</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.73)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Dominic Smith: 3H 2R 0RBI = 5 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Andrew Alvarez</div>
-                <div class="matchup">SD @ WSH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Taj Bradley</div>
-                <div class="matchup">MIN @ PIT</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 5.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Taj Bradley</div>
-                <div class="matchup">MIN @ PIT</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
                 </div>
                 <div class="player-name">Spencer Horwitz</div>
                 <div class="matchup">MIN @ PIT</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.06)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Spencer Horwitz: 2H 0R 0RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:05 ET</span>
-                </div>
-                <div class="player-name">Trevor Rogers</div>
-                <div class="matchup">TOR @ BAL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Nick Martinez</div>
-                <div class="matchup">LAA @ TB</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 2.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Walbert Ureña</div>
-                <div class="matchup">LAA @ TB</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 14.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Nick Martinez</div>
-                <div class="matchup">LAA @ TB</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Walbert Ureña</div>
-                <div class="matchup">LAA @ TB</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Max Meyer</div>
-                <div class="matchup">MIA @ NYM</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
                 </div>
                 <div class="player-name">Xavier Edwards</div>
                 <div class="matchup">MIA @ NYM</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Xavier Edwards: 2H 1R 1RBI = 4 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
                 </div>
                 <div class="player-name">Otto Lopez</div>
                 <div class="matchup">MIA @ NYM</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.07)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Otto Lopez: 0H 1R 1RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
                 </div>
                 <div class="player-name">Juan Soto</div>
                 <div class="matchup">MIA @ NYM</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.04)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Juan Soto: 1H 1R 0RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
                 </div>
                 <div class="player-name">Ian Happ</div>
                 <div class="matchup">CHC @ STL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Ian Happ: 2H 1R 3RBI = 6 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
                 </div>
                 <div class="player-name">Michael Busch</div>
                 <div class="matchup">CHC @ STL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.05)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Michael Busch: 3H 1R 2RBI = 6 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
-                </div>
-                <div class="player-name">Troy Melton</div>
-                <div class="matchup">DET @ CWS</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 17.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
                 </div>
                 <div class="player-name">Riley Greene</div>
                 <div class="matchup">DET @ CWS</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.70)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Riley Greene: 2H 0R 0RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
                 </div>
                 <div class="player-name">Dillon Dingler</div>
                 <div class="matchup">DET @ CWS</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.29)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Dillon Dingler: 1H 1R 2RBI = 4 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
-                </div>
-                <div class="player-name">Dillon Dingler</div>
-                <div class="matchup">DET @ CWS</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.13)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:40 ET</span>
-                </div>
-                <div class="player-name">Logan Webb</div>
-                <div class="matchup">SF @ COL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 4.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:40 ET</span>
-                </div>
-                <div class="player-name">Logan Webb</div>
-                <div class="matchup">SF @ COL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 7.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
-                </div>
-                <div class="player-name">Luis Severino</div>
-                <div class="matchup">NYY @ ATH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
                 </div>
                 <div class="player-name">Ben Rice</div>
                 <div class="matchup">NYY @ ATH</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 3.15)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Ben Rice: 4H 2R 2RBI = 8 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
-                </div>
-                <div class="player-name">Ben Rice</div>
-                <div class="matchup">NYY @ ATH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
                 </div>
                 <div class="player-name">Aaron Judge</div>
                 <div class="matchup">NYY @ ATH</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.82)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Aaron Judge: 1H 1R 2RBI = 4 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
                 </div>
                 <div class="player-name">Paul Goldschmidt</div>
                 <div class="matchup">NYY @ ATH</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.58)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Paul Goldschmidt: 1H 1R 3RBI = 5 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">George Kirby</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 3.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">George Kirby</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 7.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
                 </div>
                 <div class="player-name">Luke Raley</div>
                 <div class="matchup">AZ @ SEA</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.58)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Luke Raley: 2H 1R 1RBI = 4 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">Luke Raley</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.06)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
                 </div>
                 <div class="player-name">Randy Arozarena</div>
                 <div class="matchup">AZ @ SEA</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.54)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Randy Arozarena: 2H 0R 1RBI = 3 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Zack Wheeler</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 17.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Justin Wrobleski</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 18.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Justin Wrobleski</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
                 </div>
                 <div class="player-name">Kyle Schwarber</div>
                 <div class="matchup">PHI @ LAD</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.95)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Kyle Schwarber: 1H 1R 1RBI = 3 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Kyle Schwarber</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.56)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
                 </div>
                 <div class="player-name">Brandon Marsh</div>
                 <div class="matchup">PHI @ LAD</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.37)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Brandon Marsh: 1H 1R 0RBI = 2 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Grant Holmes</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 4.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">JJ Bleday</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.45)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (JJ Bleday: 2H 1R 1RBI = 4 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
         <div class="pick-card win">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">JJ Bleday</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">Nathaniel Lowe</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.32)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Win (Nathaniel Lowe: 1H 1R 1RBI = 3 (line 1.5))</span>
                 <span class="badge badge-win">WIN</span>
             </div>
         </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Nathaniel Lowe</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.04)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Paxton Schultz</div>
-                <div class="matchup">SD @ WSH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
-                </div>
-                <div class="player-name">Shota Imanaga</div>
-                <div class="matchup">CHC @ STL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
-                </div>
-                <div class="player-name">Shota Imanaga</div>
-                <div class="matchup">CHC @ STL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:05 ET</span>
-                </div>
-                <div class="player-name">MacKenzie Gore</div>
-                <div class="matchup">KC @ TEX</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
-        <div class="pick-card win">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:10 ET</span>
-                </div>
-                <div class="player-name">Kai-Wei Teng</div>
-                <div class="matchup">MIL @ HOU</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-win">WIN</span>
-            </div>
-        </div>
-        
         <div class="pick-card void">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">Drake Baldwin</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 3.17)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Void (DNP - Drake Baldwin not in boxscore)</span>
                 <span class="badge badge-void">VOID</span>
             </div>
         </div>
-        
         <div class="pick-card void">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Drake Baldwin</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.08)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-void">VOID</span>
-            </div>
-        </div>
-        
-        <div class="pick-card void">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Andrew Nardi</div>
-                <div class="matchup">SD @ WSH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 5.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-void">VOID</span>
-            </div>
-        </div>
-        
-        <div class="pick-card void">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:05 ET</span>
+                    <span>MLB</span>
+                    <span>23:05 ET</span>
                 </div>
                 <div class="player-name">Jesús Sánchez</div>
                 <div class="matchup">TOR @ BAL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.10)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Void (DNP - Jesús Sánchez not in boxscore)</span>
                 <span class="badge badge-void">VOID</span>
             </div>
         </div>
-        
         <div class="pick-card void">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
-                </div>
-                <div class="player-name">Kyle Leahy</div>
-                <div class="matchup">CHC @ STL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-void">VOID</span>
-            </div>
-        </div>
-        
-        <div class="pick-card void">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
                 </div>
                 <div class="player-name">Brendan Donovan</div>
                 <div class="matchup">AZ @ SEA</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.54)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Void (DNP - Brendan Donovan not in boxscore)</span>
                 <span class="badge badge-void">VOID</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
-                </div>
-                <div class="player-name">Taj Bradley</div>
-                <div class="matchup">MIN @ PIT</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:45 ET</span>
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
                 </div>
                 <div class="player-name">Brandon Lowe</div>
                 <div class="matchup">MIN @ PIT</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.25)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Brandon Lowe: 0H 1R 0RBI = 1 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:05 ET</span>
+                    <span>MLB</span>
+                    <span>23:05 ET</span>
                 </div>
                 <div class="player-name">Vladimir Guerrero Jr.</div>
                 <div class="matchup">TOR @ BAL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Vladimir Guerrero Jr.: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:05 ET</span>
+                    <span>MLB</span>
+                    <span>23:05 ET</span>
                 </div>
                 <div class="player-name">Ernie Clement</div>
                 <div class="matchup">TOR @ BAL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.08)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Ernie Clement: 1H 0R 0RBI = 1 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Slade Cecconi</div>
-                <div class="matchup">BOS @ CLE</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 14.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Slade Cecconi</div>
-                <div class="matchup">BOS @ CLE</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Nick Martinez</div>
-                <div class="matchup">LAA @ TB</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
                 </div>
                 <div class="player-name">Mike Trout</div>
                 <div class="matchup">LAA @ TB</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.19)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Mike Trout: 0H 1R 0RBI = 1 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Freddy Peralta</div>
-                <div class="matchup">MIA @ NYM</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Max Meyer</div>
-                <div class="matchup">MIA @ NYM</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Freddy Peralta</div>
-                <div class="matchup">MIA @ NYM</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
                 </div>
                 <div class="player-name">Carson Kelly</div>
                 <div class="matchup">CHC @ STL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Carson Kelly: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
-                </div>
-                <div class="player-name">Erick Fedde</div>
-                <div class="matchup">DET @ CWS</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 18.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:40 ET</span>
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
                 </div>
                 <div class="player-name">Kevin McGonigle</div>
                 <div class="matchup">DET @ CWS</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.65)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Kevin McGonigle: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:05 ET</span>
-                </div>
-                <div class="player-name">Stephen Kolek</div>
-                <div class="matchup">KC @ TEX</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 17.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:05 ET</span>
-                </div>
-                <div class="player-name">Stephen Kolek</div>
-                <div class="matchup">KC @ TEX</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:40 ET</span>
-                </div>
-                <div class="player-name">Michael Lorenzen</div>
-                <div class="matchup">SF @ COL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 3.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:40 ET</span>
-                </div>
-                <div class="player-name">Logan Webb</div>
-                <div class="matchup">SF @ COL</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>01:40 ET</span>
-                </div>
-                <div class="player-name">Luis Severino</div>
-                <div class="matchup">NYY @ ATH</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">Zac Gallen</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 3.5 Ks</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">George Kirby</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 17.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:10 ET</span>
-                </div>
-                <div class="player-name">Zac Gallen</div>
-                <div class="matchup">AZ @ SEA</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 6.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Zack Wheeler</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
                 </div>
                 <div class="player-name">Bryce Harper</div>
                 <div class="matchup">PHI @ LAD</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.58)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Bryce Harper: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
-                </div>
-                <div class="player-name">Bryce Harper</div>
-                <div class="matchup">PHI @ LAD</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>02:15 ET</span>
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
                 </div>
                 <div class="player-name">Andy Pages</div>
                 <div class="matchup">PHI @ LAD</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.05)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Andy Pages: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Grant Holmes</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 14.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
-                </div>
-                <div class="player-name">Grant Holmes</div>
-                <div class="matchup">ATL @ CIN</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 5.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>22:40 ET</span>
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
                 </div>
                 <div class="player-name">Elly De La Cruz</div>
                 <div class="matchup">ATL @ CIN</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Elly De La Cruz: 0H 0R 0RBI = 0 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Tyler Samaniego</div>
-                <div class="matchup">BOS @ CLE</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 15.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:10 ET</span>
-                </div>
-                <div class="player-name">Tyler Samaniego</div>
-                <div class="matchup">BOS @ CLE</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Under 4.5 Hits</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>23:15 ET</span>
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
                 </div>
                 <div class="player-name">Jordan Walker</div>
                 <div class="matchup">CHC @ STL</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.27)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Jordan Walker: 0H 1R 0RBI = 1 (line 1.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
         <div class="pick-card loss">
             <div>
                 <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:10 ET</span>
-                </div>
-                <div class="player-name">Kai-Wei Teng</div>
-                <div class="matchup">MIL @ HOU</div>
-                
-                <div class="pick-details">
-                    <span class="pick-line">Over 18.5 Outs</span>
-                    <span class="pick-odds">Odds: -110</span>
-                </div>
-            </div>
-            
-            <div class="pick-result">
-                <span class="result-score"></span>
-                <span class="badge badge-loss">LOSS</span>
-            </div>
-        </div>
-        
-        <div class="pick-card loss">
-            <div>
-                <div class="pick-header">
-                     <span>MLB</span>
-                     <span>00:10 ET</span>
+                    <span>MLB</span>
+                    <span>00:10 ET</span>
                 </div>
                 <div class="player-name">Brice Turang</div>
                 <div class="matchup">MIL @ HOU</div>
-                
                 <div class="pick-details">
                     <span class="pick-line">Over 1.5 (Exp: 2.13)</span>
                     <span class="pick-odds">Odds: -110</span>
                 </div>
             </div>
-            
             <div class="pick-result">
-                <span class="result-score"></span>
+                <span class="result-score">Loss (Brice Turang: 0H 0R 1RBI = 1 (line 1.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div></div>
+        </div>
+        <div class="prop-section">
+            <div class="prop-title">
+                <span>Hits Allowed</span>
+                <span>12-9 <span style="font-size:0.8em;color:#9ca3af">(1v)</span> <span style="color:#10b981">(+1.92u)</span></span>
+            </div>
+            <div class="picks-grid">
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Andrew Alvarez</div>
+                <div class="matchup">SD @ WSH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Andrew Alvarez: 5 H allowed (line 5.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Taj Bradley</div>
+                <div class="matchup">MIN @ PIT</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Taj Bradley: 5 H allowed (line 5.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:05 ET</span>
+                </div>
+                <div class="player-name">Trevor Rogers</div>
+                <div class="matchup">TOR @ BAL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Trevor Rogers: 6 H allowed (line 6.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Walbert Ureña</div>
+                <div class="matchup">LAA @ TB</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Walbert Ureña: 5 H allowed (line 5.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:40 ET</span>
+                </div>
+                <div class="player-name">Logan Webb</div>
+                <div class="matchup">SF @ COL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 7.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Logan Webb: 3 H allowed (line 7.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
+                </div>
+                <div class="player-name">Luis Severino</div>
+                <div class="matchup">NYY @ ATH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Luis Severino: 3 H allowed (line 6.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">George Kirby</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 7.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (George Kirby: 6 H allowed (line 7.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Justin Wrobleski</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Justin Wrobleski: 1 H allowed (line 6.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Paxton Schultz</div>
+                <div class="matchup">SD @ WSH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Paxton Schultz: 2 H allowed (line 4.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
+                </div>
+                <div class="player-name">Shota Imanaga</div>
+                <div class="matchup">CHC @ STL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Shota Imanaga: 5 H allowed (line 5.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:05 ET</span>
+                </div>
+                <div class="player-name">MacKenzie Gore</div>
+                <div class="matchup">KC @ TEX</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (MacKenzie Gore: 4 H allowed (line 4.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Kai-Wei Teng</div>
+                <div class="matchup">MIL @ HOU</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Kai-Wei Teng: 3 H allowed (line 6.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card void">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
+                </div>
+                <div class="player-name">Kyle Leahy</div>
+                <div class="matchup">CHC @ STL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Void (DNP - Kyle Leahy not in boxscore)</span>
+                <span class="badge badge-void">VOID</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Slade Cecconi</div>
+                <div class="matchup">BOS @ CLE</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Slade Cecconi: 7 H allowed (line 6.5))</span>
                 <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Nick Martinez</div>
+                <div class="matchup">LAA @ TB</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Nick Martinez: 8 H allowed (line 5.5))</span>
+                <span class="badge badge-loss">LOSS</span>
             </div>
         </div>
-        
-        
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Max Meyer</div>
+                <div class="matchup">MIA @ NYM</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Max Meyer: 6 H allowed (line 4.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Freddy Peralta</div>
+                <div class="matchup">MIA @ NYM</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Freddy Peralta: 7 H allowed (line 5.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:05 ET</span>
+                </div>
+                <div class="player-name">Stephen Kolek</div>
+                <div class="matchup">KC @ TEX</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Stephen Kolek: 6 H allowed (line 4.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">Zac Gallen</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 6.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Zac Gallen: 8 H allowed (line 6.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Zack Wheeler</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Zack Wheeler: 5 H allowed (line 4.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Grant Holmes</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 5.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Grant Holmes: 7 H allowed (line 5.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Tyler Samaniego</div>
+                <div class="matchup">BOS @ CLE</div>
+                <div class="pick-details">
+                    <span class="pick-line">Under 4.5 Hits</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Tyler Samaniego: 6 H allowed (line 4.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div></div>
+        </div>
+        <div class="prop-section">
+            <div class="prop-title">
+                <span>Pitching Outs</span>
+                <span>7-11 <span style="color:#ef4444">(-4.63u)</span></span>
+            </div>
+            <div class="picks-grid">
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Walbert Ureña</div>
+                <div class="matchup">LAA @ TB</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 14.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Walbert Ureña: 6.0 IP = 18 outs (line 14.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Nick Martinez</div>
+                <div class="matchup">LAA @ TB</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Nick Martinez: 7.0 IP = 21 outs (line 15.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Max Meyer</div>
+                <div class="matchup">MIA @ NYM</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Max Meyer: 6.0 IP = 18 outs (line 15.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
+                </div>
+                <div class="player-name">Troy Melton</div>
+                <div class="matchup">DET @ CWS</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 17.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Troy Melton: 7.0 IP = 21 outs (line 17.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Zack Wheeler</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 17.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Zack Wheeler: 6.0 IP = 18 outs (line 17.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Justin Wrobleski</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 18.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Justin Wrobleski: 7.0 IP = 21 outs (line 18.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:15 ET</span>
+                </div>
+                <div class="player-name">Shota Imanaga</div>
+                <div class="matchup">CHC @ STL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Shota Imanaga: 5.1 IP = 16 outs (line 15.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Taj Bradley</div>
+                <div class="matchup">MIN @ PIT</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Taj Bradley: 4.0 IP = 12 outs (line 15.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Slade Cecconi</div>
+                <div class="matchup">BOS @ CLE</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 14.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Slade Cecconi: 4.1 IP = 13 outs (line 14.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Freddy Peralta</div>
+                <div class="matchup">MIA @ NYM</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Freddy Peralta: 4.2 IP = 14 outs (line 15.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
+                </div>
+                <div class="player-name">Erick Fedde</div>
+                <div class="matchup">DET @ CWS</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 18.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Erick Fedde: 4.0 IP = 12 outs (line 18.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:05 ET</span>
+                </div>
+                <div class="player-name">Stephen Kolek</div>
+                <div class="matchup">KC @ TEX</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 17.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Stephen Kolek: 5.0 IP = 15 outs (line 17.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:40 ET</span>
+                </div>
+                <div class="player-name">Logan Webb</div>
+                <div class="matchup">SF @ COL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Logan Webb: 4.1 IP = 13 outs (line 15.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
+                </div>
+                <div class="player-name">Luis Severino</div>
+                <div class="matchup">NYY @ ATH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Luis Severino: 1.0 IP = 3 outs (line 15.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">George Kirby</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 17.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (George Kirby: 5.1 IP = 16 outs (line 17.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Grant Holmes</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 14.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Grant Holmes: 4.2 IP = 14 outs (line 14.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Tyler Samaniego</div>
+                <div class="matchup">BOS @ CLE</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 15.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Tyler Samaniego: 1.0 IP = 3 outs (line 15.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:10 ET</span>
+                </div>
+                <div class="player-name">Kai-Wei Teng</div>
+                <div class="matchup">MIL @ HOU</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 18.5 Outs</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Kai-Wei Teng: 5.0 IP = 15 outs (line 18.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div></div>
+        </div>
+        <div class="prop-section">
+            <div class="prop-title">
+                <span>Strikeouts</span>
+                <span>5-2 <span style="font-size:0.8em;color:#9ca3af">(1v)</span> <span style="color:#10b981">(+2.55u)</span></span>
+            </div>
+            <div class="picks-grid">
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Taj Bradley</div>
+                <div class="matchup">MIN @ PIT</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 5.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Taj Bradley: 6 Ks (line 5.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:10 ET</span>
+                </div>
+                <div class="player-name">Nick Martinez</div>
+                <div class="matchup">LAA @ TB</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 2.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Nick Martinez: 5 Ks (line 2.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:40 ET</span>
+                </div>
+                <div class="player-name">Logan Webb</div>
+                <div class="matchup">SF @ COL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 4.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Logan Webb: 5 Ks (line 4.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">George Kirby</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 3.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (George Kirby: 4 Ks (line 3.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Grant Holmes</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 4.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Grant Holmes: 5 Ks (line 4.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card void">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:45 ET</span>
+                </div>
+                <div class="player-name">Andrew Nardi</div>
+                <div class="matchup">SD @ WSH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 5.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Void (DNP - Andrew Nardi not in boxscore)</span>
+                <span class="badge badge-void">VOID</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>00:40 ET</span>
+                </div>
+                <div class="player-name">Michael Lorenzen</div>
+                <div class="matchup">SF @ COL</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 3.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Michael Lorenzen: 2 Ks (line 3.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">Zac Gallen</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 3.5 Ks</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Zac Gallen: 2 Ks (line 3.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div></div>
+        </div>
+        <div class="prop-section">
+            <div class="prop-title">
+                <span>Total Bases</span>
+                <span>7-1 <span style="font-size:0.8em;color:#9ca3af">(1v)</span> <span style="color:#10b981">(+5.37u)</span></span>
+            </div>
+            <div class="picks-grid">
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Matt Olson</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Matt Olson: 2 TB (5 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>23:40 ET</span>
+                </div>
+                <div class="player-name">Dillon Dingler</div>
+                <div class="matchup">DET @ CWS</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.13)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Dillon Dingler: 4 TB (4 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>01:40 ET</span>
+                </div>
+                <div class="player-name">Ben Rice</div>
+                <div class="matchup">NYY @ ATH</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Ben Rice: 9 TB (5 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:10 ET</span>
+                </div>
+                <div class="player-name">Luke Raley</div>
+                <div class="matchup">AZ @ SEA</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.06)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Luke Raley: 5 TB (4 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Kyle Schwarber</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.56)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Kyle Schwarber: 4 TB (4 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">JJ Bleday</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.09)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (JJ Bleday: 5 TB (3 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card win">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Nathaniel Lowe</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.04)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Win (Nathaniel Lowe: 4 TB (4 AB, line 1.5))</span>
+                <span class="badge badge-win">WIN</span>
+            </div>
+        </div>
+        <div class="pick-card void">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>22:40 ET</span>
+                </div>
+                <div class="player-name">Drake Baldwin</div>
+                <div class="matchup">ATL @ CIN</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.08)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Void (DNP - Drake Baldwin not in boxscore)</span>
+                <span class="badge badge-void">VOID</span>
+            </div>
+        </div>
+        <div class="pick-card loss">
+            <div>
+                <div class="pick-header">
+                    <span>MLB</span>
+                    <span>02:15 ET</span>
+                </div>
+                <div class="player-name">Bryce Harper</div>
+                <div class="matchup">PHI @ LAD</div>
+                <div class="pick-details">
+                    <span class="pick-line">Over 1.5 (Exp: 2.21)</span>
+                    <span class="pick-odds">Odds: -110</span>
+                </div>
+            </div>
+            <div class="pick-result">
+                <span class="result-score">Loss (Bryce Harper: 0 TB (4 AB, line 1.5))</span>
+                <span class="badge badge-loss">LOSS</span>
+            </div>
+        </div></div>
+        </div>
+        </div>
     </div>
 </body>
 </html>
-        
