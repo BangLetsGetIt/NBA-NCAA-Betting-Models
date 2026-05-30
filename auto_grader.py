@@ -1110,6 +1110,72 @@ def run_mlb_grading(force=False, grade_only=False):
 
     log(f"Found {len(completed_events)} completed MLB games.", "info")
 
+    # Build MLB Stats API gamePk lookup for accurate per-game batting stats (TB grading)
+    mlb_api_pk_lookup = {}   # (date_compact, away_abbr, home_abbr) -> gamePk (lowercase keys)
+    mlb_api_bs_cache  = {}   # gamePk -> boxscore json
+
+    for i in range(4):
+        date_str     = (datetime.now(et_tz) - timedelta(days=i)).strftime('%Y-%m-%d')
+        date_compact = date_str.replace('-', '')
+        try:
+            sched = _req.get(
+                f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={date_str}&gameType=R&hydrate=team",
+                timeout=10
+            ).json()
+            for d in sched.get('dates', []):
+                for g in d.get('games', []):
+                    pk   = g['gamePk']
+                    away = g.get('teams', {}).get('away', {}).get('team', {}).get('abbreviation', '').upper()
+                    home = g.get('teams', {}).get('home', {}).get('team', {}).get('abbreviation', '').upper()
+                    if away and home:
+                        mlb_api_pk_lookup[(date_compact, away, home)] = pk
+            time.sleep(0.2)
+        except Exception:
+            pass
+
+    def get_mlb_api_batter_tb(pick_date, matchup, player_last_name):
+        """Return actual game TB for a batter using MLB Stats API boxscore."""
+        parts = matchup.split(' @ ')
+        if len(parts) != 2:
+            return None
+        away_raw, home_raw = parts[0].strip().upper(), parts[1].strip().upper()
+        pk = mlb_api_pk_lookup.get((pick_date, away_raw, home_raw)) or \
+             mlb_api_pk_lookup.get((pick_date, home_raw, away_raw))
+        if not pk:
+            # Try ESPN->MLB abbr mapping via REV_MAP
+            away_m = REV_MAP.get(away_raw, away_raw).upper()
+            home_m = REV_MAP.get(home_raw, home_raw).upper()
+            pk = mlb_api_pk_lookup.get((pick_date, away_m, home_m)) or \
+                 mlb_api_pk_lookup.get((pick_date, home_m, away_m))
+        if not pk:
+            return None
+        if pk not in mlb_api_bs_cache:
+            try:
+                mlb_api_bs_cache[pk] = _req.get(
+                    f"https://statsapi.mlb.com/api/v1/game/{pk}/boxscore",
+                    timeout=10
+                ).json()
+            except Exception:
+                return None
+        bs = mlb_api_bs_cache[pk]
+        search = _normalize(player_last_name)
+        for side in ('away', 'home'):
+            team = bs.get('teams', {}).get(side, {})
+            players = team.get('players', {})
+            for pid, pdata in players.items():
+                full = _normalize(pdata.get('person', {}).get('fullName', ''))
+                if search in full:
+                    bstats = pdata.get('stats', {}).get('batting', {})
+                    if not bstats or bstats.get('atBats') is None:
+                        continue
+                    h  = int(bstats.get('hits', 0))
+                    d2 = int(bstats.get('doubles', 0))
+                    d3 = int(bstats.get('triples', 0))
+                    hr = int(bstats.get('homeRuns', 0))
+                    # TB = H + 2B + 2×3B + 3×HR
+                    return h + d2 + 2 * d3 + 3 * hr, int(bstats.get('atBats', 0))
+        return None
+
     # Build (matchup, date) -> event entry so same-matchup games on different
     # days don't overwrite each other.
     game_lookup = {}  # key: (matchup_str, date_compact)
@@ -1400,11 +1466,18 @@ def run_mlb_grading(force=False, grade_only=False):
                         pick['profit'] = 0
                         graded_count += 1
                     continue
-                ab = int(stats[labels.index('AB')])
-                slg_str = stats[labels.index('SLG')]
-                slg = float(slg_str) if slg_str and slg_str not in ('.---', '---', '') else 0.0
-                tb = round(slg * ab)
-                result_str = f"{pick_sel}: {tb} TB (SLG {slg_str} × {ab} AB, line {line_val})"
+                last = get_last_name(pick_sel)
+                mlb_result = get_mlb_api_batter_tb(pick_date, matchup, last)
+                if mlb_result is not None:
+                    tb, ab = mlb_result
+                    result_str = f"{pick_sel}: {tb} TB ({ab} AB, line {line_val})"
+                else:
+                    # Fall back to ESPN season SLG × AB (less accurate)
+                    ab = int(stats[labels.index('AB')])
+                    slg_str = stats[labels.index('SLG')]
+                    slg = float(slg_str) if slg_str and slg_str not in ('.---', '---', '') else 0.0
+                    tb = round(slg * ab)
+                    result_str = f"{pick_sel}: {tb} TB (est. SLG {slg_str} × {ab} AB, line {line_val})"
                 if tb > line_val:
                     pick['status'] = 'Win'
                     pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
