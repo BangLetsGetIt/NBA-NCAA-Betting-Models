@@ -2,7 +2,7 @@
 """WNBA Props Shared Engine
 Stats: ESPN WNBA box scores (free, no key)
 Odds:  The Odds API - basketball_wnba (existing key)
-Props: Points, Rebounds, Assists
+Props: Points, Rebounds, Assists, 3-Pointers, PRA, Pts+Reb, Pts+Ast, Reb+Ast
 """
 
 import json
@@ -62,6 +62,61 @@ PROP_CONFIGS = {
         "stats_cache": "wnba_player_stats_cache.json",
         "min_edge": 0.8,
         "top_plays": 6,
+    },
+    "threes": {
+        "market_key": "player_threes",
+        "stat_col": "3PT",
+        "prop_unit": "3PM",
+        "display_name": "3-Pointers",
+        "html_file": "wnba_3pt_props.html",
+        "tracking_file": "wnba_3pt_props_tracking.json",
+        "stats_cache": "wnba_player_stats_cache.json",
+        "min_edge": 0.5,
+        "top_plays": 8,
+    },
+    "pra": {
+        "market_key": "player_points_rebounds_assists",
+        "stat_col": ["PTS", "REB", "AST"],
+        "prop_unit": "PRA",
+        "display_name": "Pts+Reb+Ast",
+        "html_file": "wnba_pra_props.html",
+        "tracking_file": "wnba_pra_props_tracking.json",
+        "stats_cache": "wnba_player_stats_cache.json",
+        "min_edge": 2.5,
+        "top_plays": 8,
+    },
+    "points_rebounds": {
+        "market_key": "player_points_rebounds",
+        "stat_col": ["PTS", "REB"],
+        "prop_unit": "P+R",
+        "display_name": "Pts+Reb",
+        "html_file": "wnba_points_rebounds_props.html",
+        "tracking_file": "wnba_points_rebounds_props_tracking.json",
+        "stats_cache": "wnba_player_stats_cache.json",
+        "min_edge": 2.0,
+        "top_plays": 8,
+    },
+    "points_assists": {
+        "market_key": "player_points_assists",
+        "stat_col": ["PTS", "AST"],
+        "prop_unit": "P+A",
+        "display_name": "Pts+Ast",
+        "html_file": "wnba_points_assists_props.html",
+        "tracking_file": "wnba_points_assists_props_tracking.json",
+        "stats_cache": "wnba_player_stats_cache.json",
+        "min_edge": 2.0,
+        "top_plays": 8,
+    },
+    "rebounds_assists": {
+        "market_key": "player_rebounds_assists",
+        "stat_col": ["REB", "AST"],
+        "prop_unit": "R+A",
+        "display_name": "Reb+Ast",
+        "html_file": "wnba_rebounds_assists_props.html",
+        "tracking_file": "wnba_rebounds_assists_props_tracking.json",
+        "stats_cache": "wnba_player_stats_cache.json",
+        "min_edge": 1.5,
+        "top_plays": 8,
     },
 }
 
@@ -197,18 +252,34 @@ def _build_season_stats(cache_file: str):
         if not logs:
             continue
         gp = len(logs)
-        avg = lambda col: round(sum(r.get(col, 0) for r in logs) / gp, 2)
+
+        def avg(col):
+            return round(sum(r.get(col, 0) for r in logs) / gp, 2)
+
         recent = logs[-RECENT_GAMES:]
         rp = len(recent)
-        ravg = lambda col: round(sum(r.get(col, 0) for r in recent) / rp, 2) if rp else avg(col)
+
+        def ravg(col):
+            return round(sum(r.get(col, 0) for r in recent) / rp, 2) if rp else avg(col)
+
+        s_pts, s_reb, s_ast, s_3pt = avg('PTS'), avg('REB'), avg('AST'), avg('3PT')
+        r_pts, r_reb, r_ast, r_3pt = ravg('PTS'), ravg('REB'), ravg('AST'), ravg('3PT')
 
         season_stats[player] = {
-            'season_pts': avg('PTS'),
-            'season_reb': avg('REB'),
-            'season_ast': avg('AST'),
-            'recent_pts': ravg('PTS'),
-            'recent_reb': ravg('REB'),
-            'recent_ast': ravg('AST'),
+            # Single stats
+            'season_pts': s_pts, 'recent_pts': r_pts,
+            'season_reb': s_reb, 'recent_reb': r_reb,
+            'season_ast': s_ast, 'recent_ast': r_ast,
+            'season_3pt': s_3pt, 'recent_3pt': r_3pt,
+            # Combo stats
+            'season_pra': round(s_pts + s_reb + s_ast, 2),
+            'recent_pra': round(r_pts + r_reb + r_ast, 2),
+            'season_p+r': round(s_pts + s_reb, 2),
+            'recent_p+r': round(r_pts + r_reb, 2),
+            'season_p+a': round(s_pts + s_ast, 2),
+            'recent_p+a': round(r_pts + r_ast, 2),
+            'season_r+a': round(s_reb + s_ast, 2),
+            'recent_r+a': round(r_reb + r_ast, 2),
             'games_played': gp,
             'team': logs[-1].get('team', ''),
             'minutes': avg('MIN'),
@@ -365,18 +436,21 @@ class WNBAPropsEngine:
         cfg = PROP_CONFIGS[prop_type]
 
         self.market_key = cfg['market_key']
-        self.stat_col = cfg['stat_col']
+        self.stat_col = cfg['stat_col']           # str or list[str] for combos
         self.prop_unit = cfg['prop_unit']
         self.display_name = cfg['display_name']
         self.min_edge = cfg['min_edge']
         self.top_plays = cfg['top_plays']
+        self.is_combo = isinstance(self.stat_col, list)
 
         self.html_file = os.path.join(SCRIPT_DIR, cfg['html_file'])
         self.tracking_file = os.path.join(SCRIPT_DIR, cfg['tracking_file'])
         self.stats_cache = os.path.join(SCRIPT_DIR, cfg['stats_cache'])
 
-        self.season_key = f"season_{self.stat_col.lower()}"
-        self.recent_key = f"recent_{self.stat_col.lower()}"
+        # Cache keys for season/recent averages
+        unit_lower = self.prop_unit.lower()
+        self.season_key = f"season_{unit_lower}"
+        self.recent_key = f"recent_{unit_lower}"
 
     # ── Tracking ──────────────────────────────────────────────────────────────
 
@@ -497,7 +571,10 @@ class WNBAPropsEngine:
                         graded += 1
                     continue
 
-                actual = stat_row.get(self.stat_col, 0)
+                if self.is_combo:
+                    actual = sum(stat_row.get(c, 0) for c in self.stat_col)
+                else:
+                    actual = stat_row.get(self.stat_col, 0)
                 prop_line = pick.get('prop_line', 0)
                 bet_type = pick.get('bet_type', 'over')
 
@@ -581,6 +658,10 @@ class WNBAPropsEngine:
 
             season_avg = pdata.get(self.season_key, 0)
             recent_avg = pdata.get(self.recent_key, season_avg)
+            # Fallback: sum components if combo key missing (cache from old version)
+            if season_avg == 0 and self.is_combo:
+                season_avg = round(sum(pdata.get(f"season_{c.lower()}", 0) for c in self.stat_col), 2)
+                recent_avg = round(sum(pdata.get(f"recent_{c.lower()}", 0) for c in self.stat_col), 2)
             if season_avg == 0:
                 continue
 
@@ -904,9 +985,14 @@ class WNBAPropsEngine:
 
 def _build_nav(active_type: str):
     links = [
-        ('points', 'wnba_points_props.html', '🏀 Points'),
-        ('rebounds', 'wnba_rebounds_props.html', '💪 Rebounds'),
-        ('assists', 'wnba_assists_props.html', '🎯 Assists'),
+        ('points',          'wnba_points_props.html',          'Points'),
+        ('rebounds',        'wnba_rebounds_props.html',         'Rebounds'),
+        ('assists',         'wnba_assists_props.html',          'Assists'),
+        ('threes',          'wnba_3pt_props.html',              '3-Pointers'),
+        ('pra',             'wnba_pra_props.html',              'PRA'),
+        ('points_rebounds', 'wnba_points_rebounds_props.html',  'Pts+Reb'),
+        ('points_assists',  'wnba_points_assists_props.html',   'Pts+Ast'),
+        ('rebounds_assists','wnba_rebounds_assists_props.html', 'Reb+Ast'),
     ]
     pills = ''
     for key, href, label in links:

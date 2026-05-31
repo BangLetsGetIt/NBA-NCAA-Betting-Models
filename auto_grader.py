@@ -768,7 +768,8 @@ def run_wnba_grading(force=False, grade_only=False):
         log(f"Error processing WNBA Main: {e}", "error")
 
     # --- 2. Props Models (Points, Rebounds, Assists) ---
-    for prop_type in ('points', 'rebounds', 'assists'):
+    for prop_type in ('points', 'rebounds', 'assists', 'threes', 'pra',
+                      'points_rebounds', 'points_assists', 'rebounds_assists'):
         try:
             from wnba_props_shared import WNBAPropsEngine
             engine = WNBAPropsEngine(prop_type)
