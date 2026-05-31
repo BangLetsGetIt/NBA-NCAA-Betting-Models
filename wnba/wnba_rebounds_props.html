@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WNBA Rebounds Props</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+        :root {
+            --bg-main: #121212; --bg-card: #1e1e1e; --bg-card-secondary: #2a2a2a;
+            --text-primary: #ffffff; --text-secondary: #b3b3b3;
+            --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+            --border-color: #333333;
+        }
+        body { margin:0; padding:20px; font-family:'Inter',sans-serif;
+               background:var(--bg-main); color:var(--text-primary);
+               -webkit-font-smoothing:antialiased; }
+        .container { max-width:650px; margin:0 auto; }
+        header { display:flex; justify-content:space-between; align-items:center;
+                 margin-bottom:25px; border-bottom:1px solid var(--border-color);
+                 padding-bottom:15px; }
+        h1 { margin:0; font-size:22px; font-weight:700; }
+        .date-sub { color:var(--text-secondary); font-size:13px; margin-top:4px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+                        margin-bottom:25px; }
+        .stat-box { background:var(--bg-card); border-radius:12px; padding:12px;
+                    text-align:center; border:1px solid var(--border-color); }
+        .stat-label { font-size:11px; color:var(--text-secondary);
+                      text-transform:uppercase; margin-bottom:4px; }
+        .stat-value { font-size:18px; font-weight:700; }
+        .section-title { font-size:16px; margin-bottom:12px; display:flex;
+                         align-items:center; font-weight:600; }
+        .section-title .highlight { color:var(--accent-green); margin-left:8px;
+                                    font-size:13px; font-weight:400; }
+        .prop-card { background:var(--bg-card); border-radius:16px; overflow:hidden;
+                     margin-bottom:20px; border:1px solid var(--border-color);
+                     box-shadow:0 4px 6px -1px rgba(0,0,0,.2); }
+        .card-header { padding:12px 16px; display:flex; justify-content:space-between;
+                       align-items:center; background:var(--bg-card-secondary);
+                       border-bottom:1px solid var(--border-color); }
+        .header-left { display:flex; align-items:center; gap:10px; }
+        .team-logo { width:40px; height:40px; border-radius:50%; object-fit:contain; }
+        .player-info h2 { margin:0; font-size:16px; line-height:1.2; }
+        .matchup-info { color:var(--text-secondary); font-size:12px; margin-top:2px; }
+        .game-date-time { font-size:11px; color:var(--text-secondary); background:#333;
+                          padding:4px 8px; border-radius:4px; font-weight:500;
+                          white-space:nowrap; }
+        .card-body { padding:16px; }
+        .bet-main-row { margin-bottom:12px; }
+        .bet-selection { font-size:20px; font-weight:800; }
+        .bet-odds { font-size:16px; color:var(--text-secondary); font-weight:500;
+                    margin-left:8px; }
+        .model-subtext { color:var(--text-secondary); font-size:13px; margin-bottom:14px;
+                         padding-bottom:12px; border-bottom:1px solid var(--border-color); }
+        .model-subtext strong { color:var(--text-primary); }
+        .tags-container { display:flex; flex-wrap:wrap; gap:6px; }
+        .tag { font-size:11px; padding:4px 8px; border-radius:4px; font-weight:500; }
+        .tag-green { background:rgba(74,222,128,.15); color:var(--accent-green); }
+        .tag-red { background:rgba(248,113,113,.15); color:var(--accent-red); }
+        .tag-blue { background:rgba(96,165,250,.15); color:var(--accent-blue); }
+        .txt-green { color:var(--accent-green); }
+        .txt-red { color:var(--accent-red); }
+        .glow-green { box-shadow:0 0 15px rgba(74,222,128,.15);
+                      border:1px solid rgba(74,222,128,.3); }
+        .glow-blue { box-shadow:0 0 15px rgba(96,165,250,.15);
+                     border:1px solid rgba(96,165,250,.3); }
+        .nav-bar { display:flex; gap:10px; margin-bottom:25px; overflow-x:auto;
+                   padding-bottom:5px; }
+        .nav-pill { padding:8px 16px; background:var(--bg-card);
+                    border:1px solid var(--border-color); border-radius:20px;
+                    color:var(--text-secondary); text-decoration:none;
+                    font-size:13px; font-weight:500; white-space:nowrap; }
+        .nav-pill:hover, .nav-pill.active { background:var(--bg-card-secondary);
+                                            color:var(--text-primary);
+                                            border-color:var(--text-primary); }
+        @media(max-width:600px){ .summary-grid{grid-template-columns:repeat(2,1fr);}
+                                 .stat-box:last-child{grid-column:span 2;} }
+    </style>
+</head>
+<body>
+<div class="container">
+  <nav class="nav-bar"><a href="wnba_points_props.html" class="nav-pill">🏀 Points</a><a href="wnba_rebounds_props.html" class="nav-pill active">💪 Rebounds</a><a href="wnba_assists_props.html" class="nav-pill">🎯 Assists</a></nav>
+  <header>
+    <div>
+      <h1>🏀 WNBA Rebounds Props</h1>
+      <div class="date-sub">May 30, 2026 · Powered by The Odds API + ESPN</div>
+    </div>
+  </header>
+
+  <div class="summary-grid">
+    <div class="stat-box">
+      <div class="stat-label">Season Record</div>
+      <div class="stat-value">0-0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Win Rate</div>
+      <div class="stat-value" style="color:#f87171">0.0%</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Total Units</div>
+      <div class="stat-value" style="color:#4ade80">+0.00u</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Last 10 Days</div>
+      <div class="stat-value">0-0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">L10 Units</div>
+      <div class="stat-value" style="color:#4ade80">+0.00u</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Graded Picks</div>
+      <div class="stat-value">0</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="color:#4ade80">
+    ▲ OVER PLAYS <span class="highlight">0 today</span>
+  </div>
+  <p style="color:#666;text-align:center;padding:20px">No over plays today</p>
+
+  <div class="section-title" style="color:#f87171;margin-top:30px">
+    ▼ UNDER PLAYS <span class="highlight">3 today</span>
+  </div>
+  
+<div class="prop-card glow-blue">
+  <div class="card-header">
+    <div class="header-left">
+      <img src="https://a.espncdn.com/i/teamlogos/wnba/500/lv.png" class="team-logo" onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'" alt="">
+      <div class="player-info">
+        <h2>A'ja Wilson</h2>
+        <div class="matchup-info">Las Vegas Aces vs Valkyries</div>
+      </div>
+    </div>
+    <div class="game-meta">
+      <div class="game-date-time">Sun 03:30 PM</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bet-main-row">
+      <span class="bet-selection txt-red">
+        <span class="line">UNDER 8.5 REB</span>
+      </span>
+      <span class="bet-odds">+100</span>
+    </div>
+    <div class="model-subtext">
+      Season avg <strong>6.88</strong> · Recent avg <strong>6.88</strong>
+    </div>
+    <div class="tags-container">
+      <span class="tag tag-green">Edge: +1.6</span>
+      <span class="tag tag-blue">EV: +29.2%</span>
+    </div>
+  </div>
+</div>
+<div class="prop-card glow-blue">
+  <div class="card-header">
+    <div class="header-left">
+      <img src="https://a.espncdn.com/i/teamlogos/wnba/500/ind.png" class="team-logo" onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'" alt="">
+      <div class="player-info">
+        <h2>Aliyah Boston</h2>
+        <div class="matchup-info">Indiana Fever vs Fire</div>
+      </div>
+    </div>
+    <div class="game-meta">
+      <div class="game-date-time">Sat 08:08 PM</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bet-main-row">
+      <span class="bet-selection txt-red">
+        <span class="line">UNDER 8.5 REB</span>
+      </span>
+      <span class="bet-odds">-146</span>
+    </div>
+    <div class="model-subtext">
+      Season avg <strong>6.57</strong> · Recent avg <strong>6.57</strong>
+    </div>
+    <div class="tags-container">
+      <span class="tag tag-green">Edge: +1.9</span>
+      <span class="tag tag-blue">EV: +13.5%</span>
+    </div>
+  </div>
+</div>
+<div class="prop-card glow-blue">
+  <div class="card-header">
+    <div class="header-left">
+      <img src="https://a.espncdn.com/i/teamlogos/wnba/500/ind.png" class="team-logo" onerror="this.src='https://a.espncdn.com/i/teamlogos/wnba/500/wnba.png'" alt="">
+      <div class="player-info">
+        <h2>Caitlin Clark</h2>
+        <div class="matchup-info">Indiana Fever vs Fire</div>
+      </div>
+    </div>
+    <div class="game-meta">
+      <div class="game-date-time">Sat 08:08 PM</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="bet-main-row">
+      <span class="bet-selection txt-red">
+        <span class="line">UNDER 5.5 REB</span>
+      </span>
+      <span class="bet-odds">-162</span>
+    </div>
+    <div class="model-subtext">
+      Season avg <strong>4.0</strong> · Recent avg <strong>4.0</strong>
+    </div>
+    <div class="tags-container">
+      <span class="tag tag-green">Edge: +1.5</span>
+      <span class="tag tag-blue">EV: +2.7%</span>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

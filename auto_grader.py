@@ -767,43 +767,17 @@ def run_wnba_grading(force=False, grade_only=False):
     except Exception as e:
         log(f"Error processing WNBA Main: {e}", "error")
 
-    # --- 2. Props Model ---
-    try:
-        mod_name = 'wnba_props_model'
-        filename = 'wnba_props_model.py'
-        log(f"Processing {mod_name}...", "info")
-        
+    # --- 2. Props Models (Points, Rebounds, Assists) ---
+    for prop_type in ('points', 'rebounds', 'assists'):
         try:
-            mod = __import__(mod_name)
-        except ImportError:
-            spec = importlib.util.spec_from_file_location(mod_name, os.path.join("wnba", filename))
-            mod = importlib.util.module_from_spec(spec)
-            sys.modules[mod_name] = mod
-            spec.loader.exec_module(mod)
-            
-        # FORCE RELOAD
-        importlib.reload(mod)
-        
-        if grade_only:
-             if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-                 s1, s10, s20, today, yesterday = mod.get_stats()
-                 mod.generate_html([], s1, s10, today, yesterday)
-                 any_updates = True
-        else:
-            if hasattr(mod, 'main'):
-                 mod.main()
-                 any_updates = True
-            elif hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-                if force:
-                     # get_stats returns 5 values now
-                     s1, s10, s20, today, yesterday = mod.get_stats()
-                     mod.generate_html([], s1, s10, today, yesterday)
-                     log(f"Regenerated HTML for {mod_name}", "success")
-                     any_updates = True
+            from wnba_props_shared import WNBAPropsEngine
+            engine = WNBAPropsEngine(prop_type)
+            engine.grade_pending()
+            log(f"Graded WNBA {prop_type} props", "success")
+            any_updates = True
+        except Exception as e:
+            log(f"Error grading WNBA {prop_type} props: {e}", "error")
 
-    except Exception as e:
-        log(f"Error processing WNBA Props: {e}", "error")
-        
     return any_updates
 
 def run_ncaab_grading(force=False, grade_only=False):
