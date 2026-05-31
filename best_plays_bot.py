@@ -61,6 +61,14 @@ TRACKING_SOURCES = [
     ('CBB R+A Props', 'ncaa/cbb_rebounds_assists_props_tracking.json', 'NCAAB', 'Props'),
     ('Soccer', 'soccer/soccer_picks_tracking.json', 'Soccer', 'Total'),
     ('MLB Master', 'mlb/mlb_master_model_tracking.json', 'MLB', 'Props'),
+    ('WNBA Points', 'wnba/wnba_points_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA Rebounds', 'wnba/wnba_rebounds_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA Assists', 'wnba/wnba_assists_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA 3PT', 'wnba/wnba_3pt_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA PRA', 'wnba/wnba_pra_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA P+R', 'wnba/wnba_points_rebounds_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA P+A', 'wnba/wnba_points_assists_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA R+A', 'wnba/wnba_rebounds_assists_props_tracking.json', 'WNBA', 'Props'),
 ]
 
 
@@ -165,8 +173,10 @@ def calculate_confidence_score(play, model_stats, bet_type_rate):
     bet_type_score = (bet_type_rate / 100) * 25
     
     # AI Score (typically 8-10) -> scaled to 0-20
-    # MLB uses 'score' (prob*10, range ~5-9.5) as proxy
-    ai_score = play.get('ai_score') or play.get('score') or 8.0
+    # MLB uses 'score'; WNBA uses 'ev' (0-15 range, map to 7-10 equiv)
+    ev = play.get('ev', 0)
+    ai_score = (play.get('ai_score') or play.get('score') or
+                (7.0 + min(ev / 15.0, 1.0) * 3.0 if ev else 8.0))
     ai_component = ((ai_score - 7) / 3) * 20  # 7=0, 10=20
     ai_component = max(0, min(20, ai_component))
     
@@ -341,7 +351,12 @@ def get_team_logo_url(team_name, sport):
                 break
     
     if not abbr: abbr = team_name[:3].lower()
-    
+
+    if sport == 'WNBA':
+        from wnba.wnba_props_shared import WNBA_TEAM_ABBREVS
+        abbr = WNBA_TEAM_ABBREVS.get(team_name, abbr)
+        return f"https://a.espncdn.com/i/teamlogos/wnba/500/{abbr}.png"
+
     sport_path = 'nba' if sport == 'NBA' else 'nfl' if sport == 'NFL' else 'ncaa'
     return f"https://a.espncdn.com/i/teamlogos/{sport_path}/500/{abbr}.png"
 

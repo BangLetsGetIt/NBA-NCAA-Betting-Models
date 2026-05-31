@@ -37,6 +37,14 @@ TRACKING_SOURCES = [
     ('NBA P+R Props', 'nba/nba_points_rebounds_props_tracking.json', 'NBA', 'Props'),
     ('NBA P+A Props', 'nba/nba_points_assists_props_tracking.json', 'NBA', 'Props'),
     ('NBA R+A Props', 'nba/nba_rebounds_assists_props_tracking.json', 'NBA', 'Props'),
+    ('WNBA Points', 'wnba/wnba_points_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA Rebounds', 'wnba/wnba_rebounds_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA Assists', 'wnba/wnba_assists_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA 3PT', 'wnba/wnba_3pt_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA PRA', 'wnba/wnba_pra_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA P+R', 'wnba/wnba_points_rebounds_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA P+A', 'wnba/wnba_points_assists_props_tracking.json', 'WNBA', 'Props'),
+    ('WNBA R+A', 'wnba/wnba_rebounds_assists_props_tracking.json', 'WNBA', 'Props'),
     ('NBA Main', 'nba/nba_picks_tracking.json', 'NBA', 'Spread/Total'),
     ('NCAAB', 'ncaa/ncaab_picks_tracking.json', 'NCAAB', 'Spread/Total'),
     ('CBB Points Props', 'ncaa/cbb_points_props_tracking.json', 'NCAAB', 'Props'),
@@ -327,6 +335,69 @@ def get_mlb_plays():
     return plays
 
 
+def get_wnba_props_plays():
+    """Get WNBA player prop plays from tracking JSON files."""
+    plays = []
+    now = now_et()
+
+    wnba_sources = [
+        ('WNBA Points', 'wnba/wnba_points_props_tracking.json'),
+        ('WNBA Rebounds', 'wnba/wnba_rebounds_props_tracking.json'),
+        ('WNBA Assists', 'wnba/wnba_assists_props_tracking.json'),
+        ('WNBA 3PT', 'wnba/wnba_3pt_props_tracking.json'),
+        ('WNBA PRA', 'wnba/wnba_pra_props_tracking.json'),
+        ('WNBA P+R', 'wnba/wnba_points_rebounds_props_tracking.json'),
+        ('WNBA P+A', 'wnba/wnba_points_assists_props_tracking.json'),
+        ('WNBA R+A', 'wnba/wnba_rebounds_assists_props_tracking.json'),
+    ]
+
+    for model_name, filepath in wnba_sources:
+        picks = load_json(filepath)
+        win_rate, record = get_model_win_rate(filepath)
+
+        for p in picks:
+            if p.get('status', 'pending').lower() != 'pending':
+                continue
+
+            game_time = parse_game_time(p.get('game_time'))
+            if not game_time or game_time < now:
+                continue
+
+            ev = p.get('ev', 0)
+            edge = abs(p.get('edge', 0))
+            if ev <= 0 or edge < 1.0:
+                continue
+
+            bet_type = p.get('bet_type', '').upper()
+            prop_unit = p.get('prop_unit', '')
+            prop_line = p.get('prop_line', '')
+            player = p.get('player', 'Unknown')
+
+            plays.append({
+                'sport': 'WNBA',
+                'type': 'Prop',
+                'pick': f"{player} {bet_type} {prop_line} {prop_unit}".strip(),
+                'edge': edge,
+                'explanation': f"{model_name} | Record: {record} ({win_rate:.0f}%) | EV: {ev:+.1f}%",
+                'matchup': p.get('opponent', ''),
+                'game_time': game_time,
+                'game_time_str': game_time.strftime('%a %I:%M %p'),
+                'predicted_score': '',
+                'home_team': '',
+                'away_team': '',
+                'market_line': prop_line,
+                'player': player,
+                'model': model_name,
+                'model_win_rate': win_rate,
+                'model_record': record,
+                'ai_score': 7.0 + min(ev / 15.0, 1.0) * 3.0,
+                'season_avg': p.get('season_avg', 0),
+                'recent_avg': p.get('recent_avg', 0),
+            })
+
+    return plays
+
+
 def find_correlations(plays):
     """Find correlated plays from the same game (e.g., team covers + under)."""
     by_game = defaultdict(list)
@@ -473,6 +544,8 @@ def get_sport_badge_color(sport):
         return '#f59e0b'
     elif sport == 'MLB':
         return '#4ade80'
+    elif sport == 'WNBA':
+        return '#f472b6'
     else:
         return '#a78bfa'
 
@@ -1224,13 +1297,15 @@ def main():
     ncaab = get_ncaab_plays()
     props = get_props_plays()
     mlb = get_mlb_plays()
+    wnba = get_wnba_props_plays()
 
     print(f"  NBA spreads/totals: {len(nba)} qualifying plays")
     print(f"  NCAAB spreads/totals: {len(ncaab)} qualifying plays")
     print(f"  NBA/NCAAB player props: {len(props)} qualifying plays")
     print(f"  MLB props: {len(mlb)} qualifying plays")
+    print(f"  WNBA props: {len(wnba)} qualifying plays")
 
-    all_plays = nba + ncaab + props + mlb
+    all_plays = nba + ncaab + props + mlb + wnba
     print(f"  Total: {len(all_plays)} plays")
 
     if not all_plays:
