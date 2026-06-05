@@ -264,8 +264,12 @@
       "recent_avg": 24.0,
       "ev": 27.65,
       "edge": 2.5,
-      "status": "pending",
-      "tracked_at": "2026-06-04T01:12:29.636628-04:00"
+      "status": "loss",
+      "tracked_at": "2026-06-04T01:12:29.636628-04:00",
+      "result": "LOSS",
+      "actual_pra": 28,
+      "profit_loss": -100,
+      "graded_at": "2026-06-05T00:16:49.558130-04:00"
     },
     {
       "pick_id": "Alyssa Thomas_32.5_under_2026-06-06T02:00:00Z",
@@ -298,8 +302,12 @@
       "recent_avg": 30.49,
       "ev": 21.12,
       "edge": 3.01,
-      "status": "pending",
-      "tracked_at": "2026-06-04T01:12:29.636683-04:00"
+      "status": "win",
+      "tracked_at": "2026-06-04T01:12:29.636683-04:00",
+      "result": "WIN",
+      "actual_pra": 32,
+      "profit_loss": 78,
+      "graded_at": "2026-06-05T00:16:49.558278-04:00"
     },
     {
       "pick_id": "Angel Reese_30.5_under_2026-06-04T23:00:00Z",
@@ -315,8 +323,46 @@
       "recent_avg": 26.22,
       "ev": 21.12,
       "edge": 4.28,
+      "status": "win",
+      "tracked_at": "2026-06-04T01:12:29.636695-04:00",
+      "result": "WIN",
+      "actual_pra": 24,
+      "profit_loss": 78,
+      "graded_at": "2026-06-05T00:16:49.558366-04:00"
+    },
+    {
+      "pick_id": "Azura Stevens_14.5_under_2026-06-05T23:30:00Z",
+      "player": "Azura Stevens",
+      "prop_line": 14.5,
+      "bet_type": "under",
+      "prop_unit": "PRA",
+      "team": "Chicago Sky",
+      "opponent": "Connecticut Sun",
+      "odds": -102,
+      "game_time": "2026-06-05T23:30:00Z",
+      "season_avg": 11.25,
+      "recent_avg": 11.25,
+      "ev": 34.67,
+      "edge": 3.25,
       "status": "pending",
-      "tracked_at": "2026-06-04T01:12:29.636695-04:00"
+      "tracked_at": "2026-06-05T00:16:51.345281-04:00"
+    },
+    {
+      "pick_id": "Azzi Fudd_18.5_under_2026-06-06T02:00:00Z",
+      "player": "Azzi Fudd",
+      "prop_line": 18.5,
+      "bet_type": "under",
+      "prop_unit": "PRA",
+      "team": "Dallas Wings",
+      "opponent": "Los Angeles Sparks",
+      "odds": -128,
+      "game_time": "2026-06-06T02:00:00Z",
+      "season_avg": 14.44,
+      "recent_avg": 14.44,
+      "ev": 21.12,
+      "edge": 4.06,
+      "status": "pending",
+      "tracked_at": "2026-06-05T00:16:51.345313-04:00"
     }
   ]
 }
