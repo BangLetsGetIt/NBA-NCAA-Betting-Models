@@ -325,8 +325,12 @@
       "recent_avg": 3.8,
       "ev": 22.54,
       "edge": 1.12,
-      "status": "pending",
-      "tracked_at": "2026-06-11T01:21:41.462839-04:00"
+      "status": "loss",
+      "tracked_at": "2026-06-11T01:21:41.462839-04:00",
+      "result": "LOSS",
+      "actual_ast": 0,
+      "profit_loss": -100,
+      "graded_at": "2026-06-11T23:28:10.105612-04:00"
     },
     {
       "pick_id": "Jessica Shepard_4.5_over_2026-06-12T01:10:00Z",
@@ -342,8 +346,12 @@
       "recent_avg": 5.3,
       "ev": 1.68,
       "edge": 0.83,
-      "status": "pending",
-      "tracked_at": "2026-06-11T01:21:41.462882-04:00"
+      "status": "win",
+      "tracked_at": "2026-06-11T01:21:41.462882-04:00",
+      "result": "WIN",
+      "actual_ast": 7,
+      "profit_loss": 76,
+      "graded_at": "2026-06-11T23:28:10.105769-04:00"
     },
     {
       "pick_id": "Alyssa Thomas_8.5_under_2026-06-12T01:10:00Z",
@@ -359,8 +367,63 @@
       "recent_avg": 7.2,
       "ev": 10.94,
       "edge": 0.83,
+      "status": "loss",
+      "tracked_at": "2026-06-11T01:21:41.462896-04:00",
+      "result": "LOSS",
+      "actual_ast": 10,
+      "profit_loss": -100,
+      "graded_at": "2026-06-11T23:28:10.105796-04:00"
+    },
+    {
+      "pick_id": "Chelsea Gray_2.5_over_2026-06-12T02:03:23Z",
+      "player": "Chelsea Gray",
+      "prop_line": 2.5,
+      "bet_type": "over",
+      "prop_unit": "AST",
+      "team": "Las Vegas Aces",
+      "opponent": "Portland Fire",
+      "odds": -210,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 7.0,
+      "recent_avg": 7.3,
+      "ev": 3.33,
+      "edge": 4.5,
       "status": "pending",
-      "tracked_at": "2026-06-11T01:21:41.462896-04:00"
+      "tracked_at": "2026-06-11T23:28:11.905722-04:00"
+    },
+    {
+      "pick_id": "Jackie Young_8.5_under_2026-06-12T02:03:23Z",
+      "player": "Jackie Young",
+      "prop_line": 8.5,
+      "bet_type": "under",
+      "prop_unit": "AST",
+      "team": "Las Vegas Aces",
+      "opponent": "Portland Fire",
+      "odds": 110,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 6.0,
+      "recent_avg": 6.6,
+      "ev": 42.8,
+      "edge": 2.5,
+      "status": "pending",
+      "tracked_at": "2026-06-11T23:28:11.905768-04:00"
+    },
+    {
+      "pick_id": "Kayla Thornton_1.5_under_2026-06-13T02:00:00Z",
+      "player": "Kayla Thornton",
+      "prop_line": 1.5,
+      "bet_type": "under",
+      "prop_unit": "AST",
+      "team": "Golden State Valkyries",
+      "opponent": "Seattle Storm",
+      "odds": -125,
+      "game_time": "2026-06-13T02:00:00Z",
+      "season_avg": 0.58,
+      "recent_avg": 0.6,
+      "ev": 4.9,
+      "edge": 0.92,
+      "status": "pending",
+      "tracked_at": "2026-06-11T23:28:11.905783-04:00"
     }
   ]
 }

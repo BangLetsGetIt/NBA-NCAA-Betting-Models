@@ -411,9 +411,13 @@
       "recent_avg": 5.14,
       "ev": 7.34,
       "edge": 1.36,
-      "status": "pending",
+      "status": "loss",
       "tracked_at": "2026-06-10T00:24:20.954187-04:00",
-      "last_updated": "2026-06-11T01:21:38.343061-04:00"
+      "last_updated": "2026-06-11T01:21:38.343061-04:00",
+      "result": "LOSS",
+      "actual_reb": 9,
+      "profit_loss": -100,
+      "graded_at": "2026-06-11T23:28:06.106310-04:00"
     },
     {
       "pick_id": "Natasha Mack_9.5_under_2026-06-12T01:10:00Z",
@@ -429,8 +433,12 @@
       "recent_avg": 8.2,
       "ev": 14.71,
       "edge": 1.12,
-      "status": "pending",
-      "tracked_at": "2026-06-11T01:21:38.342997-04:00"
+      "status": "win",
+      "tracked_at": "2026-06-11T01:21:38.342997-04:00",
+      "result": "WIN",
+      "actual_reb": 4,
+      "profit_loss": 68,
+      "graded_at": "2026-06-11T23:28:06.106434-04:00"
     },
     {
       "pick_id": "A'ja Wilson_10.5_under_2026-06-12T02:10:00Z",
@@ -463,8 +471,80 @@
       "recent_avg": 3.0,
       "ev": 3.19,
       "edge": 1.5,
+      "status": "win",
+      "tracked_at": "2026-06-11T01:21:38.343075-04:00",
+      "result": "WIN",
+      "actual_reb": 3,
+      "profit_loss": 62,
+      "graded_at": "2026-06-11T23:28:06.106508-04:00"
+    },
+    {
+      "pick_id": "Emily Engstler_3.5_over_2026-06-12T02:03:23Z",
+      "player": "Emily Engstler",
+      "prop_line": 3.5,
+      "bet_type": "over",
+      "prop_unit": "REB",
+      "team": "Portland Fire",
+      "opponent": "Las Vegas Aces",
+      "odds": 126,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 4.62,
+      "recent_avg": 5.1,
+      "ev": 53.86,
+      "edge": 1.12,
       "status": "pending",
-      "tracked_at": "2026-06-11T01:21:38.343075-04:00"
+      "tracked_at": "2026-06-11T23:28:08.125105-04:00"
+    },
+    {
+      "pick_id": "Megan Gustafson_1.5_over_2026-06-12T02:03:23Z",
+      "player": "Megan Gustafson",
+      "prop_line": 1.5,
+      "bet_type": "over",
+      "prop_unit": "REB",
+      "team": "Portland Fire",
+      "opponent": "Las Vegas Aces",
+      "odds": -146,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 3.77,
+      "recent_avg": 4.4,
+      "ev": 17.95,
+      "edge": 2.27,
+      "status": "pending",
+      "tracked_at": "2026-06-11T23:28:08.125153-04:00"
+    },
+    {
+      "pick_id": "A'ja Wilson_4.5_over_2026-06-12T02:03:23Z",
+      "player": "A'ja Wilson",
+      "prop_line": 4.5,
+      "bet_type": "over",
+      "prop_unit": "REB",
+      "team": "Las Vegas Aces",
+      "opponent": "Portland Fire",
+      "odds": -168,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 9.25,
+      "recent_avg": 10.2,
+      "ev": 11.67,
+      "edge": 4.75,
+      "status": "pending",
+      "tracked_at": "2026-06-11T23:28:08.125170-04:00"
+    },
+    {
+      "pick_id": "Jackie Young_7.5_under_2026-06-12T02:03:23Z",
+      "player": "Jackie Young",
+      "prop_line": 7.5,
+      "bet_type": "under",
+      "prop_unit": "REB",
+      "team": "Las Vegas Aces",
+      "opponent": "Portland Fire",
+      "odds": -148,
+      "game_time": "2026-06-12T02:03:23Z",
+      "season_avg": 4.17,
+      "recent_avg": 4.4,
+      "ev": 13.95,
+      "edge": 3.33,
+      "status": "pending",
+      "tracked_at": "2026-06-11T23:28:08.125185-04:00"
     }
   ]
 }
