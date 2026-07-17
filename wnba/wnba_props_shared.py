@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import pytz
 import requests
 from dotenv import load_dotenv
+from scipy.stats import norm
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(os.path.dirname(SCRIPT_DIR), '.env'))
@@ -39,6 +40,8 @@ PROP_CONFIGS = {
         "tracking_file": "wnba_points_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
         "min_edge": 1.5,
+        "stat_std": 6.0,
+        "min_games": 8,
         "top_plays": 10,
     },
     "rebounds": {
@@ -50,6 +53,8 @@ PROP_CONFIGS = {
         "tracking_file": "wnba_rebounds_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
         "min_edge": 1.0,
+        "stat_std": 2.5,
+        "min_games": 8,
         "top_plays": 8,
     },
     "assists": {
@@ -61,6 +66,8 @@ PROP_CONFIGS = {
         "tracking_file": "wnba_assists_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
         "min_edge": 0.8,
+        "stat_std": 1.8,
+        "min_games": 8,
         "top_plays": 6,
     },
     "threes": {
@@ -72,6 +79,8 @@ PROP_CONFIGS = {
         "tracking_file": "wnba_3pt_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
         "min_edge": 0.5,
+        "stat_std": 1.2,
+        "min_games": 8,
         "top_plays": 8,
     },
     "pra": {
@@ -82,7 +91,9 @@ PROP_CONFIGS = {
         "html_file": "wnba_pra_props.html",
         "tracking_file": "wnba_pra_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
-        "min_edge": 2.5,
+        "min_edge": 4.0,
+        "stat_std": 8.5,
+        "min_games": 12,
         "top_plays": 8,
     },
     "points_rebounds": {
@@ -93,7 +104,9 @@ PROP_CONFIGS = {
         "html_file": "wnba_points_rebounds_props.html",
         "tracking_file": "wnba_points_rebounds_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
-        "min_edge": 2.0,
+        "min_edge": 3.5,
+        "stat_std": 7.5,
+        "min_games": 12,
         "top_plays": 8,
     },
     "points_assists": {
@@ -104,7 +117,9 @@ PROP_CONFIGS = {
         "html_file": "wnba_points_assists_props.html",
         "tracking_file": "wnba_points_assists_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
-        "min_edge": 2.0,
+        "min_edge": 3.5,
+        "stat_std": 7.0,
+        "min_games": 12,
         "top_plays": 8,
     },
     "rebounds_assists": {
@@ -115,7 +130,9 @@ PROP_CONFIGS = {
         "html_file": "wnba_rebounds_assists_props.html",
         "tracking_file": "wnba_rebounds_assists_props_tracking.json",
         "stats_cache": "wnba_player_stats_cache.json",
-        "min_edge": 1.5,
+        "min_edge": 2.0,
+        "stat_std": 3.5,
+        "min_games": 12,
         "top_plays": 8,
     },
 }
@@ -395,33 +412,20 @@ def _get_wnba_props(market_key: str):
 
 # ── EV / scoring ─────────────────────────────────────────────────────────────
 
-def _calculate_ev(season_avg: float, recent_avg: float, prop_line: float,
-                  odds: int, bet_type: str):
-    """Return (ev_pct, true_prob_pct)."""
+def _calculate_ev(blended_avg: float, prop_line: float, odds: int,
+                  bet_type: str, stat_std: float):
+    """Return (ev_pct, true_prob_pct) using normal distribution over blended average."""
     if odds is None:
         odds = -110
-    if odds > 0:
-        implied = 100 / (odds + 100)
+    if bet_type == 'over':
+        true_prob = float(1 - norm.cdf(prop_line, loc=blended_avg, scale=stat_std))
     else:
-        implied = abs(odds) / (abs(odds) + 100)
-
-    edge = (season_avg - prop_line) if bet_type == 'over' else (prop_line - season_avg)
-    edge_factor = min(abs(edge) / 2.0, 1.0)
-
-    recent_factor = 0.0
-    if bet_type == 'over' and recent_avg > season_avg:
-        recent_factor = min((recent_avg - season_avg) / 2.0, 0.08)
-    elif bet_type == 'under' and recent_avg < season_avg:
-        recent_factor = min((season_avg - recent_avg) / 2.0, 0.08)
-
-    true_prob = 0.50 + (edge_factor * 0.18) + recent_factor
-    true_prob = min(max(true_prob, 0.40), 0.70)
-
+        true_prob = float(norm.cdf(prop_line, loc=blended_avg, scale=stat_std))
+    true_prob = min(max(true_prob, 0.30), 0.82)
     if odds > 0:
         ev = (true_prob * (odds / 100)) - (1 - true_prob)
     else:
         ev = (true_prob * (100 / abs(odds))) - (1 - true_prob)
-
     return round(ev * 100, 2), round(true_prob * 100, 1)
 
 
@@ -440,6 +444,8 @@ class WNBAPropsEngine:
         self.prop_unit = cfg['prop_unit']
         self.display_name = cfg['display_name']
         self.min_edge = cfg['min_edge']
+        self.stat_std = cfg['stat_std']
+        self.min_games = cfg['min_games']
         self.top_plays = cfg['top_plays']
         self.is_combo = isinstance(self.stat_col, list)
 
@@ -665,23 +671,25 @@ class WNBAPropsEngine:
             if season_avg == 0:
                 continue
 
+            # Require minimum games for a reliable sample
+            if pdata.get('games_played', 0) < self.min_games:
+                continue
+
+            # Blend recent form heavily — more predictive than season average alone
+            blended_avg = round(0.4 * season_avg + 0.6 * recent_avg, 2)
+
             prop_line = prop['prop_line']
             home = prop['home_team']
             away = prop['away_team']
-            team = home  # default — will check rosters below
-
-            # Determine which team the player is on
-            for tname, rows in []:  # placeholder; we'll use pdata team
-                pass
             player_team = pdata.get('team', '')
 
             # Over side
             if prop.get('over_price') is not None:
-                edge = round(season_avg - prop_line, 2)
+                edge = round(blended_avg - prop_line, 2)
                 if edge >= self.min_edge:
-                    ev, prob = _calculate_ev(season_avg, recent_avg, prop_line,
-                                             prop['over_price'], 'over')
-                    if ev > 0:
+                    ev, prob = _calculate_ev(blended_avg, prop_line,
+                                             prop['over_price'], 'over', self.stat_std)
+                    if ev > 3.0:
                         plays.append({
                             'player': player,
                             'team': player_team,
@@ -692,6 +700,7 @@ class WNBAPropsEngine:
                             'odds': prop['over_price'],
                             'season_avg': season_avg,
                             'recent_avg': recent_avg,
+                            'blended_avg': blended_avg,
                             'edge': edge,
                             'ev': ev,
                             'true_prob': prob,
@@ -702,11 +711,11 @@ class WNBAPropsEngine:
 
             # Under side
             if prop.get('under_price') is not None:
-                edge = round(prop_line - season_avg, 2)
+                edge = round(prop_line - blended_avg, 2)
                 if edge >= self.min_edge:
-                    ev, prob = _calculate_ev(season_avg, recent_avg, prop_line,
-                                             prop['under_price'], 'under')
-                    if ev > 0:
+                    ev, prob = _calculate_ev(blended_avg, prop_line,
+                                             prop['under_price'], 'under', self.stat_std)
+                    if ev > 3.0:
                         plays.append({
                             'player': player,
                             'team': player_team,
@@ -717,6 +726,7 @@ class WNBAPropsEngine:
                             'odds': prop['under_price'],
                             'season_avg': season_avg,
                             'recent_avg': recent_avg,
+                            'blended_avg': blended_avg,
                             'edge': edge,
                             'ev': ev,
                             'true_prob': prob,
@@ -939,7 +949,7 @@ class WNBAPropsEngine:
       <span class="bet-odds">{odds_str}</span>
     </div>
     <div class="model-subtext">
-      Season avg <strong>{season_avg}</strong> · Recent avg <strong>{recent_avg}</strong>
+      Season avg <strong>{season_avg}</strong> · L10 avg <strong>{recent_avg}</strong> · Model avg <strong>{play.get('blended_avg', season_avg)}</strong>
     </div>
     <div class="tags-container">
       {edge_tag}
@@ -985,7 +995,10 @@ class WNBAPropsEngine:
 
 def _build_nav(active_type: str):
     links = [
-        ('points',          'wnba_points_props.html',          'Points'),
+        ('ml',              'wnba_ml.html',                     'Moneyline'),
+        ('spreads',         'wnba_spreads.html',                'Spreads'),
+        ('totals',          'wnba_totals.html',                 'Totals'),
+        ('points',          'wnba_points_props.html',           'Points'),
         ('rebounds',        'wnba_rebounds_props.html',         'Rebounds'),
         ('assists',         'wnba_assists_props.html',          'Assists'),
         ('threes',          'wnba_3pt_props.html',              '3-Pointers'),

@@ -746,23 +746,18 @@ def run_wnba_grading(force=False, grade_only=False):
         importlib.reload(mod)
 
         if grade_only:
-            # WNBA main often fetches just scores, but let's be safe
-            if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-                 stats = mod.get_stats()
-                 mod.generate_html([], stats)
-                 any_updates = True
+            if hasattr(mod, 'generate_html'):
+                mod.generate_html()
+                any_updates = True
         else:
             if hasattr(mod, 'main'):
-                 mod.main()
-                 any_updates = True
+                mod.main()
+                any_updates = True
             else:
-                # Fallback
-                if hasattr(mod, 'generate_html') and hasattr(mod, 'get_stats'):
-                    if force:
-                        stats = mod.get_stats()
-                        mod.generate_html([], stats)
-                        log(f"Regenerated HTML for {mod_name}", "success")
-                        any_updates = True
+                if hasattr(mod, 'generate_html') and force:
+                    mod.generate_html()
+                    log(f"Regenerated HTML for {mod_name}", "success")
+                    any_updates = True
                 
     except Exception as e:
         log(f"Error processing WNBA Main: {e}", "error")
@@ -778,6 +773,160 @@ def run_wnba_grading(force=False, grade_only=False):
             any_updates = True
         except Exception as e:
             log(f"Error grading WNBA {prop_type} props: {e}", "error")
+
+    # --- 3. Team Picks (ML / Spread / Total) ---
+    try:
+        import requests as _requests
+        wnba_team_tracking = os.path.join('wnba', 'wnba_team_tracking.json')
+        if os.path.exists(wnba_team_tracking):
+            with open(wnba_team_tracking) as _f:
+                _td = json.load(_f)
+
+            et_tz = pytz.timezone('US/Eastern')
+            now_et = datetime.now(et_tz)
+            _pending = [p for p in _td.get('picks', []) if p.get('status') == 'pending']
+            _graded_count = 0
+            _sb_cache = {}
+
+            for pick in _pending:
+                pick_id = pick.get('id', '')
+                # Extract date from last 8 chars of id
+                pick_date = pick_id.split('_')[-1] if pick_id else ''
+                if not pick_date or pick_date >= now_et.strftime('%Y%m%d'):
+                    continue  # don't grade today or future
+
+                # Fetch ESPN scoreboard for that date
+                if pick_date not in _sb_cache:
+                    try:
+                        _resp = _requests.get(
+                            'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard',
+                            params={'dates': pick_date}, timeout=10
+                        ).json()
+                        _sb_cache[pick_date] = _resp.get('events', [])
+                    except Exception as _e:
+                        log(f"WNBA scoreboard error {pick_date}: {_e}", "warning")
+                        _sb_cache[pick_date] = []
+
+                events = _sb_cache[pick_date]
+                home_full = pick.get('home_team', '')
+                away_full = pick.get('away_team', '')
+
+                # Find matching completed event
+                event = None
+                for ev in events:
+                    comps = ev.get('competitions', [{}])[0]
+                    is_done = comps.get('status', {}).get('type', {}).get('completed', False)
+                    if not is_done:
+                        continue
+                    names = {c.get('team', {}).get('displayName', '')
+                             for c in comps.get('competitors', [])}
+                    if home_full in names and away_full in names:
+                        event = ev
+                        break
+
+                if not event:
+                    continue
+
+                comps = event.get('competitions', [{}])[0]
+                competitors = comps.get('competitors', [])
+                home_c = next((c for c in competitors
+                               if c.get('team', {}).get('displayName', '') == home_full), None)
+                away_c = next((c for c in competitors
+                               if c.get('team', {}).get('displayName', '') == away_full), None)
+                if not home_c or not away_c:
+                    continue
+
+                try:
+                    home_score = int(home_c.get('score', 0) or 0)
+                    away_score = int(away_c.get('score', 0) or 0)
+                except (ValueError, TypeError):
+                    continue
+
+                total_pts = home_score + away_score
+                margin    = home_score - away_score  # positive = home win
+                pick_type = pick.get('type', '')
+                result_str = f"{away_full} {away_score} - {home_full} {home_score}"
+
+                try:
+                    if pick_type == 'WNBA Moneyline':
+                        bet_team = pick.get('bet_team', '')
+                        is_home  = (bet_team == home_full)
+                        sel_score = home_score if is_home else away_score
+                        opp_score = away_score if is_home else home_score
+                        if sel_score > opp_score:
+                            pick['status'] = 'win'
+                            pick['profit_loss'] = round((pick.get('odds_dec', 1.91) - 1) * 100, 2)
+                        elif sel_score < opp_score:
+                            pick['status'] = 'loss'
+                            pick['profit_loss'] = -100
+                        else:
+                            pick['status'] = 'push'
+                            pick['profit_loss'] = 0
+
+                    elif pick_type == 'WNBA Spread':
+                        bet_team = pick.get('bet_team', '')
+                        point    = float(pick.get('point', 0))
+                        is_home  = (bet_team == home_full)
+                        sel_margin = margin if is_home else -margin
+                        if sel_margin + point > 0:
+                            pick['status'] = 'win'
+                            pick['profit_loss'] = round((pick.get('odds_dec', 1.91) - 1) * 100, 2)
+                        elif sel_margin + point < 0:
+                            pick['status'] = 'loss'
+                            pick['profit_loss'] = -100
+                        else:
+                            pick['status'] = 'push'
+                            pick['profit_loss'] = 0
+
+                    elif pick_type == 'WNBA Total':
+                        direction = pick.get('direction', 'over')
+                        tot_line  = float(pick.get('tot_line', 165.5))
+                        if direction == 'over':
+                            won  = total_pts > tot_line
+                            push = total_pts == tot_line
+                        else:
+                            won  = total_pts < tot_line
+                            push = total_pts == tot_line
+                        if push:
+                            pick['status'] = 'push'
+                            pick['profit_loss'] = 0
+                        elif won:
+                            pick['status'] = 'win'
+                            pick['profit_loss'] = round((pick.get('odds_dec', 1.91) - 1) * 100, 2)
+                        else:
+                            pick['status'] = 'loss'
+                            pick['profit_loss'] = -100
+                        result_str += f" | Total: {total_pts} ({direction.upper()} {tot_line})"
+                    else:
+                        continue
+
+                    pick['result'] = f"{pick['status'].title()} ({result_str})"
+                    _graded_count += 1
+                    log(f"WNBA {pick_type} {pick.get('selection','')}: {pick['status']} | {result_str}", "success")
+
+                except Exception as _e:
+                    log(f"WNBA team pick grading error {pick_id}: {_e}", "warning")
+
+            if _graded_count > 0:
+                with open(wnba_team_tracking, 'w') as _f:
+                    json.dump(_td, _f, indent=2)
+                log(f"WNBA team picks: graded {_graded_count}", "success")
+                any_updates = True
+
+                # Regenerate HTML
+                try:
+                    _wmod_spec = importlib.util.spec_from_file_location(
+                        'wnba_model', os.path.join('wnba', 'wnba_model.py')
+                    )
+                    _wmod = importlib.util.module_from_spec(_wmod_spec)
+                    _wmod_spec.loader.exec_module(_wmod)
+                    _wmod.generate_html()
+                    log("Regenerated WNBA team HTML pages", "success")
+                except Exception as _e:
+                    log(f"WNBA team HTML regen error: {_e}", "warning")
+
+    except Exception as e:
+        log(f"Error grading WNBA team picks: {e}", "error")
 
     return any_updates
 
@@ -1539,6 +1688,83 @@ def run_mlb_grading(force=False, grade_only=False):
             except Exception as e:
                 log(f"Hits Allowed grading error {pick_sel}: {e}", "warning")
 
+        # --- Moneyline / Run Line / Totals ---
+        elif pick_type in ('Team Props - Moneyline', 'Team Props - Run Line', 'Team Props - Total Runs'):
+            try:
+                header_comp = sdata.get('header', {}).get('competitions', [{}])[0]
+                competitors = header_comp.get('competitors', [])
+                away_c = next((c for c in competitors if c.get('homeAway') == 'away'), None)
+                home_c = next((c for c in competitors if c.get('homeAway') == 'home'), None)
+                if not away_c or not home_c:
+                    continue
+                home_score = int(away_c.get('score', -1) if away_c else -1)
+                away_score = int(home_c.get('score', -1) if home_c else -1)
+                # ESPN sometimes reverses home/away — use abbr matching
+                away_score = int(away_c.get('score', 0) or 0)
+                home_score = int(home_c.get('score', 0) or 0)
+                total_runs  = away_score + home_score
+                margin      = home_score - away_score  # positive = home win
+
+                result_str = f"{away_abbr} {away_score} - {home_abbr} {home_score}"
+
+                if pick_type == 'Team Props - Moneyline':
+                    bet_team = pick.get('bet_team', '')
+                    sel_is_home = (bet_team == pick.get('home_team', ''))
+                    sel_score = home_score if sel_is_home else away_score
+                    opp_score = away_score if sel_is_home else home_score
+                    if sel_score > opp_score:
+                        pick['status'] = 'Win'
+                        pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                    elif sel_score < opp_score:
+                        pick['status'] = 'Loss'
+                        pick['profit'] = -1.0
+                    else:
+                        pick['status'] = 'Push'
+                        pick['profit'] = 0.0
+
+                elif pick_type == 'Team Props - Run Line':
+                    bet_team = pick.get('bet_team', '')
+                    point    = float(pick.get('point', -1.5))
+                    sel_is_home = (bet_team == pick.get('home_team', ''))
+                    sel_score = home_score if sel_is_home else away_score
+                    opp_score = away_score if sel_is_home else home_score
+                    margin_sel = sel_score - opp_score
+                    if margin_sel + point > 0:
+                        pick['status'] = 'Win'
+                        pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                    elif margin_sel + point < 0:
+                        pick['status'] = 'Loss'
+                        pick['profit'] = -1.0
+                    else:
+                        pick['status'] = 'Push'
+                        pick['profit'] = 0.0
+
+                else:  # Total Runs
+                    direction = pick.get('direction', 'over')
+                    tot_line  = float(pick.get('tot_line', pick.get('line', 8.5)))
+                    if direction == 'over':
+                        won = total_runs > tot_line
+                        push = total_runs == tot_line
+                    else:
+                        won = total_runs < tot_line
+                        push = total_runs == tot_line
+                    if push:
+                        pick['status'] = 'Push'
+                        pick['profit'] = 0.0
+                    elif won:
+                        pick['status'] = 'Win'
+                        pick['profit'] = round(pick.get('odds_dec', 1.91) - 1, 4)
+                    else:
+                        pick['status'] = 'Loss'
+                        pick['profit'] = -1.0
+                    result_str += f" | Total: {total_runs} ({direction.upper()} {tot_line})"
+
+                pick['result'] = f"{pick['status']} ({result_str})"
+                graded_count += 1
+                log(f"MLB {pick_type.split(' - ')[1]} {matchup}: {pick['status']} | {result_str}", "success")
+            except Exception as e:
+                log(f"Team props grading error {pick_type} {matchup}: {e}", "warning")
+
     if graded_count > 0:
         tracking['picks'] = picks
         with open(TRACKING_FILE, 'w') as f:
@@ -1649,10 +1875,11 @@ def main():
     
     if args.loop:
         while True:
-            updates_nba = run_nba_grading(force=args.force, grade_only=args.grade_only)
-            updates_mlb = run_mlb_grading(force=args.force, grade_only=args.grade_only)
+            updates_nba  = run_nba_grading(force=args.force, grade_only=args.grade_only)
+            updates_mlb  = run_mlb_grading(force=args.force, grade_only=args.grade_only)
+            updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
 
-            if updates_nba or updates_mlb:
+            if updates_nba or updates_mlb or updates_wnba:
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
@@ -1695,10 +1922,11 @@ def main():
             args.force = False 
     else:
         # Run once
-        updates_nba = run_nba_grading(force=args.force, grade_only=args.grade_only)
-        updates_mlb = run_mlb_grading(force=args.force, grade_only=args.grade_only)
+        updates_nba  = run_nba_grading(force=args.force, grade_only=args.grade_only)
+        updates_mlb  = run_mlb_grading(force=args.force, grade_only=args.grade_only)
+        updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
 
-        if updates_nba or updates_mlb:
+        if updates_nba or updates_mlb or updates_wnba:
             # Regenerate Best Plays aggregator
             try:
                 import best_plays_bot
