@@ -17,13 +17,16 @@ RECEIVING_YARDS_CACHE = SCRIPT_DIR / "nfl_player_receiving_yards_stats_cache.jso
 PASSING_YARDS_CACHE = SCRIPT_DIR / "nfl_player_passing_yards_stats_cache.json"
 
 def get_current_season():
-    """Get current NFL season year"""
+    """Return the NFL season year whose data should be used for projections.
+    During the offseason / preseason (Jan–Aug), the most recent completed
+    season is used as the stats baseline.  Once Week 1 kicks off in September
+    we switch to the current calendar year.
+    """
     now = datetime.now()
-    # NFL season starts in September
     if now.month >= 9:
-        return now.year
+        return now.year      # In-season: e.g. Sept 2026 → 2026
     else:
-        return now.year - 1
+        return now.year - 1  # Offseason: e.g. Aug 2026 → 2025
 
 def fetch_all_stats():
     """Fetch all NFL player stats using nflreadpy"""

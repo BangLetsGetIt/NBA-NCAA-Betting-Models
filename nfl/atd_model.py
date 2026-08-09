@@ -31,7 +31,7 @@ MIN_EDGE_THRESHOLD = 0.05  # 5% minimum edge (was 8%)
 SHARP_EDGE_THRESHOLD = 0.08  # 8%+ edge for "SHARP BET" (was 10%)
 KELLY_FRACTION = 0.25  # Conservative Kelly (1/4 Kelly)
 MIN_CONFIDENCE = 0.65  # Confidence required
-CURRENT_SEASON = "2025" # Adjust as needed
+CURRENT_SEASON = "2026" # Adjust as needed
 
 # Defense Ratings (Position specific - Lower is better for Defense)
 DEFENSE_TD_RATINGS = {

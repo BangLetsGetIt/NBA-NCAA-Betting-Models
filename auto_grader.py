@@ -1878,8 +1878,9 @@ def main():
             updates_nba  = run_nba_grading(force=args.force, grade_only=args.grade_only)
             updates_mlb  = run_mlb_grading(force=args.force, grade_only=args.grade_only)
             updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
+            updates_nfl  = run_nfl_grading(force=args.force, grade_only=args.grade_only)
 
-            if updates_nba or updates_mlb or updates_wnba:
+            if updates_nba or updates_mlb or updates_wnba or updates_nfl:
                 # Regenerate Best Plays aggregator
                 try:
                     import best_plays_bot
@@ -1925,8 +1926,9 @@ def main():
         updates_nba  = run_nba_grading(force=args.force, grade_only=args.grade_only)
         updates_mlb  = run_mlb_grading(force=args.force, grade_only=args.grade_only)
         updates_wnba = run_wnba_grading(force=args.force, grade_only=args.grade_only)
+        updates_nfl  = run_nfl_grading(force=args.force, grade_only=args.grade_only)
 
-        if updates_nba or updates_mlb or updates_wnba:
+        if updates_nba or updates_mlb or updates_wnba or updates_nfl:
             # Regenerate Best Plays aggregator
             try:
                 import best_plays_bot

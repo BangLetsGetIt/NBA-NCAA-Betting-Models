@@ -33,7 +33,7 @@ MIN_EDGE_UNDER = 6.0   # Must project 6+ yards UNDER the line (Unders are sweati
 MIN_CONSISTENCY = 0.5  # Player must be somewhat consistent
 MIN_AI_SCORE = 5.0     # 0-10 Scale (lowered to show more +EV plays)
 UNIT_SIZE = 100        # $100 units for ROI calc
-CURRENT_SEASON = "2025" # Adjust as needed
+CURRENT_SEASON = "2026" # Adjust as needed
 
 # ANSI Colors
 class Colors:
