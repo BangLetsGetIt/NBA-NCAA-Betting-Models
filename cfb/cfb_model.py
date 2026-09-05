@@ -13,7 +13,7 @@ CFBD_API_KEY = os.getenv("CFBD_API_KEY")
 if not CFBD_API_KEY:
     raise ValueError("Please set your CFBD_API_KEY in .env file")
 
-CURRENT_YEAR = 2025
+CURRENT_YEAR = 2026
 BANKROLL = 10000  # Example Bankroll $10,000
 
 print(f"--- INITIALIZING CFB ALPHA MODEL ({CURRENT_YEAR} Season) ---")
@@ -87,7 +87,8 @@ def fetch_advanced_stats():
         if team_name not in team_stats_dict:
             team_stats_dict[team_name] = {}
 
-        team_stats_dict[team_name][stat_name] = stat_value
+        val = stat_value.actual_instance if hasattr(stat_value, 'actual_instance') else stat_value
+        team_stats_dict[team_name][stat_name] = val
 
     # Debug: Print available stat names from first team
     if team_stats_dict:
@@ -140,6 +141,18 @@ def fetch_advanced_stats():
 # ==========================================
 # 2. PREDICTION ENGINE
 # ==========================================
+def get_current_cfb_week():
+    """Return estimated current CFB week based on today's date.
+    CFB Week 1 starts around Aug 24 each year.
+    """
+    now = datetime.now()
+    season_start = datetime(now.year, 8, 24)
+    if now < season_start:
+        return 1
+    days_in = (now - season_start).days
+    return max(1, min((days_in // 7) + 1, 15))
+
+
 def predict_spread(team_a_stats, team_b_stats):
     """
     Predict point spread using EPA differential.
@@ -477,9 +490,10 @@ def main():
         # Thanksgiving week - show games from the next 7 days
         print(f"   Fetching upcoming games starting {today.strftime('%B %d, %Y')} {now.strftime('%I:%M %p ET')}...")
 
-        # Try both Week 13 and 14 to capture all games
+        # Fetch current week and next week to capture all upcoming games
+        current_week = get_current_cfb_week()
         week_games = []
-        for week in [13, 14]:
+        for week in [current_week, current_week + 1]:
             try:
                 live_games = games_api.get_games(
                     year=CURRENT_YEAR,
@@ -569,7 +583,7 @@ def main():
         from collections import Counter
         dates = [g.get('game_date', today) for g in upcoming_games]
         date_counts = Counter(dates)
-        print(f"   Found {len(upcoming_games)} games this week (Week 14):")
+        print(f"   Found {len(upcoming_games)} games (Week {current_week}):")
         for date, count in sorted(date_counts.items()):
             print(f"     - {date.strftime('%A, %B %d')}: {count} games")
     else:
