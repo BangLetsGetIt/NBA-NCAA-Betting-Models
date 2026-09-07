@@ -232,233 +232,235 @@ def kelly_criterion(true_prob, decimal_odds):
 # 4. HTML GENERATION
 # ==========================================
 def generate_html(results):
-    """Generate NBA-style HTML report for CFB predictions"""
+    """Generate CourtSide Analytics-style HTML report for CFB predictions"""
 
-    games_html = ""
+    spread_picks = sum(1 for g in results['games'] if g['has_bet'])
+    total_picks  = sum(1 for g in results['games'] if g['has_total_bet'])
+
+    picks_html = ""
     for game in results['games']:
-        pick_class = 'pick-yes' if game['has_bet'] else 'pick-none'
+        away = game['away_team']
+        home = game['home_team']
+        matchup = f"{away} @ {home}"
+        game_time = game.get('start_time', 'TBD')
 
-        games_html += f"""
-                <div class="game-card">
-                    <div class="matchup">{game['away_team']} @ {game['home_team']}</div>
-                    <div class="game-time">🏈 {game['start_time']}</div>
-
-                    <div class="bet-section">
-                        <div class="bet-box">
-                            <div class="bet-title">📊 SPREAD BET</div>
-                            <div class="odds-line">
-                                <span>Market Line:</span>
-                                <strong>{game['market_spread']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Prediction:</span>
-                                <strong>{game['predicted_spread']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{game['edge']} pts</strong>
-                            </div>
-
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Confidence</span>
-                                    <span class="confidence-pct">{game['cover_prob']}</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {game['confidence']}%"></div>
-                                </div>
-                            </div>
-
-                            <div class="pick {pick_class}">
-                                <strong style="font-size: 1.3rem;">{'✅ ' + game['pick_team_spread'] if game['has_bet'] else '⏸️ PASS'}</strong><br>
-                                <small>{game['recommendation']}</small><br>
-                                <small style="opacity: 0.7;">Why: Our model sees {game['edge']} points of value in this matchup</small>
-                            </div>
-                        </div>
-
-                        <div class="bet-box" style="border-left-color: #6366f1;">
-                            <div class="bet-title" style="color: #6366f1;">💰 TOTAL (OVER/UNDER)</div>
-                            <div class="odds-line">
-                                <span>Market Total:</span>
-                                <strong>{game['market_total']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Model Prediction:</span>
-                                <strong>{game['expected_total']}</strong>
-                            </div>
-                            <div class="odds-line">
-                                <span>Edge:</span>
-                                <strong>{game['total_edge']} pts</strong>
-                            </div>
-
-                            <div class="confidence-bar-container">
-                                <div class="confidence-label">
-                                    <span>Over Probability</span>
-                                    <span class="confidence-pct">{game['prob_over']}</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" style="width: {game['total_confidence']}%; background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);"></div>
-                                </div>
-                            </div>
-
-                            <div class="pick {'pick-yes' if game['has_total_bet'] else 'pick-none'}">
-                                <strong style="font-size: 1.3rem;">{'✅ ' + game['total_pick'] if game['has_total_bet'] else '⏸️ PASS'}</strong><br>
-                                <small>{game['total_recommendation']}</small><br>
-                                <small style="opacity: 0.7;">{('Why: Model projects ' + game['expected_total'] + ' total points vs market of ' + game['market_total']) if game['total_has_line'] else ''}</small>
-                            </div>
-                        </div>
-                    </div>
+        if game['has_bet']:
+            pick_label = game.get('pick_team_spread', 'N/A')
+            picks_html += f"""
+    <div class="prop-card glow-green">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="player-info">
+                    <h2>{matchup}</h2>
+                    <div class="matchup-info">{home} Home</div>
                 </div>
-        """
+            </div>
+            <div class="game-meta">
+                <div class="bet-type-badge">Spread</div>
+                <div class="game-date-time">{game_time}</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="bet-main-row">
+                <div class="bet-selection">
+                    <span class="txt-green">{pick_label}</span>
+                </div>
+            </div>
+            <div class="model-subtext">Cover probability: <strong>{game['cover_prob']}</strong></div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-title">Model Line</div>
+                    <div class="stat-val">{game['predicted_spread']}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-title">Market Line</div>
+                    <div class="stat-val">{game['market_spread']}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-title">Edge</div>
+                    <div class="stat-val txt-green">{game['edge']} pts</div>
+                </div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-item"><span class="metric-lbl">COVER %</span><span class="metric-val txt-green">{game['cover_prob']}</span></div>
+                <div class="metric-item"><span class="metric-lbl">EDGE</span><span class="metric-val txt-green">{game['edge']} pts</span></div>
+                <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">{game['kelly_size']}</span></div>
+            </div>
+            <div class="tags-container">
+                <span class="tag tag-green">Spread Value</span>
+                <span class="tag tag-blue">EPA Model</span>
+            </div>
+        </div>
+    </div>"""
 
-    html = f"""
-<!DOCTYPE html>
+        if game['has_total_bet'] and game['total_has_line']:
+            picks_html += f"""
+    <div class="prop-card glow-green">
+        <div class="card-header">
+            <div class="header-left">
+                <div class="player-info">
+                    <h2>{matchup}</h2>
+                    <div class="matchup-info">{home} Home</div>
+                </div>
+            </div>
+            <div class="game-meta">
+                <div class="bet-type-badge">Total</div>
+                <div class="game-date-time">{game_time}</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="bet-main-row">
+                <div class="bet-selection">
+                    <span class="txt-green">{game['total_pick']}</span>
+                    <span class="line">{game['market_total']}</span>
+                </div>
+            </div>
+            <div class="model-subtext">Over probability: <strong>{game['prob_over']}</strong></div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-title">Model Total</div>
+                    <div class="stat-val">{game['expected_total']}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-title">Market Total</div>
+                    <div class="stat-val">{game['market_total']}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-title">Edge</div>
+                    <div class="stat-val txt-green">{game['total_edge']} pts</div>
+                </div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-item"><span class="metric-lbl">OVER %</span><span class="metric-val txt-green">{game['prob_over']}</span></div>
+                <div class="metric-item"><span class="metric-lbl">EDGE</span><span class="metric-val txt-green">{game['total_edge']} pts</span></div>
+                <div class="metric-item"><span class="metric-lbl">KELLY</span><span class="metric-val">{game['kelly_total']}</span></div>
+            </div>
+            <div class="tags-container">
+                <span class="tag tag-green">Total Value</span>
+                <span class="tag tag-blue">EPA Model</span>
+            </div>
+        </div>
+    </div>"""
+
+    if not picks_html:
+        picks_html = '<div class="no-bets">No qualifying picks today.</div>'
+
+    html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CFB Alpha Model - {results['date']}</title>
+    <title>CourtSide Analytics — CFB Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            padding: 2rem;
-            min-height: 100vh;
-        }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        .card {{
-            background: #1a1a1a;
-            border-radius: 1rem;
-            border: 1px solid #2a2a2a;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }}
-        .header-card {{
-            text-align: center;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid #ff6b35;
-        }}
-        .game-card {{
-            padding: 1.5rem;
-            border-bottom: 1px solid #2a2a2a;
-        }}
-        .game-card:last-child {{ border-bottom: none; }}
-        .matchup {{ font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }}
-        .game-time {{ color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem; }}
-        .bet-section {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }}
-        .bet-box {{
-            background: #0a0a0a;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border-left: 4px solid #ff6b35;
-        }}
-        .bet-title {{
-            font-weight: 700;
-            color: #ff6b35;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-        }}
-        .odds-line {{
-            display: flex;
-            justify-content: space-between;
-            margin: 0.25rem 0;
-            font-size: 0.95rem;
-            color: #cbd5e1;
-        }}
-        .odds-line strong {{ color: #ffffff; }}
-        .confidence-bar-container {{ margin: 0.75rem 0; }}
-        .confidence-label {{
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: #9ca3af;
-        }}
-        .confidence-pct {{
-            font-weight: 700;
-            color: #ff6b35;
-        }}
-        .confidence-bar {{
-            height: 8px;
-            background: #1e293b;
-            border-radius: 999px;
-            overflow: hidden;
-            border: 1px solid #2a2a2a;
-        }}
-        .confidence-fill {{
-            height: 100%;
-            background: linear-gradient(90deg, #ff6b35 0%, #f77f00 100%);
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }}
-        .pick {{
-            font-weight: 700;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-            border-radius: 0.375rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }}
-        .pick small {{
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 400;
-            margin-top: 0.5rem;
-            opacity: 0.9;
-            line-height: 1.4;
-        }}
-        .pick-yes {{ background-color: #064e3b; color: #10b981; border: 2px solid #10b981; }}
-        .pick-none {{ background-color: #1e293b; color: #94a3b8; border: 2px solid #475569; }}
-        .badge {{
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 700;
-            background-color: #7c2d12;
-            color: #ff6b35;
-            margin: 0.25rem;
-        }}
-        @media (max-width: 768px) {{
-            .bet-section {{ grid-template-columns: 1fr; }}
-            body {{ padding: 1rem; }}
-            .matchup {{ font-size: 1.25rem; }}
-        }}
+    :root {{
+        --bg-main: #0a0a0a; --bg-card: #1a1a1a; --bg-card-secondary: #222222;
+        --text-primary: #ffffff; --text-secondary: #94a3b8;
+        --accent-green: #4ade80; --accent-red: #f87171; --accent-blue: #60a5fa;
+        --border-color: #2a2a2a;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{ margin: 0; padding: 20px; font-family: 'Inter', system-ui, sans-serif;
+           background-color: var(--bg-main); color: var(--text-primary); }}
+    .container {{ max-width: 820px; margin: 0 auto; }}
+    header {{ display: flex; justify-content: space-between; align-items: center;
+             margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px; }}
+    h1 {{ margin: 0; font-size: 22px; font-weight: 800; }}
+    .subheader {{ font-size: 15px; font-weight: 600; margin-top: 2px; }}
+    .date-sub {{ color: var(--text-secondary); font-size: 13px; margin-top: 4px; }}
+    .nav-bar {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }}
+    .nav-link {{ padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+                text-decoration: none; border: 1px solid var(--border-color);
+                color: var(--text-secondary); background: var(--bg-card); transition: all 0.15s; }}
+    .nav-link:hover {{ color: var(--text-primary); border-color: var(--accent-blue); }}
+    .nav-link.active {{ color: var(--accent-blue); border-color: var(--accent-blue);
+                       background: rgba(96,165,250,0.1); }}
+    .summary-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }}
+    .stat-box {{ background: var(--bg-card); border-radius: 12px; padding: 16px;
+                text-align: center; border: 1px solid var(--border-color); }}
+    .stat-label {{ font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 6px; }}
+    .stat-value {{ font-size: 22px; font-weight: 700; }}
+    .txt-green {{ color: var(--accent-green); }}
+    .txt-red   {{ color: var(--accent-red); }}
+    .prop-card {{ background: var(--bg-card); border-radius: 16px; overflow: hidden;
+                 margin-bottom: 18px; border: 1px solid var(--border-color);
+                 box-shadow: 0 4px 12px rgba(0,0,0,0.3); }}
+    .prop-card.glow-green {{ border-color: rgba(74,222,128,0.25); box-shadow: 0 0 15px rgba(74,222,128,0.1); }}
+    .card-header {{ padding: 14px 18px; background: var(--bg-card-secondary);
+                   display: flex; justify-content: space-between; align-items: center;
+                   border-bottom: 1px solid var(--border-color); gap: 10px; }}
+    .header-left {{ display: flex; align-items: center; gap: 12px; }}
+    .player-info h2 {{ margin: 0; font-size: 17px; font-weight: 700; line-height: 1.2; }}
+    .matchup-info {{ font-size: 13px; color: var(--text-secondary); margin-top: 2px; }}
+    .game-meta {{ text-align: right; flex-shrink: 0; }}
+    .bet-type-badge {{ font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      color: var(--accent-blue); letter-spacing: .4px; }}
+    .game-date-time {{ font-size: 12px; color: var(--text-secondary); margin-top: 3px; }}
+    .card-body {{ padding: 18px; }}
+    .bet-main-row {{ margin-bottom: 10px; }}
+    .bet-selection {{ display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }}
+    .bet-selection .txt-green {{ font-size: 20px; font-weight: 800; }}
+    .line {{ font-size: 18px; font-weight: 600; color: var(--text-primary); }}
+    .model-subtext {{ font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }}
+    .model-subtext strong {{ color: var(--text-primary); }}
+    .stats-row {{ display: flex; gap: 10px; margin-bottom: 12px; }}
+    .stat-item {{ background: var(--bg-main); border-radius: 8px; padding: 10px 14px; flex: 1; }}
+    .stat-title {{ font-size: 11px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .4px; margin-bottom: 4px; }}
+    .stat-val {{ font-size: 16px; font-weight: 700; }}
+    .metrics-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }}
+    .metric-item {{ background: var(--bg-main); padding: 10px; border-radius: 8px; text-align: center; }}
+    .metric-lbl {{ display: block; font-size: 10px; color: var(--text-secondary);
+                  text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }}
+    .metric-val {{ font-size: 15px; font-weight: 700; }}
+    .tags-container {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+    .tag {{ font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }}
+    .tag-green {{ background: rgba(74,222,128,0.12); color: var(--accent-green); }}
+    .tag-blue  {{ background: rgba(96,165,250,0.12); color: var(--accent-blue); }}
+    .no-bets {{ text-align: center; color: var(--text-secondary); padding: 40px; font-style: italic;
+               background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color); }}
+    footer {{ text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 40px;
+             padding-top: 20px; border-top: 1px solid var(--border-color); }}
+    @media (max-width: 768px) {{
+        .stats-row {{ flex-wrap: wrap; }}
+        .summary-grid {{ grid-template-columns: repeat(2, 1fr); }}
+        body {{ padding: 12px; }}
+    }}
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card header-card">
-            <h1 style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">🏈 CFB MODEL PICKS</h1>
-            <p style="font-size: 1.25rem; opacity: 0.9;">EPA-Based Predictive Model</p>
-            <div>
-                <div class="badge">● EPA ANALYSIS</div>
-                <div class="badge">● SPREAD PREDICTIONS</div>
-                <div class="badge">● TOTAL PREDICTIONS</div>
-                <div class="badge">● VALUE BETTING</div>
-            </div>
-            <p style="font-size: 0.875rem; opacity: 0.75; margin-top: 1rem;">Generated: {results['date']}</p>
-            <p style="font-size: 1rem; margin-top: 0.5rem;">Games: {results['total_games']} | Betting Opportunities: {results['total_bets']}</p>
+<div class="container">
+    <div class="nav-bar">
+        <a href="cfb_model_output.html" class="nav-link active">🏈 CFB Picks</a>
+    </div>
+    <header>
+        <div>
+            <h1>CourtSide Analytics</h1>
+            <div class="subheader">🏈 College Football</div>
+            <div class="date-sub">{results['date']} • EPA Model • Alpha V1.0</div>
         </div>
-
-        <div class="card">
-{games_html}
+    </header>
+    <div class="summary-grid">
+        <div class="stat-box">
+            <div class="stat-label">Games Analyzed</div>
+            <div class="stat-value">{results['total_games']}</div>
         </div>
-
-        <div style="text-align: center; margin-top: 2rem; padding: 1rem; color: #64748b; font-size: 0.875rem;">
-            Model based on EPA (Expected Points Added) & Advanced Analytics<br>
-            Always bet responsibly. Past performance doesn't guarantee future results.
+        <div class="stat-box">
+            <div class="stat-label">Spread Picks</div>
+            <div class="stat-value txt-green">{spread_picks}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Total Picks</div>
+            <div class="stat-value txt-green">{total_picks}</div>
         </div>
     </div>
+    {picks_html}
+    <footer>
+        Model based on EPA (Expected Points Added) &amp; Advanced Analytics<br>
+        Always bet responsibly. Past performance doesn't guarantee future results.
+    </footer>
+</div>
 </body>
 </html>
 """
